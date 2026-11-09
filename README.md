@@ -5,11 +5,12 @@ A personal dashboard for goals, money, bills, debt, reminders, health and groomi
 **Open it:** download `index.html` and open it in any browser, or turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/`).
 
 ## What's inside
-- **Overview**: net worth, income vs spending, monthly budget pace, health score, goals, upcoming payments
+- **Overview**: net worth, income vs spending, monthly budget pace, health score, goals, upcoming payments, a habit cairn that stacks a stone as you go, and a one-line daily journal with mood
 - **Goals**: progress bars, milestones, auto-tracking for debt and emergency fund
 - **Reminders**: full-year calendar (birthdays, tax dates, renewals, festivals) with a phone-calendar export (.ics)
-- **Health**: daily, weekly, monthly, quarterly and yearly habits, plus a steps, water, sleep and weight log
+- **Health**: score dial, 12-glass water tracker, full-day streak, 16-week habit heatmap (tap a day to edit it), striped steps chart, plus daily to yearly habits
 - **Grooming**: AM/PM routine, haircut tracker, product shelf with "running low" alerts
+- **Animated UI**: page-entry motion, count-up numbers, self-drawing charts, a bin that eats the word "Delete", an expanding search, a circle-reveal theme switch and a spinning-tiles unlock. Turn animations off in Settings if you prefer.
 - **Life checklist**: the money, insurance, health and safety basics to set up
 - **Money**: activity log, budget vs actual, bills tracker, debt payoff planner, savings, year summary
 
