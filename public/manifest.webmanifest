@@ -1,6 +1,6 @@
 {
-  "name": "Aditya OS · Life Dashboard",
-  "short_name": "Aditya OS",
+  "name": "Self Streak",
+  "short_name": "Self Streak",
   "description": "Goals, money, bills, reminders, health and grooming in one place.",
   "start_url": "./",
   "scope": "./",

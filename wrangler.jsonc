@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "self-streak",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  "d1_databases": [{ "binding": "DB", "database_name": "self-streak", "database_id": "REPLACE_AFTER_CREATE" }],
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "observability": { "enabled": true },
+  "vars": {
+    "DAILY_AI_LIMIT": "20",
+    "TRIAL_DAYS": "7",
+    "PRICE_INR": "499",
+    "VAPID_PUBLIC_KEY": "BD-VBa02pcA2wwTGLv16rP9666MiyTnAvwKevoYVnuqi6KVBhISN42hqMhiSpUORRf1Dgghcs6q2UUaISaSKhUk",
+    "VAPID_SUBJECT": "mailto:support@selfstreak.app"
+  }
+  // Secrets (set with wrangler secret put): ANTHROPIC_API_KEY, VAPID_PRIVATE_JWK
+}
