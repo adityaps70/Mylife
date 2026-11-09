@@ -42,7 +42,7 @@ svg.i{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-
 .pos{color:var(--lime-text)}.neg{color:var(--red)}.warn{color:var(--yellow)}
 
 /* ---------- shell ---------- */
-.side{position:fixed;inset:0 auto 0 0;width:248px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;z-index:40;transition:width .2s,transform .25s}
+.side{padding-top:calc(16px + env(safe-area-inset-top))!important;padding-bottom:calc(16px + env(safe-area-inset-bottom))!important;position:fixed;inset:0 auto 0 0;width:248px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;z-index:40;transition:width .2s,transform .25s}
 .logo{display:flex;align-items:center;gap:10px;padding:2px 8px 10px}
 .logo .mk{width:32px;height:32px;border-radius:10px;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-weight:700;font-size:15px;flex:0 0 32px}
 .logo b{font-size:18px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
@@ -483,6 +483,68 @@ input[type=time]{width:112px}
 @media (max-width:860px){.fab{right:16px;width:56px;height:56px;bottom:calc(16px + env(safe-area-inset-bottom))}#toasts{bottom:calc(86px + env(safe-area-inset-bottom))}.nzrow .nb{min-width:100%}}
 @supports (padding:env(safe-area-inset-top)){.topbar{padding-top:env(safe-area-inset-top);height:calc(68px + env(safe-area-inset-top))}}
 
+/* ================= Notes sheet (Apple Notes style) ================= */
+#voice.notes{--nbg:#fbfaf7;--nink:#1d1d1f;--nmut:#8a8a8e;--nacc:#d9a400;--nline:#e9e7e1;--ncard:#ffffff;padding:0;background:var(--nbg);color:var(--nink);border:1px solid var(--nline);width:min(760px,calc(100vw - 24px));height:min(820px,calc(100dvh - 40px));max-height:calc(100dvh - 24px);overflow:hidden;font-family:-apple-system,"SF Pro Text","Helvetica Neue","Plus Jakarta Sans",system-ui,sans-serif}
+:root[data-theme="dark"] #voice.notes{--nbg:#1c1c1e;--nink:#f2f2f7;--nmut:#8e8e93;--nacc:#ffd60a;--nline:#2c2c2e;--ncard:#2c2c2e}
+@media (prefers-color-scheme:dark){:root[data-theme="auto"] #voice.notes{--nbg:#1c1c1e;--nink:#f2f2f7;--nmut:#8e8e93;--nacc:#ffd60a;--nline:#2c2c2e;--ncard:#2c2c2e}}
+#voice.notes[open]{display:flex;flex-direction:column}
+.nt-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px 4px;padding-top:calc(14px + env(safe-area-inset-top))}
+.nt-actions{display:flex;align-items:center;gap:4px}
+.nt-link{border:0;background:none;color:var(--nacc);font:500 17px/1.2 inherit;font-family:inherit;display:inline-flex;align-items:center;gap:2px;cursor:pointer;padding:8px 6px;border-radius:10px;min-height:40px}
+.nt-link svg.i{width:20px;height:20px;stroke-width:2.2}
+.nt-link:hover{background:color-mix(in srgb,var(--nacc) 10%,transparent)}
+.nt-ic{min-width:40px;justify-content:center;font-size:15px;font-weight:600}
+.nt-ic.off{color:var(--nmut)}
+.nt-done{font-weight:600;padding-left:10px}
+.nt-date{font-size:12.5px;color:var(--nmut);text-align:center;padding:2px 0 6px}
+.nt-body{flex:1;overflow-y:auto;padding:4px 26px 24px;overscroll-behavior:contain}
+.nt-text{font-size:17px;line-height:1.55;color:var(--nink);white-space:pre-wrap;word-wrap:break-word;min-height:38%;outline:0;caret-color:var(--nacc)}
+.nt-text .nt-title{font-size:27px;font-weight:700;line-height:1.25;letter-spacing:-.01em;margin-bottom:6px}
+.nt-text:empty::before{content:attr(data-ph);color:var(--nmut);white-space:pre-wrap;pointer-events:none}
+.nt-text .interim{color:var(--nmut)}
+.nt-text .caret{display:inline-block;width:2px;height:1.15em;margin-left:1px;background:var(--nacc);vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.nt-sec{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--nmut);margin:26px 0 8px}
+.nt-assigned{display:grid;gap:8px}
+.nt-chip{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--ncard);border:1px solid var(--nline);animation:chipIn .5s var(--spring) backwards;animation-delay:calc(var(--k)*60ms)}
+@keyframes chipIn{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.nt-chip .nb{flex:1;min-width:0}
+.nt-chip .to{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--nacc)}
+.nt-chip .tx{font-size:14.5px;font-weight:600}
+.nt-chip .sb{font-size:12px;color:var(--nmut)}
+.nt-chip svg.ok{color:var(--nacc);width:18px;height:18px;stroke-width:2.6}
+.nt-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--nline);background:var(--nbg)}
+.nt-status{font-size:13px;color:var(--nmut);display:flex;align-items:center;gap:8px;min-width:0}
+.nt-status.r{justify-content:flex-end}
+.nt-mic{width:62px;height:62px;border-radius:50%;border:0;background:var(--nacc);color:#1d1d1f;display:grid;place-items:center;cursor:pointer;transition:transform .25s var(--spring),background-color .25s;box-shadow:0 10px 26px -10px color-mix(in srgb,var(--nacc) 80%,transparent)}
+.nt-mic svg.i{width:26px;height:26px;stroke-width:2.2}
+.nt-mic.sm{width:48px;height:48px}
+.nt-mic:active{transform:scale(.92)}
+.nt-mic.on{background:#ff3b30;color:#fff;animation:micPulse 1.4s ease-in-out infinite}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,59,48,.45)}50%{box-shadow:0 0 0 14px rgba(255,59,48,0)}}
+.nt-wave{display:inline-flex;gap:3px;align-items:center;height:16px}
+.nt-wave i{width:3px;height:5px;border-radius:2px;background:#ff3b30;animation:wv .8s ease-in-out infinite}
+.nt-wave i:nth-child(2){animation-delay:.1s}.nt-wave i:nth-child(3){animation-delay:.2s}.nt-wave i:nth-child(4){animation-delay:.3s}.nt-wave i:nth-child(5){animation-delay:.4s}
+.nt-h1{font-size:32px;font-weight:700;letter-spacing:-.02em;padding:0 22px}
+.nt-sub{font-size:13px;color:var(--nmut);padding:2px 22px 10px}
+.nt-list{padding:0 10px 20px}
+.nt-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;cursor:pointer;border-bottom:1px solid var(--nline)}
+.nt-row:hover{background:var(--ncard)}
+.nt-row .nb{flex:1;min-width:0}
+.nt-row b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt-row .sb{font-size:13px;color:var(--nmut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nt-row .sb span{color:var(--nink);margin-right:6px}
+.nt-count{font-size:11.5px;font-weight:700;color:var(--nacc);white-space:nowrap}
+.nt-del{border:0;background:none;color:var(--nmut);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;cursor:pointer;opacity:.6}
+.nt-del:hover{opacity:1;background:var(--ncard)}
+.nt-del svg.i{width:15px;height:15px}
+@media (max-width:860px){
+  #voice.notes{width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;margin:0;border:0;border-radius:0}
+  #voice.notes[open]{animation:sheetUp .45s var(--spring)}
+  .nt-body{padding:4px 20px 20px}
+}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:0}}
+
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr));column-gap:36px}
 .shelf .ri:last-child{border-bottom:1px solid var(--line)}
 /* lock screen */
@@ -533,7 +595,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   .app,body.collapsed .app{margin-left:0}
   .hamb{display:grid}
   .collapse-btn{display:none}
-  .topbar{padding:0 16px;height:62px}
+  .topbar{padding:env(safe-area-inset-top) 16px 0;height:calc(62px + env(safe-area-inset-top))}
   .searchbtn span,.searchbtn .kbd{display:none}
   .searchbtn{width:42px;padding:0;justify-content:center;flex:0 0 42px}
   .newlbl{display:none}
@@ -545,7 +607,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   .stat .v{font-size:18px}
   .big{font-size:28px}
   .fields{grid-template-columns:1fr}
-  .scry.open{position:absolute;left:16px;right:16px;top:10px;width:auto;z-index:5}
+  .scry.open{position:absolute;left:16px;right:16px;top:calc(10px + env(safe-area-inset-top));width:auto;z-index:5}
 }
 @media (max-width:420px){.kpis{grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:12px}.kpi .v{font-size:18px}.hero .stats{grid-template-columns:1fr 1fr}}
 </style>
@@ -576,7 +638,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   <main id="main"></main>
 </div>
 <dialog id="dlg"></dialog>
-<button class="fab" id="fab" data-act="voice" aria-label="Quick log by voice" title="Quick log (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>
+<button class="fab" id="fab" data-act="voice" aria-label="New note: speak or type" title="New note (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>
 <dialog id="voice" aria-label="Quick log"></dialog>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
@@ -622,6 +684,8 @@ const IC={
  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>',
  stop:'<rect x="7" y="7" width="10" height="10" rx="2.5"/>',
  bank:'<path d="M3 9.5L12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3.5 20.5h17"/>',
+ speaker:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+ mute:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 10l5 5M21 10l-5 5"/>',
  lock:'<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
  scissors:'<circle cx="6" cy="7" r="2.6"/><circle cx="6" cy="17" r="2.6"/><path d="M8.2 8.4L20 17M8.2 15.6L20 7"/>',
  sparkle:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/>',
@@ -1395,7 +1459,7 @@ function pOverview(){
   const recent=[...state.tx].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
   const S=SEASON[m];
   return `${phead(fmt(t,{weekday:'long',month:'long',day:'numeric'}),`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${esc(state.profile.first||'there')}`,
-    `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="voice">${ic('mic')} Quick log</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
+    `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="voice">${ic('mic')} Note</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
   <div class="stack">${sampleBanner()}
   <div class="ov"><div class="stack">
     <div class="card hero"><div style="min-width:0">
@@ -2081,7 +2145,7 @@ function LOG_CONTEXT(){
 const HSYN=[[/\bgym\b|workout|work out|exercise|lifting|weights|kasrat/,/gym|workout/i],[/meditat|breathing|dhyan/,/meditation/i],[/\bread\b|reading|\bbook\b|padha|padhi/,/^read 20/i],[/sunlight|morning sun|dhoop/,/sunlight/i],[/protein/,/protein/i],[/fruit|vegetable|veggies|salad/,/fruits/i],[/no junk|skipped junk|no sugar|avoided junk|didn'?t eat junk/,/junk/i],[/(\bam\b|morning|subah)\s*skin ?care|morning routine/,/^am skincare/i],[/(\bpm\b|night|raat)\s*skin ?care|night routine/,/^pm skincare/i],[/brush|floss/,/brush/i],[/deodorant|\bdeo\b/,/deodorant/i],[/no screens|phone away|screens? off/,/no screens/i],[/weigh ?in|weighed myself/,/weigh-in/i],[/long walk|\bran\b|\brun\b|jogg|played|cricket|badminton|football/,/long walk/i],[/yoga|stretch|mobility/,/yoga/i],[/meal prep/,/meal prep/i],[/called (mom|dad|my parents|parents|maa|papa|home)|talked to (mom|dad|my parents)|ghar (pe )?call/,/call parents/i],[/met (a |my )?friend|called (a |my )?friend|dost se/,/friend/i],[/detox/,/detox/i],[/bed ?sheet|pillow cover/,/bedsheets/i],[/declutter|cleaned (my )?room/,/declutter/i],[/scrub|exfoliat/,/exfoliate/i],[/beard|shave|shaved/,/beard/i],[/\bnails?\b/,/nails/i],[/washed (my )?hair|hair wash|shampoo/,/hair wash/i]];
 const LSTOP=new Set(['weight','trends','review','daily','hours','minutes','target','check','every','water','litres','glasses','steps','sleep','morning','night','before','after','skincare','healthy','weekly','month','times','servings','fruits']);
 function parseLocal(text){
-  const A=[],T=ds(today()),s=' '+String(text).toLowerCase().replace(/₹/g,' rs ').replace(/(\d),(?=\d{3})/g,'$1')+' ',H=state.health.habits;
+  const NW={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,ek:1,do:2,teen:3,char:4,paanch:5,half:.5},A=[],T=ds(today()),s=' '+String(text).toLowerCase().replace(/₹/g,' rs ').replace(/(\d),(?=\d{3})/g,'$1').replace(/\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|ek|do|teen|char|paanch)\b(?=\s+(glass|glasses|gilas|litres?|liters?|hours?|ghante|k\b|thousand))/g,w=>NW[w])+' ',H=state.health.habits;
   const push=(kind,ref='',value=0,txt='',date=T)=>A.push({kind,ref,value,text:txt,date});let m;
   if((m=s.match(/(\d+(?:\.\d+)?)\s*(k|thousand|hazaar|hazar)?\s*(steps?|kadam)/)))push('steps','',parseFloat(m[1])*(m[2]?1000:1));
   else if(/(complet|done|finish|hit|poor|pur)[a-z]*\b[^.]{0,30}\bsteps?\b|\bsteps?\b[^.]{0,20}\b(done|complet|finish|ho gay)/.test(s))push('steps','',10000);
@@ -2090,8 +2154,8 @@ function parseLocal(text){
   else if(/(finished|completed|done with) (my )?water|water (goal )?(done|complete)/.test(s))push('water_set','',12);
   if((m=s.match(/(?:slept|sleep|soya|neend)\D{0,14}(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hours?|ghante)/))||(m=s.match(/(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hours?|ghante)\s*(?:of\s*)?(?:sleep|neend)/)))push('sleep','',parseFloat(m[1]));
   if((m=s.match(/(?:weight|weigh|weighed|vazan|wajan)\D{0,12}(\d{2,3}(?:\.\d+)?)/))){push('weight','',parseFloat(m[1]));const w=H.find(x=>/weigh-in/i.test(x.name));if(w)push('habit_done',w.id)}
-  const moneyRe=/(spent|spend|paid|pay|bought|gave|kharch[a-z]*|diye|diya)\s+(?:rs\.?|rupees?|inr)?\s*(\d+(?:\.\d+)?)\s*(k)?\s*(?:rs\.?|rupees?)?\s*(?:on|for|to|at|ka|ke|ki|par|pe)?\s*([a-z][a-z &'.-]{1,40})?/g;let mm;
-  while((mm=moneyRe.exec(s))){const amt=parseFloat(mm[2])*(mm[3]?1000:1),what=(mm[4]||'').replace(/\b(and|aur|then|also|plus)\b.*$/,'').trim();
+  const moneyRe=/(spent|spend|paid|pay|bought|gave|kharch[a-z]*|diye|diya)\s+(?:rs\.?|rupees?|inr)?\s*(\d+(?:\.\d+)?)\s*(k)?\s*(?:rs\.?|rupees?)?\s*(?:on|for|to|at|ka|ke|ki|par|pe)?\s*([a-z][a-z &'-]{1,30})?/g;let mm;
+  while((mm=moneyRe.exec(s))){const amt=parseFloat(mm[2])*(mm[3]?1000:1),what=(mm[4]||'').replace(/\b(and|aur|then|also|plus|remind|did|drank|slept|completed|walked)\b.*$/,'').trim();
     const bill=what&&state.bills.find(b=>billKeys(b).some(k=>(' '+what+' ').includes(k)));
     if(bill){push('bill_paid',bill.id);continue}
     push('expense','',amt,what?what.replace(/\b\w/g,c=>c.toUpperCase()):'Expense')}
@@ -2108,6 +2172,7 @@ function parseLocal(text){
 function applyActions(actions){
   const out=[],T=ds(today()),H=id=>state.health.habits.find(h=>h.id===id);
   for(const a of (actions||[]).slice(0,25)){
+    const b0=out.length;
     const valid=/^\d{4}-\d{2}-\d{2}$/.test(a.date||''),date=valid&&a.date<=T?a.date:T,d=pd(date),v=num(a.value),txt=String(a.text||'').trim();
     const lg=()=>state.health.logs[date]=state.health.logs[date]||{};
     switch(a.kind){
@@ -2128,57 +2193,173 @@ function applyActions(actions){
       case'journal':{if(!txt)break;state.journal=state.journal||{};const J=state.journal[date]||{};state.journal[date]={t:txt.slice(0,500),m:v>=1&&v<=5?v:num(J.m)};out.push({icon:'journal',col:'var(--violet)',text:'Journal line saved',sub:txt.slice(0,60)});break}
       case'reminder_add':{if(!txt)break;const rd=valid&&a.date>=T?a.date:T;state.reminders.push({id:uid(),title:txt.slice(0,120),type:'Personal',date:rd,repeat:'none',lead:0,notes:'Added by voice'});out.push({icon:'bell',col:'var(--cyan)',text:`Reminder: ${txt.slice(0,60)}`,sub:fmt(pd(rd),{weekday:'short',day:'numeric',month:'short'})});break}
     }
+    for(let k=b0;k<out.length;k++)out[k].kind=a.kind;
   }
   return out;
 }
+/* ================= Notes: dictate or type, everything is filed automatically ================= */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=null,vs={phase:'idle',final:'',interim:'',results:[],snapshot:null,reply:'',err:''};
-function openVoice(auto=true){menu=null;renderShell();vs={phase:'idle',final:'',interim:'',results:[],snapshot:null,reply:'',err:''};renderVoice();const d=$('#voice');if(!d.open)d.showModal();if(auto&&SR)startListen();else setTimeout(()=>$('#vin')?.focus(),60)}
-function renderVoice(){
-  const v=vs,d=$('#voice'),lang=ui.vlang||'en-IN',L=v.phase==='listening';
-  d.innerHTML=`<div class="vbody">
-  <div class="inline" style="justify-content:space-between;flex-wrap:nowrap"><div><h3 style="margin:0">Quick log</h3><div class="tiny muted">${hasAI()?'Understood by Claude · '+esc(modelName()):'Built-in understanding · add an API key for smarter results'}</div></div>
-    <div class="inline" style="gap:6px;flex-wrap:nowrap"><div class="seg"><button data-vl="en-IN" class="${lang==='en-IN'?'on':''}">EN</button><button data-vl="hi-IN" class="${lang==='hi-IN'?'on':''}" aria-label="Hindi">हिं</button></div><button class="ic" data-vx="close" aria-label="Close">${ic('x')}</button></div></div>
-  <button class="orb ${L?'on':''}" id="orb" aria-label="${L?'Stop listening':'Start listening'}">${ic(L?'stop':'mic')}</button>
-  <div class="wave ${L?'on':''}" aria-hidden="true">${[...Array(11)].map((_,k)=>`<i style="--k:${(k*3)%7}"></i>`).join('')}</div>
-  <div class="vtext" aria-live="polite">${v.phase==='thinking'?'<div class="thinking"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></div><div class="tiny muted" style="margin-top:8px">Understanding…</div>':esc(v.final)}${v.interim?` <span class="interim">${esc(v.interim)}</span>`:''}${!v.final&&!v.interim&&v.phase!=='thinking'?`<span class="muted" style="font-weight:500;font-size:15px">${L?'Listening… say it like you’d tell a friend':SR?'Tap the mic and speak':'Voice isn’t available in this browser. Type below.'}</span>`:''}</div>
-  ${v.results.length?`<div class="vres card" style="padding:6px 16px">${v.results.map((r,k)=>`<div class="ri" style="--k:${k}">${icoBox(r.icon,r.col)}<div class="rb"><div class="rt">${esc(r.text)}</div>${r.sub?`<div class="rs">${esc(r.sub)}</div>`:''}</div>${ic('tick').replace('class="i"','class="i pos"')}</div>`).join('')}</div>`:''}
-  ${v.reply?`<p class="small muted" style="text-align:center">${esc(v.reply)}</p>`:''}
-  ${v.err?`<div class="banner red">${esc(v.err)}</div>`:''}
-  ${v.snapshot?`<div class="inline" style="justify-content:space-between"><span class="small pos">Saved ${v.results.length} update${v.results.length>1?'s':''}</span><button class="btn sm" id="vundo">Undo</button></div>`:''}
-  <div style="display:flex;gap:8px"><input id="vin" placeholder="Or type: did gym, 9k steps, spent 250 on Swiggy" autocomplete="off" aria-label="Type what you did"><button class="btn lime" id="vgo">Log</button></div>
-  <div class="chips">${['Completed my 10k steps and gym','Drank 3 glasses of water','Slept 7.5 hours, weight 72 kg','Spent 450 on Zomato','Paid electricity bill','Did AM skincare and meditation'].map(x=>`<button class="chip" data-vex="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>`;
-  $('#orb').onclick=()=>L?stopListen():startListen();
-  const go=()=>{const t=$('#vin').value;if(t.trim()){try{rec?.abort()}catch(e){}processLog(t)}};
-  $('#vgo').onclick=go;$('#vin').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
-  d.querySelectorAll('[data-vex]').forEach(b=>b.onclick=()=>{try{rec?.abort()}catch(e){}processLog(b.dataset.vex)});
-  d.querySelectorAll('[data-vl]').forEach(b=>b.onclick=()=>{ui.vlang=b.dataset.vl;saveUI();renderVoice()});
-  d.querySelector('[data-vx]').onclick=()=>closeDlg(d);
-  const u=$('#vundo');if(u)u.onclick=undoLog;
+const NOTE_PH='Start writing, or tap the mic and talk…\n\nTry: “Did gym and 10k steps. Drank 3 glasses. Spent 450 on Zomato. Remind me to call the bank tomorrow.”';
+const DEST={habit_done:'Habits',habit_undo:'Habits',steps:'Health',water_add:'Health',water_set:'Health',sleep:'Health',weight:'Health',expense:'Spending',income:'Income',bill_paid:'Bills',emi_paid:'Debt',haircut:'Grooming',product_bought:'Grooming',goal_progress:'Goals',checklist_done:'Life checklist',journal:'Journal',reminder_add:'Reminders'};
+let rec=null,NV={view:'note',id:null,listening:false,interim:'',queue:'',busy:false,snap:null,status:'',tip:''},typer=null,silT=null,idleT=null;
+const curNote=()=>(state.notes||[]).find(n=>n.id===NV.id);
+function newNote(){state.notes=state.notes||[];const n={id:uid(),created:Date.now(),updated:Date.now(),text:'',done:[],pl:0};state.notes.unshift(n);if(state.notes.length>300)state.notes.length=300;NV.id=n.id;return n}
+function noteHTML(t){if(!t)return '';const L=t.split('\n');return `<div class="nt-title">${esc(L[0])||'<br>'}</div>`+L.slice(1).map(l=>`<div>${esc(l)||'<br>'}</div>`).join('')}
+const noteTitle=n=>(n.text.split('\n').find(l=>l.trim())||'New Note').slice(0,60);
+const sayClean=s=>String(s).replace(/−\s?/g,'').replace(/₹\s?([\d,]+(?:\.\d+)?)/g,'$1 rupees').replace(/\+(\d)/g,'$1').replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu,'').replace(/\s+/g,' ').trim();
+function speak(t){
+  if(ui.talk===false||!('speechSynthesis' in window)||!t)return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(sayClean(t)),lang=ui.vlang||'en-IN',V=speechSynthesis.getVoices();
+    u.lang=lang;u.voice=V.find(v=>v.lang===lang)||V.find(v=>v.lang.replace('_','-').startsWith(lang.slice(0,2)))||null;u.rate=1.03;speechSynthesis.speak(u)}catch(e){}
 }
-function startListen(){
-  if(!SR){vs.err='Voice input isn’t supported in this browser. Type instead, or open the dashboard in Chrome.';renderVoice();$('#vin')?.focus();return}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{};
+function openVoice(auto=true){
+  menu=null;renderShell();const d=$('#voice');d.classList.add('notes');
+  NV={...NV,view:'note',listening:false,interim:'',queue:'',busy:false,snap:null,status:'',tip:''};
+  const last=(state.notes||[])[0];if(last&&!last.text.trim())NV.id=last.id;else newNote();
+  renderNotes();if(!d.open)d.showModal();
+  if(auto&&SR)startListen();else focusNote(true);
+}
+function openNotesList(){menu=null;renderShell();const d=$('#voice');d.classList.add('notes');NV.view='list';renderNotes();if(!d.open)d.showModal()}
+function focusNote(end){const el=$('#ntx');if(!el||NV.listening)return;el.focus();if(end){const r=document.createRange();r.selectNodeContents(el);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r)}}
+function statusHTML(){
+  const s=NV.status;
+  if(NV.listening)return `<span class="nt-wave" aria-hidden="true">${'<i></i>'.repeat(5)}</span> Listening… just talk`;
+  if(s==='thinking')return `<span class="thinking"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></span> Filing…`;
+  if(s==='typing')return 'Files itself when you pause';
+  if(NV.tip)return esc(NV.tip);
+  if(s)return esc(s);
+  return SR?'Tap the mic, or just type':'Type here · voice needs Chrome, Edge or Safari';
+}
+function chipsHTML(n){
+  if(!n.done.length)return '';
+  return `<div class="nt-sec">Filed automatically</div>`+n.done.map((r,k)=>`<div class="nt-chip" style="--k:${k}">${icoBox(r.icon,r.col)}<div class="nb"><div class="to">${esc(DEST[r.kind]||'Dashboard')}</div><div class="tx">${esc(r.text)}</div>${r.sub?`<div class="sb">${esc(r.sub)}</div>`:''}</div>${ic('tick').replace('class="i"','class="i ok"')}</div>`).join('');
+}
+function renderNotes(){
+  const d=$('#voice');if(!d)return;const talk=ui.talk!==false;
+  if(NV.view==='list'){
+    const L=(state.notes||[]).filter(n=>n.text.trim());
+    const when=t=>{const d0=new Date(t);return ds(d0)===ds(today())?d0.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):fmt(d0,{day:'numeric',month:'short'})};
+    d.innerHTML=`<div class="nt-top"><span></span><div class="nt-actions"><button class="nt-link" data-n="close">Close</button></div></div>
+    <div class="nt-h1">Notes</div><div class="nt-sub">Everything you write or say gets filed into the dashboard.</div>
+    <div class="nt-body nt-list">${L.map(n=>{const prev=n.text.split('\n').filter(l=>l.trim()).slice(1,2)[0]||'';return `<div class="nt-row" data-nid="${n.id}" role="button" tabindex="0"><div class="nb"><b>${esc(noteTitle(n))}</b><div class="sb"><span>${when(n.updated)}</span> ${esc(prev.slice(0,70))}</div></div>${n.done.length?`<span class="nt-count">${n.done.length} filed</span>`:''}<button class="nt-del" data-ndel="${n.id}" aria-label="Delete note">${ic('x')}</button></div>`}).join('')||'<div class="empty">No notes yet. Tap the pencil to start one.</div>'}</div>
+    <div class="nt-bar"><span class="nt-status">${L.length} note${L.length===1?'':'s'}</span><button class="nt-mic sm" data-n="new" aria-label="New note">${ic('edit')}</button><span class="nt-status"></span></div>`;
+  }else{
+    const n=curNote()||newNote(),dt=new Date(n.created);
+    d.innerHTML=`<div class="nt-top"><button class="nt-link" data-n="list">${ic('left')} Notes</button><div class="nt-actions">
+      <button class="nt-link nt-ic" data-n="lang" aria-label="Language">${ui.vlang==='hi-IN'?'हिं':'EN'}</button>
+      <button class="nt-link nt-ic ${talk?'':'off'}" data-n="talk" aria-label="Talk back ${talk?'on':'off'}" title="Talk back ${talk?'on':'off'}">${ic(talk?'speaker':'mute')}</button>
+      <button class="nt-link nt-done" data-n="done">Done</button></div></div>
+    <div class="nt-date">${fmt(dt,{day:'numeric',month:'long',year:'numeric'})} at ${dt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})}</div>
+    <div class="nt-body"><div class="nt-text" id="ntx" ${NV.listening?'':'contenteditable="true"'} data-ph="${esc(NOTE_PH)}" spellcheck="true" aria-label="Note">${noteHTML(n.text)}</div>
+      <div class="nt-assigned" id="nta">${chipsHTML(n)}</div></div>
+    <div class="nt-bar"><div class="nt-status" id="nts">${statusHTML()}</div><button class="nt-mic ${NV.listening?'on':''}" data-n="mic" aria-label="${NV.listening?'Stop listening':'Dictate'}">${ic(NV.listening?'stop':'mic')}</button><div class="nt-status r">${NV.snap&&NV.snap.noteId===n.id?'<button class="nt-link" data-n="undo">Undo</button>':''}</div></div>`;
+    paintLive();
+  }
+  d.querySelectorAll('[data-n]').forEach(b=>b.onclick=e=>{e.stopPropagation();noteAction(b.dataset.n)});
+  d.querySelectorAll('[data-nid]').forEach(r=>{r.onclick=e=>{if(e.target.closest('[data-ndel]'))return;NV.id=r.dataset.nid;NV.view='note';NV.status='';renderNotes();focusNote(true)};r.onkeydown=e=>{if(e.key==='Enter')r.click()}});
+  d.querySelectorAll('[data-ndel]').forEach(b=>b.onclick=e=>{e.stopPropagation();if(!confirm('Delete this note? Things already filed stay in the dashboard.'))return;state.notes=state.notes.filter(n=>n.id!==b.dataset.ndel);save();renderNotes()});
+  const el=$('#ntx');
+  if(el&&!NV.listening){
+    el.oninput=()=>{const n=curNote();n.text=el.innerText.replace(/ /g,' ').replace(/\n$/,'');n.updated=Date.now();if(n.pl>n.text.length)n.pl=n.text.length;save();
+      clearTimeout(idleT);const pend=n.text.slice(n.pl).trim();setStatus(pend?'typing':'');
+      if(pend)idleT=setTimeout(()=>{if(/[.!?।\n]\s*$/.test(curNote()?.text||'')||document.activeElement!==el)processPending()},2600)};
+    el.onblur=()=>{const n=curNote();if(n&&n.text.slice(n.pl).trim()){clearTimeout(idleT);idleT=setTimeout(processPending,1200)}};
+    el.onpaste=e=>{e.preventDefault();document.execCommand('insertText',false,(e.clipboardData||window.clipboardData).getData('text/plain'))};
+  }
+}
+function paintLive(){
+  const el=$('#ntx'),n=curNote();if(!el||!n||!NV.listening)return;
+  el.innerHTML=noteHTML(n.text)||'<div class="nt-title"></div>';
+  const last=el.lastElementChild;last.insertAdjacentHTML('beforeend',`${NV.interim?`<span class="interim">${n.text&&!/\s$|\n$/.test(n.text)?' ':''}${esc(NV.interim)}</span>`:''}<span class="caret"></span>`);
+  const body=el.closest('.nt-body');if(body)body.scrollTop=body.scrollHeight;
+}
+function setStatus(s){NV.status=s;const el=$('#nts');if(el)el.innerHTML=statusHTML()}
+function typeIn(chunk){
+  const n=curNote();if(!n)return;chunk=chunk.trim();if(!chunk)return;
+  const base=n.text+NV.queue,start=!base.trim()||/[.!?।]\s*$|\n\s*$/.test(base);
+  if(start)chunk=chunk[0].toUpperCase()+chunk.slice(1);
+  if(!/[.!?।]$/.test(chunk))chunk+='.';
+  if(!base.trim())chunk+='\n';
+  NV.queue+=(base&&!/\s$/.test(base)?' ':'')+chunk;
+  if(!typer)typer=setInterval(()=>{const m=curNote();if(!m||!NV.queue){clearInterval(typer);typer=null;return}const k=RM()?NV.queue.length:Math.max(1,Math.ceil(NV.queue.length/40));m.text+=NV.queue.slice(0,k);NV.queue=NV.queue.slice(k);m.updated=Date.now();paintLive()},22);
+}
+const flushQueue=()=>new Promise(res=>{const t=setInterval(()=>{if(!NV.queue){clearInterval(t);res()}},30)});
+async function micHint(){
+  if(location.protocol==='file:'){NV.tip='Opened as a file, so the browser asks for the mic every time. Use the web address instead.';return}
+  try{const p=await navigator.permissions.query({name:'microphone'});
+    if(p.state==='prompt'&&!ui.micTip){NV.tip='When the browser asks, choose “Allow on every visit” so it won’t ask again.';ui.micTip=true;saveUI()}
+    if(p.state==='denied')NV.tip='Microphone is blocked. Click the lock icon in the address bar → Microphone → Allow.';}catch(e){}
+}
+async function startListen(){
+  if(!SR){NV.tip='Voice input needs Chrome, Edge or Safari. On iPhone you can also use the keyboard’s 🎤 dictation key.';renderNotes();focusNote(true);return}
+  try{speechSynthesis.cancel()}catch(e){}
   try{rec?.abort()}catch(e){}
-  rec=new SR();rec.lang=ui.vlang||'en-IN';rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
-  vs={...vs,phase:'listening',final:'',interim:'',err:'',results:[],reply:'',snapshot:null};renderVoice();
-  rec.onresult=e=>{let f='',n='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)f+=r[0].transcript;else n+=r[0].transcript}vs.final=f.trim();vs.interim=n.trim();renderVoice()};
-  rec.onerror=e=>{const m={'not-allowed':'Microphone access is blocked. Allow it for this site in your browser settings, or type instead.','service-not-allowed':'Microphone access is blocked. Allow it for this site in your browser settings, or type instead.','no-speech':'Didn’t hear anything. Tap the mic and try again.','network':'Voice recognition needs an internet connection.','audio-capture':'No microphone found.'};vs={...vs,phase:'idle',err:m[e.error]||('Voice input stopped ('+e.error+'). Try again or type.')};renderVoice()};
-  rec.onend=()=>{if(vs.phase!=='listening')return;const t=(vs.final+' '+vs.interim).trim();if(t)processLog(t);else{vs.phase='idle';renderVoice()}};
-  try{rec.start()}catch(e){vs={...vs,phase:'idle',err:'Couldn’t start the microphone. Try again.'};renderVoice()}
+  await micHint();
+  rec=new SR();rec.lang=ui.vlang||'en-IN';rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
+  let doneIdx=0;
+  NV={...NV,listening:true,interim:'',status:''};renderNotes();
+  const arm=()=>{clearTimeout(silT);silT=setTimeout(()=>finishListening(),2000)};
+  rec.onresult=e=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal){if(i>=doneIdx){typeIn(r[0].transcript);doneIdx=i+1}}else interim+=r[0].transcript}NV.interim=interim.trim();NV.tip='';paintLive();setStatus('');arm()};
+  rec.onerror=e=>{const m={'not-allowed':'Microphone is blocked. Click the lock icon in the address bar → Microphone → Allow.','service-not-allowed':'Microphone is blocked for this site. Allow it in your browser settings.','no-speech':'Didn’t hear anything. Tap the mic and try again.','network':'Voice recognition needs an internet connection.','audio-capture':'No microphone found.','aborted':''};NV.tip=m[e.error]??('Voice stopped ('+e.error+').');};
+  rec.onend=()=>{if(!NV.listening)return;finishListening(true)};
+  try{rec.start()}catch(e){NV.listening=false;NV.tip='Couldn’t start the microphone. Try again.';renderNotes()}
 }
-function stopListen(){try{rec?.stop()}catch(e){}}
-async function processLog(text){
-  text=String(text||'').trim();if(!text)return;
-  vs={...vs,phase:'thinking',final:text,interim:'',err:'',results:[],reply:'',snapshot:null};renderVoice();
-  let actions=null,reply='',err='';
-  if(hasAI()){try{const out=await aiJSON({system:LOG_SYSTEM(),content:[{type:'text',text:LOG_CONTEXT()+'\n\nWHAT I SAID: '+text}],schema:LOG_SCHEMA,effort:'low'});actions=out.actions||[];reply=out.reply||''}catch(e){err=aiErr(e)+' Used built-in understanding instead.'}}
-  if(!actions)actions=parseLocal(text);
-  const snap=JSON.stringify(state),results=applyActions(actions);
-  if(!results.length){vs={...vs,phase:'idle',err,reply:reply||'I couldn’t match that to anything. Try “did gym”, “8000 steps”, “drank 2 glasses” or “spent 200 on chai”.'};renderVoice();return}
-  autoHabits();vs={...vs,phase:'done',results,reply,err,snapshot:snap};commit();renderVoice();
-  const box=$('#voice .vres');if(box)burst(...center(box),24);toast(`Logged ${results.length} update${results.length>1?'s':''}`,'mic');
+async function finishListening(ended){
+  clearTimeout(silT);if(!NV.listening)return;
+  if(NV.interim)typeIn(NV.interim);NV.interim='';NV.listening=false;
+  if(!ended){try{rec?.stop()}catch(e){}}
+  await flushQueue();save();renderNotes();processPending();
 }
-function undoLog(){if(!vs.snapshot)return;state=JSON.parse(vs.snapshot);vs={...vs,phase:'idle',results:[],snapshot:null,reply:'Undone. Nothing was changed.'};commit();renderVoice();toast('Undone','x')}
+async function processPending(){
+  clearTimeout(idleT);const n=curNote();if(!n||NV.busy)return;const pend=n.text.slice(n.pl).trim();if(!pend){setStatus('');return}
+  NV.busy=true;setStatus('thinking');
+  let actions=null,reply='';
+  if(hasAI()){try{const o=await aiJSON({system:LOG_SYSTEM()+'\nKeep reply to one short spoken sentence.',content:[{type:'text',text:LOG_CONTEXT()+'\n\nWHAT I SAID: '+pend}],schema:LOG_SCHEMA,effort:'low'});actions=o.actions||[];reply=o.reply||''}catch(e){toast(aiErr(e)+' Used built-in understanding.','x')}}
+  if(!actions)actions=parseLocal(pend);
+  const notes=state.notes,snap=JSON.stringify({...state,notes:undefined});
+  const res=applyActions(actions);
+  const m=(state.notes||notes).find(x=>x.id===n.id)||n;m.pl=m.text.length;m.updated=Date.now();
+  NV.busy=false;
+  if(res.length){autoHabits();m.done.push(...res);NV.snap={snap,noteId:m.id,count:res.length};commit();
+    NV.status=`Filed ${res.length} thing${res.length>1?'s':''}`;renderNotes();const a=$('#nta');if(a)burst(...center(a.lastElementChild||a),18);}
+  else{save();NV.status='Saved as a note';renderNotes()}
+  speak(reply||spokenSummary(res));
+}
+function spokenSummary(res){
+  if(!res.length)return 'Saved as a note.';
+  const short=t=>String(t).replace(/\s*\(.*?\)/g,'').split(/[:—]/)[0].trim().toLowerCase();
+  const hasSteps=res.some(r=>r.kind==='steps');
+  const parts=res.filter(r=>!(hasSteps&&r.kind==='habit_done'&&/10,000 steps/i.test(r.text))).map(r=>{
+    switch(r.kind){
+      case'habit_done':return 'ticked '+short(r.text);
+      case'steps':return r.text.replace(/^Steps:\s*/,'')+' steps';
+      case'water_add':return r.text.replace(/^\+/,'');
+      case'sleep':return r.text.replace(/^Sleep:\s*([\d.]+)\s*h/,'$1 hours of sleep');
+      case'weight':return 'weight '+r.text.replace(/^Weight:\s*/,'');
+      case'expense':case'income':{const m=r.text.match(/₹\s?([\d,]+(?:\.\d+)?)\s*·\s*(.*)$/);return m?`${m[1]} rupees ${r.kind==='income'?'from':'on'} ${m[2]}`:r.text}
+      case'reminder_add':return 'a reminder to '+r.text.replace(/^Reminder:\s*/,'')+' for '+r.sub;
+      default:return r.text;
+    }});
+  const list=parts.length>1?parts.slice(0,-1).join(', ')+' and '+parts[parts.length-1]:parts[0];
+  return 'Got it. I’ve logged '+list+'.';
+}
+function noteAction(a){
+  const n=curNote();
+  if(a==='mic'){NV.listening?finishListening():startListen();return}
+  if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderNotes();if(ui.talk!==false)speak('Talk back is on.');else try{speechSynthesis.cancel()}catch(e){}return}
+  if(a==='lang'){ui.vlang=ui.vlang==='hi-IN'?'en-IN':'hi-IN';saveUI();renderNotes();toast(ui.vlang==='hi-IN'?'Listening in Hindi':'Listening in English','mic');return}
+  if(a==='undo'){if(!NV.snap)return;const s=NV.snap,notes=state.notes;state={...JSON.parse(s.snap),notes};const m=notes.find(x=>x.id===s.noteId);if(m)m.done.splice(-s.count);NV.snap=null;NV.status='Undone';commit();renderNotes();speak('Undone.');return}
+  if(a==='done'){if(NV.listening){finishListening();return}if(n&&n.text.slice(n.pl).trim()){processPending();return}closeDlg($('#voice'));return}
+  if(a==='list'){if(NV.listening)finishListening();else if(n&&n.text.slice(n.pl).trim())processPending();NV.view='list';renderNotes();return}
+  if(a==='new'){newNote();NV.view='note';NV.status='';NV.snap=null;renderNotes();focusNote(true);return}
+  if(a==='close'){closeDlg($('#voice'));return}
+}
+function onNotesClose(){
+  clearTimeout(silT);try{rec?.abort()}catch(e){}NV.listening=false;
+  const n=curNote();if(n&&n.text.slice(n.pl).trim())processPending();
+  setTimeout(()=>{state.notes=(state.notes||[]).filter(x=>x.text.trim());save()},1500);
+}
 
 /* ================= reminders & notifications ================= */
 const inQuiet=t=>{const q=state.nudges.quiet;if(!q||!q.from||!q.to||q.from===q.to)return false;return q.from<q.to?t>=q.from&&t<q.to:t>=q.from||t<q.to};
@@ -2385,7 +2566,7 @@ function renderShell(){
   <button class="ibtn lumen" data-act="theme" title="Switch to ${dark?'light':'dark'} mode" aria-label="Switch to ${dark?'light':'dark'} mode">${ic(dark?'sun':'moon')}</button>
   <button class="ibtn" data-act="lock" title="Lock dashboard">${ic('lock')}</button>
   <div class="menuwrap"><button class="btn lime ${menu==='new'?'open':''}" style="height:42px;border-radius:12px" data-act="new" aria-label="New">${ic('plus')}<span class="newlbl">New</span></button>
-    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="voice">${ic('mic')} Quick log by voice<small>V</small></button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
+    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="voice">${ic('mic')} New note (speak or type)<small>V</small></button><button class="mi" data-act="notes">${ic('journal')} All notes</button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
 }
 function applyTheme(){document.documentElement.dataset.theme=state.profile.theme||'dark';document.documentElement.classList.toggle('nomotion',state.profile.motion==='off')}
 function render(){
@@ -2522,6 +2703,7 @@ document.addEventListener('click',e=>{
     case'collapse':ui.collapsed=!ui.collapsed;render();return;
     case'search':openScry();return;
     case'voice':openVoice();return;
+    case'notes':openNotesList();return;
     case'import':openImport();return;
     case'notifOn':askNotif();return;
     case'notifTest':if(window.Notification?.permission==='granted'){showNotif({title:'Test reminder 💧',body:'Water check: tap “+1 glass” to log it.',tag:'test',url:'./#/health',actions:[{action:'w1',title:'+1 glass'}],acts:{w1:'water:1'}});toast('Test sent. Check your notifications.')}else askNotif();return;
@@ -2622,7 +2804,7 @@ matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>rend
 {const q=new URLSearchParams(location.search);if(q.get('do')){pendingDo=q.get('do');history.replaceState(null,'',location.pathname+location.hash)}}
 function afterOpen(){if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
 $('#dlg').addEventListener('close',()=>{if(imp){imp=null}$('#dlg').classList.remove('wide')});
-$('#voice').addEventListener('close',()=>{try{rec?.abort()}catch(e){}});
+$('#voice').addEventListener('close',onNotesClose);
 $('#voice').addEventListener('click',e=>{if(e.target===$('#voice'))closeDlg($('#voice'))});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){nzCache.t=0;notifTick();checkMissed()}});
 if(isUnlocked()){autoHabits();render();afterOpen()}else showLock();
