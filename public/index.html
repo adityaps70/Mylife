@@ -2114,7 +2114,7 @@ function pSettings(){
 /* ================= Self Streak: account, cloud sync, AI via server ================= */
 const BRAND='Self Streak';
 let cloudBase=0,syncFail=0;
-let account=null,usage={used:0,limit:20},cloudT=null,cloudDirty=false,pushOn=false,authMode='login';
+let account=null,usage={used:0,limit:100},cloudT=null,cloudDirty=false,pushOn=false,authMode='login';
 async function apiFetch(path,opts={}){
   const r=await fetch(path,{method:opts.method||'GET',headers:opts.body!==undefined?{'content-type':'application/json'}:{},body:opts.body!==undefined?JSON.stringify(opts.body):undefined,credentials:'same-origin'});
   let d={};try{d=await r.json()}catch(e){}
@@ -2235,7 +2235,7 @@ function checkPaywall(){
   P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center">${logo(64)}</div>
   <h2 style="font-size:24px">Your free trial has ended</h2><p class="small muted">Keep your streaks, reminders and AI logging going.</p>
   <div class="price">₹${account.price||499}<small> / month</small></div>
-  <ul>${['Unlimited habits, goals, bills and reminders','Push reminders on your phone','Voice and typed notes filed automatically','Bank statement, bill and meal-photo scanning (20 AI actions a day)','Your data synced across devices'].map(x=>`<li>${ic('tick')}${x}</li>`).join('')}</ul>
+  <ul>${['Unlimited habits, goals, bills and reminders','Push reminders on your phone','Voice and typed notes filed automatically','Bank statement, bill and meal-photo scanning (100 AI actions a day)','Your data synced across devices'].map(x=>`<li>${ic('tick')}${x}</li>`).join('')}</ul>
   <button class="btn lime" style="height:48px;justify-content:center" data-act="subscribe">Subscribe for ₹${account.price||499}/month</button>
   <button class="btn ghost" data-act="exportData">Download my data</button><button class="btn ghost" data-act="logout">Log out</button>
   <p class="tiny faint" id="paymsg"></p></div>`;

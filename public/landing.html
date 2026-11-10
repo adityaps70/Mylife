@@ -400,7 +400,7 @@ footer .legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px
     </ul>
   </div>
   <div class="sheet rv d1" aria-label="Assistant conversation preview">
-    <div class="sheet-h"><svg class="lgo"><use href="#logo"/></svg><div><b>Self Streak assistant</b><small id="aiLeft">20 of 20 AI actions left today</small></div><span class="sp"></span><svg class="i" style="color:var(--muted)"><use href="#speaker"/></svg><svg class="i" style="color:var(--muted)"><use href="#x"/></svg></div>
+    <div class="sheet-h"><svg class="lgo"><use href="#logo"/></svg><div><b>Self Streak assistant</b><small id="aiLeft">100 of 100 AI actions left today</small></div><span class="sp"></span><svg class="i" style="color:var(--muted)"><use href="#speaker"/></svg><svg class="i" style="color:var(--muted)"><use href="#x"/></svg></div>
     <div class="sheet-log" id="sheetLog"></div>
     <div class="sheet-f"><div class="askbar"><div class="ask-text"><svg class="i"><use href="#spark"/></svg><span class="typed" id="sheetTyped"></span><span id="sheetPh">Log anything…</span></div><span class="ab" id="sheetCam"><svg class="i"><use href="#cam"/></svg></span><span class="ab mic" id="sheetMic"><svg class="i"><use href="#mic"/></svg></span></div></div>
   </div>
@@ -433,7 +433,7 @@ footer .legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px
     <ul class="ticks">
       <li><svg class="i"><use href="#tick"/></svg>Unlimited habits, goals, bills, loans and reminders</li>
       <li><svg class="i"><use href="#tick"/></svg>Push reminders on your phone and laptop</li>
-      <li><svg class="i"><use href="#tick"/></svg>AI logging by voice, text and photo (20 a day)</li>
+      <li><svg class="i"><use href="#tick"/></svg>AI logging by voice, text and photo (100 a day)</li>
       <li><svg class="i"><use href="#tick"/></svg>AI debt repayment plan built on your income</li>
       <li><svg class="i"><use href="#tick"/></svg>Synced across all your devices</li>
     </ul>
@@ -521,20 +521,20 @@ const ai=html=>`<div class="as-row"><svg class="as-av"><use href="#logo"/></svg>
 const chip=(k,icon,col,to,tx,sb)=>`<div class="as-chip" style="--k:${k}">${box(icon,col)}<div class="nb"><div class="to">${to}</div><div class="tx">${tx}</div><div class="sb">${sb}</div></div>${I('tick','').replace('class="i"','class="i ok"')}</div>`;
 function add(html){LOG.insertAdjacentHTML('beforeend',html);while(LOG.children.length>4)LOG.firstElementChild.remove();return LOG.lastElementChild}
 async function assistLoop(){
-  await seen(LOG);const ty=$('#sheetTyped'),ph=$('#sheetPh'),mic=$('#sheetMic'),cam=$('#sheetCam'),left=$('#aiLeft');let n=20;
+  await seen(LOG);const ty=$('#sheetTyped'),ph=$('#sheetPh'),mic=$('#sheetMic'),cam=$('#sheetCam'),left=$('#aiLeft');let n=100;
   while(true){
     LOG.innerHTML='';
     ph.style.display='none';mic.classList.add('live');await typeInto(ty,'did gym, 10k steps, paid rent 12000',42);await sleep(350);mic.classList.remove('live');
     add(me(ty.textContent));ty.textContent='';ph.style.display='';
     const t=add(ai('<span class="thinking"><i></i><i></i><i></i></span>'));await sleep(1100);
     t.querySelector('.as-b').innerHTML=`Done.<div class="as-chips">${chip(0,'heart','var(--green)','Health','Gym · upper body','Habit ticked · 5-day streak')}${chip(1,'steps','var(--lime)','Health','10,000 steps','Walk 10,000 steps ✓')}${chip(2,'rupee','var(--orange)','Spending','− ₹12,000 · Rent','Rent / Home')}</div><span class="as-link">Undo</span>`;
-    left.textContent=`${--n} of 20 AI actions left today`;await sleep(3200);
+    left.textContent=`${--n} of 100 AI actions left today`;await sleep(3200);
     cam.animate([{transform:'scale(1)'},{transform:'scale(.85)'},{transform:'scale(1)'}],{duration:350});await sleep(400);
     add(me('<div class="plate" role="img" aria-label="Photo of dal chawal"></div>'));
     const t2=add(ai('<span class="thinking"><i></i><i></i><i></i></span>'));await sleep(1300);
     t2.querySelector('.as-b').innerHTML=`Looks like <b>dal chawal with salad</b>: about 520 kcal, 18 g protein, 80 g carbs, 12 g fat.<div class="as-btns"><span class="btn sm lime">${I('tick')} Log meal</span><span class="btn sm">Edit first</span><span class="btn sm">Not a meal</span></div>`;
-    left.textContent=`${--n} of 20 AI actions left today`;await sleep(3600);
-    if(n<5)n=20;
+    left.textContent=`${--n} of 100 AI actions left today`;await sleep(3600);
+    if(n<80)n=100;
   }
 }
 

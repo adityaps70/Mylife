@@ -45,7 +45,7 @@ async function usageToday(env, uid) {
   return r ? r.count : 0;
 }
 async function me(env, u) {
-  const limit = Number(env.DAILY_AI_LIMIT || 20);
+  const limit = Number(env.DAILY_AI_LIMIT || 100);
   return { user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
     usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY };
 }
@@ -303,7 +303,7 @@ async function api(req, env, url) {
     const b = await body(), spec = (() => { try { return buildTask(String(b.task || ''), b.input || {}); } catch { return 'bad_file'; } })();
     if (spec === 'bad_file') return err(400, 'That file type isn’t supported. Use a PDF or a photo (JPG/PNG).');
     if (!spec) return err(400, 'unknown_task');
-    const limit = Number(env.DAILY_AI_LIMIT || 20), day = istDay();
+    const limit = Number(env.DAILY_AI_LIMIT || 100), day = istDay();
     const row = await env.DB.prepare('INSERT INTO usage (user_id, day, count) VALUES (?, ?, 1) ON CONFLICT(user_id, day) DO UPDATE SET count = count + 1 WHERE count < ? RETURNING count').bind(u.id, day, limit).first();
     if (!row) return err(429, `You’ve used all ${limit} AI actions for today. They reset at midnight.`, { used: limit, limit });
     try {
