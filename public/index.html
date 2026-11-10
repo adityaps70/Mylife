@@ -1254,6 +1254,11 @@ function load(raw){
   if(s.v<4){s.v=4;s.health.habits.forEach(h=>{if(!Array.isArray(h.times))Object.assign(h,defaultReminder(h))})}
   const nd=nudgeDefaults();s.nudges=Object.assign(nd,s.nudges||{});for(const k in nd)if(s.nudges[k]===undefined)s.nudges[k]=nd[k];s.nudges.fired=s.nudges.fired||{};
   s.journal=s.journal||{};s.cards=s.cards||[];
+  // Clean up exact duplicates left by repeated taps on an old version (same bill / reminder saved twice).
+  {const nk=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]/g,''),seen={},drop=new Set();
+   for(const b of s.bills||[]){const k=[nk(b.name),+b.amount||0,b.freq,+b.dueDay||0].join('|');if(seen[k]){drop.add(b.id);for(const pk of Object.keys(s.paid||{}))if(pk.startsWith('B:'+b.id+'|')){s.paid['B:'+seen[k]+pk.slice(2+b.id.length)]=s.paid[pk];delete s.paid[pk]}}else seen[k]=b.id}
+   if(drop.size)s.bills=s.bills.filter(b=>!drop.has(b.id));
+   const rs={};s.reminders=(s.reminders||[]).filter(r=>{const k=[nk(r.title),r.date,+r.amount||0,r.repeat].join('|');if(rs[k])return false;rs[k]=1;return true})}
   return s;
 }
 let state=load();
@@ -3010,7 +3015,12 @@ let swReg=null,deferredInstall=null,pendingDo=null;
 async function initPWA(){
   const ok='serviceWorker' in navigator&&(location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));if(!ok)return;
   try{
-    swReg=await navigator.serviceWorker.register('sw.js');
+    const hadSW=!!navigator.serviceWorker.controller;let reloading=false;
+    swReg=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
+    // A new version was deployed: the new service worker takes over, so reload once to run the new app.
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadSW||reloading)return;reloading=true;const go=()=>{if(document.querySelector('dialog[open]')&&document.visibilityState==='visible'){setTimeout(go,1500);return}try{save()}catch(e){}location.reload()};go()});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')swReg.update().catch(()=>{})});
+    setInterval(()=>swReg.update().catch(()=>{}),30*60e3);
     navigator.serviceWorker.addEventListener('message',e=>{if(e.data?.type==='notif-action'&&e.data.act)runDo(e.data.act)});
     if('periodicSync' in swReg){try{const st=await navigator.permissions.query({name:'periodic-background-sync'});if(st.state==='granted')await swReg.periodicSync.register('nudges',{minInterval:30*60*1000})}catch(e){}}
     navigator.serviceWorker.ready.then(()=>syncSW());
