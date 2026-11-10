@@ -483,9 +483,16 @@ svg.bars text{fill:var(--faint);font-size:11px;font-family:inherit}
 .cairn .cn-glow{fill:none;stroke:#e8ff8a;stroke-width:2;filter:url(#cnBlur);opacity:.9;animation:cnPulse 2.2s ease-in-out infinite}
 @keyframes cnPulse{50%{opacity:.35}}
 @keyframes drop{from{opacity:0;transform:translateY(-70px)}}
-.moods{display:flex;gap:9px;align-items:center}
-.mood{width:22px;height:22px;border-radius:50%;border:0;cursor:pointer;padding:0;background:color-mix(in srgb,var(--lime) calc(var(--m)*19%),var(--line2))}
-.mood.on{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--lime);transform:scale(1.12)}
+.moods{display:flex;gap:6px;align-items:stretch;flex-wrap:nowrap}
+.mood-q{display:flex;align-items:baseline;gap:8px;margin:12px 0 8px;font-size:13.5px}
+.mood-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.mood{width:50px;display:grid;justify-items:center;gap:2px;padding:7px 0 5px;border-radius:13px;border:1px solid var(--line);background:var(--card2);cursor:pointer;color:var(--muted);font:inherit}
+.mood .mface{font-size:22px;line-height:1;filter:grayscale(.55);opacity:.75;transition:filter .2s,opacity .2s,transform .25s var(--spring)}
+.mood small{font-size:10px;font-weight:600}
+.mood:hover .mface{filter:none;opacity:1;transform:scale(1.12)}
+.mood.on{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 14%,var(--card2));color:var(--text)}
+.mood.on .mface{filter:none;opacity:1;transform:scale(1.18)}
+@media (max-width:420px){.mood{width:44px}.mood .mface{font-size:20px}}
 textarea.jl{min-height:80px;resize:vertical}
 /* motion off */
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important}}
@@ -1937,7 +1944,8 @@ function pOverview(){
       <div style="margin-top:10px">${daily.filter(x=>!isDone(x)||x.id===justId).slice(0,5).map(habitRow).join('')||'<div class="empty">All done today. 🎉</div>'}</div></div>
     <div class="card"><div class="ch">${icoBox('journal','var(--violet)')}<div><h3>One line</h3><div class="sub">Before the phone goes away</div></div><span class="sp"></span>${jStreak?`<span class="pill lime nodot">${jStreak} day${jStreak>1?'s':''} written</span>`:''}</div>
       <textarea class="jl" id="jl" placeholder="What did today teach you?" aria-label="Today's line">${esc(jT.t||'')}</textarea>
-      <div class="inline" style="margin-top:10px"><div class="moods" role="group" aria-label="Mood">${[1,2,3,4,5].map(v=>`<button class="mood ${num(jT.m)===v?'on':''}" style="--m:${v}" data-mood="${v}" aria-label="Mood ${v} of 5" title="${['Rough','Meh','Okay','Good','Great'][v-1]}"></button>`).join('')}</div><span style="flex:1"></span><button class="btn sm lime" data-act="jsave">Save line</button></div>
+      <div class="mood-q"><b>How was your day?</b><span class="tiny muted" id="moodLbl">${num(jT.m)?['Rough','Meh','Okay','Good','Great'][num(jT.m)-1]+' day':'Tap a face'}</span></div>
+      <div class="mood-row"><div class="moods" role="radiogroup" aria-label="How was your day?">${[['😣','Rough'],['😕','Meh'],['😐','Okay'],['🙂','Good'],['😄','Great']].map(([e,l],i)=>`<button class="mood ${num(jT.m)===i+1?'on':''}" data-mood="${i+1}" role="radio" aria-checked="${num(jT.m)===i+1}" aria-label="${l} day"><span class="mface">${e}</span><small>${l}</small></button>`).join('')}</div><button class="btn sm lime" data-act="jsave" style="margin-left:auto">Save line</button></div>
       ${jPrev?`<div class="glabel" style="margin-top:14px">${jPrev[0]===ds(addDays(t,-1))?'Yesterday':fmt(pd(jPrev[0]),{weekday:'short',day:'numeric',month:'short'})}</div><p class="small muted" style="line-height:1.6">${esc(jPrev[1].t)}</p>`:''}</div>
     <div class="card"><div class="ch"><div><h3>Coming up</h3><div class="sub">Next 14 days</div></div><span class="sp"></span><button class="link" data-go="reminders">See all ${ic('right')}</button></div>
       ${up.slice(0,7).map(evRow).join('')||'<div class="empty">Nothing in the next two weeks.</div>'}</div>
@@ -4489,7 +4497,7 @@ document.addEventListener('click',e=>{
   if(d.hd){const h=state.health.habits.find(x=>x.id===d.hd);if(!h||!ui.hmDay)return;const day=pd(ui.hmDay),nv=!isDone(h,day);setDone(h,nv,day);habitLogSync(h,nv,ui.hmDay);justId=h.id+'@'+ui.hmDay;commit();return}
   if(d.hm){ui.hmDay=ui.hmDay===d.hm?null:d.hm;render();return}
   if(d.glass){splash(el);const k=ds(today()),lg=state.health.logs[k]=state.health.logs[k]||{},n=+d.glass;lg.water=num(lg.water)===n?n-1:n;autoHabits();commit();if(lg.water===12){burst(...lastXY,30,['var(--cyan)','#fff','var(--lime)']);toast('3 litres! Water goal done','drop')}return}
-  if(d.mood){document.querySelectorAll('.mood').forEach(b=>b.classList.toggle('on',b===el));el.closest('.card').dataset.mood=d.mood;return}
+  if(d.mood){document.querySelectorAll('.mood').forEach(b=>{b.classList.toggle('on',b===el);b.setAttribute('aria-checked',b===el)});el.closest('.card').dataset.mood=d.mood;const ml=$('#moodLbl');if(ml)ml.textContent=['Rough','Meh','Okay','Good','Great'][d.mood-1]+' day';return}
   if(d.check){const c=state.checklist.find(x=>x.id===d.check);if(c){c.done=!c.done;justId=c.id;commit();if(c.done){burst(...lastXY,10);toast('Checked off')}}return}
   if(d.ms){const g=state.goals.find(x=>x.id===d.ms);if(g){const m=g.milestones[+d.i];m.done=!m.done;justId=g.id+':'+d.i;commit();if(m.done){burst(...lastXY,12);toast('Milestone done')}}return}
   if(d.goaltap){const g=state.goals.find(x=>x.id===d.goaltap);if(!g)return;
