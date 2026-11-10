@@ -478,6 +478,10 @@ async function sendDuePushes(env) {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    // Old address and www → the main domain (pages only; the API keeps working everywhere).
+    if ((url.hostname.endsWith('.workers.dev') || url.hostname === 'www.selfstreak.com') && !url.pathname.startsWith('/api/') && req.method === 'GET' && url.pathname !== '/sw.js') {
+      return Response.redirect('https://selfstreak.com' + url.pathname + url.search, 301);
+    }
     if (url.pathname.startsWith('/api/')) {
       try { return await api(req, env, url); } catch (e) { console.error(e); return err(500, 'Something went wrong. Please try again.'); }
     }

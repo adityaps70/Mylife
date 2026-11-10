@@ -5,7 +5,7 @@ A personal dashboard for goals, money, bills, debt, reminders, health and groomi
 **Open it:** download `index.html` and open it in any browser, or turn on GitHub Pages (Settings → Pages → Deploy from branch `main`, folder `/`).
 
 ## Install it on your phone
-Open https://self-streak.adityaps700.workers.dev on your phone.
+Open https://selfstreak.com on your phone.
 - **Android (Chrome):** menu ⋮ → Install app.
 - **iPhone (Safari):** Share → Add to Home Screen, then open it from the home screen.
 

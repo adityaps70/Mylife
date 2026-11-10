@@ -7,6 +7,12 @@
   "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/", "/app", "/app/"] },
   "ai": { "binding": "AI" },
   "d1_databases": [{ "binding": "DB", "database_name": "self-streak", "database_id": "f98709f8-60b2-4740-9623-230f2877f9a7" }],
+  // Custom domain (selfstreak.com is on Cloudflare DNS). Deploy only after the zone is active.
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "selfstreak.com", "custom_domain": true },
+    { "pattern": "www.selfstreak.com", "custom_domain": true }
+  ],
   "triggers": { "crons": ["*/5 * * * *"] },
   "observability": { "enabled": true },
   "vars": {
