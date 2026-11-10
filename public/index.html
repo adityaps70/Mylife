@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Self Streak</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -193,6 +194,7 @@ main{padding:4px 28px 64px;max-width:1480px}
 .dmiss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:8px;margin-top:8px}.dmiss>div{padding:9px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
 .dtom{margin-top:12px}
 #rMsg{color:var(--red);font-size:13px;min-height:18px;margin:0}#rMsg.okmsg{color:var(--lime-text)}
+.gwrap{display:grid;gap:10px;justify-items:center}.gwrap[hidden]{display:none}.gor{display:flex;align-items:center;gap:10px;width:100%;color:var(--faint);font-size:12px}.gor::before,.gor::after{content:'';flex:1;height:1px;background:var(--line)}#gbtn{width:100%;display:flex;justify-content:center;min-height:44px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -2229,12 +2231,14 @@ function showAuth(mode='login',msg=''){
     <input id="aEmail" type="email" placeholder="Email" autocomplete="email" aria-label="Email" required>
     <input id="aPw" type="password" placeholder="${S?'Password (8+ characters)':'Password'}" autocomplete="${S?'new-password':'current-password'}" aria-label="Password" required>
     <button class="btn lime" id="authBtn" type="submit">${S?'Create account':'Log in'}</button>
+    <div class="gwrap" id="gwrap" hidden><div class="gor"><span>or</span></div><div id="gbtn"></div></div>
     <p id="lockerr" role="alert">${esc(msg)}</p>
     <p class="tiny muted">${S?`7-day free trial, then ₹${account?.price||499}/month. Cancel anytime.`:'<button type="button" class="link" data-forgot>Forgot your password?</button>'}</p>
     <div class="gyre" id="gyre" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="gok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
   </form></div>`;
   box.querySelectorAll('[data-auth]').forEach(b=>b.onclick=()=>{const e=$('#aEmail').value;showAuth(b.dataset.auth);$('#aEmail').value=e;($('#aName')||$('#aEmail')).focus()});
   $('#authf').onsubmit=authSubmit;
+  googleButton(S);
   box.querySelector('[data-forgot]')?.addEventListener('click',()=>{const e=$('#aEmail').value;showAuth('forgot');$('#rEmail').value=e;$('#rEmail').focus()});
   setTimeout(()=>($('#aName')||$('#aEmail'))?.focus(),40);
 }
@@ -2258,6 +2262,20 @@ function showReset(mode,msg){
       const m=await apiFetch('/api/reset',{method:'POST',body:{token,password:pw}});history.replaceState(null,'',location.pathname);toast('Password changed. You’re logged in.','tick');await enterApp(m,false);
     }catch(x){out.textContent=x.message;btn.disabled=false;btn.textContent=F?'Send reset link':'Save new password'}};
   setTimeout(()=>($('#rEmail')||$('#rPw'))?.focus(),40);
+}
+let gCfg=null;
+function loadGsi(){return window.google?.accounts?.id?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)})}
+async function googleButton(S){
+  try{gCfg=gCfg||await apiFetch('/api/config');if(!gCfg.googleClientId)return;await loadGsi();
+    const wrap=$('#gwrap'),host=$('#gbtn');if(!wrap||!host)return;wrap.hidden=false;
+    google.accounts.id.initialize({client_id:gCfg.googleClientId,callback:googleCredential,ux_mode:'popup',auto_select:false,itp_support:true,context:S?'signup':'signin'});
+    google.accounts.id.renderButton(host,{theme:document.documentElement.dataset.theme==='light'?'outline':'filled_black',size:'large',shape:'pill',text:S?'signup_with':'continue_with',logo_alignment:'center',width:Math.min(360,host.clientWidth||320)});
+  }catch(e){}
+}
+async function googleCredential(resp){
+  const err=$('#lockerr');if(err)err.textContent='';
+  try{const m=await apiFetch('/api/google',{method:'POST',body:{credential:resp.credential}});const reset=RM()?null:await gyre();await enterApp(m,m.isNew,m.name);if(reset)reset()}
+  catch(x){if(err)err.textContent=x.message}
 }
 async function authSubmit(e){
   e.preventDefault();const btn=$('#authBtn'),err=$('#lockerr'),S=authMode==='signup';

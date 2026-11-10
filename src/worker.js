@@ -46,7 +46,7 @@ async function usageToday(env, uid) {
 }
 async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
-  return { user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
+  return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
     usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY };
 }
 
@@ -219,6 +219,27 @@ async function runAI(env, spec) {
   return { result: JSON.parse(text) };
 }
 
+/* ---------------- Google sign-in ---------------- */
+let googleKeys = { at: 0, keys: [] };
+const b64uBytes = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), (c) => c.charCodeAt(0));
+async function verifyGoogleToken(env, jwt) {
+  const [h, p, sig] = jwt.split('.');
+  if (!h || !p || !sig) throw new Error('bad_jwt');
+  const head = JSON.parse(new TextDecoder().decode(b64uBytes(h))), claims = JSON.parse(new TextDecoder().decode(b64uBytes(p)));
+  if (Date.now() - googleKeys.at > 3600e3 || !googleKeys.keys.some((k) => k.kid === head.kid)) {
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/certs'); googleKeys = { at: Date.now(), keys: (await r.json()).keys || [] };
+  }
+  const jwk = googleKeys.keys.find((k) => k.kid === head.kid); if (!jwk || head.alg !== 'RS256') throw new Error('unknown_key');
+  const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+  const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uBytes(sig), new TextEncoder().encode(h + '.' + p));
+  if (!ok) throw new Error('bad_signature');
+  if (!['accounts.google.com', 'https://accounts.google.com'].includes(claims.iss)) throw new Error('bad_issuer');
+  if (claims.aud !== env.GOOGLE_CLIENT_ID) throw new Error('bad_audience');
+  if (!(claims.exp * 1000 > Date.now())) throw new Error('expired');
+  if (!claims.email || claims.email_verified !== true && claims.email_verified !== 'true') throw new Error('email_not_verified');
+  return claims;
+}
+
 /* ---------------- Email (password resets) ---------------- */
 // Cloudflare Email Sending if the EMAIL binding exists, otherwise Resend if RESEND_API_KEY is set.
 const MAIL_FROM = (env) => env.MAIL_FROM || 'no-reply@selfstreak.com';
@@ -317,6 +338,24 @@ async function api(req, env, url) {
     return json({ ok: true });
   }
 
+  if (p === '/api/google' && m === 'POST') {
+    // "Continue with Google": verify Google's signed ID token, then log in or create the account.
+    if (!env.GOOGLE_CLIENT_ID) return err(501, 'Google sign-in isn’t switched on yet.');
+    const b = await body(); let g;
+    try { g = await verifyGoogleToken(env, String(b.credential || '')); } catch (e) { console.error('google', e); return err(401, 'Google sign-in failed. Please try again.'); }
+    const email = String(g.email || '').toLowerCase();
+    let usr = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first(), isNew = false;
+    if (!usr) {
+      const first = !(await env.DB.prepare('SELECT 1 FROM users LIMIT 1').first());
+      const id = crypto.randomUUID(), salt = randHex(16), now = Date.now();
+      // Random password the person never sees; they can set one later with "Forgot password".
+      await env.DB.prepare('INSERT INTO users (id, email, name, pass_hash, salt, plan, trial_ends, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(id, email, String(g.given_name || g.name || '').slice(0, 60), await hashPassword(randHex(24), salt), salt, first ? 'owner' : 'trial', now + Number(env.TRIAL_DAYS || 7) * DAY, now).run();
+      usr = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first(); isNew = true;
+    }
+    return json({ ...(await me(env, usr)), isNew, name: usr.name }, 200, { 'set-cookie': await newSession(env, req, usr.id) });
+  }
+  if (p === '/api/config' && m === 'GET') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '' });
   if (p === '/api/forgot' && m === 'POST') {
     const b = await body(), email = String(b.email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err(400, 'Enter the email you signed up with.');
@@ -529,6 +568,8 @@ export default {
     if ((url.hostname.endsWith('.workers.dev') || url.hostname === 'www.selfstreak.com') && !url.pathname.startsWith('/api/') && req.method === 'GET' && url.pathname !== '/sw.js') {
       return Response.redirect('https://selfstreak.com' + url.pathname + url.search, 301);
     }
+    // Google Search Console ownership file (served exactly, no redirects).
+    if (url.pathname === '/googleed720d5bc99e0297.html') return new Response('google-site-verification: googleed720d5bc99e0297.html', { headers: { 'content-type': 'text/html; charset=utf-8' } });
     if (url.pathname.startsWith('/api/')) {
       try { return await api(req, env, url); } catch (e) { console.error(e); return err(500, 'Something went wrong. Please try again.'); }
     }
