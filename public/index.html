@@ -176,6 +176,7 @@ main{padding:4px 28px 64px;max-width:1480px}
 .pmini{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:14px;border-radius:18px;border:1px solid color-mix(in srgb,var(--lime) 25%,var(--line));background:radial-gradient(260px 100px at 0 0,color-mix(in srgb,var(--lime) 10%,transparent),transparent 70%),var(--card);color:var(--text);cursor:pointer;width:100%}
 .pmini .nb{flex:1;min-width:0}.pmini b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (max-width:420px){.pkp{grid-template-columns:1fr 1fr}.pkp>div:last-child{grid-column:1/-1}}
+.jrow{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}.jrow:last-child{border:0}.jrow .nb{flex:1;min-width:0;font-size:14px}.jd{width:46px;flex:none;text-align:center;border:1px solid var(--line);border-radius:12px;padding:4px 0;background:var(--card2)}.jd b{display:block;font-size:17px;line-height:1.1}.jd span{font-size:10px;color:var(--muted);text-transform:uppercase}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -2764,7 +2765,7 @@ function applyActions(actions){
         if(!g){g={id:uid(),title:txt.slice(0,80),category:{marriage:'Relationships',education:'Learning',travel:'Travel',house:'Finance',emergency:'Finance',car:'Personal',business:'Business',retire:'Finance'}[pt]||'Personal',link:'',current:0,target:0,unit:'',deadline:'',why:'',milestones:[]};state.goals.push(g)}
         if(v>0){g.target=Math.round(v);g.unit='₹'}if(dl)g.deadline=dl;g.priority=true;g.ptype=pt;delete g.sample;
         const P=prioPlan(g);out.push({icon:'target',col:'var(--lime)',text:`${isNew?'New life priority':'Updated'}: ${g.title}`,sub:[g.target?kfmt(g.target):'',g.deadline?'by '+fmt(pd(g.deadline),{month:'short',year:'numeric'}):'',P.months&&P.need?inr(P.need)+'/month needed':''].filter(Boolean).join(' · ')});break}
-      case'journal':{if(!txt)break;state.journal=state.journal||{};const J=state.journal[date]||{};state.journal[date]={t:txt.slice(0,500),m:v>=1&&v<=5?v:num(J.m)};out.push({icon:'journal',col:'var(--violet)',text:'Journal line saved',sub:txt.slice(0,60)});break}
+      case'journal':{if(!txt)break;state.journal=state.journal||{};const J=state.journal[date]||{};state.journal[date]={t:txt.slice(0,500),m:v>=1&&v<=5?v:num(J.m)};out.push({icon:'journal',col:'var(--violet)',text:'Saved to your journal',sub:txt.slice(0,50)+' · see Notes → Journal'});break}
       case'meal':{if(!txt&&!v)break;addMeal({name:txt||'Meal',kcal:v,p:a.protein,c:a.carbs,f:a.fat,src:'note'},date);out.push({icon:'food',col:'var(--orange)',text:`${txt||'Meal'} · ${Math.round(v)} kcal`,sub:`${Math.round(num(a.protein))} g protein · ${Math.round(num(a.carbs))} g carbs · ${Math.round(num(a.fat))} g fat`});break}
       case'reminder_add':{if(!txt)break;const rd=valid&&a.date>=T?a.date:T;state.reminders.push({id:uid(),title:txt.slice(0,120),type:'Personal',date:rd,repeat:'none',lead:0,notes:'Added by voice'});out.push({icon:'bell',col:'var(--cyan)',text:`Reminder: ${txt.slice(0,60)}`,sub:fmt(pd(rd),{weekday:'short',day:'numeric',month:'short'})});break}
     }
@@ -2795,7 +2796,7 @@ function deviceSpeak(text){
     u.lang=pick?.lang||lang;u.voice=pick;u.rate=1;speechSynthesis.speak(u)}catch(e){}
 }
 async function speak(t){
-  if(ui.talk===false||!t)return;
+  if(ui.talk!==true||!t)return;
   const text=sayClean(t);if(!text)return;stopSpeak();const my=ttsSeq;
   if(account&&navigator.onLine&&(ui.voice||'luna')!=='device'&&account.user.status!=='expired'){
     try{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,voice:ui.voice||'luna'}),credentials:'same-origin'});
@@ -2829,7 +2830,7 @@ function chipsHTML(n){
   return `<div class="nt-sec">Filed automatically</div>`+n.done.map((r,k)=>`<div class="nt-chip" style="--k:${k}">${icoBox(r.icon,r.col)}<div class="nb"><div class="to">${esc(DEST[r.kind]||'Dashboard')}</div><div class="tx">${esc(r.text)}</div>${r.sub?`<div class="sb">${esc(r.sub)}</div>`:''}</div>${ic('tick').replace('class="i"','class="i ok"')}</div>`).join('');
 }
 function renderNotes(){
-  const d=$('#voice');if(!d)return;const talk=ui.talk!==false;
+  const d=$('#voice');if(!d)return;const talk=ui.talk===true;
   if(NV.view==='list'){
     const L=(state.notes||[]).filter(n=>n.text.trim());
     const when=t=>{const d0=new Date(t);return ds(d0)===ds(today())?d0.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):fmt(d0,{day:'numeric',month:'short'})};
@@ -2940,7 +2941,7 @@ function spokenSummary(res){
 function noteAction(a){
   const n=curNote();
   if(a==='mic'){NV.listening?finishListening():startListen();return}
-  if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderNotes();if(ui.talk!==false)speak('Talk back is on.');else stopSpeak();return}
+  if(a==='talk'){ui.talk=ui.talk!==true;saveUI();renderNotes();if(ui.talk)speak('Talk back is on.');else stopSpeak();return}
   if(a==='lang'){ui.vlang=ui.vlang==='hi-IN'?'en-IN':'hi-IN';saveUI();renderNotes();toast(ui.vlang==='hi-IN'?'Listening in Hindi':'Listening in English','mic');return}
   if(a==='undo'){if(!NV.snap)return;const s=NV.snap,notes=state.notes;state={...JSON.parse(s.snap),notes};const m=notes.find(x=>x.id===s.noteId);if(m)m.done.splice(-s.count);NV.snap=null;NV.status='Undone';commit();renderNotes();speak('Undone.');return}
   if(a==='done'){if(NV.listening){finishListening();return}closeDlg($('#voice'));return}
@@ -3184,14 +3185,14 @@ function asMsgs(){state.chat=state.chat||[];return state.chat}
 function asPush(m){const L=asMsgs();L.push({id:uid(),t:Date.now(),...m});if(L.length>40)L.splice(0,L.length-40);save();renderAsst();return L[L.length-1]}
 function asChips(res){return res.map((r,k)=>`<div class="as-chip" style="--k:${k}">${icoBox(r.icon,r.col)}<div class="nb"><div class="to">${esc(DEST[r.kind]||'Dashboard')}</div><div class="tx">${esc(r.text)}</div>${r.sub?`<div class="sb">${esc(r.sub)}</div>`:''}</div>${ic('tick').replace('class="i"','class="i ok"')}</div>`).join('')}
 function renderAsst(){
-  const d=$('#asst');if(!d)return;const L=asMsgs(),talk=ui.talk!==false,typing=!!AS.draft.trim();
+  const d=$('#asst');if(!d)return;const L=asMsgs(),talk=ui.talk===true,typing=!!AS.draft.trim();
   const msgs=L.map(m=>{
     if(m.who==='me')return `<div class="as-row me"><div class="as-b me">${m.img?`<img src="${m.img}" alt="Photo you sent">`:''}${m.file?`<div class="as-file">${ic('receipt')} ${esc(m.file)}</div>`:''}${m.text?`<div>${esc(m.text)}</div>`:''}</div></div>`;
     return `<div class="as-row"><span class="as-av">${logo(26)}</span><div class="as-b ai">${m.text?`<div>${esc(m.text)}</div>`:''}${m.chips&&m.chips.length?`<div class="as-chips">${asChips(m.chips)}</div>`:''}${m.btns&&m.btns.length&&!m.used?`<div class="as-btns">${m.btns.map((b,k)=>`<button class="btn sm ${k===0?'lime':''}" data-asb="${m.id}:${k}">${esc(b.label)}</button>`).join('')}</div>`:''}${m.undo&&!m.undone?`<button class="link tiny" data-asundo="${m.id}">Undo</button>`:''}${m.undone?'<span class="tiny faint">Undone</span>':''}</div></div>`;
   }).join('');
   d.innerHTML=`<div class="as-head"><div class="as-brand">${logo(30)}<div><b>Self Streak assistant</b><div class="tiny muted">${account?`${aiLeft()} of ${usage.limit} AI actions left today`:'Built-in understanding'}</div></div></div>
-    <div class="inline" style="gap:2px;flex-wrap:nowrap"><button class="ic" data-asact="talk" title="Talk back ${talk?'on':'off'}" aria-label="Talk back ${talk?'on':'off'}">${ic(talk?'speaker':'mute')}</button><button class="ic" data-asact="clear" title="Clear chat" aria-label="Clear chat">${ic('edit')}</button><button class="ic" data-asact="close" aria-label="Close">${ic('x')}</button></div></div>
-  <div class="as-log" id="asLog">${msgs||`<div class="as-hello">${logo(56,'draw')}<h3>What did you do today?</h3><p class="small muted">Type it, say it, or snap a photo of a meal, bill or receipt. I’ll put it in the right place, and ask if I’m not sure.</p><div class="as-sugg">${ASUGG.map(s=>`<button class="chip" data-assugg="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>`}
+    <div class="inline" style="gap:2px;flex-wrap:nowrap"><button class="ic" data-asact="talk" title="Talk back ${talk?'on':'off'}" aria-label="Talk back ${talk?'on':'off'}">${ic(talk?'speaker':'mute')}</button>${L.length?`<button class="btn sm ghost" data-asact="clear" title="Start a new chat. Your entries stay saved." aria-label="New chat">${ic('plus')} New chat</button>`:''}<button class="ic" data-asact="close" aria-label="Close">${ic('x')}</button></div></div>
+  <div class="as-log" id="asLog">${msgs||`<div class="as-hello">${logo(56,'draw')}<h3>What did you do today?</h3><p class="small muted">Type it, say it, or snap a photo of a meal, bill or receipt. I’ll put it in the right place, and ask if I’m not sure.</p><div class="as-sugg">${ASUGG.map(s=>`<button class="chip" data-assugg="${esc(s)}">${esc(s)}</button>`).join('')}</div>${(state.chatPrev||[]).length?`<button class="btn sm" data-asact="restore" style="margin-top:14px">${ic('clock')} Show previous chat</button>`:''}<p class="tiny faint" style="margin-top:10px">Clearing the chat never deletes what was logged.</p></div>`}
     ${AS.busy?`<div class="as-row"><span class="as-av">${logo(26)}</span><div class="as-b ai"><span class="thinking"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></span></div></div>`:''}</div>
   <div class="as-bar ${AS.listening?'rec':''}">
     <button class="as-btn" data-asact="camera" aria-label="Camera: photo of a meal, bill or receipt" title="Camera">${ic('camera')}</button>
@@ -3204,7 +3205,7 @@ function renderAsst(){
   ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();asSend()}};
   d.querySelectorAll('[data-asact]').forEach(b=>b.onclick=()=>{const a=b.dataset.asact;
     if(a==='close')closeDlg(d);else if(a==='send')asSend();else if(a==='mic')AS.listening?asStop(true):asMic();else if(a==='camera')asCamera();
-    else if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderAsst()}else if(a==='clear'){state.chat=[];save();renderAsst()}});
+    else if(a==='talk'){ui.talk=ui.talk!==true;saveUI();renderAsst();if(ui.talk)speak('Talk back is on.');else stopSpeak()}else if(a==='clear'){if(!(state.chat||[]).length)return;state.chatPrev=state.chat;state.chat=[];save();renderAsst()}else if(a==='restore'){state.chat=[...(state.chatPrev||[]),...(state.chat||[])];state.chatPrev=null;save();renderAsst()}});
   d.querySelectorAll('[data-assugg]').forEach(b=>b.onclick=()=>{AS.draft=b.dataset.assugg;asSend()});
   d.querySelectorAll('[data-asb]').forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.asb.split(':'),m=asMsgs().find(x=>x.id===id),fn=AS.cb[id+':'+k];if(m?.used)return;if(m){m.used=true;save()}Object.keys(AS.cb).forEach(c=>{if(c.startsWith(id+':'))delete AS.cb[c]});renderAsst();if(fn)fn()});
   d.querySelectorAll('[data-asundo]').forEach(b=>b.onclick=()=>{const m=asMsgs().find(x=>x.id===b.dataset.asundo);if(!m||!m.undo)return;const chat=asMsgs(),notes=state.notes;state={...JSON.parse(m.undo),notes,chat};m.undone=true;delete m.undo;commit();renderAsst();toast('Undone','x');speak('Undone.')});
@@ -3275,10 +3276,17 @@ function asRoute(kind,r){
 
 /* ================= Notes page (plain notes; filing is optional) ================= */
 function pNotes(){
-  const L=(state.notes||[]).filter(n=>n.text.trim());
-  return `${phead('Life · Your notes','Notes',`<button class="btn" data-act="ask">${ic('sparkle')} Ask the assistant</button><button class="btn lime" data-act="newnote">${ic('edit')} New note</button>`)}
-  <div class="stack">${L.length?`<div class="auto">${L.map(n=>{const lines=n.text.split('\n').filter(l=>l.trim());return `<button class="card note-card" data-nopen="${n.id}"><b>${esc(noteTitle(n))}</b><p class="small muted">${esc(lines.slice(1).join(' ').slice(0,160))}</p><span class="tiny faint">${fmt(new Date(n.updated),{day:'numeric',month:'short'})}${n.done.length?` · ${n.done.length} filed`:''}</span></button>`}).join('')}</div>`
-    :`<div class="card empty">${logo(48)}<p style="margin-top:10px">No notes yet. Notes are for thoughts, lists and ideas. To log habits, spends or meals, use the assistant bar at the bottom.</p></div>`}</div>`;
+  const tab=ui.notesTab||'notes',L=(state.notes||[]).filter(n=>n.text.trim()),J=Object.entries(state.journal||{}).filter(([k,v])=>v&&(v.t||v.m)).sort((a,b)=>b[0].localeCompare(a[0])),jt=(state.journal||{})[ds(today())]||{};
+  const MOOD=['','😣 Rough','😕 Meh','🙂 Okay','😊 Good','🤩 Great'];
+  const tabs=`<div class="seg" style="margin-bottom:4px"><button class="${tab==='notes'?'on':''}" data-set="notesTab:notes">Notes · ${L.length}</button><button class="${tab==='journal'?'on':''}" data-set="notesTab:journal">Journal · ${J.length}</button></div>`;
+  const notes=L.length?`<div class="auto">${L.map(n=>{const lines=n.text.split('\n').filter(l=>l.trim());return `<button class="card note-card" data-nopen="${n.id}"><b>${esc(noteTitle(n))}</b><p class="small muted">${esc(lines.slice(1).join(' ').slice(0,160))}</p><span class="tiny faint">${fmt(new Date(n.updated),{day:'numeric',month:'short'})}</span></button>`}).join('')}</div>`
+    :`<div class="card empty">${logo(48)}<p style="margin-top:10px">No notes yet. Notes are for thoughts, lists and ideas. To log habits, spends or meals, use the assistant bar at the bottom.</p></div>`;
+  const journal=`<div class="card"><div class="ch">${icoBox('journal','var(--violet)')}<div><h3>Today’s line</h3><div class="sub">One sentence about your day. You can also just tell the assistant.</div></div></div>
+    <textarea class="jl" id="jl2" placeholder="What did today teach you?" aria-label="Today's line">${esc(jt.t||'')}</textarea>
+    <div class="inline" style="margin-top:10px"><span style="flex:1"></span><button class="btn sm lime" data-act="jsave2">Save line</button></div></div>
+    ${J.length?`<div class="card"><div class="ch"><h3>All entries</h3><span class="sp"></span><span class="sub">${J.length} day${J.length>1?'s':''}</span></div>${J.map(([k,v])=>`<div class="jrow"><div class="jd"><b>${pd(k).getDate()}</b><span>${MONTHS[pd(k).getMonth()]} ${pd(k).getFullYear()!==today().getFullYear()?pd(k).getFullYear():''}</span></div><div class="nb"><div>${esc(v.t||'')}</div>${v.m?`<span class="tiny muted">${MOOD[v.m]}</span>`:''}</div><button class="ic" data-jdel="${k}" aria-label="Delete this entry">${ic('x')}</button></div>`).join('')}</div>`:'<div class="card empty">No journal entries yet.</div>'}`;
+  return `${phead('Life · Your notes & journal','Notes',`<button class="btn" data-act="ask">${ic('sparkle')} Ask the assistant</button>${tab==='notes'?`<button class="btn lime" data-act="newnote">${ic('edit')} New note</button>`:''}`)}
+  <div class="stack">${tabs}${tab==='notes'?notes:journal}</div>`;
 }
 
 /* ================= Water glasses ================= */
@@ -3475,7 +3483,7 @@ function prioTag(id){
 }
 
 /* ================= shell ================= */
-const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes & journal','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
 const PAGES={notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
@@ -3601,7 +3609,7 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
@@ -3610,6 +3618,7 @@ document.addEventListener('click',e=>{
   if(d.go){go(d.go);return}
   if(d.lsedit!==undefined){ui.lsEdit=d.lsedit||null;render();if(d.lsedit)setTimeout(()=>document.getElementById('ls-'+d.lsedit)?.focus(),50);return}
   if(d.lsave){const l=state.loans.find(x=>x.id===d.lsave),v=document.getElementById('ls-'+d.lsave)?.value;if(!l)return;if(!v){toast('Pick a date first','x');return}l.startDate=v;delete l.sample;ui.lsEdit=null;commit();toast(`First EMI: ${fmt(pd(v),{day:'numeric',month:'short',year:'numeric'})}`,'calendar');return}
+  if(d.jdel){if(confirm('Delete this journal entry?')){delete state.journal[d.jdel];commit()}return}
   if(d.ptag){prioTag(d.ptag);return}
   if(d.pai){makePrioPlan(d.pai);return}
   if(d.cpay){const [id,how]=d.cpay.split(':'),c=state.cards.find(x=>x.id===id);if(!c)return;const st=cardState(c);
@@ -3672,6 +3681,7 @@ document.addEventListener('click',e=>{
     case'jsave':{const card=el.closest('.card'),t=$('#jl').value.trim(),k=ds(today()),J=state.journal=state.journal||{},m=num(card.dataset.mood||J[k]?.m);if(!t&&!m){toast('Write a line first','journal');return}J[k]={t,m};commit();toast('Saved today’s line','journal');return}
     case'logout':logout();return;
     case'subscribe':subscribe();return;
+    case'jsave2':{const t=($('#jl2')?.value||'').trim(),k=ds(today()),J=state.journal=state.journal||{};if(!t){toast('Write a line first','x');return}J[k]={...(J[k]||{}),t:t.slice(0,500)};commit();toast('Saved to your journal','journal');return}
     case'voiceTest':{const was=ui.talk;ui.talk=true;speak(`Hi ${state.profile.first||'there'}! This is your Self Streak assistant. You’ve done six of eight habits today, and you’re two glasses away from your water goal. Nice work.`);ui.talk=was;return}
     case'debtPlan':makeDebtPlan();return;
     case'applyPlan':{const r=state.debtPlan?.r;if(!r)return;ui.extra=Math.max(0,Math.round(r.extra_per_month));ui.strategy=r.strategy==='snowball'?'snowball':'avalanche';saveUI();render();toast(`Calculator set to ${inr(ui.extra)} extra a month`,'tick');return}
