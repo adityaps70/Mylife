@@ -149,6 +149,10 @@ main{padding:4px 28px 64px;max-width:1480px}
 .dateblk b{display:block;font-size:16px;color:var(--text)}
 .soon{color:var(--yellow);font-weight:600}
 .empty{padding:22px;text-align:center;color:var(--muted);font-size:13.5px}
+.cbills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;margin-top:14px}
+.cbill{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card2)}.cbill .mid{font-size:22px;margin:4px 0 2px}
+.cbill.late{border-color:color-mix(in srgb,var(--red) 55%,transparent)}.cbill.paid{border-color:color-mix(in srgb,var(--lime) 45%,transparent)}.cbill.next{border-style:dashed}
+.ctx{margin-top:12px;border-top:1px solid var(--line);padding-top:8px;display:grid;gap:2px}.ctx-i{display:flex;align-items:center;gap:8px;min-height:34px}.ctx-i .ic{width:28px;height:28px;opacity:.6}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -1051,6 +1055,7 @@ function defaults(){
       S({name:'Personal loan',lender:'Bank',type:'Personal loan',principal:300000,outstanding:210000,rate:13.5,emi:10200,dueDay:5,startDate:'2025-06-05',notes:'Check foreclosure / prepayment charges'}),
       S({name:'Credit card balance',lender:'Card',type:'Credit card',principal:40000,outstanding:40000,rate:42,emi:5000,dueDay:18,startDate:'2026-09-18',notes:'~3.5% per month. Clear this first.'}),
     ],
+    cards:[],
     savings:[
       S({name:'Emergency fund',type:'Emergency fund',current:50000,target:0,monthly:5000}),
       S({name:'Index fund SIP',type:'Mutual fund SIP',current:80000,target:0,monthly:5000}),
@@ -1222,7 +1227,7 @@ function load(raw){
   s.grooming=s.grooming||groomDefaults();s.grooming.products=s.grooming.products||[];
   if(s.v<4){s.v=4;s.health.habits.forEach(h=>{if(!Array.isArray(h.times))Object.assign(h,defaultReminder(h))})}
   const nd=nudgeDefaults();s.nudges=Object.assign(nd,s.nudges||{});for(const k in nd)if(s.nudges[k]===undefined)s.nudges[k]=nd[k];s.nudges.fired=s.nudges.fired||{};
-  s.journal=s.journal||{};
+  s.journal=s.journal||{};s.cards=s.cards||[];
   return s;
 }
 let state=load();
@@ -1292,7 +1297,7 @@ async function gyre(){
   return ()=>{all.forEach(a=>a.cancel());card.classList.remove('ok')};
 }
 
-const COLL={goals:()=>state.goals,income:()=>state.income,expenses:()=>state.expenses,bills:()=>state.bills,loans:()=>state.loans,savings:()=>state.savings,reminders:()=>state.reminders,habits:()=>state.health.habits,checklist:()=>state.checklist,tx:()=>state.tx,products:()=>state.grooming.products};
+const COLL={goals:()=>state.goals,income:()=>state.income,expenses:()=>state.expenses,bills:()=>state.bills,loans:()=>state.loans,savings:()=>state.savings,reminders:()=>state.reminders,habits:()=>state.health.habits,checklist:()=>state.checklist,tx:()=>state.tx,cards:()=>state.cards,products:()=>state.grooming.products};
 const MOPTS=MONTHS_FULL.map((m,i)=>[i,m]);
 const txCats=()=>[...state.expenses.map(e=>e.name),'Income','Other'];
 const SCHEMAS={
@@ -1319,8 +1324,15 @@ const SCHEMAS={
   loans:{title:'loan',fields:[
     {k:'name',l:'Loan name',t:'text',req:1},{k:'lender',l:'Lender / person',t:'text'},{k:'type',l:'Type',t:'select',o:LOAN_TYPES},
     {k:'rate',l:'Interest rate (% per year)',t:'number'},{k:'principal',l:'Original amount (₹)',t:'number'},{k:'outstanding',l:'Outstanding now (₹)',t:'number'},
-    {k:'emi',l:'EMI / monthly payment (₹)',t:'number'},{k:'dueDay',l:'EMI due day',t:'number'},{k:'startDate',l:'Loan start date',t:'date'},
+    {k:'emi',l:'EMI / monthly payment (₹)',t:'number'},{k:'dueDay',l:'EMI due day',t:'number'},{k:'startDate',l:'First EMI date',t:'date',help:'When the first EMI was / will be paid. EMIs before this date aren’t counted.'},
     {k:'notes',l:'Notes (prepayment charges, etc.)',t:'text',wide:1}]},
+  cards:{title:'credit card / pay later',help:'Spends up to the bill date go on that bill. Spends after it roll to the next bill.',fields:[
+    {k:'name',l:'Name',t:'text',req:1,ph:'HDFC card, Paytm Postpaid…'},{k:'kind',l:'Type',t:'select',o:['Credit card','Pay later']},
+    {k:'limit',l:'Credit limit (₹)',t:'number'},{k:'openBal',l:'Amount on your latest bill (₹)',t:'number',help:'What the last bill/statement says. 0 if nothing is due.'},
+    {k:'stmtDay',l:'Bill is made on (day of month)',t:'number',help:'Statement / billing date, e.g. 30'},{k:'dueDay',l:'Pay by (day of month)',t:'number',help:'Due date, e.g. 5'},
+    {k:'minPct',l:'Minimum due (% of bill)',t:'number',help:'Cards ≈ 5. Most pay-later apps need the full bill: 100.'},
+    {k:'rate',l:'Interest if not paid in full (% per month)',t:'number',help:'Cards ≈ 3.5. 0 if none.'},{k:'lateFee',l:'Late fee (₹)',t:'number'},
+    {k:'notes',l:'Notes',t:'text',wide:1}]},
   savings:{title:'saving / investment',fields:[{k:'name',l:'Name',t:'text',req:1},{k:'type',l:'Type',t:'select',o:SAV_TYPES},{k:'current',l:'Current value (₹)',t:'number'},{k:'target',l:'Target (₹, optional)',t:'number'},{k:'monthly',l:'Monthly contribution (₹)',t:'number'},{k:'notes',l:'Notes',t:'text'}]},
   reminders:{title:'reminder',fields:[
     {k:'title',l:'What',t:'text',req:1,wide:1},{k:'type',l:'Type',t:'select',o:REM_TYPES},
@@ -1378,6 +1390,8 @@ function openForm(coll,id,preset={}){
     if(miss){alert('Please fill in: '+miss.l);return}
     if(coll==='habits'&&!id&&!(out.times||[]).length)Object.assign(out,defaultReminder({...preset,...out}),{dow:out.dow,dom:out.dom||1});
     if(coll==='tx'){if(!out.date)out.date=ds(today());if(out.dir==='in'&&out.category!=='Income'&&!item.category)out.category='Income'}
+    if(coll==='cards'){if(!out.stmtDay)out.stmtDay=1;if(!out.dueDay)out.dueDay=Math.min(28,num(out.stmtDay)+15)%28||28;if(!item.openDate||out.openBal!==item.openBal||num(out.stmtDay)!==num(item.stmtDay))out.openDate=ds(lastStmtOn(out,today()));
+      if(preset._fromLoan){const li=state.loans.findIndex(l=>l.id===preset._fromLoan);if(li>=0)state.loans.splice(li,1);delete preset._fromLoan}}
     if(id){Object.assign(item,out);delete item.sample}else arr.push({id:uid(),...preset,...out});
     closeDlg(dlg);commit();toast(id?'Saved':`Added ${sc.title}`);
   };
@@ -1427,7 +1441,7 @@ function fin(){
   const wants=sum(state.expenses.filter(e=>e.kind==='want'),e=>e.amount);
   return {income,bills,emi,spend,out,left,rate:income?left/income:NaN,debt,assets,net:assets-debt,emiRatio:income?emi/income:NaN,ef,efMonths:out?ef/out:0,needs,wants};
 }
-const loanOff=l=>{const t=today();return state.paid['L:'+l.id+'|'+ym(t.getFullYear(),t.getMonth())]?1:0};
+const loanOff=l=>{const t=today();let o=state.paid['L:'+l.id+'|'+ym(t.getFullYear(),t.getMonth())]?1:0;if(l.startDate){const sd=pd(l.startDate),m=(sd.getFullYear()-t.getFullYear())*12+(sd.getMonth()-t.getMonth());if(m>0)o-=m}return o};
 function loanEmiInMonth(l,y,m){
   const e=num(l.emi);if(!e)return 0;
   const mEnd=new Date(y,m+1,0),t=today();
@@ -1467,7 +1481,7 @@ function monthlyOcc(baseY,baseM,day,step,from,to,minDate){
   return out;
 }
 function eventsBetween(from,to){
-  const ev=[],ty=today().getFullYear();
+  cardSyncPaid();const ev=[],ty=today().getFullYear();
   for(const r of state.reminders){
     if(!r.date)continue;
     const b=pd(r.date);let dates=[];const rep=r.repeat||'none';
@@ -1495,10 +1509,11 @@ function eventsBetween(from,to){
       ev.push({date:d,title:l.name+' EMI',type:'EMI',amount:num(l.emi),src:'loan',id:l.id,notes:l.lender,extra:'',lead:2});
     }
   }
+  ev.push(...cardEvents(from,to));
   return ev.sort((a,b)=>a.date-b.date||a.title.localeCompare(b.title));
 }
-const paidKey=e=>e.src==='bill'?`B:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:e.src==='loan'?`L:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:null;
-function lateThisMonth(){const t=today();return eventsBetween(new Date(t.getFullYear(),t.getMonth(),1),addDays(t,-1)).filter(e=>(e.src==='bill'||e.src==='loan')&&num(e.amount)>0&&e.extra!=='autopay'&&!state.paid[paidKey(e)])}
+const paidKey=e=>e.src==='card'?`C:${e.id}|${e.stmt}`:e.src==='bill'?`B:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:e.src==='loan'?`L:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:null;
+function lateThisMonth(){const t=today();return eventsBetween(new Date(t.getFullYear(),t.getMonth(),1),addDays(t,-1)).filter(e=>(e.src==='bill'||e.src==='loan'||e==='card')&&num(e.amount)>0&&e.extra!=='autopay'&&!state.paid[paidKey(e)])}
 function evRow(e){
   const dd=daysBetween(today(),e.date);
   const when=dd===0?'Today':dd===1?'Tomorrow':dd<0?`${-dd}d ago`:`in ${dd} days`;
@@ -1509,6 +1524,13 @@ function evRow(e){
   <div class="rs">${typeTag(e.type)}${e.amount?`<span>· ${inr(e.amount)}</span>`:''}<span>·</span><span class="${dd>=0&&dd<=3?'soon':''}">${when}</span></div></div>${btn}</div>`;
 }
 function togglePaid(pk){
+  if(pk.startsWith('C:')){
+    const [cid,st]=pk.slice(2).split('|'),c=state.cards.find(x=>x.id===cid);if(!c)return;
+    const p=state.paid[pk];
+    if(p){if(p.pay)c.txns=(c.txns||[]).filter(t=>t.id!==p.pay);delete state.paid[pk]}
+    else{const s=cardState(c),amt=ds(s.stmt.date)===st?s.due:s.unbilled;if(amt>0){const t=cardPay(c,amt,'Paid in full');state.paid[pk]={pay:t.id}}}
+    commit();return;
+  }
   if(pk.startsWith('L:')){
     const [lid]=pk.slice(2).split('|'),l=state.loans.find(x=>x.id===lid);
     if(state.paid[pk]){if(l&&state.paid[pk].prev!==undefined)l.outstanding=state.paid[pk].prev;delete state.paid[pk]}
@@ -1786,6 +1808,7 @@ function pDebt(){
     <div class="kpis" style="margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px">
       ${[['Rate',r+'%'],['EMI',inr(num(l.emi))],['Months left',isFinite(s.n)?s.n:'∞'],['Payoff',isFinite(s.n)?dfd(s.n):'Never'],['Interest left',isFinite(s.int)?`<span class="neg">${inr(s.int)}</span>`:'—']].map(([a,b])=>`<div><div class="tiny muted">${a}</div><b>${b}</b></div>`).join('')}</div>
     ${!isFinite(s.n)&&num(l.outstanding)>0?'<p class="small neg" style="margin-top:10px">The EMI doesn’t cover the monthly interest, so the balance keeps growing.</p>':''}
+    <div class="inline small" style="margin-top:12px;gap:8px"><span class="muted">First EMI</span>${l.startDate?`<b>${fmt(pd(l.startDate),{day:'numeric',month:'short',year:'numeric'})}</b>${pd(l.startDate)>t?' <span class="pill cyan nodot">starts later</span>':''}`:`<input type="date" class="sel" data-lstart="${l.id}" aria-label="First EMI date" style="height:30px"><span class="tiny muted">Add it so past and future months are right</span>`}</div>
     ${l.notes?`<p class="tiny muted" style="margin-top:10px">${esc(l.notes)}</p>`:''}
     <div class="inline" style="margin-top:14px">${num(l.outstanding)>0?`<button class="btn sm ${paid?'done':''} ${justId===pk?'bump':''}" data-paid="${pk}">${paid?ic('tick')+` ${MONTHS[t.getMonth()]} EMI paid`:`Mark ${MONTHS[t.getMonth()]} EMI paid`}</button><button class="btn sm ghost" data-prepay="${l.id}">Record prepayment</button>`:'<span class="pill lime">Closed 🎉</span>'}</div></div>`}).join('');
   const saved=base.interest-plan.interest,msaved=base.months-plan.months;
@@ -1801,6 +1824,7 @@ function pDebt(){
     <div class="kpis" style="margin-top:16px">${kpi('New debt-free date',plan.stuck?'Never':dfd(plan.months),plan.months+' months')}${kpi('Months saved',Math.max(0,msaved),'','pos')}${kpi('Interest saved',inr(Math.max(0,saved)),'','pos')}</div>
     ${plan.order.length?`<p class="small" style="margin-top:14px"><b>Payoff order:</b> ${plan.order.map((l,i)=>`${i+1}. ${esc(l.name)} <span class="muted">(${dfd(l.done)})</span>`).join(' → ')}</p>`:''}</div>
   <div class="r2">${cards||'<div class="card empty">No loans. Enjoy the freedom! 🎉</div>'}</div>
+  ${cardSection()}
   <div class="card"><h3 style="margin-bottom:8px">Debt rules worth keeping</h3><ul class="tips">
     <li>Pay credit cards in <b>full</b> every month. “Minimum due” keeps ~40% yearly interest running.</li>
     <li>Prepay the highest-interest loan first. A home loan (~8–9%) is usually last.</li>
@@ -2817,7 +2841,7 @@ const inQuiet=t=>{const q=state.nudges.quiet;if(!q||!q.from||!q.to||q.from===q.t
 const NZ_COL={Digest:'var(--yellow)',Water:'var(--cyan)',Steps:'var(--lime)',Habit:'var(--green)',Grooming:'var(--violet)',Log:'var(--violet)',Money:'var(--orange)',Dates:'var(--red)'};
 function habitNudge(h){return ({Movement:'Move now. Future you says thanks.',Nutrition:'Small choices, big results.',Sleep:'Protect tomorrow’s energy.',Mind:'Two quiet minutes count.',Grooming:'Two minutes. Look sharp.',Checkup:'Quick check, then tick it off.',Lifestyle:'Tiny habit, big compound.',Relationships:'They’ll be glad you did.'})[h.area]||'Tick it off when done.'}
 function digestText(d){
-  const ev=eventsBetween(d,d),pay=ev.filter(e=>(e.src==='bill'||e.src==='loan')&&num(e.amount)&&!state.paid[paidKey(e)]),dates=ev.filter(e=>e.src==='reminder'),soon=eventsBetween(addDays(d,1),addDays(d,7)).filter(e=>e.type==='Birthday'||e.type==='Anniversary'),p=[];
+  const ev=eventsBetween(d,d),pay=ev.filter(e=>(e.src==='bill'||e.src==='loan'||e==='card')&&num(e.amount)&&!state.paid[paidKey(e)]),dates=ev.filter(e=>e.src==='reminder'),soon=eventsBetween(addDays(d,1),addDays(d,7)).filter(e=>e.type==='Birthday'||e.type==='Anniversary'),p=[];
   if(pay.length)p.push(`${pay.length} payment${pay.length>1?'s':''} due (${inr(sum(pay,e=>e.amount))})`);
   if(dates.length)p.push(dates.slice(0,2).map(e=>e.title).join(', '));
   if(soon.length)p.push(`${soon[0].title} in ${daysBetween(d,soon[0].date)} days`);
@@ -2842,7 +2866,7 @@ function nudgeItems(d){
   if(N.catchup.on&&d.getDate()===25){const open=()=>state.health.habits.filter(h=>h.period==='monthly'&&!isDone(h,d));add('mo',N.catchup.time,'Habit','Monthly habits still open',()=>open().slice(0,4).map(h=>h.name).join(', ')+'. A few days left this month.',{check:()=>open().length>0,url:'./#/health'})}
   if(N.logday.on)add('logday',N.logday.time,'Log','Log your day ✍️','Steps, spends and one line in your journal. Tap the mic and just say it.',{check:()=>!(state.journal&&state.journal[dk]&&state.journal[dk].t)||!num(lg().steps),url:'./?do=voice',icon:'mic'});
   if(N.money.on){
-    for(const e of eventsBetween(d,addDays(d,2)).filter(x=>(x.src==='bill'||x.src==='loan')&&num(x.amount))){const dd=daysBetween(d,e.date);if(dd!==0&&dd!==2)continue;const pk=paidKey(e);
+    for(const e of eventsBetween(d,addDays(d,2)).filter(x=>(x.src==='bill'||x.src==='loan'||x==='card')&&num(x.amount))){const dd=daysBetween(d,e.date);if(dd!==0&&dd!==2)continue;const pk=paidKey(e);
       add(`m:${pk}:${dd}`,N.money.time,'Money',dd===0?`Due today: ${e.title}`:`Due in 2 days: ${e.title}`,`${inr(e.amount)} on ${fmt(e.date,{weekday:'short',day:'numeric',month:'short'})}${e.extra==='autopay'?' · on autopay, just check it went through':''}.`,{check:()=>!state.paid[pk],actions:[{action:'paid',title:'Mark paid'}],acts:{paid:'paid:'+pk},url:'./#/bills',icon:'receipt'})}
     if(dk===ds(today()))add('overdue','10:30','Money','Overdue payments ⚠️',()=>{const l=lateThisMonth();return l.slice(0,3).map(e=>`${e.title} ${inr(e.amount)}`).join(' · ')+(l.length>3?` +${l.length-3} more`:'')},{check:()=>lateThisMonth().length>0,url:'./#/bills',icon:'receipt'});
   }
@@ -3144,6 +3168,68 @@ function splash(btn){
     p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d+38}px)) scale(.4)`,opacity:0}],{duration:650+Math.random()*250,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>p.remove()}
 }
 
+/* ================= credit cards & pay later (billing cycles) ================= */
+const clampD=(y,m,d)=>new Date(y,m,Math.min(Math.max(1,num(d)||1),dim(y,m)));
+const lastStmtOn=(c,ref)=>{let d=clampD(ref.getFullYear(),ref.getMonth(),c.stmtDay);if(d>ref){const p=addMonths(new Date(ref.getFullYear(),ref.getMonth(),1),-1);d=clampD(p.getFullYear(),p.getMonth(),c.stmtDay)}return d};
+const nextStmt=(c,d)=>{const n=addMonths(new Date(d.getFullYear(),d.getMonth(),1),1);return clampD(n.getFullYear(),n.getMonth(),c.stmtDay)};
+const dueOf=(c,s)=>{let d=clampD(s.getFullYear(),s.getMonth(),c.dueDay);if(d<=s){const n=addMonths(new Date(s.getFullYear(),s.getMonth(),1),1);d=clampD(n.getFullYear(),n.getMonth(),c.dueDay)}return d};
+const minOf=(c,amt)=>amt<=0?0:Math.min(amt,Math.max(num(c.minPct)>=100?amt:200,Math.round(amt*(c.minPct===''||c.minPct===undefined?5:num(c.minPct))/100)));
+const ord=n=>{n=num(n);const v=n%100;return n+(v>=11&&v<=13?'th':['th','st','nd','rd'][n%10]||'th')};
+function cardState(c,asOf=today()){
+  const T=c.txns||[],end=new Date(asOf.getFullYear(),asOf.getMonth(),asOf.getDate(),23,59);
+  const open=c.openDate?pd(c.openDate):lastStmtOn(c,asOf);
+  const inR=(t,a,b)=>{const d=pd(t.date);return d>a&&d<=b};
+  let bal=num(c.openBal),prev=open;const stmts=[{date:open,amount:bal,due:dueOf(c,open),interest:0}];
+  for(let s=nextStmt(c,open);s<=end;s=nextStmt(c,s)){
+    const last=stmts[stmts.length-1],sEnd=new Date(s.getFullYear(),s.getMonth(),s.getDate(),23,59),pEnd=new Date(prev.getFullYear(),prev.getMonth(),prev.getDate(),23,59);
+    const pays=sum(T.filter(t=>t.type==='pay'&&inR(t,pEnd,sEnd)),t=>t.amount),spends=sum(T.filter(t=>t.type!=='pay'&&inR(t,pEnd,sEnd)),t=>t.amount);
+    const paidByDue=sum(T.filter(t=>t.type==='pay'&&inR(t,pEnd,new Date(last.due.getFullYear(),last.due.getMonth(),last.due.getDate(),23,59))),t=>t.amount);
+    const carry=Math.max(0,last.amount-paidByDue),interest=carry>0?Math.round(carry*num(c.rate)/100)+(num(c.lateFee)&&paidByDue<minOf(c,last.amount)?num(c.lateFee):0):0;
+    bal=Math.max(0,bal-pays+spends+interest);stmts.push({date:s,amount:bal,due:dueOf(c,s),interest});prev=s;
+  }
+  const cur=stmts[stmts.length-1],cEnd=new Date(cur.date.getFullYear(),cur.date.getMonth(),cur.date.getDate(),23,59);
+  const paidSince=sum(T.filter(t=>t.type==='pay'&&pd(t.date)>cEnd),t=>t.amount),unbilled=sum(T.filter(t=>t.type!=='pay'&&pd(t.date)>cEnd),t=>t.amount);
+  const due=Math.max(0,cur.amount-paidSince),minDue=Math.max(0,minOf(c,cur.amount)-paidSince),used=Math.max(0,cur.amount-paidSince+unbilled);
+  return {stmt:cur,stmts,due,minDue,paidSince,unbilled,used,avail:num(c.limit)-used,next:nextStmt(c,cur.date),nextDue:dueOf(c,nextStmt(c,cur.date)),overdue:due>0&&cur.due<today()};
+}
+function cardSyncPaid(){for(const c of state.cards||[]){const s=cardState(c),k=`C:${c.id}|${ds(s.stmt.date)}`;if(s.stmt.amount>0&&s.due<=0)state.paid[k]=state.paid[k]||true;else if(state.paid[k]&&!state.paid[k].pay)delete state.paid[k]}}
+function cardPay(c,amt,note){c.txns=c.txns||[];const t={id:uid(),date:ds(today()),amount:Math.round(num(amt)),type:'pay',note:note||'Payment'};c.txns.push(t);return t}
+function cardSpend(c,amt,note,date){c.txns=c.txns||[];const tx={id:uid(),date:date||ds(today()),payee:note||c.name,category:guessCat(note||'')||'Other',amount:Math.round(num(amt)),dir:'out',method:c.kind==='Pay later'?'Pay later':'Card',note:'On '+c.name};state.tx.push(tx);const t={id:uid(),date:tx.date,amount:tx.amount,type:'spend',note:note||'',tx:tx.id};c.txns.push(t);return t}
+function guessCat(s){s=String(s).toLowerCase();const E=state.expenses.map(e=>e.name);const f=(re,w)=>re.test(s)?E.find(n=>new RegExp(w,'i').test(n)):null;return f(/zomato|swiggy|food|restaurant|cafe/,'eat|food')||f(/amazon|flipkart|myntra|shop/,'shop')||f(/petrol|fuel|uber|ola|rapido/,'travel|fuel|transport')||f(/grocer|blinkit|zepto|bigbasket/,'grocer')||null}
+function cardEvents(from,to){
+  const ev=[];
+  for(const c of state.cards||[]){const s=cardState(c);
+    const push=(date,amount,stmt,proj)=>{if(date>=from&&date<=to&&amount>0)ev.push({date,title:c.name+' bill',type:'Bill/Payment',amount,src:'card',id:c.id,stmt:ds(stmt),extra:proj?'so far':'',notes:proj?'Spends so far on the next bill':`Min due ${inr(minOf(c,s.stmt.amount))}`,lead:2})};
+    push(s.stmt.due,s.due>0?s.due:s.stmt.amount,s.stmt.date,false);
+    push(s.nextDue,s.unbilled,s.next,true);
+  }
+  return ev;
+}
+function cardRow(c){
+  const s=cardState(c),lim=num(c.limit),u=lim?Math.min(1,s.used/lim):0,dd=daysBetween(today(),s.stmt.due),paid=s.stmt.amount>0&&s.due<=0;
+  const recent=[...(c.txns||[])].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,ui.cardAll===c.id?50:5);
+  return `<div class="card ccard"><div class="ch" style="align-items:center">${icoBox(c.kind==='Pay later'?'phone':'card','var(--violet)')}<div style="flex:1;min-width:0"><h3>${esc(c.name)}</h3><div class="sub">${esc(c.kind||'Credit card')} · bill on the ${ord(c.stmtDay)}, pay by the ${ord(c.dueDay)}</div></div>${s.overdue?'<span class="pill red">Overdue</span>':''}<button class="ic" data-edit="cards" data-id="${c.id}" aria-label="Edit">${ic('edit')}</button></div>
+  <div class="inline" style="justify-content:space-between;margin-bottom:8px"><span class="small muted">Used <b class="mid" style="font-size:20px;color:var(--text)">${inr(s.used)}</b> of ${inr(lim)}</span><span class="small ${s.avail<0?'neg':'muted'}">${inr(Math.max(0,s.avail))} available</span></div>${gbar(u,u>.8)}
+  <div class="cbills">
+    <div class="cbill ${paid?'paid':s.overdue?'late':''}"><div class="tiny faint">BILL OF ${fmt(s.stmt.date,{day:'numeric',month:'short'}).toUpperCase()}</div><div class="mid">${inr(s.stmt.amount)}</div>
+      <div class="small muted">${paid?'Paid in full 🎉':s.stmt.amount<=0?'Nothing to pay':`${s.paidSince?`${inr(s.paidSince)} paid · ${inr(s.due)} left · `:''}due ${fmt(s.stmt.due,{day:'numeric',month:'short'})}${dd>=0?` (${dd===0?'today':dd===1?'tomorrow':'in '+dd+' days'})`:` (${-dd} days late)`}`}</div>
+      ${!paid&&s.due>0?`<div class="small" style="margin-top:4px">${s.minDue>0?`Minimum due <b>${inr(s.minDue)}</b>`:`<span class="pos">${ic('tick')} Minimum paid</span> · pay the rest to avoid interest`}${s.stmt.interest?` · includes ${inr(s.stmt.interest)} interest/fees`:''}</div>
+      <div class="inline" style="margin-top:10px;gap:6px"><button class="btn sm lime" data-cpay="${c.id}:full">Pay full ${inr(s.due)}</button>${s.minDue>0&&s.minDue<s.due?`<button class="btn sm" data-cpay="${c.id}:min">Pay minimum ${inr(s.minDue)}</button>`:''}<button class="btn sm ghost" data-cpay="${c.id}:other">Other amount</button></div>`:''}</div>
+    <div class="cbill next"><div class="tiny faint">NEXT BILL · ${fmt(s.next,{day:'numeric',month:'short'}).toUpperCase()}</div><div class="mid">${inr(s.unbilled)}</div><div class="small muted">Spent since the last bill. Goes on the bill of ${fmt(s.next,{day:'numeric',month:'short'})}, due ${fmt(s.nextDue,{day:'numeric',month:'short'})}.</div>
+      <div class="inline" style="margin-top:10px"><button class="btn sm" data-cspend="${c.id}">${ic('plus')} Add a spend</button></div></div>
+  </div>
+  ${num(c.rate)>0&&!paid&&s.due>0?`<p class="tiny muted" style="margin-top:10px">Paying only the minimum carries ${inr(s.due-s.minDue)} to the next bill with about ${inr(Math.round((s.due-s.minDue)*num(c.rate)/100))} interest.</p>`:''}
+  ${recent.length?`<div class="ctx">${recent.map(t=>`<div class="ctx-i"><span class="tiny muted" style="width:52px">${fmt(pd(t.date),{day:'numeric',month:'short'})}</span><span class="nb small">${t.type==='pay'?'Payment':esc(t.note||'Spend')}</span><b class="small ${t.type==='pay'?'pos':''}">${t.type==='pay'?'+':''}${inr(t.amount)}</b><button class="ic" data-cdel="${c.id}:${t.id}" aria-label="Delete">${ic('x')}</button></div>`).join('')}${(c.txns||[]).length>5?`<button class="link tiny" data-cmore="${c.id}">${ui.cardAll===c.id?'Show less':'Show all '+c.txns.length}</button>`:''}</div>`:''}
+  </div>`;
+}
+function cardSection(){
+  const cs=state.cards||[],tot=sum(cs,c=>cardState(c).used),conv=state.loans.filter(l=>/credit card|bnpl|pay later/i.test((l.type||'')+' '+l.name)&&num(l.outstanding)>0);
+  return `<div class="ch" style="margin:8px 0 -4px"><div><h3>Credit cards & pay later</h3><div class="sub">${cs.length?`${inr(tot)} used across ${cs.length}. Spends after the bill date roll to the next bill.`:'Track limit, bill date, minimum due and what rolls to next month.'}</div></div><span class="sp"></span><button class="btn lime" data-add="cards">${ic('plus')} Add card / pay later</button></div>
+  ${conv.length?`<div class="banner">${ic('card')} ${conv.map(l=>esc(l.name)).join(', ')} ${conv.length>1?'are':'is'} saved as a loan. Switch to card billing to track bill dates, minimum due and carry-over. <span class="sp"></span>${conv.map(l=>`<button class="btn sm" data-cconv="${l.id}">Switch ${esc(l.name)}</button>`).join(' ')}</div>`:''}
+  ${cs.length?`<div class="r2">${cs.map(cardRow).join('')}</div>`:''}`;
+}
+function cardAskAmount(title,def){const v=prompt(title,def?String(def):'');if(v===null)return null;const n=num(String(v).replace(/[₹,\s]/g,''));return n>0?n:null}
+
 /* ================= shell ================= */
 const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
@@ -3271,14 +3357,24 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
   if(menu&&!el.closest('.pop')&&d.act!=='bell'&&d.act!=='new')menu=null;
   if(d.paid){e.stopPropagation();const was=!!state.paid[d.paid];justId=d.paid;togglePaid(d.paid);if(!was){toast('Marked as paid');burst(...lastXY,12)}return}
   if(d.go){go(d.go);return}
-  if(d.add){let pre={};try{pre=JSON.parse(d.pre||'{}')}catch(x){}if(d.date){pre.date=d.date;pre.repeat='none'}if(d.type)pre.type=d.type;if(d.add==='tx'){pre.date=pre.date||ds(today());pre.dir=pre.dir||'out';pre.method=pre.method||'UPI'}if(d.add==='reminders'&&!pre.repeat)pre.repeat='yearly';menu=null;openForm(d.add,null,pre);renderShell();return}
+  if(d.cpay){const [id,how]=d.cpay.split(':'),c=state.cards.find(x=>x.id===id);if(!c)return;const st=cardState(c);
+    let amt=how==='full'?st.due:how==='min'?st.minDue:cardAskAmount(`How much did you pay on ${c.name}? Bill left: ${inr(st.due)}`,st.minDue);if(!amt)return;
+    cardPay(c,amt,how==='full'?'Paid in full':how==='min'?'Minimum due':'Payment');justId=null;commit();
+    const left=cardState(c).due;toast(left>0?`Paid ${inr(amt)} · ${inr(left)} still due on this bill`:`Bill paid 🎉 ${inr(amt)}`,'tick');burst(...lastXY,12);return}
+  if(d.cspend){const c=state.cards.find(x=>x.id===d.cspend);if(!c)return;const amt=cardAskAmount(`Amount spent on ${c.name} (₹)`);if(!amt)return;const note=prompt('On what? (e.g. Swiggy, Amazon)')||'';cardSpend(c,amt,note.trim());commit();
+    const s=cardState(c);toast(`${inr(amt)} added · goes on the bill of ${fmt(s.next,{day:'numeric',month:'short'})}${s.avail<0?' · over limit!':''}`,'card');return}
+  if(d.cdel){const [id,tid]=d.cdel.split(':'),c=state.cards.find(x=>x.id===id);if(!c)return;const t=c.txns.find(x=>x.id===tid);if(!t||!confirm(`Delete this ${t.type==='pay'?'payment':'spend'} of ${inr(t.amount)}?`))return;c.txns=c.txns.filter(x=>x.id!==tid);if(t.tx)state.tx=state.tx.filter(x=>x.id!==t.tx);for(const k in state.paid)if(state.paid[k]?.pay===tid)delete state.paid[k];commit();return}
+  if(d.cmore){ui.cardAll=ui.cardAll===d.cmore?null:d.cmore;saveUI();render();return}
+  if(d.cconv){const l=state.loans.find(x=>x.id===d.cconv);if(!l)return;const pl=/bnpl|pay later|postpaid|paytm|simpl|lazypay/i.test((l.type||'')+' '+l.name);
+    openForm('cards',null,{_fromLoan:l.id,name:l.name,kind:pl?'Pay later':'Credit card',limit:Math.max(num(l.principal),num(l.outstanding)),openBal:num(l.outstanding),dueDay:num(l.dueDay)||5,stmtDay:((num(l.dueDay)||5)+12)%28||28,minPct:pl?100:5,rate:pl?0:3.5,notes:l.notes||''});return}
+  if(d.add){let pre={};try{pre=JSON.parse(d.pre||'{}')}catch(x){}if(d.date){pre.date=d.date;pre.repeat='none'}if(d.type)pre.type=d.type;if(d.add==='tx'){pre.date=pre.date||ds(today());pre.dir=pre.dir||'out';pre.method=pre.method||'UPI'}if(d.add==='reminders'&&!pre.repeat)pre.repeat='yearly';if(d.add==='cards'&&!pre.kind)Object.assign(pre,{kind:'Credit card',minPct:5,rate:3.5,stmtDay:30,dueDay:5});menu=null;openForm(d.add,null,pre);renderShell();return}
   if(d.edit){openForm(d.edit,d.id);return}
   if(d.set){const [k,v]=d.set.split(':');ui[k]=['bm','txDays','ovRange'].includes(k)?+v:v;render();return}
   if(d.habit){const h=state.health.habits.find(x=>x.id===d.habit);if(!h)return;const now=!isDone(h);setDone(h,now);habitLogSync(h,now);justId=h.id;commit();
@@ -3356,6 +3452,7 @@ document.addEventListener('change',e=>{
   if(d.prof){state.profile[d.prof]=['age','proteinTarget','kcalTarget'].includes(d.prof)?num(el.value):el.value;commit();return}
   if(d.groom){state.grooming[d.groom]=d.groom==='cutEvery'?num(el.value):el.value;commit();return}
   if(d.nzv){const v=d.nzv.endsWith('dow')?num(el.value):el.value;if(!d.nzv.endsWith('dow')&&!/^\d{2}:\d{2}$/.test(v))return;setNz(d.nzv,v);commit();return}
+  if(d.lstart){const l=state.loans.find(x=>x.id===d.lstart);if(l&&el.value){l.startDate=el.value;delete l.sample;commit();toast('First EMI date saved','calendar')}return}
   if(d.nzt){setNz(d.nzt,parseTimes(el.value));commit();toast('Times updated','clock');return}
   if(d.nzti){const [path,k]=d.nzti.split(':'),arr=path.split('.').reduce((o,x)=>o[x],state.nudges);if(!/^\d{2}:\d{2}$/.test(el.value))return;arr[+k]=el.value;setNz(path,parseTimes(arr.join(',')));commit();return}
   if(d.hti){const [id,k]=d.hti.split(':'),h=state.health.habits.find(x=>x.id===id);if(h&&/^\d{2}:\d{2}$/.test(el.value)){h.times[+k]=el.value;h.times=parseTimes(h.times.join(','));ui.nzOpen=true;nzCache.t=0;commit()}return}
