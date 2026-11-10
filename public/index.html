@@ -853,6 +853,64 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   .scry.open{position:absolute;left:16px;right:16px;top:calc(10px + env(safe-area-inset-top));width:auto;z-index:5}
 }
 @media (max-width:420px){.kpis{grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:12px}.kpi .v{font-size:18px}.hero .stats{grid-template-columns:1fr 1fr}}
+/* ---- Streak & rewards ---- */
+.gpill{display:flex;align-items:center;gap:6px;height:42px;padding:0 11px 0 9px;border:1px solid var(--line);background:var(--card);border-radius:12px;font:800 15px/1 inherit;color:var(--text);cursor:pointer;flex:none}
+.gpill .gfl{font-size:18px;filter:grayscale(1);opacity:.5;transition:filter .3s,opacity .3s}.gpill.on .gfl{filter:none;opacity:1}
+.gpill .gring{width:18px;height:18px;border-radius:50%;background:conic-gradient(var(--lime) calc(var(--p)*1%),var(--line2) 0);-webkit-mask:radial-gradient(circle,transparent 5px,#000 6px);mask:radial-gradient(circle,transparent 5px,#000 6px)}
+.lime-t{color:var(--lime-text,var(--lime))}
+.gxp{position:fixed;z-index:120;transform:translate(-50%,-50%);font-weight:800;font-size:17px;color:var(--lime-text,var(--lime));text-shadow:0 2px 12px rgba(0,0,0,.45);pointer-events:none;animation:gxp 1.25s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes gxp{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-260%) scale(1)}}
+.gconf{position:fixed;inset:0;z-index:131;pointer-events:none}
+.gcel{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s}
+.gcel.show{opacity:1;pointer-events:auto}
+.gbox{width:min(400px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;text-align:center;background:var(--card);border:1px solid var(--line2);border-radius:28px;padding:30px 24px 22px;box-shadow:0 40px 120px -30px rgba(215,246,74,.35);transform:scale(.85) translateY(20px);transition:transform .45s var(--spring,cubic-bezier(.3,1.5,.5,1))}
+.gcel.show .gbox{transform:none}
+.gbox h2{font-size:24px;letter-spacing:-.02em;margin:6px 0 6px}.gbox p{margin:0 0 6px;font-size:14px;line-height:1.5}
+.gbig{font-size:84px;line-height:1;margin:0 auto 4px;display:grid;place-items:center;animation:gpop .7s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.gbig.flame{animation:gpop .7s var(--spring,cubic-bezier(.3,1.5,.5,1)) both,gflick 1.4s ease-in-out .7s infinite alternate}
+.gbig.chest{animation:gshake .6s ease-in-out both,gpop .5s .6s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.glv{display:grid;place-items:center;width:110px;height:110px;border-radius:30px;background:var(--lime);color:var(--lime-ink,#10120a);font-size:56px;font-weight:800}
+@keyframes gpop{0%{transform:scale(.2);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes gflick{0%{transform:scale(1) rotate(-3deg)}100%{transform:scale(1.07) rotate(3deg)}}
+@keyframes gshake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(10deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(6deg)}}
+.gnum{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--lime-text,var(--lime))}.gnum.bump{animation:gpop .5s var(--spring,cubic-bezier(.3,1.5,.5,1))}
+.gacts{display:grid;gap:8px;margin-top:16px}.gacts .btn{height:46px;justify-content:center;font-weight:700}
+.gcard{width:100%;max-width:260px;border-radius:16px;margin:10px auto 0;display:block;border:1px solid var(--line)}
+.gweek{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 8px}
+.gwd{display:grid;gap:4px;justify-items:center;font-size:11px;color:var(--faint);font-weight:700}
+.gwd i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line);font-size:17px}
+.gwd.on i{background:color-mix(in srgb,var(--orange) 18%,var(--card2));border-color:color-mix(in srgb,var(--orange) 45%,transparent)}
+.gwd.ice i{background:color-mix(in srgb,var(--cyan) 16%,var(--card2));border-color:color-mix(in srgb,var(--cyan) 45%,transparent)}
+.gwd.now i{border:2px dashed var(--lime)}.gwd.now span{color:var(--lime-text,var(--lime))}.gwd.miss i{color:var(--faint)}
+.ghero{display:flex;gap:26px;align-items:center;flex-wrap:wrap;background:radial-gradient(ellipse at 0 0,color-mix(in srgb,var(--orange) 16%,transparent),transparent 60%),var(--card)}
+.gh-l{display:flex;gap:16px;align-items:center}.gh-r{flex:1;min-width:260px}
+.gflame{font-size:70px;line-height:1;filter:grayscale(1);opacity:.45}.gflame.on{filter:none;opacity:1;animation:gflick 1.4s ease-in-out infinite alternate}
+.gbn{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.gring-wrap{position:relative;display:grid;place-items:center;flex:none}.gring-wrap span{position:absolute;font-weight:800;font-size:17px;text-align:center;line-height:1.1}.gring-wrap span small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+.gring-wrap.big span{font-size:24px}.gr circle{transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)}
+.gseg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.gseg button{border:1px solid var(--line2);background:var(--card2);color:var(--text);border-radius:12px;padding:8px 4px;font:600 12.5px inherit;cursor:pointer;display:grid;gap:1px}
+.gseg button small{font-size:10.5px;color:var(--muted)}.gseg button.on{background:color-mix(in srgb,var(--lime) 18%,var(--card2));border-color:var(--lime)}
+.gbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}.gbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .8s cubic-bezier(.2,.8,.2,1)}.gbar.lv{height:12px}
+.gq{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line)}.gq:last-of-type{border-bottom:0}
+.gq .ge{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line);flex:none;font-size:16px;font-weight:800}
+.gq.done .ge{background:var(--lime);color:var(--lime-ink,#10120a);border-color:var(--lime)}.gq.done .small{color:var(--muted);text-decoration:line-through}
+.gchest{display:flex;gap:12px;align-items:center;margin-top:10px;padding:12px;border-radius:14px;border:1px dashed var(--line2)}.gchest span{font-size:26px}.gchest.open{border-style:solid;border-color:var(--lime);background:color-mix(in srgb,var(--lime) 10%,transparent)}
+.gtier{font-size:30px}
+.glb{display:grid;gap:4px}.glr{display:grid;grid-template-columns:28px 1fr auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;font-size:13.5px}
+.glr .rk{font-weight:800;color:var(--muted);text-align:center}.glr.me{background:color-mix(in srgb,var(--lime) 14%,var(--card2));border:1px solid color-mix(in srgb,var(--lime) 40%,transparent)}
+.glr.up .rk{color:var(--green,#6fe28a)}.glr.dn .rk{color:var(--red,#ff4f6e)}.glr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gfr{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.gfr .av{flex:none}.gfr .ibtn{width:34px;height:34px;flex:0 0 34px}
+.ginv{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 6px;padding:14px;border-radius:16px;background:var(--card2);border:1px solid var(--line)}.gcode{font-size:22px;letter-spacing:.12em}
+.gstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.gstats b{font-size:20px}
+.gbadges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gbd{display:grid;gap:3px;justify-items:center;text-align:center;padding:14px 8px;border-radius:16px;border:1px solid var(--line);background:var(--card2)}
+.gbd span{font-size:34px;filter:grayscale(1);opacity:.35}.gbd b{font-size:12.5px}.gbd small{font-size:11px;color:var(--faint);line-height:1.3}
+.gbd.got{border-color:color-mix(in srgb,var(--lime) 40%,transparent)}.gbd.got span{filter:none;opacity:1}
+.gset{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.gset .nb{flex:1;min-width:0}.gq .nb,.gfr .nb{flex:1;min-width:0}.gset:last-child{border-bottom:0}
+.gtoday{display:grid;grid-template-columns:minmax(220px,auto) 1fr;gap:20px;align-items:center}
+.gt-l{display:flex;gap:14px;align-items:center;cursor:pointer}
+@media (max-width:760px){.gtoday{grid-template-columns:1fr}.gstats{grid-template-columns:repeat(2,minmax(0,1fr))}.gbn{font-size:52px}.gflame{font-size:56px}.ghero{gap:14px}.gpill{padding:0 9px 0 7px}.gpill .gring{display:none}}
 </style>
 </head>
 <body>
@@ -1264,6 +1322,8 @@ function defaults(){
 }
 
 /* ================= state ================= */
+try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^[A-Za-z0-9]{6}$/.test(r))localStorage.setItem('ss_ref',r.toUpperCase())}catch(e){}
+const gRef=()=>{try{return localStorage.getItem('ss_ref')||''}catch(e){return ''}};
 let storageOK=true;
 function load(raw){
   let s=null;
@@ -1303,7 +1363,7 @@ try{Object.assign(ui,JSON.parse(localStorage.getItem(UIKEY))||{})}catch(e){}
 let menu=null;
 function saveUI(){try{localStorage.setItem(UIKEY,JSON.stringify(ui))}catch(e){}}
 function save(){state._u=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true}catch(e){storageOK=false}queueCloud()}
-function commit(){save();nzCache.t=0;render();syncSW();pushSchedule()}
+function commit(){try{gTick()}catch(e){console.error(e)}save();nzCache.t=0;render();syncSW();pushSchedule()}
 
 /* ================= motion helpers ================= */
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||state.profile.motion==='off';
@@ -2304,7 +2364,7 @@ async function googleButton(S){
 }
 async function googleCredential(resp){
   const err=$('#lockerr');if(err)err.textContent='';
-  try{const m=await apiFetch('/api/google',{method:'POST',body:{credential:resp.credential}});const reset=RM()?null:await gyre();await enterApp(m,m.isNew,m.name);if(reset)reset()}
+  try{const m=await apiFetch('/api/google',{method:'POST',body:{credential:resp.credential,ref:gRef()}});const reset=RM()?null:await gyre();await enterApp(m,m.isNew,m.name);if(reset)reset()}
   catch(x){if(err)err.textContent=x.message}
 }
 async function authSubmit(e){
@@ -2314,7 +2374,7 @@ async function authSubmit(e){
   if(S&&pw.length<8){err.textContent='Use at least 8 characters for your password.';return}
   btn.disabled=true;btn.textContent='Please wait…';err.textContent='';
   try{
-    const m=await apiFetch(S?'/api/signup':'/api/login',{method:'POST',body:{email,password:pw,name}});
+    const m=await apiFetch(S?'/api/signup':'/api/login',{method:'POST',body:{email,password:pw,name,ref:gRef()}});
     const reset=RM()?null:await gyre();
     await enterApp(m,S,name);if(reset)reset();
   }catch(x){err.textContent=x.message;const c=$('#authf');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');btn.disabled=false;btn.textContent=S?'Create account':'Log in'}
@@ -2332,7 +2392,7 @@ async function enterApp(m,isNew,name){
 }
 function openApp(){
   document.body.classList.remove('locked');$('#lock').innerHTML='';$('#onb').classList.remove('show');
-  autoHabits();pageChanged=true;render();window.scrollTo(0,0);afterOpen();checkPaywall();initPush();
+  autoHabits();try{gTick(true);save()}catch(e){console.error(e)}pageChanged=true;render();window.scrollTo(0,0);afterOpen();checkPaywall();initPush();setTimeout(()=>gSocial(),1500);
 }
 async function logout(){
   if(!confirm('Log out of Self Streak on this device?'))return;
@@ -3702,6 +3762,7 @@ function pToday(){
   const block=(title,cls,list,empty,id='')=>`<div class="card ${cls}"${id?` id="${id}"`:''}><div class="ch"><h3>${title}</h3><span class="sp"></span><span class="pill ${cls==='tmiss'?'red':cls==='tnext'?'cyan':'lime'} nodot">${list.length}</span></div>${list.map(row).join('')||`<div class="empty small">${empty}</div>`}</div>`;
   return `${phead(fmt(t,{weekday:'long',day:'numeric',month:'long'}),'Today',`<button class="btn" data-go="history">${ic('clock')} Day history</button>`)}
   <div class="stack">
+  ${gTodayCard()}
   <div class="kpis">${kpi('Done',B.done.length,'','pos','sec-done')}${kpi('Missed',B.missed.length,'',B.missed.length?'neg':'','sec-missed')}${kpi('Up next',B.next.length,'','','sec-next')}${kpi('Any time today',B.anytime.length,'','',B.anytime.length?'sec-any':'sec-next')}</div>
   ${daySummaryCard(ds(t),S,h)}
   <div class="r2">${block('Missed so far','tmiss',B.missed,'Nothing missed. Nice! 🎉','sec-missed')}${block('Up next','tnext',B.next,'Nothing else scheduled today.','sec-next')}</div>
@@ -3793,10 +3854,260 @@ async function admAction(id,action,el){
 }
 
 /* ================= shell ================= */
-const NAV=[['Life',[['today','Today','sun'],['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+/* ================= Streak & rewards: one daily streak, XP, daily goal, freezes, quests, badges, levels, leagues, friends ================= */
+const G_GOALS=[[20,'Casual'],[50,'Regular'],[100,'Serious'],[150,'Intense']];
+const G_TIERS=[['Bronze','#d6915f'],['Silver','#c7cbd4'],['Gold','#f5c84c'],['Sapphire','#4fb0f0'],['Diamond','#b49cff']];
+const G_MILES=[3,7,14,21,30,50,75,100,150,200,250,300,365,500,730,1000];
+const G_QUESTS=[
+  {id:'w4',g:'w',e:'💧',t:'Drink 4 glasses of water',f:r=>[r.water,4]},
+  {id:'w8',g:'w',e:'💧',t:'Drink 8 glasses of water',f:r=>[r.water,8]},
+  {id:'m1',g:'m',e:'🍽️',t:'Log a meal',f:r=>[r.meals,1]},
+  {id:'m2',g:'m',e:'🍽️',t:'Log 2 meals',f:r=>[r.meals,2]},
+  {id:'h3',g:'h',e:'✅',t:'Tick 3 habits',f:r=>[r.habits,3],ok:r=>r.allHabits>=4},
+  {id:'ha',g:'h',e:'✅',t:'Tick every daily habit',f:r=>[r.habits,r.allHabits],ok:r=>r.allHabits>=1&&r.allHabits<=8},
+  {id:'tx',g:'t',e:'₹',t:'Log an expense or income',f:r=>[r.tx,1]},
+  {id:'jr',g:'j',e:'📓',t:'Write in your journal',f:r=>[+r.journal,1]},
+  {id:'st',g:'s',e:'👟',t:'Log your steps',f:r=>[r.steps>0?1:0,1]},
+  {id:'sk',g:'s',e:'👟',t:'Walk 10,000 steps',f:r=>[Math.min(r.steps,10000),10000]},
+  {id:'sl',g:'s',e:'😴',t:'Log last night’s sleep',f:r=>[+r.sleep,1]},
+  {id:'xp',g:'x',e:'⭐',t:'Earn 60 XP',f:r=>[gBase(r),60]}];
+const G_BADGES=[
+  ['spark','✨','First spark','Your first active day',c=>c.activeDays>=1],
+  ['s3','🔥','On fire','3-day streak',c=>c.best>=3],
+  ['s7','🗓️','Week warrior','7-day streak',c=>c.best>=7],
+  ['s30','🌙','Monthly master','30-day streak',c=>c.best>=30],
+  ['s100','💯','Century','100-day streak',c=>c.best>=100],
+  ['s365','👑','Year of you','365-day streak',c=>c.best>=365],
+  ['perfect','🎯','Perfect week','Hit your daily goal 7 days in a row',c=>c.goalRun>=7],
+  ['water','💧','Hydration hero','12+ glasses on 7 days',c=>c.water12>=7],
+  ['steps','👟','Step master','10,000 steps on 10 days',c=>c.steps10k>=10],
+  ['early','🌅','Early bird','Log something before 8 am on 5 days',c=>c.early>=5],
+  ['chef','🍳','Home chef','Log 30 meals',c=>c.meals>=30],
+  ['money','📒','Money tracker','Log 50 expenses or incomes',c=>c.tx>=50],
+  ['bills','🧾','Bill boss','Pay 10 bills or EMIs in the app',c=>c.paid>=10],
+  ['journal','📓','Dear diary','Write 7 journal entries',c=>c.journal>=7],
+  ['quest','🗺️','Quest hunter','Complete 30 daily quests',c=>c.quests>=30],
+  ['l10','⭐','Level 10','Reach level 10',c=>c.lvl>=10],
+  ['l25','🌟','Level 25','Reach level 25',c=>c.lvl>=25],
+  ['friend','🤝','Better together','Add a friend',c=>c.friends>=1],
+  ['gold','🥇','Golden','Reach the Gold league',c=>c.tier>=2],
+  ['diamond','💎','Diamond','Reach the Diamond league',c=>c.tier>=4]];
+function G(){const g=state.game=state.game||{};g.days=g.days||{};g.frozen=g.frozen||{};g.q=g.q||{};g.qc=g.qc||{};g.badges=g.badges||{};g.cel=g.cel||{};g.early=g.early||{};
+  if(g.freezes==null)g.freezes=1;if(!g.goal)g.goal=50;if(g.sound==null)g.sound=true;['board','recap','risk'].forEach(k=>{if(g[k]==null)g[k]=true});return g}
+let gIdx=null,gPrevXP=null,gSoc=null,gSocAt=0,gSyncT=null,gSig='',gTickT=0;
+function gIndex(){const tx={},act={},paid={};for(const t of state.tx||[])if(!t.sample&&t.date)tx[t.date]=(tx[t.date]||0)+1;
+  for(const a of state.activity||[]){if(a.i==='receipt'||a.i==='card')paid[a.d]=(paid[a.d]||0)+1;else act[a.d]=(act[a.d]||0)+1}return gIdx={tx,act,paid}}
+function gRaw(k){const I=gIdx||gIndex(),L=(state.health.logs||{})[k]||{},c=(state.health.checks||{})['d:'+k]||{},hs=dailyHabits();
+  return {habits:hs.filter(h=>c[h.id]).length,allHabits:hs.length,water:num(L.water),steps:num(L.steps),sleep:num(L.sleep)>0,weight:num(L.weight)>0,meals:((state.meals||{})[k]||[]).length,tx:I.tx[k]||0,paid:I.paid[k]||0,act:I.act[k]||0,journal:!!((state.journal||{})[k]||{}).t}}
+function gBase(r){return r.habits*10+Math.min(r.water,16)*2+(r.steps>0?5:0)+(r.steps>=10000?10:0)+(r.sleep?5:0)+(r.weight?5:0)+Math.min(r.meals,5)*10+Math.min(r.tx,10)*5+Math.min(r.paid,5)*20+Math.min(r.act,5)*10+(r.journal?15:0)}
+const gHash=s=>{let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+function gQuests(k,r){const g=G();r=r||gRaw(k);
+  if(!g.q[k]){if(k!==ds(today()))return null;let seed=gHash(k+(account?.user?.id||'me'));const pool=G_QUESTS.filter(q=>!q.ok||q.ok(r)),used=new Set(),pick=[];
+    for(let i=0;i<40&&pick.length<3;i++){seed=Math.imul(seed^(seed>>>15),2246822507)>>>0;const q=pool[seed%pool.length];if(!used.has(q.g)){used.add(q.g);pick.push(q.id)}}g.q[k]=pick}
+  return g.q[k].map(id=>G_QUESTS.find(x=>x.id===id)).filter(Boolean).map(Q=>{const [c,t]=Q.f(r);return {...Q,cur:Math.min(c,t),target:t,done:t>0&&c>=t}})}
+function gDayXP(k){const r=gRaw(k);let x=gBase(r);const q=G().q[k]?gQuests(k,r):null;if(q){const n=q.filter(z=>z.done).length;x+=n*20+(n===q.length?30:0)}return x}
+const gOn=k=>!!(G().days[k]||G().frozen[k]);
+function gRunFrom(d){let n=0;while(n<5000&&gOn(ds(d))){if(G().days[ds(d)])n++;d=addDays(d,-1)}return n}
+function gStreak(){const t=today();return gRunFrom(gOn(ds(t))?t:addDays(t,-1))}
+const gToday=()=>G().days[ds(today())]||0;
+const gTotal=()=>Object.values(G().days).reduce((a,b)=>a+b,0);
+function gLevel(xp){let n=1;while(50*n*(n+1)<=xp&&n<99)n++;const lo=50*(n-1)*n,hi=50*n*(n+1);return {n,lo,hi,pct:Math.round((xp-lo)/(hi-lo)*100)}}
+function gWeekKey(d=today()){return ds(addDays(d,-((d.getDay()+6)%7)))}
+function gWeekStats(offset=0){const mon=addDays(pd(gWeekKey()),-7*offset);const s={wk:ds(mon),xp:0,active:0,water:0,meals:0,habits:0,tx:0,spent:0,journal:0,best:0,bestDay:''};
+  const end=offset?addDays(mon,6):today();
+  for(let d=new Date(mon);d<=end;d=addDays(d,1)){const k=ds(d),x=G().days[k]||0,r=gRaw(k);s.xp+=x;if(x)s.active++;s.water+=Math.min(r.water,30);s.meals+=r.meals;s.habits+=r.habits;s.tx+=r.tx;s.journal+=+r.journal;if(x>s.best){s.best=x;s.bestDay=fmt(d,{weekday:'long'})}}
+  for(const t of state.tx||[])if(!t.sample&&t.dir==='out'&&t.date>=s.wk&&t.date<=ds(end))s.spent+=num(t.amount);
+  return s}
+function gCtx(){const g=G(),days=Object.keys(g.days).sort();let water12=0,steps10k=0,meals=0,journal=0;
+  for(const [k,L] of Object.entries(state.health.logs||{})){if(num(L.water)>=12)water12++;if(num(L.steps)>=10000)steps10k++}
+  for(const a of Object.values(state.meals||{}))meals+=a.length;for(const j of Object.values(state.journal||{}))if(j&&j.t)journal++;
+  let goalRun=0,run=0,prev=null;for(const k of days){if(g.days[k]>=g.goal){run=prev&&ds(addDays(pd(prev),1))===k?run+1:1;prev=k;goalRun=Math.max(goalRun,run)}}
+  const I=gIdx||gIndex();
+  return {activeDays:days.length,best:Math.max(g.best||0,gStreak()),goalRun,water12,steps10k,early:Object.keys(g.early).length,meals,tx:Object.values(I.tx).reduce((a,b)=>a+b,0),paid:Object.values(I.paid).reduce((a,b)=>a+b,0),journal,
+    quests:Object.values(g.qc).reduce((a,b)=>a+b,0),lvl:gLevel(gTotal()).n,friends:g.friends||0,tier:g.maxTier||0}}
+
+/* ---- the tick: runs on every change; works out today's XP, streak, freezes and what to celebrate ---- */
+function gTick(silent){
+  const g=G(),t=today(),tk=ds(t);gIndex();const fresh=!g.start;
+  if(!g.start){g.start=tk;for(let i=90;i>=1;i--){const k=ds(addDays(t,-i)),x=gDayXP(k);if(x>0)g.days[k]=x}silent=true}
+  const before=g.days[tk]||0;
+  for(let i=0;i<=7;i++){const k=ds(addDays(t,-i)),x=gDayXP(k);if(x>0)g.days[k]=x;else delete g.days[k]}
+  const q=gQuests(tk);g.qc[tk]=q.filter(z=>z.done).length;
+  const now=g.days[tk]||0;
+  // New day: use streak freezes for missed days, or mark the streak as lost.
+  if(g.fchk!==tk){g.fchk=tk;if(!fresh){
+    let d=addDays(t,-1);const gap=[];while(gap.length<45&&!gOn(ds(d))){gap.push(ds(d));d=addDays(d,-1)}
+    const prev=gap.length&&gap.length<45?gRunFrom(d):0;
+    if(prev>0){if(gap.length<=g.freezes){gap.forEach(k=>g.frozen[k]=1);g.freezes-=gap.length;gQueue({type:'freeze',used:gap.length,n:prev})}
+      else{g.lost={n:prev,day:gap[0],at:tk,gap:gap.length};gQueue({type:'lost',n:prev,repair:gap.length===1})}}}
+    if(g.lost&&g.lost.at!==tk&&ds(addDays(pd(g.lost.at),1))!==tk)delete g.lost;
+    for(const k of Object.keys(g.cel))if(/\d{4}-\d{2}-\d{2}$/.test(k)&&k.slice(-10)<ds(addDays(t,-40)))delete g.cel[k];
+    for(const k of Object.keys(g.q))if(k<ds(addDays(t,-40))){delete g.q[k]}
+  }
+  // Streak repair: earn twice the daily goal the day after a single missed day.
+  if(g.lost&&g.lost.gap===1&&now>=2*g.goal){g.frozen[g.lost.day]=1;const n=g.lost.n;delete g.lost;gQueue({type:'repair',n:gStreak()})}
+  const streak=gStreak();g.best=Math.max(g.best||0,streak);
+  if(now>before&&new Date().getHours()<8)g.early[tk]=1;
+  const loud=!silent&&now>before;
+  if(loud&&gPrevXP!==null)gFloat('+'+(now-before)+' XP');
+  const mark=(k,fn)=>{if(g.cel[k])return;g.cel[k]=1;if(!silent)fn()};
+  if(now>0)mark('s'+tk,()=>gQueue({type:'streak',n:streak}));
+  if(now>=g.goal)mark('g'+tk,()=>gQueue({type:'goal',xp:now}));
+  if(q.length&&q.every(z=>z.done))mark('c'+tk,()=>gQueue({type:'chest'}));
+  if(G_MILES.includes(streak)&&now>0)mark('m'+streak+':'+tk,()=>gQueue({type:'mile',n:streak}));
+  if(streak>0&&streak%7===0&&now>0&&!g.cel['fz'+streak+':'+g.start]){g.cel['fz'+streak+':'+g.start]=1;if(g.freezes<2){g.freezes++;if(!silent)gQueue({type:'freezeEarn',n:streak})}}
+  const lv=gLevel(gTotal()).n;if(g.lvl&&lv>g.lvl&&!silent)gQueue({type:'level',n:lv});g.lvl=Math.max(g.lvl||0,lv);
+  const C=gCtx();for(const [id,e,name,desc,test] of G_BADGES)if(!g.badges[id]&&test(C)){g.badges[id]=tk;if(!silent)gQueue({type:'badge',e,name,desc})}
+  gPrevXP=now;gSync();
+}
+function gSync(force){
+  if(!account)return;const g=G(),st=gStreak(),wk=gWeekStats(0);
+  const days=Object.keys({...g.days,...g.frozen}).sort().slice(-120);
+  const body={streak:st,best:g.best||0,lastActive:days[days.length-1]||null,days,xp:gTotal(),weekKey:gWeekKey(),weekXP:wk.xp,freezes:g.freezes,board:!!g.board,recap:!!g.recap,risk:!!g.risk,
+    stats:{...wk,headline:wk.active>=6?'An almost perfect week. Keep the fire going!':wk.active>=3?'Solid week. Can you beat it next week?':'Every day counts. Let’s build it up next week.'}};
+  const sig=JSON.stringify([body.streak,body.best,body.lastActive,body.xp,body.weekXP,body.freezes,body.board,body.recap,body.risk]);
+  if(sig===gSig&&!force)return;clearTimeout(gSyncT);
+  gSyncT=setTimeout(async()=>{try{const r=await apiFetch('/api/game',{method:'PUT',body});gSig=sig;if(r.code&&g.code!==r.code){g.code=r.code;save()}}catch(e){}},force?0:2500);
+}
+async function gSocial(force){
+  if(!account||(!force&&gSoc&&Date.now()-gSocAt<120000))return gSoc;
+  try{gSoc=await apiFetch('/api/game/social');gSocAt=Date.now();const g=G();let ch=false;
+    if(gSoc.code&&g.code!==gSoc.code){g.code=gSoc.code;ch=true}
+    if((g.friends||0)!==gSoc.friends.length){g.friends=gSoc.friends.length;ch=true}
+    if(gSoc.tier>(g.maxTier||0)){g.maxTier=gSoc.tier;ch=true}
+    const R=gSoc.result;if(R&&R.to!==R.from&&g.seenRes!==R.wk){g.seenRes=R.wk;ch=true;gQueue({type:'league',...R});apiFetch('/api/game/seen',{method:'POST'}).catch(()=>{})}
+    if(ch){gTick(true);save()}
+  }catch(e){}
+  return gSoc}
+const gLink=()=>'https://selfstreak.com/?ref='+(G().code||gSoc?.code||'');
+
+/* ---- celebrations ---- */
+let gQ=[],gShow=false;
+function gQueue(c){gQ.push(c);if(!gShow){gShow=true;setTimeout(gNext,350)}}
+function gSound(kind){if(!G().sound)return;try{unlockAudio();if(!actx)return;const t0=actx.currentTime+.02;
+  const N={xp:[880],streak:[523.25,659.25,783.99],goal:[523.25,659.25,783.99,1046.5],level:[392,523.25,659.25,783.99,1046.5],badge:[783.99,1174.66],chest:[659.25,830.61,987.77,1318.5],sad:[392,329.63]}[kind]||[660];
+  N.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(),st=t0+i*.09;o.type=kind==='sad'?'sine':'triangle';o.frequency.value=f;g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(kind==='xp'?.04:.08,st+.015);g.gain.exponentialRampToValueAtTime(.0001,st+(i===N.length-1?.7:.3));o.connect(g);g.connect(actx.destination);o.start(st);o.stop(st+.8)})}catch(e){}}
+function gFloat(txt){const el=document.createElement('div');el.className='gxp';el.textContent=txt;const [x,y]=lastXY;el.style.left=Math.max(40,Math.min(innerWidth-40,x))+'px';el.style.top=Math.max(60,y-10)+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),1300);gSound('xp')}
+function gConfetti(){if(RM())return;const c=document.createElement('canvas');c.className='gconf';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);const x=c.getContext('2d'),cols=['#d7f64a','#45dfe6','#ff8a4c','#b49cff','#f5c84c','#ffffff'];
+  const P=[...Array(150)].map(()=>({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*.42,vx:(Math.random()-.5)*16,vy:-Math.random()*15-5,r:Math.random()*6+4,a:Math.random()*6,va:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0]}));
+  const t0=performance.now();(function f(t){const k=(t-t0)/2400;x.clearRect(0,0,c.width,c.height);for(const p of P){p.vy+=.42;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.globalAlpha=Math.max(0,1-k);x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()}if(k<1)requestAnimationFrame(f);else c.remove()})(t0)}
+function gWeekStrip(){const g=G(),t=today(),mon=pd(gWeekKey());return `<div class="gweek">${[...Array(7)].map((_,i)=>{const d=addDays(mon,i),k=ds(d),st=g.days[k]?'on':g.frozen[k]?'ice':d<t&&k>=(g.start||'')?'miss':d.getTime()===t.getTime()?'now':'';
+  return `<div class="gwd ${st}"><span>${'MTWTFSS'[i]}</span><i>${st==='on'?'🔥':st==='ice'?'🧊':st==='miss'?'·':''}</i></div>`}).join('')}</div>`}
+function gNext(){
+  const c=gQ.shift();if(!c){gShow=false;return}gShow=true;const g=G();let h='',snd='badge',conf=false,auto=0,share=false;
+  const big=(e,cls='')=>`<div class="gbig ${cls}">${e}</div>`;
+  if(c.type==='streak'){h=`${big('🔥','flame')}<div class="gnum" data-from="${Math.max(0,c.n-1)}" data-to="${c.n}">${c.n}</div><h2>day streak!</h2>${gWeekStrip()}<p class="muted">${c.n===1?'Day one. Come back tomorrow to make it two.':c.n<7?'You’re building something. See you tomorrow!':'Unstoppable. Keep the fire going.'}</p>`;snd='streak';auto=4200}
+  else if(c.type==='goal'){h=`${big('🎯')}<h2>Daily goal done!</h2><p class="muted"><b class="lime-t">${c.xp} XP</b> today. Your goal is ${g.goal} XP.</p>`;snd='goal';conf=true;auto=4200}
+  else if(c.type==='chest'){h=`${big('🎁','chest')}<h2>All 3 quests done!</h2><p class="muted">Bonus chest opened: <b class="lime-t">+30 XP</b></p>`;snd='chest';conf=true}
+  else if(c.type==='mile'){h=`${big('🔥','flame')}<div class="gnum">${c.n}</div><h2>${c.n}-day streak!</h2><p class="muted">That’s a milestone. Share it and pull a friend in.</p><canvas class="gcard" id="gcardc"></canvas>`;snd='level';conf=true;share=true}
+  else if(c.type==='level'){h=`${big(`<span class="glv">${c.n}</span>`)}<h2>Level ${c.n}!</h2><p class="muted">${gLevel(gTotal()).hi-gTotal()} XP to level ${c.n+1}.</p>`;snd='level';conf=true}
+  else if(c.type==='badge'){h=`${big(c.e)}<div class="glabel">New badge</div><h2>${esc(c.name)}</h2><p class="muted">${esc(c.desc)}</p>`;snd='badge';conf=true}
+  else if(c.type==='freeze'){h=`${big('🧊')}<h2>Streak freeze used</h2><p class="muted">You missed ${c.used===1?'a day':c.used+' days'}, but your <b>${c.n}-day streak</b> is safe. ${g.freezes?`You have ${g.freezes} freeze left.`:'No freezes left, so don’t miss today!'}</p>`;snd='badge'}
+  else if(c.type==='freezeEarn'){h=`${big('🧊')}<h2>You earned a streak freeze</h2><p class="muted">${c.n} days in a row! A freeze covers one missed day automatically. You have ${g.freezes} of 2.</p>`;snd='badge'}
+  else if(c.type==='lost'){h=`${big('💔')}<h2>Your ${c.n}-day streak ended</h2><p class="muted">${c.repair?`Good news: you can repair it. Earn <b class="lime-t">${2*g.goal} XP today</b> (twice your daily goal) and the missed day is forgiven.`:'Everyone slips. Start a new one today, it only takes one small thing.'}</p>`;snd='sad'}
+  else if(c.type==='repair'){h=`${big('🔧')}<h2>Streak repaired!</h2><p class="muted">Your streak is back at <b>${c.n} days</b>. 🔥</p>`;snd='level';conf=true}
+  else if(c.type==='league'){const up=c.to>c.from,T=G_TIERS[c.to];h=`${big(up?'🏆':'📉')}<h2>${up?'Promoted to':'Moved to'} <span style="color:${T[1]}">${T[0]}</span> league</h2><p class="muted">You finished #${c.rank} of ${c.of} last week with ${c.xp} XP.${up?'':' Earn more XP this week to climb back.'}</p>`;snd=up?'level':'sad';conf=up}
+  let o=$('#gcel');if(!o){o=document.createElement('div');o.id='gcel';document.body.appendChild(o)}
+  o.className='gcel show';o.innerHTML=`<div class="gbox" role="dialog" aria-modal="true">${h}<div class="gacts">${share?`<button class="btn lime" data-g="sharecard" data-n="${c.n}">Share</button>`:''}${c.type==='lost'||c.type==='freeze'?`<button class="btn ${share?'':'lime'}" data-g="close" data-go2="streak">See my streak</button>`:''}<button class="btn ${share||c.type==='lost'||c.type==='freeze'?'ghost':'lime'}" data-g="close">Continue</button></div></div>`;
+  gSound(snd);if(conf)setTimeout(gConfetti,120);
+  const nm=o.querySelector('.gnum[data-from]');if(nm&&!RM()){nm.textContent=nm.dataset.from;setTimeout(()=>{nm.textContent=nm.dataset.to;nm.classList.add('bump')},650)}
+  if(share)gCard(c.n).then(cv=>{const t=$('#gcardc');if(t){t.width=cv.width;t.height=cv.height;t.getContext('2d').drawImage(cv,0,0)}});
+  clearTimeout(gNext._t);if(auto)gNext._t=setTimeout(()=>{if($('#gcel')?.classList.contains('show'))gClose()},auto);
+}
+function gClose(){clearTimeout(gNext._t);const o=$('#gcel');if(o)o.className='gcel';setTimeout(gNext,250)}
+
+/* ---- share card (1080×1350 image) ---- */
+async function gCard(n){try{await document.fonts.ready}catch(e){}
+  const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d'),F='"Plus Jakarta Sans",system-ui,sans-serif';
+  x.fillStyle='#09090b';x.fillRect(0,0,1080,1350);
+  let gr=x.createRadialGradient(540,520,40,540,520,620);gr.addColorStop(0,'rgba(215,246,74,.28)');gr.addColorStop(1,'rgba(215,246,74,0)');x.fillStyle=gr;x.fillRect(0,0,1080,1350);
+  x.save();x.translate(90,90);x.scale(1.1,1.1);x.fillStyle='#d7f64a';x.beginPath();x.roundRect(0,0,100,100,26);x.fill();x.strokeStyle='#10120a';x.lineWidth=12;x.lineCap='round';x.stroke(new Path2D('M68 31c-3-9-11-14-21-14-12 0-20 7-20 16 0 21 47 13 47 35 0 10-9 17-22 17-11 0-20-5-24-14'));x.fillStyle='#10120a';x.beginPath();x.arc(77,23,7,0,7);x.fill();x.restore();
+  x.fillStyle='#f4f4f5';x.font=`800 50px ${F}`;x.fillText('Self Streak',230,160);
+  x.textAlign='center';x.font=`220px ${F}`;x.fillText('🔥',540,560);
+  x.fillStyle='#d7f64a';x.font=`800 260px ${F}`;x.fillText(String(n),540,860);
+  x.fillStyle='#f4f4f5';x.font=`800 84px ${F}`;x.fillText('day streak',540,970);
+  const nm=(state.profile.first||state.profile.name||'').split(' ')[0];x.fillStyle='#a1a1aa';x.font=`600 40px ${F}`;x.fillText(nm?`${nm} hasn’t missed a day.`:'Not one day missed.',540,1050);
+  x.fillStyle='#d7f64a';x.beginPath();x.roundRect(240,1150,600,100,50);x.fill();x.fillStyle='#10120a';x.font=`800 42px ${F}`;x.fillText('selfstreak.com',540,1214);
+  return c}
+async function gShareCard(n){const c=await gCard(n),text=`I’m on a ${n}-day streak on Self Streak 🔥 Habits, water, meals and money in one app. Join me: ${gLink()}`;
+  const blob=await new Promise(r=>c.toBlob(r,'image/png')),file=new File([blob],`self-streak-${n}-days.png`,{type:'image/png'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text});return}}catch(e){if(e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  try{await navigator.clipboard.writeText(text);toast('Image saved and caption copied. Post it anywhere!')}catch(e){toast('Image saved. Post it anywhere!')}}
+async function gInvite(){const text=`I track my habits, water, meals and money on Self Streak 🔥 Join with my link and we both get 7 free days: ${gLink()}`;
+  try{if(navigator.share){await navigator.share({text,url:gLink()});return}}catch(e){if(e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(text);toast('Invite link copied')}catch(e){prompt('Copy your invite link',gLink())}}
+
+/* ---- UI pieces ---- */
+function gPill(){const g=G(),st=gStreak(),x=gToday(),p=Math.min(100,Math.round(x/g.goal*100));
+  return `<button class="gpill ${x?'on':''}" data-go="streak" title="${st}-day streak · ${x}/${g.goal} XP today" aria-label="${st}-day streak. ${x} of ${g.goal} XP today. Open streak and rewards"><span class="gfl">🔥</span><b>${st}</b><span class="gring" style="--p:${p}"></span></button>`}
+function gRing(x,goal,size=88){const p=Math.min(1,x/goal),R=size/2-7,C=2*Math.PI*R;return `<svg class="gr" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size/2}" cy="${size/2}" r="${R}" stroke="var(--line2)" stroke-width="8" fill="none"/><circle cx="${size/2}" cy="${size/2}" r="${R}" stroke="var(--lime)" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-p)}" transform="rotate(-90 ${size/2} ${size/2})"/></svg>`}
+function gQuestRows(q){return q.map(z=>`<div class="gq ${z.done?'done':''}"><span class="ge">${z.done?'✓':z.e}</span><div class="nb"><div class="small" style="font-weight:600">${esc(z.t)}</div><div class="gbar"><i style="width:${Math.round(z.cur/z.target*100)}%"></i></div></div><span class="tiny ${z.done?'lime-t':'muted'}">${z.id==='sk'?(z.cur/1000).toFixed(1)+'k':z.cur}/${z.id==='sk'?'10k':z.target}</span></div>`).join('')}
+function gTodayCard(){const g=G(),st=gStreak(),x=gToday(),q=gQuests(ds(today())),n=q.filter(z=>z.done).length;
+  return `<div class="card gtoday"><div class="gt-l" data-go="streak" role="button" tabindex="0"><div class="gring-wrap">${gRing(x,g.goal,76)}<span>${x}<small>/${g.goal}</small></span></div>
+  <div><div class="inline" style="gap:6px"><b style="font-size:22px">🔥 ${st}</b><span class="muted small">day streak</span></div><div class="tiny muted">${x?(x>=g.goal?'Daily goal done. Nice!':`${g.goal-x} XP to your daily goal`):'Do one thing today to keep your streak'}</div></div></div>
+  <div class="gt-q"><div class="glabel">Daily quests · ${n}/3 ${n===3?'🎁':''}</div>${gQuestRows(q)}</div></div>`}
+function pStreak(){
+  const g=G(),st=gStreak(),x=gToday(),lv=gLevel(gTotal()),q=gQuests(ds(today())),n=q.filter(z=>z.done).length,w=gWeekStats(0),lw=gWeekStats(1),S=gSoc;
+  if(account&&(!S||Date.now()-gSocAt>120000))gSocial().then(()=>{if(ui.page==='streak')render()});
+  const cmp=(a,b,fmtv=v=>v)=>`<b>${fmtv(a)}</b>${b?`<span class="tiny ${a>=b?'pos':'neg'}"> ${a>=b?'▲':'▼'} ${fmtv(Math.abs(a-b))}</span>`:''}`;
+  const T=G_TIERS[S?.tier||0],L=S?.league;
+  return `${phead('Keep the fire going','Streak & rewards',`<button class="btn" data-g="invite">${ic('users')} Invite a friend</button>`)}
+  <div class="stack">
+  <div class="card ghero"><div class="gh-l"><div class="gflame ${x?'on':''}">🔥</div><div><div class="gbn">${st}</div><div class="muted">day streak${g.best>st?` · best ${g.best}`:''}</div></div></div>
+    <div class="gh-r">${gWeekStrip()}<div class="inline small" style="gap:14px;margin-top:10px"><span title="A freeze covers one missed day automatically. Earn one every 7-day streak.">🧊 <b>${g.freezes}</b>/2 streak freezes</span>${g.lost&&g.lost.gap===1?`<span class="pill red nodot">Repair: earn ${2*g.goal} XP today</span>`:''}<button class="btn sm ghost" data-g="sharecard" data-n="${Math.max(st,1)}">${ic('upload')} Share streak</button></div>
+    <p class="tiny muted" style="margin-top:8px">${x?'Today counts. Your streak is safe until midnight tomorrow.':'Log anything today (one glass of water counts) to keep your streak.'}</p></div></div>
+  <div class="r2">
+    <div class="card"><div class="ch"><h3>Daily goal</h3><span class="sp"></span><span class="pill lime nodot">${x>=g.goal?'Done ✓':`${g.goal-x} XP to go`}</span></div>
+      <div class="inline" style="gap:18px;align-items:center"><div class="gring-wrap big">${gRing(x,g.goal,110)}<span>${x}<small>/${g.goal} XP</small></span></div>
+      <div style="flex:1;min-width:180px"><div class="glabel">Goal</div><div class="gseg">${G_GOALS.map(([v,l])=>`<button class="${g.goal===v?'on':''}" data-g="goal" data-v="${v}">${l}<small>${v} XP</small></button>`).join('')}</div>
+      <div class="glabel" style="margin-top:14px">Level ${lv.n} · ${gTotal().toLocaleString('en-IN')} XP total</div><div class="gbar lv"><i style="width:${lv.pct}%"></i></div><div class="tiny muted">${lv.hi-gTotal()} XP to level ${lv.n+1}</div></div></div>
+      <details class="tiny muted" style="margin-top:12px"><summary>How XP works</summary><p style="margin-top:6px">Habit +10 · glass of water +2 · meal +10 · expense or income +5 · bill or EMI paid +20 · journal +15 · steps +5 (10k steps +10 more) · sleep +5 · weight +5 · each quest +20 · all 3 quests +30 bonus.</p></details></div>
+    <div class="card"><div class="ch"><h3>Daily quests</h3><span class="sp"></span><span class="pill ${n===3?'lime':'cyan'} nodot">${n}/3</span></div>${gQuestRows(q)}
+      <div class="gchest ${n===3?'open':''}"><span>${n===3?'🎁':'🔒'}</span><div class="small">${n===3?'<b>Chest opened: +30 XP</b>':'Finish all 3 to open the bonus chest (+30 XP)'}</div></div><p class="tiny faint" style="margin-top:8px">New quests every day at midnight.</p></div>
+  </div>
+  <div class="r2">
+    <div class="card"><div class="ch"><div><h3>${esc(T[0])} league</h3><div class="sub">${L&&L.endsAt?`Ends in ${gLeft(L.endsAt)} · top ${L.up||0} move up${L.down?`, bottom ${L.down} move down`:''}`:'Weekly XP ranking'}</div></div><span class="sp"></span><span class="gtier" style="--tc:${T[1]}">${['🥉','🥈','🥇','💠','💎'][S?.tier||0]}</span></div>
+      ${!account?'<div class="empty small">Sign in to join leagues.</div>':!S?'<div class="empty small">Loading…</div>':!g.board?'<div class="empty small">You’re hidden from leagues. Turn it on below to compete.</div>':
+      `<div class="glb">${L.members.map(m=>`<div class="glr ${m.me?'me':''} ${m.rank<=L.up?'up':m.rank>L.members.length-L.down?'dn':''}"><span class="rk">${m.rank}</span><span class="nm">${esc(m.name)}${m.me?' (you)':''}</span><span class="tiny muted">🔥${m.streak||0}</span><b>${m.xp} XP</b></div>`).join('')}</div>
+      ${L.members.length<2?'<p class="tiny muted" style="margin-top:10px">You’re first in this league. Invite friends to race them on weekly XP.</p>':''}`}
+      <div class="tiny faint" style="margin-top:10px">Leagues show first name and last initial only.</div></div>
+    <div class="card"><div class="ch"><div><h3>Friends</h3><div class="sub">Friend streak = days in a row you were both active</div></div></div>
+      ${!account?'<div class="empty small">Sign in to add friends.</div>':!S?'<div class="empty small">Loading…</div>':`${S.friends.map(f=>`<div class="gfr"><span class="av">${esc(f.name[0]||'?')}</span><div class="nb"><b class="small">${esc(f.name)}</b><div class="tiny muted">🔥 ${f.streak} day streak${f.together?` · <span class="lime-t">🤝 ${f.together} together</span>`:''}${f.today?' · active today':''}</div></div>${f.today?'':`<button class="btn sm" data-g="nudge" data-id="${esc(f.id)}">👋 Nudge</button>`}<button class="ibtn sm" data-g="unf" data-id="${esc(f.id)}" aria-label="Remove ${esc(f.name)}">${ic('x')}</button></div>`).join('')||'<div class="empty small">No friends yet. Streaks are easier together.</div>'}
+      <form class="inline" id="gaddf" style="margin-top:12px"><input name="code" placeholder="Friend’s code, e.g. K7P2QX" maxlength="80" style="flex:1;min-width:150px" autocomplete="off"><button class="btn">Add friend</button></form>
+      <div class="ginv"><div><div class="glabel">Your friend code</div><b class="gcode">${esc(S.code)}</b></div><span class="sp"></span><button class="btn lime" data-g="invite">Invite · both get 7 free days</button></div>
+      <div class="tiny muted">${S.refs?`${S.refs} friend${S.refs>1?'s':''} joined with your link 🎉`:'When a friend signs up with your link, you both get 7 extra free days.'}</div>`}</div>
+  </div>
+  <div class="card"><div class="ch"><div><h3>This week</h3><div class="sub">Compared with last week · full recap every Sunday evening</div></div></div>
+    <div class="gstats">${[['⭐ XP',w.xp,lw.xp],['📅 Active days',w.active,lw.active],['✅ Habits',w.habits,lw.habits],['💧 Water',w.water,lw.water],['🍽️ Meals',w.meals,lw.meals],['📓 Journal',w.journal,lw.journal]].map(([l,a,b])=>`<div><div class="tiny muted">${l}</div>${cmp(a,b)}</div>`).join('')}<div><div class="tiny muted">₹ Spent</div><b>${inr(w.spent)}</b></div><div><div class="tiny muted">🏅 Best day</div><b>${w.bestDay||'—'}</b></div></div></div>
+  <div class="card"><div class="ch"><h3>Badges</h3><span class="sp"></span><span class="pill nodot">${Object.keys(g.badges).length}/${G_BADGES.length}</span></div>
+    <div class="gbadges">${G_BADGES.map(([id,e,name,desc])=>`<div class="gbd ${g.badges[id]?'got':''}" title="${esc(desc)}"><span>${e}</span><b>${esc(name)}</b><small>${g.badges[id]?'Earned '+fmt(pd(g.badges[id]),{day:'numeric',month:'short'}):esc(desc)}</small></div>`).join('')}</div></div>
+  <div class="card"><div class="ch"><h3>Settings</h3></div>
+    ${[['risk','Streak reminders','A push at 8 pm (and 10:30 pm) only if you haven’t logged anything that day'],['recap','Weekly recap email','Sunday evening summary of your week'],['board','Show me in leagues','Your first name and last initial appear in your weekly league'],['sound','Celebration sounds','Little sounds when you earn XP, hit goals and badges']].map(([k,l,d])=>`<div class="gset"><div class="nb"><b class="small">${l}</b><div class="tiny muted">${d}</div></div><button type="button" class="switch ${g[k]?'on':''}" role="switch" aria-checked="${!!g[k]}" aria-label="${l}" data-g="tog" data-k="${k}"></button></div>`).join('')}</div>
+  </div>`}
+function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
+
+document.addEventListener('click',async e=>{
+  if(e.target.id==='gcel'){gClose();return}
+  const b=e.target.closest('[data-g]');if(!b)return;const a=b.dataset.g,g=G();
+  if(a==='close'){gClose();if(b.dataset.go2)go(b.dataset.go2);return}
+  e.preventDefault();
+  if(a==='tog'){const k=b.dataset.k;g[k]=!g[k];if(k==='sound'&&g[k])gSound('badge');commit();gSync(true);if(k==='board')setTimeout(()=>gSocial(true).then(()=>{if(ui.page==='streak')render()}),1200);return}
+  if(a==='goal'){g.goal=+b.dataset.v;commit();toast(`Daily goal set to ${g.goal} XP`)}
+  else if(a==='sharecard')gShareCard(+b.dataset.n||gStreak());
+  else if(a==='invite')gInvite();
+  else if(a==='nudge'){b.disabled=true;try{const r=await apiFetch('/api/game/nudge',{method:'POST',body:{id:b.dataset.id}});toast(r.sent?'Nudge sent 👋':'Nudge saved. They haven’t turned on notifications yet.')}catch(err){toast(err.data?.error||'Couldn’t nudge right now')}}
+  else if(a==='unf'){if(!confirm('Remove this friend? Your friend streak with them will end.'))return;try{await apiFetch('/api/game/friend',{method:'DELETE',body:{id:b.dataset.id}});await gSocial(true);render()}catch(err){toast('Couldn’t remove right now')}}
+});
+document.addEventListener('submit',async e=>{if(e.target.id!=='gaddf')return;e.preventDefault();const code=e.target.code.value.trim();if(!code)return;
+  try{await apiFetch('/api/game/friend',{method:'POST',body:{code}});toast('Friend added 🤝');await gSocial(true);gTick();save();render()}catch(err){toast(err.data?.error||'Couldn’t add that friend')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#gcel')?.classList.contains('show'))gClose()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.game&&!document.body.classList.contains('locked')&&G().fchk!==ds(today())){gTick();save();render()}});
+
+const NAV=[['Life',[['today','Today','sun'],['streak','Streak & rewards','flame'],['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
-const PAGES={admin:pAdmin,today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
+const PAGES={admin:pAdmin,streak:pStreak,today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
 function alerts(){
   const t=today(),late=lateThisMonth().map(e=>({...e,late:true}));
   const soon=eventsBetween(t,addDays(t,60)).filter(e=>{const d=daysBetween(t,e.date);return d<=Math.max(2,num(e.lead))&&!(paidKey(e)&&state.paid[paidKey(e)])});
@@ -3813,7 +4124,7 @@ function renderShell(){
   const dark=document.documentElement.dataset.theme!=='light'&&!(state.profile.theme==='auto'&&matchMedia('(prefers-color-scheme: light)').matches);
   $('#topbar').innerHTML=`<button class="ibtn hamb" data-act="nav" aria-label="Menu">${ic('menu')}</button>
   <div class="scry ${scryOpen?'open':''}" id="scry"><input id="scryIn" placeholder="Search reminders, bills, goals, payments…  ⌘K" value="${esc(scryQ)}" autocomplete="off" aria-label="Search everything"><button class="scry-btn" data-act="scry" aria-label="${scryOpen?'Close search':'Search'}">${ic('search').replace('class="i"','class="i ss"')}${ic('x').replace('class="i"','class="i sx"')}</button>${scryOpen?'<div class="pop wide scry-res" id="sres"></div>':''}</div><span class="tsp"></span>
-  <div class="tpill" title="Full-day streak and year progress"><span class="yr" style="--p:${yp}"></span><span>Day <b>${fs}</b> of the streak · <b>${dleft}</b> days left in ${yy}</span></div>
+  ${gPill()}<div class="tpill" title="Year progress"><span class="yr" style="--p:${yp}"></span><span><b>${dleft}</b> days left in ${yy}</span></div>
   <div class="menuwrap"><button class="ibtn" data-act="bell" aria-label="Notifications">${ic('bell')}${al.length?'<span class="dot"></span>':''}</button>
     ${menu==='bell'?`<div class="pop wide"><h4>Needs attention <span class="faint">· ${al.length}</span></h4><div style="padding:0 10px;max-height:60vh;overflow-y:auto">${al.slice(0,12).map(e=>evRow(e)).join('')||'<div class="empty">You’re all caught up.</div>'}</div></div>`:''}</div>
   <button class="ibtn lumen" data-act="theme" title="Switch to ${dark?'light':'dark'} mode" aria-label="Switch to ${dark?'light':'dark'} mode">${ic(dark?'sun':'moon')}</button>
@@ -3840,7 +4151,7 @@ function render(){
   }
   pageChanged=false;justId=null;
   if(location.hash!=='#/'+ui.page)history.replaceState(null,'','#/'+ui.page);
-  document.title=(ui.page==='overview'?'':({admin:'Admin',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
+  document.title=(ui.page==='overview'?'':({admin:'Admin',streak:'Streak & rewards',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
 function go(p){const [pg,v]=String(p).split(':');if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}

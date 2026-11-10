@@ -1,6 +1,7 @@
 // Self Streak API: accounts, per-user data, AI (Claude) with daily limits, push reminders, billing hooks.
 import Anthropic from '@anthropic-ai/sdk';
 import { sendPush } from './webpush.js';
+import { gameRoutes, gameCron, applyReferral } from './game.js';
 
 const DAY = 86400000;
 const MODEL = 'claude-haiku-5-5';
@@ -312,7 +313,7 @@ async function admin(req, env, url, p, m, body) {
     else if (b.action === 'revoke') await env.DB.prepare("UPDATE users SET paid_until = 0, trial_ends = ?, plan = 'trial' WHERE id = ?").bind(now, target.id).run();
     else if (b.action === 'reset_ai') await env.DB.prepare('DELETE FROM usage WHERE user_id = ? AND day = ?').bind(target.id, istDay()).run();
     else if (b.action === 'logout') await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(target.id).run();
-    else if (b.action === 'delete') { for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(target.id).run(); await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(target.id).run(); }
+    else if (b.action === 'delete') { for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets', 'game']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(target.id).run(); await env.DB.prepare('DELETE FROM friends WHERE a = ? OR b = ?').bind(target.id, target.id).run(); await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(target.id).run(); }
     else return err(400, 'unknown_action');
     return json({ ok: true });
   }
@@ -364,6 +365,7 @@ async function api(req, env, url) {
     const id = crypto.randomUUID(), salt = randHex(16), now = Date.now();
     await env.DB.prepare('INSERT INTO users (id, email, name, pass_hash, salt, plan, trial_ends, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
       .bind(id, email, name, await hashPassword(pw, salt), salt, first ? 'owner' : 'trial', now + Number(env.TRIAL_DAYS || 7) * DAY, now).run();
+    if (b.ref) { try { await applyReferral(env, id, b.ref); } catch (e) { console.error('ref', e); } }
     const u = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
     return json({ ...(await me(env, u)), isNew: true }, 200, { 'set-cookie': await newSession(env, req, id) });
   }
@@ -416,6 +418,7 @@ async function api(req, env, url) {
       // Random password the person never sees; they can set one later with "Forgot password".
       await env.DB.prepare('INSERT INTO users (id, email, name, pass_hash, salt, plan, trial_ends, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
         .bind(id, email, String(g.given_name || g.name || '').slice(0, 60), await hashPassword(randHex(24), salt), salt, first ? 'owner' : 'trial', now + Number(env.TRIAL_DAYS || 7) * DAY, now).run();
+      if (b.ref) { try { await applyReferral(env, id, b.ref); } catch (e) { console.error('ref', e); } }
       usr = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first(); isNew = true;
     }
     return json({ ...(await me(env, usr)), isNew, name: usr.name }, 200, { 'set-cookie': await newSession(env, req, usr.id) });
@@ -470,6 +473,7 @@ async function api(req, env, url) {
 
   const u = await currentUser(env, req);
   if (!u) return err(401, 'not_signed_in');
+  if (p.startsWith('/api/game')) { const r = await gameRoutes(req, env, p, m, body, u); if (r) return r; }
   if (Date.now() - (u.last_seen || 0) > 10 * 60e3) {
     await env.DB.prepare('UPDATE users SET last_seen = ? WHERE id = ?').bind(Date.now(), u.id).run();
     await env.DB.prepare('INSERT OR IGNORE INTO active_days (user_id, day) VALUES (?, ?)').bind(u.id, istDay()).run();
@@ -496,7 +500,7 @@ async function api(req, env, url) {
     return json({ ok: true });
   }
   if (p === '/api/account' && m === 'DELETE') {
-    for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(u.id).run();
+    for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets', 'game']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(u.id).run(); await env.DB.prepare('DELETE FROM friends WHERE a = ? OR b = ?').bind(u.id, u.id).run();
     await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(u.id).run();
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, '', 0) });
   }
@@ -671,5 +675,5 @@ export default {
     }
     return env.ASSETS.fetch(req);
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); ctx.waitUntil(gameCron(env, mailReady(env) ? sendMail : null).catch((e) => console.error('gameCron', e))); },
 };
