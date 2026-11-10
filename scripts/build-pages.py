@@ -264,6 +264,7 @@ def render(p):
 <div class="final"><h2>Start your streak today</h2><p>Habits, money, reminders and health in one app. Set up in two minutes, free for 7 days.</p><a class="btn lime" href="/app#signup">Start free trial</a></div>
 <section><h2 style="font-size:20px">More from Self Streak</h2><div class="more">{more}</div></section></main>
 <footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a></div></footer>
+<script>try{{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({{p:location.pathname,r:document.referrer}})],{{type:'application/json'}}))}}catch(e){{}}</script>
 </body></html>'''
 
 for p in PAGES:

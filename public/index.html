@@ -195,6 +195,8 @@ main{padding:4px 28px 64px;max-width:1480px}
 .dtom{margin-top:12px}
 #rMsg{color:var(--red);font-size:13px;min-height:18px;margin:0}#rMsg.okmsg{color:var(--lime-text)}
 .gwrap{display:grid;gap:10px;justify-items:center}.gwrap[hidden]{display:none}.gor{display:flex;align-items:center;gap:10px;width:100%;color:var(--faint);font-size:12px}.gor::before,.gor::after{content:'';flex:1;height:1px;background:var(--line)}#gbtn{width:100%;display:flex;justify-content:center;min-height:44px}#gbtn iframe{color-scheme:normal}
+.abar{display:grid;grid-template-columns:minmax(80px,38%) 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:13px}.abar .al{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}.abar .at{height:8px;border-radius:99px;background:var(--line);overflow:hidden}.abar .at i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime))}
+.admt td{vertical-align:middle;font-size:13px}.admt .sel{height:32px;font-size:12px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -3713,11 +3715,60 @@ async function makeDaySummary(key){
   catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
 }
 
+/* ================= Admin (owner only) ================= */
+let ADM={stats:null,users:null,q:'',loading:false,err:''};
+async function admLoad(force){
+  if(ADM.loading||(!force&&ADM.stats&&Date.now()-ADM.at<60000))return;ADM.loading=true;ADM.err='';
+  try{const [s,u]=await Promise.all([apiFetch('/api/admin/stats'),apiFetch('/api/admin/users?q='+encodeURIComponent(ADM.q))]);ADM.stats=s;ADM.users=u.users;ADM.at=Date.now()}
+  catch(e){ADM.err=e.message}finally{ADM.loading=false;if(ui.page==='admin')render()}
+}
+const ago=t=>{if(!t)return 'never';const m=Math.round((Date.now()-t)/60000);return m<2?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
+const dshort=t=>t?fmt(new Date(t),{day:'numeric',month:'short'}):'—';
+function pAdmin(){
+  if(account?.user?.plan!=='owner')return `<div class="card empty">Only the owner can see this page.</div>`;
+  if(!ADM.stats){admLoad();return `${phead('Owner','Admin')}<div class="card empty">${ADM.err?esc(ADM.err):'Loading…'}</div>`}
+  const S=ADM.stats,U=S.users,M=S.money,W=S.web,lbl=S.series.days.map(d=>String(+d.slice(8)));
+  const bar=(rows,key,max)=>rows.map(r=>`<div class="abar"><span class="al">${esc(String(r[key]||'(direct)'))}</span><span class="at"><i style="width:${Math.max(3,Math.round(r.n/(max||1)*100))}%"></i></span><b>${r.n.toLocaleString('en-IN')}</b></div>`).join('')||'<div class="empty small">No data yet.</div>';
+  const pmax=Math.max(1,...W.pages.map(r=>r.n)),rmax=Math.max(1,...W.refs.map(r=>r.n)),cmax=Math.max(1,...W.countries.map(r=>r.n)),dmax=Math.max(1,...W.devices.map(r=>r.n));
+  const conv=W.visitors30?Math.min(100,(U.new30/W.visitors30)*100).toFixed(1)+'%':'—',paidConv=(U.active+U.expired)?Math.round(U.active/(U.active+U.expired)*100)+'%':'—';
+  const st={owner:['Owner','lime'],active:['Plus','lime'],trial:['Trial','cyan'],expired:['Expired','red']};
+  const rows=(ADM.users||[]).map(x=>`<tr><td><b>${esc(x.name||'—')}</b><div class="tiny muted">${esc(x.email)}</div></td><td><span class="pill ${st[x.status][1]}">${st[x.status][0]}</span><div class="tiny muted">${x.status==='trial'?'ends '+dshort(x.trial_ends):x.status==='active'?'until '+dshort(x.paid_until):''}</div></td><td>${dshort(x.created)}</td><td>${ago(x.last_seen)}</td><td class="n">${x.active30}</td><td class="n">${x.ai_today||0}</td><td class="n">${x.devices}</td><td class="n">${x.paid?inr(x.paid):'—'}</td><td>${x.status==='owner'?'':`<select class="sel" data-adm="${x.id}" aria-label="Actions for ${esc(x.email)}"><option value="">Actions…</option><option value="extend_trial">Extend trial +7 days</option><option value="grant_month">Give 1 month Plus</option><option value="revoke">End plan now</option><option value="reset_ai">Reset today’s AI count</option><option value="logout">Sign out everywhere</option><option value="delete">Delete user…</option></select>`}</td></tr>`).join('');
+  return `${phead('Owner · Only you can see this','Admin',`<button class="btn" data-act="admRefresh">${ic('clock')} Refresh</button>`)}
+  <div class="stack">
+  <div class="kpis">${kpi('Total users',U.total,`+${U.new7} this week · +${U.new30} in 30 days`)}${kpi('Active today',U.dau,`${U.wau} this week · ${U.mau} this month`)}${kpi('Online now',U.online,'active in the last 15 min')}${kpi('Paying (Plus)',U.active,`${U.trial} on trial · ${U.expired} expired`,'pos')}</div>
+  <div class="kpis">${kpi('Monthly revenue (MRR)',inr(M.mrr),`${U.active} × ${inr(M.price)}`,'pos')}${kpi('Collected, 30 days',inr(M.paid30),`${M.paid30Count} payments · ${inr(M.paidTotal)} all time`)}${kpi('Trial → paid',paidConv,'of finished trials')}${kpi('Payments',M.cashfree?'Live':'Not connected',M.cashfree?'Cashfree':'add Cashfree keys',M.cashfree?'pos':'warn')}</div>
+  <div class="r2">
+    <div class="card"><div class="ch"><div><h3>Sign-ups & active users</h3><div class="sub">Last 30 days</div></div></div>${chart(lbl,[{name:'Sign-ups',color:'var(--lime)',values:S.series.signups},{name:'Active users',color:'var(--cyan)',values:S.series.active}],'line',200)}</div>
+    <div class="card"><div class="ch"><div><h3>Website visitors</h3><div class="sub">${W.visitors30.toLocaleString('en-IN')} visitors · ${W.views30.toLocaleString('en-IN')} page views in 30 days · ${conv} signed up</div></div></div>${chart(lbl,[{name:'Visitors',color:'var(--violet)',values:S.series.visitors},{name:'Page views',color:'var(--line2)',values:S.series.views}],'bar',200)}</div>
+  </div>
+  <div class="r2">
+    <div class="card"><div class="ch"><div><h3>Top pages</h3><div class="sub">Page views, 30 days</div></div></div>${bar(W.pages,'path',pmax)}</div>
+    <div class="card"><div class="ch"><div><h3>Where visitors come from</h3><div class="sub">Other websites that sent visitors</div></div></div>${bar(W.refs,'ref',rmax)}</div>
+  </div>
+  <div class="r2">
+    <div class="card"><div class="ch"><div><h3>Countries & devices</h3><div class="sub">30 days</div></div></div>${bar(W.countries,'country',cmax)}<div style="height:10px"></div>${bar(W.devices,'device',dmax)}</div>
+    <div class="card"><div class="ch"><div><h3>AI usage</h3><div class="sub">${S.ai.today} actions today · ${S.ai.d30.toLocaleString('en-IN')} in 30 days · limit ${S.ai.limit}/user/day</div></div></div>${chart(lbl,[{name:'AI actions',color:'var(--orange)',values:S.series.ai}],'bar',150)}<div class="glabel" style="margin-top:10px">Top users this week</div>${bar(S.ai.top,'email',Math.max(1,...S.ai.top.map(r=>r.n)))}</div>
+  </div>
+  <div class="card"><div class="ch"><div><h3>Recent payments</h3><div class="sub">${S.push.n} devices get push reminders (${S.push.u} users)</div></div></div>${S.recentPay.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>User</th><th>Order</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody>${S.recentPay.map(p=>`<tr><td>${dshort(p.created)}</td><td>${esc(p.email||'')}</td><td class="tiny">${esc(p.order_id)}</td><td class="n">${inr(p.amount)}</td><td><span class="pill ${p.status==='paid'?'lime':'nodot'}">${esc(p.status)}</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty small">No payments yet.</div>'}</div>
+  <div class="card"><div class="ch" style="align-items:center"><div><h3>Users</h3><div class="sub">Newest first</div></div><span class="sp"></span><input class="sel" id="admQ" placeholder="Search email or name" value="${esc(ADM.q)}" style="max-width:240px" aria-label="Search users"></div>
+    <div class="tablewrap"><table class="admt"><thead><tr><th>User</th><th>Plan</th><th>Joined</th><th>Last seen</th><th class="n">Days active (30d)</th><th class="n">AI today</th><th class="n">Devices</th><th class="n">Paid</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="9" class="empty">No users.</td></tr>'}</tbody></table></div></div>
+  <p class="tiny faint">Visitor numbers count people on the public pages (home, features, policies) without cookies. “Active” means opened the app that day.</p>
+  </div>`;
+}
+let admT;document.addEventListener('input',e=>{if(e.target.id==='admQ'){clearTimeout(admT);ADM.q=e.target.value;admT=setTimeout(async()=>{try{const u=await apiFetch('/api/admin/users?q='+encodeURIComponent(ADM.q));ADM.users=u.users;const pos=e.target.selectionStart;render();const q=$('#admQ');if(q){q.focus();q.setSelectionRange(pos,pos)}}catch(x){}},350)}});
+async function admAction(id,action,el){
+  const u=(ADM.users||[]).find(x=>x.id===id);if(!u||!action)return;
+  const label=el.options[el.selectedIndex].text;el.value='';
+  if(action==='delete'){if(prompt(`Delete ${u.email} and all their data? This can’t be undone. Type DELETE to confirm.`)!=='DELETE')return}
+  else if(!confirm(`${label} for ${u.email}?`))return;
+  try{await apiFetch('/api/admin/user',{method:'POST',body:{id,action}});toast(`${label}: done`,'tick');admLoad(true)}catch(e){toast(e.message,'x')}
+}
+
 /* ================= shell ================= */
 const NAV=[['Life',[['today','Today','sun'],['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
-const PAGES={today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
+const PAGES={admin:pAdmin,today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
 function alerts(){
   const t=today(),late=lateThisMonth().map(e=>({...e,late:true}));
   const soon=eventsBetween(t,addDays(t,60)).filter(e=>{const d=daysBetween(t,e.date);return d<=Math.max(2,num(e.lead))&&!(paidKey(e)&&state.paid[paidKey(e)])});
@@ -3728,7 +3779,7 @@ function renderShell(){
   const badges={bills:late||'',grooming:groomAlerts().length||'',reminders:eventsBetween(today(),addDays(today(),2)).filter(e=>e.src==='reminder').length||''};
   const ini=(state.profile.name||'A').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
   $('#side').innerHTML=`<div class="logo">${logo(32)}<b>Self Streak</b><span class="sp"></span><button class="ic collapse-btn" data-act="collapse" title="Collapse sidebar">${ic('panel')}</button></div>
-  <div class="navscroll">${NAV.map(([sec,items])=>`${sec?`<div class="navsec">${sec}</div>`:'<div style="height:14px"></div>'}${items.filter(([k])=>!(state.profile.hidden||[]).includes(k)).map(([k,l,icn])=>`<button class="nav ${ui.page===k?'on':''}" data-go="${k}" title="${l}">${ic(icn)}<span class="lbl">${l}</span>${badges[k]?`<span class="badge">${badges[k]}</span>`:''}</button>`).join('')}`).join('')}</div>
+  <div class="navscroll">${(account?.user?.plan==='owner'?[...NAV,['Owner',[['admin','Admin','bars']]]]:NAV).map(([sec,items])=>`${sec?`<div class="navsec">${sec}</div>`:'<div style="height:14px"></div>'}${items.filter(([k])=>!(state.profile.hidden||[]).includes(k)).map(([k,l,icn])=>`<button class="nav ${ui.page===k?'on':''}" data-go="${k}" title="${l}">${ic(icn)}<span class="lbl">${l}</span>${badges[k]?`<span class="badge">${badges[k]}</span>`:''}</button>`).join('')}`).join('')}</div>
   <button class="me" data-go="settings"><span class="av">${esc(ini)}</span><span class="t"><b>${esc(state.profile.name)}</b><span>${esc(statusLabel())}</span></span></button>`;
   const yy=today().getFullYear(),yp=Math.round((Date.now()-new Date(yy,0,1))/(new Date(yy+1,0,1)-new Date(yy,0,1))*100),dleft=daysBetween(today(),new Date(yy,11,31)),fs=fullStreak().cur;
   const dark=document.documentElement.dataset.theme!=='light'&&!(state.profile.theme==='auto'&&matchMedia('(prefers-color-scheme: light)').matches);
@@ -3761,7 +3812,7 @@ function render(){
   }
   pageChanged=false;justId=null;
   if(location.hash!=='#/'+ui.page)history.replaceState(null,'','#/'+ui.page);
-  document.title=(ui.page==='overview'?'':({today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
+  document.title=(ui.page==='overview'?'':({admin:'Admin',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
 function go(p){const [pg,v]=String(p).split(':');if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
@@ -3916,6 +3967,7 @@ document.addEventListener('click',e=>{
     case'logout':logout();return;
     case'subscribe':subscribe();return;
     case'jsave2':{const t=($('#jl2')?.value||'').trim(),k=ds(today()),J=state.journal=state.journal||{};if(!t){toast('Write a line first','x');return}J[k]={...(J[k]||{}),t:t.slice(0,500)};commit();toast('Saved to your journal','journal');return}
+    case'admRefresh':admLoad(true);toast('Refreshing…','clock');return;
     case'voiceTest':{const was=ui.talk;ui.talk=true;speak(`Hi ${state.profile.first||'there'}! This is your Self Streak assistant. You’ve done six of eight habits today, and you’re two glasses away from your water goal. Nice work.`);ui.talk=was;return}
     case'debtPlan':makeDebtPlan();return;
     case'applyPlan':{const r=state.debtPlan?.r;if(!r)return;ui.extra=Math.max(0,Math.round(r.extra_per_month));ui.strategy=r.strategy==='snowball'?'snowball':'avalanche';saveUI();render();toast(`Calculator set to ${inr(ui.extra)} extra a month`,'tick');return}
@@ -3947,6 +3999,7 @@ document.addEventListener('change',e=>{
   if(d.prof){state.profile[d.prof]=['age','proteinTarget','kcalTarget'].includes(d.prof)?num(el.value):el.value;commit();return}
   if(d.groom){state.grooming[d.groom]=d.groom==='cutEvery'?num(el.value):el.value;commit();return}
   if(d.nzv){const v=d.nzv.endsWith('dow')?num(el.value):el.value;if(!d.nzv.endsWith('dow')&&!/^\d{2}:\d{2}$/.test(v))return;setNz(d.nzv,v);commit();return}
+  if(d.adm!==undefined&&el.value){admAction(d.adm,el.value,el);return}
   if(el.hasAttribute('data-hdaypick')){if(el.value){ui.histDay=el.value;render()}return}
   if(d.nzt){setNz(d.nzt,parseTimes(el.value));commit();toast('Times updated','clock');return}
   if(d.nzti){const [path,k]=d.nzti.split(':'),arr=path.split('.').reduce((o,x)=>o[x],state.nudges);if(!/^\d{2}:\d{2}$/.test(el.value))return;arr[+k]=el.value;setNz(path,parseTimes(arr.join(',')));commit();return}

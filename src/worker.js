@@ -254,6 +254,71 @@ async function sendMail(env, { to, subject, html, text }) {
   throw new Error('mail_not_configured');
 }
 
+/* ---------------- Admin (owner only) ---------------- */
+const daysBack = (n) => { const out = []; for (let i = n - 1; i >= 0; i--) out.push(new Date(Date.now() + 5.5 * 3600e3 - i * DAY).toISOString().slice(0, 10)); return out; };
+async function admin(req, env, url, p, m, body) {
+  const all = async (q, ...a) => (await env.DB.prepare(q).bind(...a).all()).results;
+  const one = async (q, ...a) => await env.DB.prepare(q).bind(...a).first();
+  const now = Date.now(), d30 = daysBack(30), today = d30[29], since = (d) => now - d * DAY;
+  if (p === '/api/admin/stats' && m === 'GET') {
+    const users = await all('SELECT plan, trial_ends, paid_until, created, last_seen FROM users');
+    const st = (x) => x.plan === 'owner' ? 'owner' : x.paid_until > now ? 'active' : x.trial_ends > now ? 'trial' : 'expired';
+    const cnt = { owner: 0, active: 0, trial: 0, expired: 0 }; users.forEach((x) => cnt[st(x)]++);
+    const signups = Object.fromEntries(d30.map((d) => [d, 0]));
+    users.forEach((x) => { const d = new Date(x.created + 5.5 * 3600e3).toISOString().slice(0, 10); if (d in signups) signups[d]++; });
+    const act = await all('SELECT day, COUNT(*) AS n FROM active_days WHERE day >= ? GROUP BY day', d30[0]);
+    const ai = await all("SELECT day, SUM(count) AS n, COUNT(*) AS u FROM usage WHERE day >= ? AND day NOT LIKE 'tts-%' AND day NOT LIKE 'stt-%' GROUP BY day", d30[0]);
+    const pv = await all('SELECT day, SUM(n) AS n FROM page_views WHERE day >= ? GROUP BY day', d30[0]);
+    const uv = await all('SELECT day, COUNT(*) AS n FROM visitors WHERE day >= ? GROUP BY day', d30[0]);
+    const pay = await one("SELECT COUNT(*) AS n, COALESCE(SUM(amount),0) AS sum FROM payments WHERE status = 'paid'");
+    const pay30 = await one("SELECT COUNT(*) AS n, COALESCE(SUM(amount),0) AS sum FROM payments WHERE status = 'paid' AND paid_at > ?", since(30));
+    const recentPay = await all("SELECT p.order_id, p.amount, p.status, p.created, p.paid_at, u.email FROM payments p LEFT JOIN users u ON u.id = p.user_id ORDER BY p.created DESC LIMIT 10");
+    const pages = await all('SELECT path, SUM(n) AS n FROM page_views WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 12', d30[0]);
+    const refs = await all("SELECT ref, SUM(n) AS n FROM page_views WHERE day >= ? AND ref <> '' GROUP BY ref ORDER BY n DESC LIMIT 10", d30[0]);
+    const countries = await all("SELECT country, SUM(n) AS n FROM page_views WHERE day >= ? GROUP BY country ORDER BY n DESC LIMIT 8", d30[0]);
+    const devices = await all('SELECT device, SUM(n) AS n FROM page_views WHERE day >= ? GROUP BY device ORDER BY n DESC', d30[0]);
+    const push = await one('SELECT COUNT(*) AS n, COUNT(DISTINCT user_id) AS u FROM push_subs');
+    const topAI = await all("SELECT u.email, SUM(x.count) AS n FROM usage x JOIN users u ON u.id = x.user_id WHERE x.day >= ? AND x.day NOT LIKE 'tts-%' AND x.day NOT LIKE 'stt-%' GROUP BY x.user_id ORDER BY n DESC LIMIT 8", daysBack(7)[0]);
+    const map = (rows) => Object.fromEntries(rows.map((r) => [r.day, r.n]));
+    const A = map(act), I = map(ai), P = map(pv), V = map(uv);
+    const wau = await one('SELECT COUNT(DISTINCT user_id) AS n FROM active_days WHERE day >= ?', daysBack(7)[0]);
+    const mau = await one('SELECT COUNT(DISTINCT user_id) AS n FROM active_days WHERE day >= ?', d30[0]);
+    return json({
+      users: { total: users.length, ...cnt, new7: users.filter((x) => x.created > since(7)).length, new30: users.filter((x) => x.created > since(30)).length,
+        dau: A[today] || 0, wau: wau.n, mau: mau.n, online: users.filter((x) => x.last_seen > now - 15 * 60e3).length },
+      money: { price: Number(env.PRICE_INR || 499), mrr: cnt.active * Number(env.PRICE_INR || 499), paidTotal: pay.sum, paidCount: pay.n, paid30: pay30.sum, paid30Count: pay30.n, cashfree: cfReady(env) },
+      ai: { today: I[today] || 0, d30: d30.reduce((t, d) => t + (I[d] || 0), 0), limit: Number(env.DAILY_AI_LIMIT || 20), top: topAI },
+      web: { views30: d30.reduce((t, d) => t + (P[d] || 0), 0), visitors30: d30.reduce((t, d) => t + (V[d] || 0), 0), viewsToday: P[today] || 0, visitorsToday: V[today] || 0, pages, refs, countries, devices },
+      push: push, series: { days: d30, signups: d30.map((d) => signups[d]), active: d30.map((d) => A[d] || 0), ai: d30.map((d) => I[d] || 0), views: d30.map((d) => P[d] || 0), visitors: d30.map((d) => V[d] || 0) },
+      recentPay,
+    });
+  }
+  if (p === '/api/admin/users' && m === 'GET') {
+    const q = '%' + (url.searchParams.get('q') || '').toLowerCase() + '%';
+    const rows = await all(`SELECT u.id, u.email, u.name, u.plan, u.trial_ends, u.paid_until, u.created, u.last_seen,
+      (SELECT count FROM usage WHERE user_id = u.id AND day = ?) AS ai_today,
+      (SELECT COUNT(*) FROM push_subs WHERE user_id = u.id) AS devices,
+      (SELECT COUNT(*) FROM active_days WHERE user_id = u.id AND day >= ?) AS active30,
+      (SELECT COALESCE(SUM(amount),0) FROM payments WHERE user_id = u.id AND status = 'paid') AS paid
+      FROM users u WHERE lower(u.email) LIKE ? OR lower(u.name) LIKE ? ORDER BY u.created DESC LIMIT 200`, istDay(), d30[0], q, q);
+    return json({ users: rows.map((x) => ({ ...x, status: x.plan === 'owner' ? 'owner' : x.paid_until > now ? 'active' : x.trial_ends > now ? 'trial' : 'expired' })) });
+  }
+  if (p === '/api/admin/user' && m === 'POST') {
+    const b = await body(), target = await one('SELECT * FROM users WHERE id = ?', String(b.id || ''));
+    if (!target) return err(404, 'User not found.');
+    if (target.plan === 'owner') return err(400, 'The owner account can’t be changed here.');
+    if (b.action === 'extend_trial') await env.DB.prepare('UPDATE users SET trial_ends = ? WHERE id = ?').bind(Math.max(now, target.trial_ends) + 7 * DAY, target.id).run();
+    else if (b.action === 'grant_month') await env.DB.prepare("UPDATE users SET paid_until = ?, plan = 'active' WHERE id = ?").bind(Math.max(now, target.paid_until) + 30 * DAY, target.id).run();
+    else if (b.action === 'revoke') await env.DB.prepare("UPDATE users SET paid_until = 0, trial_ends = ?, plan = 'trial' WHERE id = ?").bind(now, target.id).run();
+    else if (b.action === 'reset_ai') await env.DB.prepare('DELETE FROM usage WHERE user_id = ? AND day = ?').bind(target.id, istDay()).run();
+    else if (b.action === 'logout') await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(target.id).run();
+    else if (b.action === 'delete') { for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(target.id).run(); await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(target.id).run(); }
+    else return err(400, 'unknown_action');
+    return json({ ok: true });
+  }
+  return err(404, 'not_found');
+}
+
 /* ---------------- Cashfree payments ---------------- */
 const cfReady = (env) => !!(env.CASHFREE_APP_ID && env.CASHFREE_SECRET_KEY);
 const cfMode = (env) => (env.CASHFREE_ENV === 'sandbox' ? 'sandbox' : 'production');
@@ -389,8 +454,31 @@ async function api(req, env, url) {
     return json(await me(env, usr), 200, { 'set-cookie': await newSession(env, req, usr.id) });
   }
 
+  if (p === '/api/hit' && m === 'POST') {
+    // Page-view counter for the public pages. No cookies; visitors counted by a daily one-way hash.
+    const ua = req.headers.get('user-agent') || '';
+    if (/bot|crawl|spider|slurp|preview|headless|lighthouse|facebookexternalhit|whatsapp/i.test(ua)) return json({ ok: true });
+    const b = await body(), day = istDay();
+    const path = String(b.p || '/').split('?')[0].slice(0, 80) || '/';
+    let ref = ''; try { const r = new URL(String(b.r || '')); ref = /selfstreak\.com|workers\.dev/.test(r.hostname) ? '' : r.hostname.replace(/^www\./, '').slice(0, 60); } catch {}
+    const country = String(req.cf?.country || '').slice(0, 2), device = /mobile|iphone|android/i.test(ua) ? 'mobile' : /ipad|tablet/i.test(ua) ? 'tablet' : 'desktop';
+    await env.DB.prepare('INSERT INTO page_views (day, path, ref, country, device, n) VALUES (?, ?, ?, ?, ?, 1) ON CONFLICT(day, path, ref, country, device) DO UPDATE SET n = n + 1').bind(day, path, ref, country, device).run();
+    const h = (await sha256(day + (req.headers.get('cf-connecting-ip') || '') + ua)).slice(0, 24);
+    await env.DB.prepare('INSERT OR IGNORE INTO visitors (day, h) VALUES (?, ?)').bind(day, h).run();
+    return json({ ok: true });
+  }
+
   const u = await currentUser(env, req);
   if (!u) return err(401, 'not_signed_in');
+  if (Date.now() - (u.last_seen || 0) > 10 * 60e3) {
+    await env.DB.prepare('UPDATE users SET last_seen = ? WHERE id = ?').bind(Date.now(), u.id).run();
+    await env.DB.prepare('INSERT OR IGNORE INTO active_days (user_id, day) VALUES (?, ?)').bind(u.id, istDay()).run();
+  }
+
+  if (p.startsWith('/api/admin/')) {
+    if (u.plan !== 'owner') return err(403, 'forbidden');
+    return admin(req, env, url, p, m, body);
+  }
 
   if (p === '/api/me' && m === 'GET') return json(await me(env, u));
   if (p === '/api/profile' && m === 'POST') {

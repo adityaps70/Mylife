@@ -622,5 +622,6 @@ setTimeout(()=>document.querySelectorAll('.rv:not(.in)').forEach(el=>{if(el.getB
 try{if(localStorage.getItem('selfstreak-last'))document.querySelectorAll('a[href="/app#signup"]').forEach(a=>a.href='/app')}catch(e){}
 if(RM){$('#heroTyped').textContent='';[...W.children].slice(0,5).forEach(g=>g.classList.add('on'));pushNotif()}else{heroLoop();assistLoop()}
 </script>
+<script>try{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({p:location.pathname,r:document.referrer})],{type:'application/json'}))}catch(e){}</script>
 </body>
 </html>

@@ -60,3 +60,8 @@ CREATE TABLE IF NOT EXISTS password_resets (
   created INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS password_resets_user ON password_resets(user_id, created);
+-- Analytics (privacy-friendly: no cookies, no IPs stored)
+ALTER TABLE users ADD COLUMN last_seen INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS active_days (user_id TEXT NOT NULL, day TEXT NOT NULL, PRIMARY KEY (user_id, day));
+CREATE TABLE IF NOT EXISTS page_views (day TEXT NOT NULL, path TEXT NOT NULL, ref TEXT NOT NULL, country TEXT NOT NULL, device TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (day, path, ref, country, device));
+CREATE TABLE IF NOT EXISTS visitors (day TEXT NOT NULL, h TEXT NOT NULL, PRIMARY KEY (day, h));
