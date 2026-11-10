@@ -21,7 +21,8 @@
     "PRICE_INR": "499",
     "VAPID_PUBLIC_KEY": "BD-VBa02pcA2wwTGLv16rP9666MiyTnAvwKevoYVnuqi6KVBhISN42hqMhiSpUORRf1Dgghcs6q2UUaISaSKhUk",
     "VAPID_SUBJECT": "mailto:support@selfstreak.app",
-    "CASHFREE_ENV": "production"
+    "CASHFREE_ENV": "production",
+    "GOOGLE_CLIENT_ID": "344542883582-tj51ccld17o6u84j20no54hdcfbs9rt3.apps.googleusercontent.com"
   }
   // Secrets (set with wrangler secret put): ANTHROPIC_API_KEY, VAPID_PRIVATE_JWK, CASHFREE_APP_ID, CASHFREE_SECRET_KEY
 }
