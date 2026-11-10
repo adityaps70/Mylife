@@ -581,7 +581,7 @@ const STEPS=[
    <div style="margin-top:8px"><div class="meal">${box('food','var(--orange)')}<div class="nb">Poha &amp; chai<small>8:40 am · 380 kcal · 9 g protein</small></div></div><div class="meal">${box('food','var(--orange)')}<div class="nb">Dal chawal &amp; salad<small>1:30 pm · 520 kcal · 18 g protein</small></div></div><div class="meal">${box('food','var(--orange)')}<div class="nb">Paneer roll<small>5:15 pm · 520 kcal · 24 g protein</small></div></div></div></div>
   <div class="card"><div class="ch">${box('scissors','var(--violet)')}<div><h4>Next haircut</h4><div class="sub">Every 4 weeks</div></div><span class="sp"></span><span class="pill yellow">in 3 days</span></div><div class="bar"><i style="--w:89%;background:linear-gradient(90deg,var(--violet),var(--lime))"></i></div></div>`},
 ];
-$('#tourSteps').innerHTML=STEPS.map((s,i)=>`<div class="tstep" data-i="${i}" style="--c:${s.c}"><span class="tag"><i>${I(s.icon)}</i>${s.tag}</span><h3>${s.h}</h3><p>${s.p}</p><ul>${s.li.map(x=>`<li>${I('tick')}${x}</li>`).join('')}</ul><div class="mini-screen"><div class="tscreen">${s.s}</div></div></div>`).join('');
+$('#tourSteps').innerHTML=STEPS.map((s,i)=>`<div class="tstep" data-i="${i}" style="--c:${s.c}"><span class="tag"><i>${I(s.icon)}</i>${s.tag}</span><h3>${s.h}</h3><p>${s.p}</p><ul>${s.li.map(x=>`<li>${I('tick')}${x}</li>`).join('')}</ul><div class="mini-screen"><div class="tscreen">${s.s.replace(/lg(\d+)/g,'lm$1')}</div></div></div>`).join('');
 $('#tourScreens').innerHTML=STEPS.map((s,i)=>`<div class="tscreen" data-i="${i}">${s.s}</div>`).join('');
 $('#tourDots').innerHTML=STEPS.map(()=>'<i></i>').join('');
 function activate(i){

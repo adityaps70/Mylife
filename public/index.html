@@ -1341,7 +1341,7 @@ async function gyre(){
   const all=[];const A=(el,k,o)=>{const a=el.animate(k,{fill:'forwards',...o});all.push(a);return a.finished};
   await Promise.all(tiles.map((t,i)=>A(t,[{transform:`translate(${row[i]}px,0) scale(0)`,opacity:0},{transform:`translate(${row[i]}px,0) scale(1)`,opacity:1}],{duration:240,delay:i*55,easing:S})));
   await Promise.all(tiles.map((t,i)=>A(t,[{transform:`translate(${row[i]}px,0)`,opacity:1},{transform:`translate(${circ[i][0]}px,${circ[i][1]}px) rotate(45deg) scale(.8)`,opacity:1}],{duration:320,easing:E})));
-  await A(g,[{transform:'rotate(0)'},{transform:'rotate(450deg)'}],{duration:620,easing:E});
+  await A(g,[{transform:'rotate(0)'},{transform:'rotate(360deg)'}],{duration:620,easing:E});
   await Promise.all(tiles.map((t,i)=>A(t,[{transform:`translate(${circ[i][0]}px,${circ[i][1]}px) rotate(45deg) scale(.8)`,opacity:1},{transform:'translate(0,0) rotate(90deg) scale(.6)',opacity:0}],{duration:220,easing:'cubic-bezier(.5,0,.75,0)'})));
   A(ok,[{opacity:0,transform:'scale(.3) rotate(-45deg)'},{opacity:1,transform:'scale(1) rotate(0)'}],{duration:460,easing:S});
   A(path,[{strokeDashoffset:30},{strokeDashoffset:0}],{duration:340,delay:220,easing:'ease-out'});
