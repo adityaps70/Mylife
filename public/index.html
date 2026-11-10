@@ -1436,15 +1436,24 @@ function loanEmiInMonth(l,y,m){
   if(diff<0)return e;
   return diff-loanOff(l)<loanSim(l).n?e:0;
 }
+// First month the user actually tracked: account creation, earliest real payment, or earliest typed-in month.
+function trackStart(){
+  let t=account?.user?.created?new Date(account.user.created):today();
+  for(const x of state.tx)if(!x.sample&&x.date){const d=pd(x.date);if(d<t)t=d}
+  for(const k in state.months){const o=state.months[k];if((o.income!==undefined&&o.income!=='')||(o.spent!==undefined&&o.spent!=='')){const [yy,mm]=k.split('-').map(Number);const d=new Date(yy,mm-1,1);if(d<t)t=d}}
+  return new Date(t.getFullYear(),t.getMonth(),1);
+}
 function monthRow(y,m){
   const key=ym(y,m),o=state.months[key]||{};
+  if(new Date(y,m,1)<trackStart()&&!(o.income!==undefined&&o.income!=='')&&!(o.spent!==undefined&&o.spent!==''))
+    return {key,bills:0,emi:0,income:0,spend:0,out:0,left:0,ovI:false,ovS:false,actual:false,untracked:true};
   const bills=sum(state.bills.filter(b=>billDueIn(b,y,m)),b=>b.amount);
   const emi=sum(state.loans,l=>loanEmiInMonth(l,y,m));
   const ovI=o.income!==undefined&&o.income!=='',ovS=o.spent!==undefined&&o.spent!=='';
-  const hasTx=txIn(y,m).some(t=>t.dir!=='in');
+  const hasTx=txIn(y,m).some(t=>t.dir!=='in');const t0=today(),future=new Date(y,m,1)>new Date(t0.getFullYear(),t0.getMonth(),1);
   const income=ovI?num(o.income):sum(state.income,x=>x.amount)+txInc(y,m);
   const spend=ovS?num(o.spent):hasTx?txOut(y,m):sum(state.expenses,x=>x.amount);
-  return {key,bills,emi,income,spend,out:bills+emi+spend,left:income-bills-emi-spend,ovI,ovS,actual:hasTx};
+  return {key,bills,emi,income,spend,out:bills+emi+spend,left:income-bills-emi-spend,ovI,ovS,actual:hasTx,future};
 }
 
 /* ================= reminders engine ================= */
@@ -1821,15 +1830,18 @@ function pSavings(){
 function yearSel(){const cy=today().getFullYear();return `<select class="sel" data-ui="year">${[cy-1,cy,cy+1,cy+2].map(y=>`<option ${y==ui.year?'selected':''}>${y}</option>`).join('')}</select>`}
 function pYear(){
   const y=ui.year,rows=[...Array(12)].map((_,m)=>monthRow(y,m)),T=k=>sum(rows,r=>r[k]),t=today();
+  const tr=rows.map((r,i)=>r.untracked?null:i).filter(i=>i!==null),span=!tr.length?'':tr.length===12?'':`${MONTHS[tr[0]]}–${MONTHS[tr[tr.length-1]]}`,lbl=x=>span?`${x} · ${span}`:x;
+  const nFut=rows.filter(r=>r.future&&!r.untracked).length;
   const ch=chart(MONTHS,[{name:'Income',color:'var(--lime)',values:rows.map(r=>r.income)},{name:'Outflow',color:'var(--line2)',values:rows.map(r=>r.out)},{name:'Saved',color:'var(--cyan)',values:rows.map(r=>r.left)}],'bar',240);
   const grid=state.bills.filter(b=>num(b.amount)>0).map(b=>`<tr><td><b>${esc(b.name)}</b><div class="tiny muted">${inr(b.amount)}</div></td>${[...Array(12)].map((_,m)=>{if(!billDueIn(b,y,m))return '<td class="n faint">·</td>';const pk=`B:${b.id}|${ym(y,m)}`,on=state.paid[pk],dd=new Date(y,m,Math.min(num(b.dueDay)||1,dim(y,m))),late=!on&&dd<t;return `<td class="n"><button class="paidcell ${on?'on':''} ${late?'late':''} ${justId===pk?'bump':''}" data-paid="${pk}" title="${MONTHS[m]} ${y}: ${on?'paid':late?'overdue':'due '+dd.getDate()+' '+MONTHS[m]}">${ic('tick')}</button></td>`}).join('')}</tr>`).join('');
   return `${phead('Money · The whole year','Year summary',yearSel())}
   <div class="stack">
-  <div class="kpis">${kpi('Income in '+y,inr(T('income')))}${kpi('Bills',inr(T('bills')))}${kpi('EMIs',inr(T('emi')))}${kpi('Spending',inr(T('spend')))}${kpi('Saved',inr(T('left')),pct(T('income')?T('left')/T('income'):NaN)+' of income',T('left')<0?'neg':'pos')}</div>
+  <div class="kpis">${kpi(lbl('Income'),inr(T('income')))}${kpi(lbl('Bills'),inr(T('bills')))}${kpi(lbl('EMIs'),inr(T('emi')))}${kpi(lbl('Spending'),inr(T('spend')))}${kpi(T('left')<0?lbl('Short by'):lbl('Saved'),inr(T('left')),pct(T('income')?T('left')/T('income'):NaN)+' of income',T('left')<0?'neg':'pos')}</div>
+  ${!tr.length?`<div class="banner">${ic('calendar')} You weren’t tracking yet in ${y}. Type real numbers in the table below to fill past months.</div>`:span||nFut?`<div class="banner">${ic('calendar')} ${span?`Counting from ${MONTHS_FULL[tr[0]]}, when you started tracking. Earlier months are blank: type real numbers in the table to add them.`:''} ${nFut?`${nFut} upcoming month${nFut>1?'s are':' is'} a plan based on your budget, salary, bills and EMIs.`:''}</div>`:''}
   <div class="card"><div class="ch"><div><h3>Income vs outflow</h3><div class="sub">Outflow = bills + EMIs + spending</div></div><span class="sp"></span><div class="legend"><span><b style="background:var(--lime)"></b>Income</span><span><b style="background:var(--line2)"></b>Outflow</span><span><b style="background:var(--cyan)"></b>Saved</span></div></div>${ch}</div>
   <div class="card"><div class="ch"><div><h3>Month by month</h3><div class="sub">Months with logged payments use real spending; others use your budget. Type actual numbers to override (highlighted cells).</div></div></div>
   <div class="tablewrap"><table><thead><tr><th>Month</th><th class="n">Income</th><th class="n">Bills</th><th class="n">EMIs</th><th class="n">Spending</th><th class="n">Saved</th></tr></thead><tbody>
-  ${rows.map((r,i)=>`<tr><td><b>${MONTHS_FULL[i]}</b>${r.actual&&!r.ovS?' <span class="pill lime nodot">actual</span>':''}</td><td class="n"><input class="cell ${r.ovI?'ov':''}" type="number" inputmode="decimal" data-month="${r.key}" data-mk="income" value="${r.ovI?r.income:''}" placeholder="${Math.round(r.income)}"></td><td class="n">${inr(r.bills)}</td><td class="n">${inr(r.emi)}</td><td class="n"><input class="cell ${r.ovS?'ov':''}" type="number" inputmode="decimal" data-month="${r.key}" data-mk="spent" value="${r.ovS?r.spend:''}" placeholder="${Math.round(r.spend)}"></td><td class="n ${r.left<0?'neg':'pos'}"><b>${inr(r.left)}</b></td></tr>`).join('')}
+  ${rows.map((r,i)=>`<tr><td><b>${MONTHS_FULL[i]}</b>${r.untracked?' <span class="pill nodot">not tracked</span>':r.future?' <span class="pill nodot">plan</span>':r.actual&&!r.ovS?' <span class="pill lime nodot">actual</span>':''}</td><td class="n"><input class="cell ${r.ovI?'ov':''}" type="number" inputmode="decimal" data-month="${r.key}" data-mk="income" value="${r.ovI?r.income:''}" placeholder="${r.untracked?'—':Math.round(r.income)}"></td><td class="n ${r.untracked?'faint':''}">${r.untracked?'—':inr(r.bills)}</td><td class="n ${r.untracked?'faint':''}">${r.untracked?'—':inr(r.emi)}</td><td class="n"><input class="cell ${r.ovS?'ov':''}" type="number" inputmode="decimal" data-month="${r.key}" data-mk="spent" value="${r.ovS?r.spend:''}" placeholder="${r.untracked?'—':Math.round(r.spend)}"></td><td class="n ${r.untracked?'faint':r.left<0?'neg':'pos'}"><b>${r.untracked?'—':inr(r.left)}</b></td></tr>`).join('')}
   </tbody><tfoot><tr><td>Total</td><td class="n">${inr(T('income'))}</td><td class="n">${inr(T('bills'))}</td><td class="n">${inr(T('emi'))}</td><td class="n">${inr(T('spend'))}</td><td class="n">${inr(T('left'))}</td></tr></tfoot></table></div></div>
   <div class="card"><div class="ch"><div><h3>Bill tracker ${y}</h3><div class="sub">Tap to mark paid · red border = overdue</div></div></div>
   <div class="tablewrap"><table><thead><tr><th>Bill</th>${MONTHS.map(m=>`<th class="n">${m}</th>`).join('')}</tr></thead><tbody>${grid||'<tr><td class="empty" colspan="13">No bills yet.</td></tr>'}</tbody></table></div></div></div>`;
