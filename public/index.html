@@ -912,6 +912,48 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gtoday{display:grid;grid-template-columns:minmax(220px,auto) 1fr;gap:20px;align-items:center}
 .gt-l{display:flex;gap:14px;align-items:center;cursor:pointer}
 @media (max-width:760px){.ggoal{flex-direction:column;align-items:stretch}.ggoal .gring-wrap{align-self:center}.gseg button{padding:8px 2px;font-size:12px}.gseg button small{font-size:10px}.gtoday{grid-template-columns:1fr}.gstats{grid-template-columns:repeat(2,minmax(0,1fr))}.gbn{font-size:52px}.gflame{font-size:56px}.ghero{gap:14px}.gpill{padding:0 9px 0 7px}.gpill .gring{display:none}}
+
+/* ---- quest chest ---- */
+.gch{position:fixed;inset:0;z-index:135;display:grid;grid-template-rows:auto 1fr auto auto;justify-items:center;padding:calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 22px);background:radial-gradient(ellipse at 50% 45%,color-mix(in srgb,var(--rc,#d7f64a) 14%,#0b0b0e),#050506 70%);opacity:0;pointer-events:none;transition:opacity .3s}
+.gch.show{opacity:1;pointer-events:auto}
+.gch-top{justify-self:stretch;display:flex;justify-content:center}
+.gch-xp{display:inline-flex;gap:6px;align-items:center;padding:8px 16px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:15px;color:#f4f4f5}
+.gch-xp.bump{animation:gchBump .25s ease-out}
+@keyframes gchBump{50%{transform:scale(1.12)}}
+.gch-stage{position:relative;display:grid;place-items:center;width:100%;max-width:420px;align-self:center}
+.gch-box{width:min(64vw,250px);height:auto;cursor:pointer;position:relative;z-index:2;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55));animation:gchIdle 2.4s ease-in-out infinite;-webkit-tap-highlight-color:transparent;transform-origin:50% 85%}
+.gch-box.hit{animation:gchHit .3s cubic-bezier(.3,1.6,.5,1)}
+.gch-box.open{animation:gchOpen .5s cubic-bezier(.3,1.6,.5,1) forwards;cursor:default}
+@keyframes gchIdle{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(-6px) rotate(-1.5deg)}70%{transform:translateY(-2px) rotate(1.5deg)}}
+@keyframes gchHit{0%{transform:scale(1)}30%{transform:scale(1.13,.85) rotate(var(--rot,0deg))}60%{transform:scale(.94,1.08) rotate(calc(var(--rot,0deg)*-.6))}100%{transform:scale(1)}}
+@keyframes gchOpen{0%{transform:scale(1.15,.82)}55%{transform:scale(.95,1.08)}100%{transform:scale(1)}}
+#gchLid{transform-box:fill-box;transform-origin:50% 100%;transition:transform .75s cubic-bezier(.2,1.3,.4,1),opacity .4s .5s}
+.gch-box.open #gchLid{transform:translate(-8px,-95px) rotate(-28deg);opacity:0}
+.gbeam,.gin{opacity:0;transition:opacity .5s .15s}.gch-box.open .gbeam{opacity:.7}.gch-box.open .gin{opacity:1;filter:drop-shadow(0 0 10px #ffe089)}
+.gcrack{opacity:0;transition:opacity .2s;filter:drop-shadow(0 0 6px #fff6c2)}
+.gch-box[data-c="1"] .gcrack{opacity:.35}.gch-box[data-c="2"] .gcrack{opacity:.8}.gch-box[data-c="3"] .gcrack,.gch-box.open .gcrack{opacity:1}
+.gch-glow{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--rc,#d7f64a) 55%,transparent),transparent 65%);filter:blur(14px);opacity:.25;transition:opacity .5s,transform .5s;z-index:1}
+.gch.open .gch-glow{opacity:.95;transform:scale(1.5)}
+.gch-rays{position:absolute;width:560px;height:560px;border-radius:50%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--rc,#d7f64a) 30%,transparent) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 66%);mask:radial-gradient(circle,#000 18%,transparent 66%);opacity:0;transform:scale(.3);transition:opacity .6s,transform .9s cubic-bezier(.2,1,.3,1);z-index:0}
+.gch.open .gch-rays{opacity:1;transform:scale(1);animation:gchSpin 14s linear infinite}
+@keyframes gchSpin{to{rotate:360deg}}
+#gchFx{position:absolute;inset:0;pointer-events:none;z-index:3}
+.gpt{position:absolute;font-size:22px;line-height:1;transform:translate(-50%,-50%);animation:gpt 1.3s cubic-bezier(.15,.8,.3,1) var(--d,0s) both;text-shadow:0 0 12px currentColor}
+@keyframes gpt{0%{transform:translate(-50%,-50%) scale(.3) rotate(0);opacity:0}12%{opacity:1}70%{opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy) + 60px)) scale(1) rotate(var(--r));opacity:0}}
+.gsp{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff6c2;box-shadow:0 0 10px #ffe089;animation:gsp .7s ease-out forwards}
+@keyframes gsp{0%{transform:translate(-50%,-50%);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy)));opacity:0}}
+.gorb{position:fixed;left:0;top:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;z-index:136;pointer-events:none;box-shadow:0 0 14px 3px currentColor,inset 0 0 0 3px rgba(255,255,255,.55)}
+.gch-msg{text-align:center;min-height:118px;color:#f4f4f5}
+.gch-msg h2{font-size:26px;margin:4px 0}.gch-msg p{margin:6px 0 0}
+.gch-dots{display:flex;gap:8px;justify-content:center;margin-top:12px}.gch-dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.18);transition:background .2s,transform .2s}.gch-dots i.on{background:var(--rc,#d7f64a);transform:scale(1.25)}
+.gch-tier{display:inline-block;padding:4px 14px;border-radius:99px;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#10120a;background:var(--rc);animation:gpop .5s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.gch-num{font-size:58px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:8px;color:var(--rc);animation:gpop .5s .1s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.gch-acts{min-height:52px;display:flex;gap:10px;justify-content:center;width:100%;max-width:360px}.gch-acts .btn{flex:1;height:50px;justify-content:center;font-weight:800;font-size:15px}
+.gch-acts .btn.ghost{color:#a1a1aa;flex:0 0 auto}
+.gchest.ready{border-style:solid;border-color:#f5c84c;background:color-mix(in srgb,#f5c84c 10%,transparent);cursor:pointer;width:100%;font:inherit;color:inherit;text-align:left}
+.gchest.ready span{animation:gchIdle 1.6s ease-in-out infinite}
+.gtchest{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:10px 14px;border-radius:14px;border:1px solid #f5c84c;background:color-mix(in srgb,#f5c84c 12%,transparent);color:inherit;font:inherit;font-weight:700;cursor:pointer}
+.gtchest span{font-size:24px;animation:gchIdle 1.6s ease-in-out infinite}
 </style>
 </head>
 <body>
@@ -3906,7 +3948,7 @@ function gQuests(k,r){const g=G();r=r||gRaw(k);
   if(!g.q[k]){if(k!==ds(today()))return null;let seed=gHash(k+(account?.user?.id||'me'));const pool=G_QUESTS.filter(q=>!q.ok||q.ok(r)),used=new Set(),pick=[];
     for(let i=0;i<40&&pick.length<3;i++){seed=Math.imul(seed^(seed>>>15),2246822507)>>>0;const q=pool[seed%pool.length];if(!used.has(q.g)){used.add(q.g);pick.push(q.id)}}g.q[k]=pick}
   return g.q[k].map(id=>G_QUESTS.find(x=>x.id===id)).filter(Boolean).map(Q=>{const [c,t]=Q.f(r);return {...Q,cur:Math.min(c,t),target:t,done:t>0&&c>=t}})}
-function gDayXP(k){const r=gRaw(k);let x=gBase(r);const q=G().q[k]?gQuests(k,r):null;if(q){const n=q.filter(z=>z.done).length;x+=n*20+(n===q.length?30:0)}return x}
+function gDayXP(k){const r=gRaw(k);let x=gBase(r);const q=G().q[k]?gQuests(k,r):null;if(q){const n=q.filter(z=>z.done).length;x+=n*20}return x+((G().chest||{})[k]||0)}
 const gOn=k=>!!(G().days[k]||G().frozen[k]);
 function gRunFrom(d){let n=0;while(n<5000&&gOn(ds(d))){if(G().days[ds(d)])n++;d=addDays(d,-1)}return n}
 function gStreak(){const t=today();return gRunFrom(gOn(ds(t))?t:addDays(t,-1))}
@@ -3950,7 +3992,7 @@ function gTick(silent){
   const streak=gStreak();g.best=Math.max(g.best||0,streak);
   if(now>before&&new Date().getHours()<8)g.early[tk]=1;
   const loud=!silent&&now>before;
-  if(loud&&gPrevXP!==null)gFloat('+'+(now-before)+' XP');
+  if(loud&&gPrevXP!==null&&!gNoFloat)gFloat('+'+(now-before)+' XP');
   const mark=(k,fn)=>{if(g.cel[k])return;g.cel[k]=1;if(!silent)fn()};
   if(now>0)mark('s'+tk,()=>gQueue({type:'streak',n:streak}));
   if(now>=g.goal)mark('g'+tk,()=>gQueue({type:'goal',xp:now}));
@@ -3999,7 +4041,7 @@ function gNext(){
   const big=(e,cls='')=>`<div class="gbig ${cls}">${e}</div>`;
   if(c.type==='streak'){h=`${big('🔥','flame')}<div class="gnum" data-from="${Math.max(0,c.n-1)}" data-to="${c.n}">${c.n}</div><h2>day streak!</h2>${gWeekStrip()}<p class="muted">${c.n===1?'Day one. Come back tomorrow to make it two.':c.n<7?'You’re building something. See you tomorrow!':'Unstoppable. Keep the fire going.'}</p>`;snd='streak';auto=4200}
   else if(c.type==='goal'){h=`${big('🎯')}<h2>Daily goal done!</h2><p class="muted"><b class="lime-t">${c.xp} XP</b> today. Your goal is ${g.goal} XP.</p>`;snd='goal';conf=true;auto=4200}
-  else if(c.type==='chest'){h=`${big('🎁','chest')}<h2>All 3 quests done!</h2><p class="muted">Bonus chest opened: <b class="lime-t">+30 XP</b></p>`;snd='chest';conf=true}
+  else if(c.type==='chest'){gChestShow(()=>setTimeout(gNext,250));return}
   else if(c.type==='mile'){h=`${big('🔥','flame')}<div class="gnum">${c.n}</div><h2>${c.n}-day streak!</h2><p class="muted">That’s a milestone. Share it and pull a friend in.</p><canvas class="gcard" id="gcardc"></canvas>`;snd='level';conf=true;share=true}
   else if(c.type==='level'){h=`${big(`<span class="glv">${c.n}</span>`)}<h2>Level ${c.n}!</h2><p class="muted">${gLevel(gTotal()).hi-gTotal()} XP to level ${c.n+1}.</p>`;snd='level';conf=true}
   else if(c.type==='badge'){h=`${big(c.e)}<div class="glabel">New badge</div><h2>${esc(c.name)}</h2><p class="muted">${esc(c.desc)}</p>`;snd='badge';conf=true}
@@ -4047,7 +4089,7 @@ function gQuestRows(q){return q.map(z=>`<div class="gq ${z.done?'done':''}"><spa
 function gTodayCard(){const g=G(),st=gStreak(),x=gToday(),q=gQuests(ds(today())),n=q.filter(z=>z.done).length;
   return `<div class="card gtoday"><div class="gt-l" data-go="streak" role="button" tabindex="0"><div class="gring-wrap">${gRing(x,g.goal,76)}<span>${x}<small>/${g.goal}</small></span></div>
   <div><div class="inline" style="gap:6px"><b style="font-size:22px">🔥 ${st}</b><span class="muted small">day streak</span></div><div class="tiny muted">${x?(x>=g.goal?'Daily goal done. Nice!':`${g.goal-x} XP to your daily goal`):'Do one thing today to keep your streak'}</div></div></div>
-  <div class="gt-q"><div class="glabel">Daily quests · ${n}/3 ${n===3?'🎁':''}</div>${gQuestRows(q)}</div></div>`}
+  <div class="gt-q"><div class="glabel">Daily quests · ${n}/3 ${n===3?'🎁':''}</div>${gQuestRows(q)}${gChestReady()?'<button class="gtchest" data-g="chest"><span>🧰</span>Your chest is ready. Tap to open!</button>':''}</div></div>`}
 function pStreak(){
   const g=G(),st=gStreak(),x=gToday(),lv=gLevel(gTotal()),q=gQuests(ds(today())),n=q.filter(z=>z.done).length,w=gWeekStats(0),lw=gWeekStats(1),S=gSoc;
   if(account&&(!S||Date.now()-gSocAt>120000))gSocial().then(()=>{if(ui.page==='streak')render()});
@@ -4063,9 +4105,9 @@ function pStreak(){
       <div class="ggoal"><div class="gring-wrap big">${gRing(x,g.goal,110)}<span>${x}<small>/${g.goal} XP</small></span></div>
       <div class="ggoal-r"><div class="glabel">Goal</div><div class="gseg">${G_GOALS.map(([v,l])=>`<button class="${g.goal===v?'on':''}" data-g="goal" data-v="${v}">${l}<small>${v} XP</small></button>`).join('')}</div>
       <div class="glabel" style="margin-top:14px">Level ${lv.n} · ${gTotal().toLocaleString('en-IN')} XP total</div><div class="gbar lv"><i style="width:${lv.pct}%"></i></div><div class="tiny muted">${lv.hi-gTotal()} XP to level ${lv.n+1}</div></div></div>
-      <details class="tiny muted" style="margin-top:12px"><summary>How XP works</summary><p style="margin-top:6px">Habit +10 · glass of water +2 · meal +10 · expense or income +5 · bill or EMI paid +20 · journal +15 · steps +5 (10k steps +10 more) · sleep +5 · weight +5 · each quest +20 · all 3 quests +30 bonus.</p></details></div>
+      <details class="tiny muted" style="margin-top:12px"><summary>How XP works</summary><p style="margin-top:6px">Habit +10 · glass of water +2 · meal +10 · expense or income +5 · bill or EMI paid +20 · journal +15 · steps +5 (10k steps +10 more) · sleep +5 · weight +5 · each quest +20 · today’s chest (all 3 quests done) 20 to 100 XP, tap to open it.</p></details></div>
     <div class="card"><div class="ch"><h3>Daily quests</h3><span class="sp"></span><span class="pill ${n===3?'lime':'cyan'} nodot">${n}/3</span></div>${gQuestRows(q)}
-      <div class="gchest ${n===3?'open':''}"><span>${n===3?'🎁':'🔒'}</span><div class="small">${n===3?'<b>Chest opened: +30 XP</b>':'Finish all 3 to open the bonus chest (+30 XP)'}</div></div><p class="tiny faint" style="margin-top:8px">New quests every day at midnight.</p></div>
+      ${(()=>{const cx=(g.chest||{})[ds(today())];return gChestReady()?`<button class="gchest ready" data-g="chest"><span>🧰</span><div class="small"><b>Your chest is ready!</b><div class="tiny muted">Tap to open it. 20 to 100 XP inside.</div></div></button>`:cx?`<div class="gchest open"><span>🎁</span><div class="small"><b>Chest opened: +${cx} XP</b><div class="tiny muted">New chest tomorrow.</div></div></div>`:`<div class="gchest"><span>🔒</span><div class="small">Finish all 3 quests to unlock today’s chest (20 to 100 XP)</div></div>`})()}<p class="tiny faint" style="margin-top:8px">New quests every day at midnight.</p></div>
   </div>
   <div class="r2">
     <div class="card"><div class="ch"><div><h3>${esc(T[0])} league</h3><div class="sub">${L&&L.endsAt?`Ends in ${gLeft(L.endsAt)} · top ${L.up||0} move up${L.down?`, bottom ${L.down} move down`:''}`:'Weekly XP ranking'}</div></div><span class="sp"></span><span class="gtier" style="--tc:${T[1]}">${['🥉','🥈','🥇','💠','💎'][S?.tier||0]}</span></div>
@@ -4086,6 +4128,97 @@ function pStreak(){
   <div class="card"><div class="ch"><h3>Settings</h3></div>
     ${[['risk','Streak reminders','A push at 8 pm (and 10:30 pm) only if you haven’t logged anything that day'],['recap','Weekly recap email','Sunday evening summary of your week'],['board','Show me in leagues','Your first name and last initial appear in your weekly league'],['sound','Celebration sounds','Little sounds when you earn XP, hit goals and badges']].map(([k,l,d])=>`<div class="gset"><div class="nb"><b class="small">${l}</b><div class="tiny muted">${d}</div></div><button type="button" class="switch ${g[k]?'on':''}" role="switch" aria-checked="${!!g[k]}" aria-label="${l}" data-g="tog" data-k="${k}"></button></div>`).join('')}</div>
   </div>`}
+
+/* ---- quest chest: tap 3 times to crack it open, coins fly into your XP ---- */
+let gNoFloat=false;
+function gChestReady(){const k=ds(today()),q=gQuests(k);return q.length>0&&q.every(z=>z.done)&&!(G().chest||{})[k]}
+function gChestRoll(k){const h=gHash(k+'|chest|'+(account?.user?.id||'me')),r=h%1000,v=(a,b)=>a+(h>>>10)%(b-a+1);
+  return r<40?{xp:100,tier:'Jackpot',col:'#f5c84c'}:r<180?{xp:v(60,75),tier:'Epic',col:'#b49cff'}:r<480?{xp:v(40,55),tier:'Rare',col:'#45dfe6'}:{xp:v(20,35),tier:'Common',col:'#d7f64a'}}
+const gBuzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+function gAud(){if(!G().sound)return null;try{unlockAudio();return actx||null}catch(e){return null}}
+let gNoiseBuf=null;
+function gNoise(a){if(gNoiseBuf&&gNoiseBuf.sampleRate===a.sampleRate)return gNoiseBuf;const n=a.sampleRate*1.2,b=a.createBuffer(1,n,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;return gNoiseBuf=b}
+function gEnv(a,g,t,peak,att,dec){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(peak,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+att+dec)}
+// soft wooden knock, a little higher on every tap
+function gKnock(i){const a=gAud();if(!a)return;const t=a.currentTime+.005;
+  const n=a.createBufferSource();n.buffer=gNoise(a);const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=520+i*170;bp.Q.value=5;const g=a.createGain();gEnv(a,g,t,.32,.002,.09);n.connect(bp);bp.connect(g);g.connect(a.destination);n.start(t);n.stop(t+.2);
+  const o=a.createOscillator(),g2=a.createGain();o.type='sine';o.frequency.setValueAtTime(150+i*28,t);o.frequency.exponentialRampToValueAtTime(70+i*14,t+.14);gEnv(a,g2,t,.22,.003,.16);o.connect(g2);g2.connect(a.destination);o.start(t);o.stop(t+.25);
+  const c=a.createOscillator(),g3=a.createGain();c.type='triangle';c.frequency.value=[784,988,1175][Math.min(i-1,2)]||784;gEnv(a,g3,t+.01,.025,.005,.18);c.connect(g3);g3.connect(a.destination);c.start(t);c.stop(t+.3)}
+// lid pops: low thump + airy whoosh + a rising sparkle run
+function gPop(){const a=gAud();if(!a)return;const t=a.currentTime+.005;
+  const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.setValueAtTime(120,t);o.frequency.exponentialRampToValueAtTime(45,t+.35);gEnv(a,g,t,.35,.004,.4);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.5);
+  const n=a.createBufferSource();n.buffer=gNoise(a);const bp=a.createBiquadFilter();bp.type='bandpass';bp.Q.value=1.4;bp.frequency.setValueAtTime(400,t);bp.frequency.exponentialRampToValueAtTime(5200,t+.55);const g2=a.createGain();gEnv(a,g2,t,.14,.08,.55);n.connect(bp);bp.connect(g2);g2.connect(a.destination);n.start(t);n.stop(t+.8);
+  [1046.5,1318.5,1568,2093,2637].forEach((f,k)=>{const s=a.createOscillator(),gs=a.createGain(),st=t+.12+k*.065;s.type='triangle';s.frequency.value=f;gEnv(a,gs,st,.05,.004,.5);s.connect(gs);gs.connect(a.destination);s.start(st);s.stop(st+.6)})}
+// tiny coin "ting" (bell-like: two partials), slightly random pitch
+function gTing(k){const a=gAud();if(!a)return;const t=a.currentTime+.003,f=[2093,2349,2637,3136][k%4]*(1+(Math.random()-.5)*.02);
+  [[f,.045,.28],[f*2.76,.012,.12]].forEach(([fr,pk,dc])=>{const o=a.createOscillator(),g=a.createGain();o.type='sine';o.frequency.value=fr;gEnv(a,g,t,pk,.002,dc);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dc+.05)})}
+function gTick1(){const a=gAud();if(!a)return;const t=a.currentTime+.002,n=a.createBufferSource();n.buffer=gNoise(a);const hp=a.createBiquadFilter();hp.type='highpass';hp.frequency.value=3500;const g=a.createGain();gEnv(a,g,t,.05,.001,.025);n.connect(hp);hp.connect(g);g.connect(a.destination);n.start(t);n.stop(t+.05)}
+const G_CHEST_SVG=`<svg viewBox="0 0 200 200" class="gch-box" id="gchBox" role="img" aria-label="Treasure chest">
+<defs><linearGradient id="gw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8743a"/><stop offset="1" stop-color="#6e3b16"/></linearGradient>
+<linearGradient id="gwl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98447"/><stop offset="1" stop-color="#8a4c1e"/></linearGradient>
+<linearGradient id="gbeam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff6c2" stop-opacity=".85"/><stop offset="1" stop-color="#fff6c2" stop-opacity="0"/></linearGradient><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe089"/><stop offset="1" stop-color="#d99a1f"/></linearGradient></defs>
+<ellipse cx="100" cy="176" rx="66" ry="9" fill="rgba(0,0,0,.45)"/>
+<g id="gchBase"><rect x="38" y="98" width="124" height="74" rx="10" fill="url(#gw)"/><rect x="38" y="98" width="124" height="12" fill="url(#gg)"/><rect x="58" y="98" width="11" height="74" fill="url(#gg)"/><rect x="131" y="98" width="11" height="74" fill="url(#gg)"/><rect x="38" y="160" width="124" height="12" rx="4" fill="url(#gg)" opacity=".9"/>
+<path d="M44 124h108M44 142h108" stroke="rgba(0,0,0,.18)" stroke-width="2"/></g>
+<path class="gbeam" d="M46 100L14 0H186L154 100Z" fill="url(#gbeam)"/><ellipse class="gin" cx="100" cy="101" rx="60" ry="8" fill="#fff6c2"/><path class="gcrack" d="M40 99 L62 97 L74 101 L90 96 L104 100 L118 96 L134 101 L148 97 L160 99" stroke="#fff6c2" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="gchLid"><path d="M36 100V80Q36 46 100 46Q164 46 164 80V100Z" fill="url(#gwl)"/><path d="M36 100V88h128V100Z" fill="url(#gg)"/><path d="M58 52.5Q58 50 63 49.6V100H58ZM137 49.6Q142 50 142 52.5V100H137Z" fill="url(#gg)"/>
+<path d="M48 70Q100 58 152 70" stroke="rgba(255,255,255,.18)" stroke-width="3" fill="none" stroke-linecap="round"/>
+<rect x="86" y="84" width="28" height="32" rx="6" fill="url(#gg)" stroke="#a86f12" stroke-width="2"/><circle cx="100" cy="97" r="4" fill="#5a3410"/><rect x="98.2" y="99" width="3.6" height="9" rx="1.5" fill="#5a3410"/></g>
+</svg>`;
+let gCh=null;
+function gChestShow(done){
+  const k=ds(today());if(!gChestReady()){done&&done();return}
+  gShow=true;const R=gChestRoll(k);gCh={k,R,taps:0,open:false,done};
+  let o=$('#gchest');if(!o){o=document.createElement('div');o.id='gchest';document.body.appendChild(o)}
+  o.style.setProperty('--rc',R.col);
+  o.innerHTML=`<div class="gch-top"><span class="gch-xp">⭐ <b id="gchTot">${gTotal().toLocaleString('en-IN')}</b> XP</span></div>
+  <div class="gch-stage" id="gchStage"><div class="gch-rays"></div><div class="gch-glow"></div>${G_CHEST_SVG}<div id="gchFx"></div></div>
+  <div class="gch-msg" id="gchMsg"><div class="glabel">All 3 quests done</div><h2>Your quest chest</h2><p class="muted">Tap the chest to crack it open</p><div class="gch-dots"><i></i><i></i><i></i></div></div>
+  <div class="gch-acts" id="gchActs"><button class="btn ghost" data-g="chlater">Open later</button></div>`;
+  void o.offsetWidth;o.className='gch show';gBuzz(10);
+}
+function gChestTap(){
+  if(!gCh||gCh.open)return;const box=$('#gchBox');gCh.taps++;const n=gCh.taps;
+  box.dataset.c=n;box.style.setProperty('--rot',(n%2?-1:1)*(4+n*2)+'deg');box.classList.remove('hit');void box.getBoundingClientRect();box.classList.add('hit');
+  $('#gchMsg .gch-dots').children[n-1]?.classList.add('on');
+  const p=$('#gchMsg p');if(p)p.textContent=['','Again!','One more tap…',''][n]||'';
+  gKnock(n);gBuzz([12+n*8]);gChestSpark(4+n*3,.6);
+  if(n>=3)setTimeout(gChestBurst,RM()?0:230);
+}
+function gChestSpark(count,scale){const fx=$('#gchFx');if(!fx)return;for(let i=0;i<count;i++){const s=document.createElement('span');s.className='gsp';const a=Math.random()*Math.PI-Math.PI,d=(50+Math.random()*60)*scale;
+  s.style.cssText=`--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d-30}px;left:50%;top:52%`;fx.appendChild(s);setTimeout(()=>s.remove(),800)}}
+function gChestBurst(){
+  const c=gCh;if(!c||c.open)return;c.open=true;const g=G();g.chest=g.chest||{};const before=gTotal();
+  g.chest[c.k]=c.R.xp;gNoFloat=true;try{commit()}finally{gNoFloat=false}
+  const o=$('#gchest'),box=$('#gchBox');o.classList.add('open');box.classList.add('open');gPop();gBuzz([30,40,70]);
+  // burst of coins and stars
+  const fx=$('#gchFx'),bits=['🪙','✦','⭐','🪙','✦'].concat(c.R.tier==='Epic'||c.R.tier==='Jackpot'?['💎','💎']:[]);
+  if(!RM())for(let i=0;i<26;i++){const s=document.createElement('span');s.className='gpt';s.textContent=bits[i%bits.length];const a=-Math.PI/2+(Math.random()-.5)*2.4,d=120+Math.random()*130;
+    s.style.cssText=`--dx:${Math.cos(a)*d}px;--dy:${Math.sin(a)*d}px;--r:${(Math.random()-.5)*540}deg;--d:${Math.random()*.15}s;color:${i%3?c.R.col:'#ffe089'};left:50%;top:48%`;fx.appendChild(s);setTimeout(()=>s.remove(),1500)}
+  $('#gchMsg').innerHTML=`<span class="gch-tier" style="--rc:${c.R.col}">${c.R.tier}${c.R.tier==='Jackpot'?' 🎉':''}</span><div class="gch-num">+<b id="gchNum">0</b> XP</div><p class="muted" id="gchSub">Collecting…</p>`;
+  $('#gchActs').innerHTML='';
+  // count the reward up with soft ticks
+  const steps=Math.min(c.R.xp,24),t0=420;
+  for(let i=1;i<=steps;i++)setTimeout(()=>{const v=Math.round(c.R.xp*i/steps),el=$('#gchNum');if(el)el.textContent=v;gTick1()},t0+i*(RM()?0:32));
+  // orbs fly into the XP total, each one a little coin ting
+  const orbs=Math.min(12,Math.max(6,Math.round(c.R.xp/8))),tot=$('#gchTot'),from=$('#gchStage').getBoundingClientRect(),to=tot.getBoundingClientRect();
+  for(let i=0;i<orbs;i++)setTimeout(()=>{
+    const e=document.createElement('span');e.className='gorb';e.style.background=c.R.col;document.body.appendChild(e);
+    const x0=from.left+from.width/2+(Math.random()-.5)*80,y0=from.top+from.height*.45+(Math.random()-.5)*40,x1=to.left+to.width/2,y1=to.top+to.height/2,mx=(x0+x1)/2+(Math.random()-.5)*160,my=Math.min(y0,y1)-40-Math.random()*60;
+    const an=e.animate([{transform:`translate(${x0}px,${y0}px) scale(.4)`,opacity:0},{transform:`translate(${mx}px,${my}px) scale(1.1)`,opacity:1,offset:.45},{transform:`translate(${x1}px,${y1}px) scale(.5)`,opacity:.9}],{duration:RM()?1:620,easing:'cubic-bezier(.5,0,.3,1)',fill:'forwards'});
+    an.onfinish=()=>{e.remove();gTing(i);const v=Math.round(before+c.R.xp*(i+1)/orbs);tot.textContent=v.toLocaleString('en-IN');tot.parentElement.classList.remove('bump');void tot.offsetWidth;tot.parentElement.classList.add('bump')};
+  },900+i*(RM()?0:95));
+  const end=900+orbs*95+700;
+  setTimeout(()=>{if(c.R.tier!=='Common')gConfetti();const s=$('#gchSub');if(s)s.textContent=c.R.tier==='Jackpot'?'The rarest chest. Lucky you!':c.R.tier==='Epic'?'An epic chest!':'Finish tomorrow’s quests for another chest.';
+    const A=$('#gchActs');if(A)A.innerHTML='<button class="btn lime" data-g="chcollect">Collect</button>'},RM()?50:end);
+}
+function gChestClose(){const o=$('#gchest');if(o)o.className='gch';const d=gCh?.done;gCh=null;setTimeout(()=>{if(o&&!o.classList.contains('show'))o.innerHTML=''},400);if(ui.page==='streak'||ui.page==='today')render();if(d)d();else{gShow=false;if(gQ.length){gShow=true;setTimeout(gNext,300)}}}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#gchBox')){gChestTap();return}
+  const b=e.target.closest('[data-g="chest"],[data-g="chlater"],[data-g="chcollect"]');if(!b)return;e.preventDefault();
+  if(b.dataset.g==='chest'){if(!gShow)gChestShow(null)}else gChestClose();
+});
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
