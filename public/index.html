@@ -74,6 +74,7 @@ body.collapsed .app{margin-left:76px}
 .menuwrap{position:relative}
 .pop{position:absolute;right:0;top:50px;background:var(--card);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--shadow);z-index:50;min-width:240px;padding:8px}
 .pop.wide{width:min(380px,calc(100vw - 32px))}
+@media (max-width:760px){.pop,.pop.wide{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top) + 68px);width:auto;min-width:0;max-height:calc(100dvh - env(safe-area-inset-top) - 170px);overflow-y:auto;transform-origin:top center}}
 .pop h4{font-size:13px;padding:8px 10px 4px}
 .mi{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;background:none;border-radius:10px;cursor:pointer;text-align:left}
 .mi:hover{background:var(--card2)}
@@ -244,7 +245,7 @@ svg.chart text{fill:var(--faint);font-size:11px;font-family:inherit}
 .cat{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
 .cat .cb{flex:1;min-width:0}
 .cat .ct{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.cat .ct b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat .ct b{min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cat .ct .amt{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cat .ct .amt small{color:var(--muted);font-weight:500}
 .cat .cs{font-size:12px;color:var(--muted);margin-top:7px}
@@ -666,7 +667,7 @@ main{padding-bottom:110px!important}
 .as-btns{display:flex;flex-wrap:wrap;gap:6px}
 .as-bar{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
 .as-field{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:4px 12px}
-.as-field textarea{border:0;background:none;padding:8px 0;resize:none;font-size:15.5px;line-height:1.4;max-height:140px;outline:0}
+.as-field textarea{display:block;width:100%;min-height:0;height:38px;border:0;background:none;padding:8px 0;resize:none;font-size:15.5px;line-height:22px;max-height:140px;outline:0;overflow-y:hidden;box-shadow:none}
 .as-field textarea:focus{outline:0}
 .as-interim{font-size:14px;color:var(--muted);padding:0 0 6px}
 .as-btn{width:46px;height:46px;border-radius:50%;border:0;background:var(--card2);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:0 0 46px;transition:transform .2s var(--spring),background-color .2s}
@@ -786,6 +787,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 @media (max-width:860px){
   .side{transform:translateX(-100%);width:268px!important;box-shadow:var(--shadow)}
   body.navopen .side{transform:none}
+  body.navopen .askbar{opacity:0;pointer-events:none;transform:translateX(-50%) translateY(20px);transition:opacity .2s,transform .2s}
   body.navopen .overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35}
   body.collapsed .side .lbl,body.collapsed .navsec,body.collapsed .logo b,body.collapsed .me .t,body.collapsed .nav .badge{display:revert}
   body.collapsed .nav{justify-content:flex-start}
@@ -796,9 +798,10 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   .searchbtn span,.searchbtn .kbd{display:none}
   .searchbtn{width:42px;padding:0;justify-content:center;flex:0 0 42px}
   .newlbl{display:none}
-  main{padding:0 16px 56px}
+  main{padding:0 16px calc(120px + env(safe-area-inset-bottom))}
   .phead h1{font-size:28px}
-  .r2,.r3,.catgrid{grid-template-columns:1fr}
+  .r2,.r3,.catgrid{grid-template-columns:minmax(0,1fr)}
+  .cat .ct{flex-wrap:wrap;row-gap:4px}.cat .ct .amt{margin-left:0;width:100%}
   .hero{grid-template-columns:1fr}
   .hero .stats{border-left:0;margin:16px 0 0;padding:16px 0 0;border-top:1px solid var(--line);grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
   .stat .v{font-size:18px}
@@ -1824,7 +1827,7 @@ function pDebt(){
   const saved=base.interest-plan.interest,msaved=base.months-plan.months;
   return `${phead('Money · Loans & EMIs','Debt',`<button class="btn lime" data-add="loans">${ic('plus')} Add loan</button>`)}
   <div class="stack">${sampleBanner()}
-  <div class="card" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">${donut(paidPct,150,pct(paidPct),'repaid')}
+  <div class="card" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center">${donut(paidPct,150,pct(paidPct),'repaid')}
     <div style="flex:1;min-width:240px"><div class="tiny faint" style="letter-spacing:.08em;text-transform:uppercase;font-weight:600">Total outstanding</div><div class="big">${inr(f.debt)}</div>
     <div class="small muted">${inr(P-f.debt)} repaid of ${inr(P)} borrowed</div>
     <div class="kpis" style="margin-top:14px">${kpi('EMIs / month',inr(f.emi),pct(f.emiRatio)+' of income',f.emiRatio>.4?'neg':f.emiRatio>.3?'warn':'')}${kpi('Debt-free (current pace)',base.stuck?'Never':dfd(base.months),base.months?base.months+' months':'')}${kpi('Interest still to pay',inr(base.interest),'','neg')}</div></div></div>
@@ -3113,7 +3116,7 @@ function renderAsst(){
     <button class="as-btn go ${AS.listening?'on':''}" data-asact="${typing&&!AS.listening?'send':'mic'}" aria-label="${typing&&!AS.listening?'Send':AS.listening?'Stop':'Speak'}">${ic(typing&&!AS.listening?'send':AS.listening?'stop':'mic')}</button>
   </div>`;
   const log=$('#asLog');log.scrollTop=log.scrollHeight;
-  const ta=$('#asIn');const fit=()=>{ta.style.height='auto';ta.style.height=Math.min(140,ta.scrollHeight)+'px'};fit();
+  const ta=$('#asIn');const fit=()=>{ta.style.height='auto';const h=Math.max(38,ta.scrollHeight);ta.style.height=Math.min(140,h)+'px';ta.style.overflowY=h>140?'auto':'hidden'};fit();
   ta.oninput=()=>{AS.draft=ta.value;fit();const b=d.querySelector('.as-btn.go'),t=!!AS.draft.trim()&&!AS.listening;b.dataset.asact=t?'send':'mic';b.innerHTML=ic(t?'send':'mic');b.setAttribute('aria-label',t?'Send':'Speak')};
   ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();asSend()}};
   d.querySelectorAll('[data-asact]').forEach(b=>b.onclick=()=>{const a=b.dataset.asact;
