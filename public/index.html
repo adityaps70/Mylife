@@ -182,6 +182,16 @@ main{padding:4px 28px 64px;max-width:1480px}
 .hday small{font-size:10.5px;color:var(--muted)}.hday b{font-size:17px}.hday i{width:5px;height:5px;border-radius:50%;background:var(--lime)}.hday.on{background:var(--lime);color:var(--lime-ink);border-color:var(--lime)}.hday.on small{color:var(--lime-ink)}.hday.on i{background:var(--lime-ink)}
 .hstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:10px}.hstat{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px}.hstat small{display:block;font-size:11px;color:var(--muted)}.hstat b{font-size:16px;display:block}
 .hrow2{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;width:100%;text-align:left;background:none;border-left:0;border-right:0;border-top:0;color:var(--text)}.hrow2:last-child{border-bottom:0}.hrow2 svg.i{color:var(--lime-text)}
+.trow{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.trow:last-child{border:0}.trow .nb{flex:1;min-width:0}.trow .tx{font-weight:600;font-size:14px}
+.tmiss{border-color:color-mix(in srgb,var(--red) 35%,var(--line))}.tnext{border-color:color-mix(in srgb,var(--cyan) 30%,var(--line))}
+.tdone summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;list-style:none}.tdone summary::-webkit-details-marker{display:none}.tdone[open] summary .i{transform:rotate(90deg)}
+.dsum-empty{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:radial-gradient(380px 150px at 0 0,color-mix(in srgb,var(--lime) 10%,transparent),transparent 70%),var(--card)}.dsum-empty .nb{flex:1;min-width:220px}
+.dsum{background:radial-gradient(420px 160px at 0 0,color-mix(in srgb,var(--lime) 9%,transparent),transparent 70%),var(--card)}
+.dscore{--p:0;width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--lime) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex:none}.dscore span{width:36px;height:36px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-weight:800;font-size:13px}
+.dareas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:8px}.darea{display:flex;gap:10px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--card2)}.darea .nb{flex:1;min-width:0}
+.dfood{margin-top:12px;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--orange) 30%,var(--line));background:color-mix(in srgb,var(--orange) 5%,var(--card2))}
+.dmiss{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:8px;margin-top:8px}.dmiss>div{padding:9px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.dtom{margin-top:12px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -3001,6 +3011,7 @@ function nudgeItems(d){
   }
   if(N.catchup.on&&d.getDay()===num(N.catchup.dow)){const open=()=>state.health.habits.filter(h=>h.period==='weekly'&&!isDone(h,d));add('wk',N.catchup.time,'Habit','Weekly habits still open',()=>{const l=open();return l.slice(0,4).map(h=>h.name).join(', ')+(l.length>4?` +${l.length-4} more`:'')+'. The week ends tonight.'},{check:()=>open().length>0,url:'./#/health'})}
   if(N.catchup.on&&d.getDate()===25){const open=()=>state.health.habits.filter(h=>h.period==='monthly'&&!isDone(h,d));add('mo',N.catchup.time,'Habit','Monthly habits still open',()=>open().slice(0,4).map(h=>h.name).join(', ')+'. A few days left this month.',{check:()=>open().length>0,url:'./#/health'})}
+  if(N.logday.on)add('daysum','21:30','Log','Your day in review ✨','See what you ate, what you missed and a plan for tomorrow.',{check:()=>!((state.summaries||{})[dk])&&(dayFood(dk).L.length>0||!!num((state.health.logs[dk]||{}).steps)),url:'./app#/today',icon:'sparkle'});
   if(N.logday.on)add('logday',N.logday.time,'Log','Log your day ✍️','Steps, spends and one line in your journal. Tap the mic and just say it.',{check:()=>!(state.journal&&state.journal[dk]&&state.journal[dk].t)||!num(lg().steps),url:'./?do=voice',icon:'mic'});
   if(N.money.on){
     for(const e of eventsBetween(d,addDays(d,2)).filter(x=>(x.src==='bill'||x.src==='loan'||x==='card')&&num(x.amount))){const dd=daysBetween(d,e.date);if(dd!==0&&dd!==2)continue;const pk=paidKey(e);
@@ -3576,7 +3587,7 @@ function pHistory(){
   return `${phead('Life · What happened','Day history',`<input type="date" class="sel" data-hdaypick max="${ds(t)}" value="${key}" aria-label="Pick a day">`)}
   <div class="stack"><div class="hstrip">${strip}</div>
   <h2 style="font-size:20px;margin:2px 0 -4px">${key===ds(t)?'Today':key===ds(addDays(t,-1))?'Yesterday':''} <span class="muted" style="font-weight:500">${fmt(d,{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span></h2>
-  ${!any?`<div class="card empty">Nothing was logged on this day.</div>`:''}
+  ${!any?`<div class="card empty">Nothing was logged on this day.</div>`:daySummaryCard(key,(state.summaries||{})[key],23)}
   ${stats?`<div class="hstats">${stats}</div>`:''}
   ${sec(`Habits · ${doneH.filter(h=>h.period==='daily').length} of ${dailyH.length} daily done`,'check','var(--lime)',doneH.length?doneH.map(h=>`<div class="hrow2">${ic('tick')}<span>${esc(h.name)}</span>${h.period!=='daily'?`<span class="pill nodot">${h.period}</span>`:''}</div>`).join(''):'')}
   ${sec(`Money · spent ${inr(out)}${inc?` · received ${inr(inc)}`:''}`,'rupee','var(--orange)',tx.length?tx.map(x=>`<div class="hrow2"><span class="tiny muted" style="width:60px">${esc(x.method||'')}</span><span style="flex:1">${esc(x.payee)}<span class="tiny muted"> · ${esc(x.category||'')}</span></span><b class="${x.dir==='in'?'pos':''}">${x.dir==='in'?'+':'−'}${inr(x.amount)}</b></div>`).join(''):'')}
@@ -3587,11 +3598,83 @@ function pHistory(){
   </div>`;
 }
 
+/* ================= Today: missed, up next, done + AI day summary ================= */
+function todayBoard(){
+  const t=today(),k=ds(t),now=new Date(),mins=now.getHours()*60+now.getMinutes(),tm=s=>{const [h,m]=String(s).split(':').map(Number);return h*60+m};
+  const missed=[],next=[],anytime=[],done=[];
+  for(const h of state.health.habits.filter(h=>h.period==='daily')){
+    if(isDone(h)){done.push({icon:'check',col:'var(--lime)',title:h.name,sub:'Done'});continue}
+    const times=(h.times||[]).filter(x=>/^\d{2}:\d{2}$/.test(x)).sort(),later=times.find(x=>tm(x)>mins),past=times.filter(x=>tm(x)<=mins);
+    const it={icon:'heart',col:'var(--green)',title:h.name,act:`<button class="btn sm" data-habit="${h.id}">${ic('tick')} Done</button>`};
+    if(past.length&&!later)missed.push({...it,time:past[past.length-1],sub:`Was due at ${past[past.length-1]}`});
+    else if(later)next.push({...it,time:later,sub:h.detail||'Habit'});
+    else anytime.push({...it,sub:h.detail||'Any time today'});
+  }
+  // Water: how far behind the pace for the day (wake → sleep).
+  const L=state.health.logs[k]||{},w=num(L.water),wake=tm(state.profile.wake||'07:00'),bed=tm(state.profile.sleep||'23:00'),frac=Math.max(0,Math.min(1,(mins-wake)/Math.max(60,bed-wake))),should=Math.floor(12*frac);
+  if(w<12){if(should-w>=2)missed.push({icon:'drop',col:'var(--cyan)',title:`Water: ${w} of 12 glasses`,sub:`You should be near ${should} by now`,act:`<button class="btn sm" data-water="1">${ic('plus')} 1 glass</button>`});else next.push({icon:'drop',col:'var(--cyan)',title:`Water: ${w} of 12 glasses`,sub:`${12-w} to go`,time:'',act:`<button class="btn sm" data-water="1">${ic('plus')} 1 glass</button>`})}else done.push({icon:'drop',col:'var(--cyan)',title:'12 glasses of water',sub:'Done'});
+  if(num(L.steps)>=10000)done.push({icon:'steps',col:'var(--lime)',title:`${num(L.steps).toLocaleString('en-IN')} steps`,sub:'10k done'});
+  const F=dayFood(k),T=foodTargets();if(mins>20*60&&F.p<T.p*.7)missed.push({icon:'food',col:'var(--orange)',title:`Protein: ${F.p} of ${T.p} g`,sub:'Add a protein-rich dinner or snack'});
+  // Money and dates
+  for(const e of lateThisMonth())missed.push({icon:'receipt',col:'var(--red)',title:e.title,sub:`Overdue since ${fmt(e.date,{day:'numeric',month:'short'})} · ${inr(e.amount)}`,act:paidKey(e)?`<button class="btn sm" data-paid="${paidKey(e)}">Mark paid</button>`:''});
+  for(const e of eventsBetween(t,t)){const pk=paidKey(e);if(pk&&state.paid[pk]){done.push({icon:'receipt',col:'var(--orange)',title:e.title,sub:'Paid'});continue}
+    next.push({icon:e.src==='reminder'?(e.type==='Birthday'?'gift':'calendar'):'receipt',col:e.src==='reminder'?'var(--red)':'var(--orange)',title:e.title,sub:[e.type,e.amount?inr(e.amount):'',e.extra].filter(Boolean).join(' · '),time:'Today',act:pk?`<button class="btn sm" data-paid="${pk}">Mark paid</button>`:''})}
+  for(const e of eventsBetween(addDays(t,1),addDays(t,2)).filter(e=>!(paidKey(e)&&state.paid[paidKey(e)])))next.push({icon:e.type==='Birthday'?'gift':'calendar',col:'var(--violet)',title:e.title,sub:`${daysBetween(t,e.date)===1?'Tomorrow':'In 2 days'}${e.amount?' · '+inr(e.amount):''}`,time:fmt(e.date,{weekday:'short'})});
+  next.sort((a,b)=>String(a.time||'99').localeCompare(String(b.time||'99')));
+  return {missed,next,anytime,done};
+}
+function pToday(){
+  const B=todayBoard(),t=today(),S=(state.summaries||{})[ds(t)],h=new Date().getHours();
+  const row=i=>`<div class="trow">${icoBox(i.icon,i.col)}<div class="nb"><div class="tx">${esc(i.title)}</div>${i.sub?`<div class="tiny muted">${esc(i.sub)}</div>`:''}</div>${i.time?`<span class="pill nodot">${esc(i.time)}</span>`:''}${i.act||''}</div>`;
+  const block=(title,cls,list,empty)=>`<div class="card ${cls}"><div class="ch"><h3>${title}</h3><span class="sp"></span><span class="pill ${cls==='tmiss'?'red':cls==='tnext'?'cyan':'lime'} nodot">${list.length}</span></div>${list.map(row).join('')||`<div class="empty small">${empty}</div>`}</div>`;
+  return `${phead(fmt(t,{weekday:'long',day:'numeric',month:'long'}),'Today',`<button class="btn" data-go="history">${ic('clock')} Day history</button>`)}
+  <div class="stack">
+  <div class="kpis">${kpi('Done',B.done.length,'','pos')}${kpi('Missed',B.missed.length,'',B.missed.length?'neg':'')}${kpi('Up next',B.next.length)}${kpi('Any time today',B.anytime.length)}</div>
+  ${daySummaryCard(ds(t),S,h)}
+  <div class="r2">${block('Missed so far','tmiss',B.missed,'Nothing missed. Nice! 🎉')}${block('Up next','tnext',B.next,'Nothing else scheduled today.')}</div>
+  ${B.anytime.length?block('Any time today','tany',B.anytime,''):''}
+  <details class="card tdone"><summary><b>Done today · ${B.done.length}</b>${ic('right')}</summary>${B.done.map(row).join('')||'<div class="empty small">Nothing yet.</div>'}</details>
+  </div>`;
+}
+const RATE={great:['Great','lime'],good:['Good','lime'],okay:['Okay','yellow'],needs_attention:['Needs attention','red']};
+const AREA_IC={Food:['food','var(--orange)'],Health:['heart','var(--green)'],Habits:['check','var(--lime)'],Money:['rupee','var(--orange)'],Mind:['journal','var(--violet)'],Goals:['target','var(--cyan)']};
+function daySummaryCard(key,S,hour){
+  if(!S)return `<div class="card dsum-empty">${icoBox('sparkle','var(--lime)')}<div class="nb"><h3>${key===ds(today())?'Your day summary':'Day summary'}</h3><p class="small muted" style="margin-top:4px">AI looks at what you ate, your habits, steps, water, sleep, spending and journal, tells you what was missing (protein, oily food, nutrients like magnesium or calcium, over-budget spends) and what to do tomorrow.${key===ds(today())&&hour<19?' Best in the evening, once the day is logged.':''}</p></div><button class="btn lime" data-dsum="${key}">${ic('sparkle')} Summarise ${key===ds(today())?'my day':'this day'}</button></div>`;
+  const r=S.r;
+  return `<div class="card dsum"><div class="ch" style="align-items:center">${icoBox('sparkle','var(--lime)')}<div style="flex:1;min-width:0"><h3>Day summary</h3><div class="sub">Made ${new Date(S.at).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})} by AI</div></div><div class="dscore" style="--p:${Math.max(0,Math.min(100,num(r.score)))}"><span>${Math.round(num(r.score))}</span></div><button class="btn sm ghost" data-dsum="${key}">${ic('sparkle')} Redo</button></div>
+  <p style="font-weight:600;font-size:15.5px;line-height:1.45;margin:4px 0 12px">${esc(r.headline)}</p>
+  <div class="dareas">${(r.areas||[]).map(a=>{const R=RATE[a.rating]||RATE.okay,[ico,col]=AREA_IC[a.area]||['star','var(--lime)'];return `<div class="darea">${icoBox(ico,col)}<div class="nb"><div class="inline" style="gap:6px"><b class="small">${esc(a.area)}</b><span class="pill ${R[1]}">${R[0]}</span></div><div class="tiny muted" style="margin-top:3px">${esc(a.summary)}</div></div></div>`}).join('')}</div>
+  ${r.food?`<div class="dfood"><div class="glabel">Food check</div>${(r.food.notes||[]).length?`<ul class="tips">${r.food.notes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${(r.food.likely_missing||[]).length?`<div class="dmiss">${r.food.likely_missing.map(n=>`<div><b class="small">${esc(n.nutrient)}</b><div class="tiny muted">${esc(n.why)}</div><div class="tiny"><span class="pos">Try:</span> ${esc(n.foods)}</div></div>`).join('')}</div>`:''}</div>`:''}
+  <div class="r2" style="margin-top:12px">${(r.wins||[]).length?`<div><div class="glabel">Went well</div><ul class="tips">${r.wins.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}${(r.misses||[]).length?`<div><div class="glabel">Missed</div><ul class="tips">${r.misses.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</div>
+  ${(r.tomorrow||[]).length?`<div class="dtom"><div class="glabel">Tomorrow</div>${r.tomorrow.map(x=>`<div class="trow">${icoBox((AREA_IC[x.area]||['star'])[0],(AREA_IC[x.area]||[0,'var(--lime)'])[1])}<div class="nb small">${esc(x.action)}</div></div>`).join('')}</div>`:''}
+  <p class="tiny faint" style="margin-top:10px">Nutrient notes are estimates from meal names, not medical advice.</p></div>`;
+}
+function daySummaryInput(key){
+  const d=pd(key),L=state.health.logs[key]||{},F=dayFood(key),T=foodTargets(),J=(state.journal||{})[key]||{};
+  const daily=state.health.habits.filter(h=>h.period==='daily');
+  const tx=state.tx.filter(x=>x.date===key&&!x.sample),byCat={};tx.filter(x=>x.dir!=='in').forEach(x=>byCat[x.category||'Other']=(byCat[x.category||'Other']||0)+num(x.amount));
+  const y=d.getFullYear(),m=d.getMonth(),mtd={};state.tx.filter(x=>{const q=pd(x.date);return !x.sample&&x.dir!=='in'&&q.getFullYear()===y&&q.getMonth()===m&&q<=d}).forEach(x=>mtd[x.category||'Other']=(mtd[x.category||'Other']||0)+num(x.amount));
+  const over=state.expenses.filter(e=>num(e.amount)&&(mtd[e.name]||0)>num(e.amount)*(d.getDate()/dim(y,m))*1.15).map(e=>({category:e.name,spent_this_month:Math.round(mtd[e.name]||0),monthly_cap:num(e.amount)}));
+  return {date:key,weekday:fmt(d,{weekday:'long'}),person:{age:state.profile.age||'',city:state.profile.city||'',weight_kg:foodTargets().kg||''},
+    food:{meals:F.L.map(x=>({name:x.name,time:new Date(x.t).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}),kcal:x.kcal,protein_g:x.p,carbs_g:x.c,fat_g:x.f})),totals:{kcal:F.kcal,protein_g:F.p,carbs_g:F.c,fat_g:F.f},targets:{protein_g:T.p,kcal:T.kcal}},
+    health:{steps:num(L.steps),steps_target:10000,water_glasses:num(L.water),water_target_glasses:12,sleep_h:num(L.sleep)||'not logged',weight_kg:num(L.weight)||'',mood_1_to_5:num(J.m)||''},
+    habits:{done:daily.filter(h=>isDone(h,d)).map(h=>h.name),not_done:daily.filter(h=>!isDone(h,d)).map(h=>h.name)},
+    money:{spent:Math.round(sum(tx.filter(x=>x.dir!=='in'),x=>x.amount)),by_category:byCat,over_budget_this_month:over,paid_today:(state.activity||[]).filter(a=>a.d===key).map(a=>a.x)},
+    journal:J.t||'',goals:state.goals.filter(g=>g.priority||String(g.link).startsWith('habit:')).map(g=>{const p=goalProg(g);return {title:g.title,progress:`${Math.round(p.cur)} of ${Math.round(p.tgt)} ${g.unit||''}`,deadline:g.deadline||''}})};
+}
+async function makeDaySummary(key){
+  const inp=daySummaryInput(key);
+  if(!inp.food.meals.length&&!inp.habits.done.length&&!inp.health.steps&&!inp.health.water_glasses&&!inp.money.spent){toast('Log something for this day first: meals, habits, steps or spends.','x');return}
+  if(!needAI())return;workDialog('Summarising your day','Looking at food, habits, health and money…');
+  try{const r=await aiTask('daysummary',inp);state.summaries=state.summaries||{};state.summaries[key]={at:Date.now(),r};const ks=Object.keys(state.summaries).sort();while(ks.length>60)delete state.summaries[ks.shift()];closeDlg($('#dlg'));commit();toast('Day summary ready','sparkle')}
+  catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
+}
+
 /* ================= shell ================= */
-const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+const NAV=[['Life',[['today','Today','sun'],['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
-const PAGES={history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
+const PAGES={today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
 function alerts(){
   const t=today(),late=lateThisMonth().map(e=>({...e,late:true}));
   const soon=eventsBetween(t,addDays(t,60)).filter(e=>{const d=daysBetween(t,e.date);return d<=Math.max(2,num(e.lead))&&!(paidKey(e)&&state.paid[paidKey(e)])});
@@ -3635,7 +3718,7 @@ function render(){
   }
   pageChanged=false;justId=null;
   if(location.hash!=='#/'+ui.page)history.replaceState(null,'','#/'+ui.page);
-  document.title=(ui.page==='overview'?'':({history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
+  document.title=(ui.page==='overview'?'':({today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
 function go(p){const [pg,v]=String(p).split(':');if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
@@ -3714,7 +3797,7 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday],[data-dsum]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
@@ -3723,6 +3806,7 @@ document.addEventListener('click',e=>{
   if(d.go){go(d.go);return}
   if(d.lsedit!==undefined){ui.lsEdit=d.lsedit||null;render();if(d.lsedit)setTimeout(()=>document.getElementById('ls-'+d.lsedit)?.focus(),50);return}
   if(d.lsave){const l=state.loans.find(x=>x.id===d.lsave),v=document.getElementById('ls-'+d.lsave)?.value;if(!l)return;if(!v){toast('Pick a date first','x');return}l.startDate=v;delete l.sample;ui.lsEdit=null;commit();toast(`First EMI: ${fmt(pd(v),{day:'numeric',month:'short',year:'numeric'})}`,'calendar');return}
+  if(d.dsum){makeDaySummary(d.dsum);return}
   if(d.hday){ui.histDay=d.hday;render();return}
   if(d.jdel){if(confirm('Delete this journal entry?')){delete state.journal[d.jdel];commit()}return}
   if(d.ptag){prioTag(d.ptag);return}
@@ -3799,7 +3883,7 @@ document.addEventListener('click',e=>{
     case'mealText':mealText();return;
     case'pushTest':apiFetch('/api/push/test',{method:'POST',body:{}}).then(r=>toast(r.devices?`Push sent to ${r.sent} of ${r.devices} device${r.devices>1?'s':''}`:'Turn on notifications on this device first','bell')).catch(x=>toast(x.message,'x'));return;
     case'cutToday':state.grooming.lastCut=ds(today());logAct('scissors','Haircut');{const h=state.health.habits.find(x=>/^Haircut/.test(x.name));if(h)setDone(h,true)}commit();burst(...lastXY,16);toast('Fresh cut logged','scissors');return;
-    case'bell':menu=menu==='bell'?null:'bell';renderShell();return;
+    case'bell':menu=null;go('today');return;
     case'new':menu=menu==='new'?null:'new';renderShell();return;
     case'theme':lumen(el);return;
     case'export':download(`life-dashboard-backup-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;

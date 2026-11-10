@@ -176,6 +176,29 @@ Today is ${new Date().toISOString().slice(0, 10)}.`,
         }),
       };
     }
+    case 'daysummary': {
+      const D = JSON.stringify(input || {}).slice(0, 14000);
+      return {
+        effort: 'low', maxTokens: 6000,
+        system: `You are a warm, honest daily coach for an Indian user of a life-tracking app. You get one day's log as JSON: meals (names, estimated macros), steps, water, sleep, mood, habits done/not done, spending, journal and goals. Write a short review of the day and a plan for tomorrow.
+Rules:
+- Use only what is in the log. If an area has no data, say it wasn't logged rather than judging it.
+- Targets: 10,000 steps, 12 glasses of water (0.25 L each), 7–9 h sleep, and the protein/calorie targets given. Only say a target was hit if the number meets it; quote the real numbers (e.g. '6,200 of 10,000 steps'). A missing or 0 sleep value means not logged.
+- Food: compare protein and calories to targets. From the meal names, flag things like fried/oily, very sugary, low fibre, few vegetables or fruit, late heavy dinner. likely_missing: 1–4 essential nutrients that this day's meals were probably low in (e.g. magnesium, calcium, iron, fibre, vitamin B12, vitamin D, omega-3, potassium), each with a one-line why and 2–3 common Indian foods to fix it (e.g. "curd, paneer, ragi"). Leave it empty if nothing was eaten/logged.
+- areas: one entry each for Food, Health (steps, water, sleep), Habits, Money, Mind (mood/journal) — and Goals if goals are given. rating one of great, good, okay, needs_attention; summary one sentence with numbers.
+- wins/misses: 1–4 short items each. tomorrow: 3–5 specific actions with the area they belong to (e.g. "Add 2 eggs or a bowl of dal at breakfast to reach 110 g protein").
+- score 0–100 for the whole day. headline: one encouraging, honest sentence.
+- No medical diagnoses. Plain words.`,
+        content: [{ type: 'text', text: 'My day:\n' + D }],
+        schema: obj({
+          headline: S, score: N,
+          areas: { type: 'array', items: obj({ area: { type: 'string', enum: ['Food', 'Health', 'Habits', 'Money', 'Mind', 'Goals'] }, rating: { type: 'string', enum: ['great', 'good', 'okay', 'needs_attention'] }, summary: S }) },
+          food: obj({ protein_ok: { type: 'boolean' }, notes: { type: 'array', items: S }, likely_missing: { type: 'array', items: obj({ nutrient: S, why: S, foods: S }) } }),
+          wins: { type: 'array', items: S }, misses: { type: 'array', items: S },
+          tomorrow: { type: 'array', items: obj({ area: { type: 'string', enum: ['Food', 'Health', 'Habits', 'Money', 'Mind', 'Goals'] }, action: S }) },
+        }),
+      };
+    }
     case 'meal_text':
       return {
         effort: 'low', maxTokens: 6000,
