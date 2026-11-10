@@ -3242,47 +3242,54 @@ function asStop(send,ended){
   renderAsst();if(send&&AS.draft.trim())asSend();
 }
 /* Mic: record audio ourselves (no system dictation beep), soft chime, auto-stop on silence, transcribe on the server. */
-let asMR=null,asStream=null,asChunks=[],asRaf=0,asSend2=false;
+let asMR=null,asStream=null,asChunks=[],asRaf=0,asSend2=false,micCtx=null,micSrc=null,asT0=0;
 function chime(up){try{unlockAudio();if(!actx)return;const t=actx.currentTime+.01,notes=up?[659.25,987.77]:[783.99,523.25];notes.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(),st=t+i*.085;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(.09,st+.02);g.gain.exponentialRampToValueAtTime(.0001,st+.42);o.connect(g);g.connect(actx.destination);o.start(st);o.stop(st+.45)});if(navigator.vibrate)navigator.vibrate(up?12:8)}catch(e){}}
 const canRec=()=>!!(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&account&&navigator.onLine&&!ui.sttOff&&account.user.status!=='expired');
+const asSay=t=>{asPush({who:'ai',text:t})};
+// Fully let go of the microphone so iPhone's orange mic dot goes away.
+function releaseMic(){try{micSrc?.disconnect()}catch(e){}micSrc=null;try{asStream?.getTracks().forEach(t=>t.stop())}catch(e){}asStream=null;try{micCtx&&micCtx.state!=='closed'&&micCtx.close()}catch(e){}micCtx=null}
 async function asMic(){
   if(!canRec())return asMicSR();
   stopSpeak();unlockAudio();
+  // Create the level meter's audio context during the tap, or iPhone keeps it silent.
+  try{micCtx=new (window.AudioContext||window.webkitAudioContext)();micCtx.resume?.()}catch(e){micCtx=null}
   try{asStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
-  catch(e){toast(e?.name==='NotAllowedError'?'Microphone is blocked. Allow it for this site in your browser or phone settings.':'Couldn’t start the microphone.','x');return}
-  const mt=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(t=>window.MediaRecorder.isTypeSupported?.(t))||'';
-  asChunks=[];try{asMR=new MediaRecorder(asStream,mt?{mimeType:mt}:undefined)}catch(e){asStream.getTracks().forEach(t=>t.stop());return asMicSR()}
+  catch(e){releaseMic();asSay(e?.name==='NotAllowedError'?'I can’t use the microphone because it’s blocked. Allow it for this site in your phone or browser settings, then tap the mic again.':'I couldn’t start the microphone. Try again, or type instead.');return}
+  const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus'].find(t=>window.MediaRecorder.isTypeSupported?.(t))||'';
+  asChunks=[];try{asMR=new MediaRecorder(asStream,mt?{mimeType:mt}:undefined)}catch(e){releaseMic();return asMicSR()}
   asMR.ondataavailable=e=>{if(e.data&&e.data.size)asChunks.push(e.data)};
-  asMR.onstop=()=>asTranscribe();
+  asMR.onstop=()=>{releaseMic();asTranscribe()};
   AS.listening=true;AS.interim='';AS.heard=false;renderAsst();chime(true);
-  setTimeout(()=>{try{if(asMR.state==='inactive')asMR.start(250)}catch(e){}},260);
-  let an=null,data=null;try{const src=actx.createMediaStreamSource(asStream);an=actx.createAnalyser();an.fftSize=1024;src.connect(an);data=new Uint8Array(an.fftSize)}catch(e){}
-  const t0=performance.now();let loud=t0;
+  setTimeout(()=>{try{if(asMR&&asMR.state==='inactive')asMR.start(250);asT0=performance.now()}catch(e){}},220);
+  let an=null,data=null;try{micSrc=micCtx.createMediaStreamSource(asStream);an=micCtx.createAnalyser();an.fftSize=1024;micSrc.connect(an);data=new Uint8Array(an.fftSize)}catch(e){an=null}
+  const t0=performance.now();let loud=t0,live=false;
   const tick=()=>{if(!AS.listening)return;const now=performance.now();let rms=0;
-    if(an){an.getByteTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++){const x=(data[i]-128)/128;sum+=x*x}rms=Math.sqrt(sum/data.length)}
+    if(an){an.getByteTimeDomainData(data);let sum=0,mn=255,mx=0;for(let i=0;i<data.length;i++){const v=data[i];if(v<mn)mn=v;if(v>mx)mx=v;const x=(v-128)/128;sum+=x*x}rms=Math.sqrt(sum/data.length);if(mx-mn>1)live=true}
     const b=$('#asst .as-btn.go');if(b)b.style.setProperty('--lvl',Math.min(1,rms*9).toFixed(2));
-    if(rms>.03){loud=now;if(now-t0>350)AS.heard=true}
-    if((AS.heard&&now-loud>1700)||(!AS.heard&&now-t0>9000)||now-t0>55000){asRecStop(true);return}
+    if(rms>.025){loud=now;if(now-t0>350)AS.heard=true}
+    // If the meter can't hear anything at all (some iPhones), don't guess: wait for a tap, up to 25 s.
+    const meterDead=!live&&now-t0>1500;
+    if((AS.heard&&now-loud>1700)||(meterDead&&now-t0>25000)||(!meterDead&&!AS.heard&&now-t0>9000)||now-t0>55000){asRecStop(true);return}
     asRaf=requestAnimationFrame(tick)};
-  if(an)asRaf=requestAnimationFrame(tick);else asSil=setTimeout(()=>asRecStop(true),15000);
+  asRaf=requestAnimationFrame(tick);
 }
 function asRecStop(send){
   cancelAnimationFrame(asRaf);clearTimeout(asSil);if(!AS.listening&&!(asMR&&asMR.state!=='inactive'))return;
   AS.listening=false;asSend2=!!send;chime(false);
-  try{if(asMR&&asMR.state!=='inactive')asMR.stop();else asTranscribe()}catch(e){asTranscribe()}
-  try{asStream?.getTracks().forEach(t=>t.stop())}catch(e){}
+  try{if(asMR&&asMR.state!=='inactive')asMR.stop();else{releaseMic();asTranscribe()}}catch(e){releaseMic();asTranscribe()}
   if(send)AS.busy=true;renderAsst();
 }
 async function asTranscribe(){
-  const parts=asChunks;asChunks=[];const type=asMR?.mimeType||'audio/webm';asMR=null;
+  const parts=asChunks;asChunks=[];const type=(asMR?.mimeType||parts[0]?.type||'audio/mp4').split(';')[0];const dur=performance.now()-asT0;asMR=null;
   if(!asSend2){AS.busy=false;renderAsst();return}
-  if(!AS.heard||!parts.length){AS.busy=false;renderAsst();toast('Didn’t hear anything. Tap the mic and speak.','mic');return}
+  const size=parts.reduce((n,b)=>n+b.size,0);
+  if(!parts.length||size<1500||dur<500){AS.busy=false;renderAsst();asSay('I didn’t hear anything. Tap the mic and speak, then pause when you’re done.');return}
   try{const r=await fetch('/api/stt',{method:'POST',headers:{'content-type':type},body:new Blob(parts,{type}),credentials:'same-origin'});
-    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error&&!/^[a-z_]+$/.test(d.error)?d.error:'Couldn’t understand that.');
+    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error&&!/^[a-z_]+$/.test(d.error)?d.error:'I couldn’t understand that recording.');
     AS.busy=false;const text=String(d.text||'').trim();
-    if(!text){renderAsst();toast('Didn’t catch that. Try again a little closer to the mic.','mic');return}
+    if(!text){renderAsst();asSay('I couldn’t make out any words. Try again a little closer to the phone.');return}
     AS.draft=((AS.draft||'')+' '+text).trim();renderAsst();asSend();
-  }catch(e){AS.busy=false;renderAsst();toast(e.message||'Voice didn’t work. Try again or type.','x')}
+  }catch(e){AS.busy=false;renderAsst();asSay((e.message||'Voice didn’t work.')+' You can also type it.')}
 }
 async function asCamera(){
   const file=await pickFile('image/*,application/pdf');if(!file)return;
@@ -3796,7 +3803,7 @@ matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>rend
 function afterOpen(){if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
 $('#dlg').addEventListener('close',()=>{if(imp){imp=null}$('#dlg').classList.remove('wide')});
 $('#voice').addEventListener('close',onNotesClose);
-$('#asst').addEventListener('close',()=>{clearTimeout(asSil);if(asMR&&asMR.state!=='inactive')asRecStop(false);AS.listening=false;try{asRec?.abort()}catch(e){}});
+$('#asst').addEventListener('close',()=>{clearTimeout(asSil);if(asMR&&asMR.state!=='inactive')asRecStop(false);releaseMic();AS.listening=false;try{asRec?.abort()}catch(e){}});
 $('#asst').addEventListener('click',e=>{if(e.target===$('#asst'))closeDlg($('#asst'))});
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('hcard')){ui.nzOpen=e.target.open;saveUI()}},true);
 $('#voice').addEventListener('click',e=>{if(e.target===$('#voice'))closeDlg($('#voice'))});
