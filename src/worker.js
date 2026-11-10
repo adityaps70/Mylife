@@ -138,6 +138,7 @@ Rules:
 - Credit cards/pay-later at 30%+ yearly (≈2.5%+/month) are usually cleared first; otherwise compare avalanche (highest rate) vs snowball (smallest balance) and pick what suits them; say why.
 - If EMIs exceed ~50% of income or income can't cover essentials + EMIs, say so plainly and give concrete options: talk to the lender about restructuring/tenure extension, balance transfer, consolidating high-interest debt into a cheaper personal loan, selling unused items, or extra income ideas. Mention RBI rules only if relevant (no foreclosure charges on floating-rate individual loans). Never suggest new borrowing to pay EMIs, or illegal/unsafe lending apps.
 - budget_cuts: only from their listed budget categories, with realistic cuts.
+- If the JSON has life priorities (e.g. marriage savings by a date), balance debt payoff against them: never starve a near-term priority, and say when freed-up EMIs should switch to the priority.
 - months: plan for the next 6 months (labels like "Dec 2026"), what to pay on each debt beyond the EMI, and the expected total remaining at month end.
 - Plain, warm, short sentences. No jargon without a 3-word explanation. Today is ${new Date().toISOString().slice(0, 10)}.`,
         content: [{ type: 'text', text: 'My numbers:\n' + D }],
@@ -149,6 +150,27 @@ Rules:
           months: { type: 'array', items: obj({ month: S, actions: { type: 'array', items: obj({ name: S, pay: N, note: S }) }, debt_left: N }) },
           budget_cuts: { type: 'array', items: obj({ category: S, cut: N, how: S }) },
           quick_wins: { type: 'array', items: S }, warnings: { type: 'array', items: S },
+        }),
+      };
+    }
+    case 'priorityplan': {
+      const D = JSON.stringify(input || {}).slice(0, 14000);
+      return {
+        effort: 'medium', maxTokens: 10000, stream: true,
+        system: `You are a practical, warm money coach for people in India. The user has one big life priority (e.g. marriage, house) with a target amount and date, plus their real income, budget, bills, EMIs, credit cards, savings and other priorities as JSON. Tell them honestly whether it is reachable and exactly how.
+Rules:
+- Use only the numbers given; whole rupees. Never invent income.
+- Essentials, EMIs and card minimums always come first. Never suggest skipping an EMI, borrowing to save, or risky/illegal schemes.
+- If it is not reachable by the date, say so plainly in one sentence, then give 2–4 concrete options with their monthly amount and when the goal would be reached: e.g. extend the date, lower the target, cut specific budget categories (name them and the amount), redirect EMIs after a loan closes (say which and when), add income, or a mix. Mark one option as recommended by putting it first.
+- If they have high-interest card debt, say whether to clear it first and how that changes the date.
+- For money needed within 3 years, suggest safe places (recurring deposit, liquid/short-duration debt funds, high-interest savings), not stocks. Mention marriage-specific ideas only if the goal is marriage (e.g. split into must-have vs nice-to-have costs).
+- this_month: 2–4 specific actions for this month with amounts.
+Today is ${new Date().toISOString().slice(0, 10)}.`,
+        content: [{ type: 'text', text: 'My priority and numbers:\n' + D }],
+        schema: obj({
+          verdict: S, reachable: { type: 'boolean' }, monthly_target: N,
+          options: { type: 'array', items: obj({ title: S, detail: S, monthly: N, reach_by: S }) },
+          this_month: { type: 'array', items: S }, warnings: { type: 'array', items: S },
         }),
       };
     }
@@ -403,8 +425,9 @@ export default {
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/app' || url.pathname === '/app/')) {
       const app = url.pathname !== '/' || !!cookie(req, 'ss_session');
       const r = await env.ASSETS.fetch(new Request(new URL(app ? '/' : '/landing', url), req));
-      if (app) return r;
-      const h = new Headers(r.headers); h.set('x-ss-page', 'landing'); h.set('cache-control', 'no-store');
+      const h = new Headers(r.headers); h.set('cache-control', 'no-cache');
+      if (app) return new Response(r.body, { status: r.status, headers: h });
+      h.set('x-ss-page', 'landing'); h.set('cache-control', 'no-store');
       return new Response(r.body, { status: r.status, headers: h });
     }
     return env.ASSETS.fetch(req);

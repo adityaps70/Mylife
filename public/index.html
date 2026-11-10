@@ -164,6 +164,18 @@ main{padding:4px 28px 64px;max-width:1480px}
 .dp-cut{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .dp-months{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:0 14px}.dp-months summary{display:flex;gap:10px;align-items:center;cursor:pointer;padding:12px 0;list-style:none}.dp-months summary::-webkit-details-marker{display:none}.dp-months summary .i{margin-left:auto;transition:transform .2s}.dp-months[open] summary .i{transform:rotate(90deg)}
 .banner.warnb{border-color:color-mix(in srgb,var(--orange) 45%,transparent);align-items:flex-start}
+.prio{position:relative;overflow:hidden;background:radial-gradient(380px 150px at 0 0,color-mix(in srgb,var(--lime) 9%,transparent),transparent 70%),var(--card)}
+.pemoji{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:var(--card2);border:1px solid var(--line2);flex:none}.pemoji.sm{width:36px;height:36px;font-size:18px;border-radius:11px}
+.pcount{display:flex;align-items:baseline;gap:8px;margin-top:6px}.pcount b{font-size:clamp(24px,3vw,32px);letter-spacing:-.03em;font-weight:800}.pcount span{color:var(--muted);font-size:13px}
+.pkp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}.pkp>div{border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:9px 10px;min-width:0}.pkp small{display:block;font-size:11px;color:var(--muted)}.pkp b{font-size:15px;white-space:nowrap}
+.pchk{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.pchk span{border:1px dashed var(--line2);border-radius:10px;padding:5px 9px;display:grid}.pchk small{font-size:10px;color:var(--faint)}.pchk b{font-size:13px}
+.pai{margin-top:14px;padding:12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--lime) 30%,var(--line));background:color-mix(in srgb,var(--lime) 5%,var(--card2))}
+.popts{display:grid;gap:8px;margin-top:10px}.popts>div{padding:9px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line)}.popts .pill{margin-top:6px}
+.prio-empty .pex{display:flex;flex-wrap:wrap;gap:8px}.pchip{border:1px solid var(--line2);background:var(--card2);color:var(--text);border-radius:99px;padding:9px 14px;font-weight:600;font-size:13.5px;cursor:pointer;transition:transform .2s var(--spring)}.pchip:hover{transform:translateY(-2px);border-color:var(--lime)}
+.pstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px}
+.pmini{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:14px;border-radius:18px;border:1px solid color-mix(in srgb,var(--lime) 25%,var(--line));background:radial-gradient(260px 100px at 0 0,color-mix(in srgb,var(--lime) 10%,transparent),transparent 70%),var(--card);color:var(--text);cursor:pointer;width:100%}
+.pmini .nb{flex:1;min-width:0}.pmini b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:420px){.pkp{grid-template-columns:1fr 1fr}.pkp>div:last-child{grid-column:1/-1}}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -990,6 +1002,7 @@ const GROOM_HABITS=[
 ];
 const tcol=t=>{const h=HUE[t];return h===undefined||h<0?'hsl(220 6% 55%)':`hsl(${h} 72% 58%)`};
 const typeTag=t=>`<span style="color:${tcol(t)};font-weight:600">● ${esc(t)}</span>`;
+const PTYPES=[['marriage','Marriage','💍'],['house','House','🏠'],['emergency','Emergency fund','🛟'],['car','Car / bike','🚗'],['education','Education','🎓'],['travel','Big trip','✈️'],['business','Business','🚀'],['retire','Retirement','🌴'],['custom','Something else','⭐']];
 const GOAL_CATS=['Finance','Health','Career','Business','Learning','Relationships','Travel','Personal'];
 const GOAL_IC={Finance:'shield',Health:'heart',Career:'brief',Business:'brief',Learning:'book',Relationships:'users',Travel:'plane',Personal:'star'};
 const GOAL_COL={Finance:'var(--lime)',Health:'var(--green)',Career:'var(--cyan)',Business:'var(--cyan)',Learning:'var(--violet)',Relationships:'var(--red)',Travel:'var(--cyan)',Personal:'var(--yellow)'};
@@ -1322,8 +1335,9 @@ const SCHEMAS={
     {k:'method',l:'Paid via',t:'select',o:METHODS},{k:'note',l:'Note',t:'text'}],
     help:'Salary is counted automatically from Budget → Income. Log only extra income here.'},
   goals:{title:'goal',fields:[
-    {k:'title',l:'Goal',t:'text',req:1,wide:1},{k:'category',l:'Area',t:'select',o:GOAL_CATS},
-    {k:'link',l:'Track progress from',t:'select',o:[['','Numbers I enter'],['debt','Debt paid off (auto)'],['emergency','Emergency fund (auto)'],['savings','Total savings & investments (auto)']]},
+    {k:'title',l:'Goal',t:'text',req:1,wide:1,ph:'Get married, buy a house, ₹50 lakh saved…'},{k:'category',l:'Area',t:'select',o:GOAL_CATS},
+    {k:'priority',l:'Life priority: pin it, plan it monthly, count it down',t:'checkbox'},{k:'ptype',l:'Priority type',t:'select',o:PTYPES.map(([v,l,e])=>[v,e+' '+l])},
+    {k:'link',l:'Track progress from',t:'select',o:[['','Numbers I enter'],['tagged','Amount below + savings linked to this goal'],['debt','Debt paid off (auto)'],['emergency','Emergency fund (auto)'],['savings','Total savings & investments (auto)']]},
     {k:'current',l:'Current',t:'number'},{k:'target',l:'Target',t:'number',help:'Emergency fund: leave 0 to use 6× monthly outflow'},
     {k:'unit',l:'Unit',t:'text',ph:'₹, kg, books, days…'},{k:'deadline',l:'Deadline',t:'date'},
     {k:'why',l:'Why this matters to me',t:'textarea',wide:1},{k:'milestones',l:'Milestones (one per line)',t:'lines',wide:1}]},
@@ -1346,7 +1360,7 @@ const SCHEMAS={
     {k:'minPct',l:'Minimum due (% of bill)',t:'number',help:'Cards ≈ 5. Most pay-later apps need the full bill: 100.'},
     {k:'rate',l:'Interest if not paid in full (% per month)',t:'number',help:'Cards ≈ 3.5. 0 if none.'},{k:'lateFee',l:'Late fee (₹)',t:'number'},
     {k:'notes',l:'Notes',t:'text',wide:1}]},
-  savings:{title:'saving / investment',fields:[{k:'name',l:'Name',t:'text',req:1},{k:'type',l:'Type',t:'select',o:SAV_TYPES},{k:'current',l:'Current value (₹)',t:'number'},{k:'target',l:'Target (₹, optional)',t:'number'},{k:'monthly',l:'Monthly contribution (₹)',t:'number'},{k:'notes',l:'Notes',t:'text'}]},
+  savings:{title:'saving / investment',fields:[{k:'name',l:'Name',t:'text',req:1},{k:'type',l:'Type',t:'select',o:SAV_TYPES},{k:'current',l:'Current value (₹)',t:'number'},{k:'target',l:'Target (₹, optional)',t:'number'},{k:'monthly',l:'Monthly contribution (₹)',t:'number'},{k:'goal',l:'Saving for',t:'select',o:()=>[['','Nothing specific'],...state.goals.filter(g=>g.priority||g.unit==='₹').map(g=>[g.id,g.title])]},{k:'notes',l:'Notes',t:'text'}]},
   reminders:{title:'reminder',fields:[
     {k:'title',l:'What',t:'text',req:1,wide:1},{k:'type',l:'Type',t:'select',o:REM_TYPES},
     {k:'date',l:'Date',t:'date',help:'For birthdays, use the real birth year to see their age'},
@@ -1403,8 +1417,10 @@ function openForm(coll,id,preset={}){
     if(miss){alert('Please fill in: '+miss.l);return}
     if(coll==='habits'&&!id&&!(out.times||[]).length)Object.assign(out,defaultReminder({...preset,...out}),{dow:out.dow,dom:out.dom||1});
     if(coll==='tx'){if(!out.date)out.date=ds(today());if(out.dir==='in'&&out.category!=='Income'&&!item.category)out.category='Income'}
+    if(coll==='goals'&&out.priority&&!out.unit&&num(out.target)>0)out.unit='₹';
     if(coll==='cards'){if(!out.stmtDay)out.stmtDay=1;if(!out.dueDay)out.dueDay=Math.min(28,num(out.stmtDay)+15)%28||28;if(!item.openDate||out.openBal!==item.openBal||num(out.stmtDay)!==num(item.stmtDay))out.openDate=ds(lastStmtOn(out,today()));
       if(preset._fromLoan){const li=state.loans.findIndex(l=>l.id===preset._fromLoan);if(li>=0)state.loans.splice(li,1);delete preset._fromLoan}}
+    if(coll==='savings'&&out.goal){const g=state.goals.find(x=>x.id===out.goal);if(g&&!g.link)g.link='tagged'}
     if(id){Object.assign(item,out);delete item.sample}else arr.push({id:uid(),...preset,...out});
     closeDlg(dlg);commit();toast(id?'Saved':`Added ${sc.title}`);
   };
@@ -1570,6 +1586,7 @@ function goalProg(g){
   if(g.link==='debt'){const P=sum(state.loans,l=>Math.max(num(l.principal),num(l.outstanding)));cur=P-sum(state.loans,l=>l.outstanding);tgt=P}
   else if(g.link==='emergency'){const f=fin();cur=f.ef;tgt=tgt||Math.round(f.out*6)}
   else if(g.link==='savings'){cur=sum(state.savings,s=>s.current)}
+  else if(g.link==='tagged'){cur=num(g.current)+sum(state.savings.filter(s=>s.goal===g.id),s=>s.current)}
   const p=tgt>0?Math.max(0,Math.min(1,cur/tgt)):(g.milestones?.length?g.milestones.filter(m=>m.done).length/g.milestones.length:0);
   return {cur,tgt,p,money:g.unit==='₹'||!!g.link};
 }
@@ -1682,7 +1699,7 @@ function pOverview(){
   const S=SEASON[m];
   return `${phead(fmt(t,{weekday:'long',month:'long',day:'numeric'}),`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${esc(state.profile.first||'there')}`,
     `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
-  <div class="stack">${sampleBanner()}
+  <div class="stack">${sampleBanner()}${prioStrip()}
   <div class="ov"><div class="stack">
     <div class="card hero"><div style="min-width:0">
       <div class="ch"><div><div class="big">${inr(f.net)}</div><div class="small muted">Net worth · <span class="${cur.left>=0?'pos':'neg'}" style="font-weight:600">${cur.left>=0?'+':''}${inr(cur.left)}</span> set aside this month</div></div><span class="sp"></span>
@@ -2071,10 +2088,13 @@ function pGrooming(){
 
 function pGoals(){
   const cats=['All',...GOAL_CATS.filter(c=>state.goals.some(g=>g.category===c))];
-  const list=state.goals.filter(g=>ui.goalCat==='All'||g.category===ui.goalCat);
+  const list=state.goals.filter(g=>!g.priority&&(ui.goalCat==='All'||g.category===ui.goalCat)),ps=priorities();
   const tot=state.goals.length,avg=tot?sum(state.goals,g=>goalProg(g).p)/tot:0;
   return `${phead('Life · What I’m working towards','Goals',`<button class="btn lime" data-add="goals">${ic('plus')} Add goal</button>`)}
   <div class="stack"><div class="kpis">${kpi('Goals',tot)}${kpi('Average progress',pct(avg))}${kpi('Completed',state.goals.filter(g=>goalProg(g).p>=1).length,'','pos')}${kpi('Due in 12 months',state.goals.filter(g=>g.deadline&&daysBetween(today(),pd(g.deadline))<=365).length)}</div>
+  <div class="ch" style="margin:6px 0 -4px;align-items:center"><div><h3>Life priorities</h3><div class="sub">The big things you’re working towards, with what each one takes every month.</div></div><span class="sp"></span><button class="btn sm" data-add="goals" data-pre='${esc(JSON.stringify({priority:true,ptype:'custom',category:'Finance',unit:'₹'}))}'>${ic('plus')} Add priority</button></div>
+  ${ps.length?`<div class="${ps.length>1?'r2':''}">${ps.map(g=>prioCard(g,true)).join('')}</div>`:`<div class="card prio-empty"><div class="pex">${PTYPES.slice(0,6).map(([k,l,e])=>`<button class="pchip" data-add="goals" data-pre='${esc(JSON.stringify({priority:true,ptype:k,category:k==='marriage'?'Relationships':k==='education'?'Learning':k==='travel'?'Travel':'Finance',unit:'₹',title:{marriage:'Get married',house:'Buy a house',emergency:'6-month emergency fund',car:'Buy a car',education:'Higher studies',travel:'Big trip'}[k]}))}'>${e} ${l}</button>`).join('')}</div><p class="small muted" style="margin-top:12px">Pick one to start. Add the amount and the date, and Self Streak works out what to put aside each month, warns you if it’s not reachable, and can make an AI plan to get there.</p></div>`}
+  <div class="ch" style="margin:14px 0 -4px"><div><h3>Other goals</h3></div></div>
   <div class="chips">${cats.map(c=>`<button class="chip ${ui.goalCat===c?'on':''}" data-set="goalCat:${c}">${c}</button>`).join('')}</div>
   <div class="auto">${list.map(g=>{const p=goalProg(g),col=GOAL_COL[g.category]||'var(--lime)';
     return `<div class="card"><div class="ch" style="align-items:center">${icoBox(GOAL_IC[g.category]||'star',col)}<div style="flex:1;min-width:0"><h3>${esc(g.title)}</h3><div class="sub">${esc(g.category)}${g.deadline?' · '+timeLeft(g.deadline):''}${g.link?' · auto-tracked':''}</div></div><button class="ic" data-edit="goals" data-id="${g.id}">${ic('edit')}</button></div>
@@ -2909,6 +2929,7 @@ function nudgeItems(d){
   if(N.money.on){
     for(const e of eventsBetween(d,addDays(d,2)).filter(x=>(x.src==='bill'||x.src==='loan'||x==='card')&&num(x.amount))){const dd=daysBetween(d,e.date);if(dd!==0&&dd!==2)continue;const pk=paidKey(e);
       add(`m:${pk}:${dd}`,N.money.time,'Money',dd===0?`Due today: ${e.title}`:`Due in 2 days: ${e.title}`,`${inr(e.amount)} on ${fmt(e.date,{weekday:'short',day:'numeric',month:'short'})}${e.extra==='autopay'?' · on autopay, just check it went through':''}.`,{check:()=>!state.paid[pk],actions:[{action:'paid',title:'Mark paid'}],acts:{paid:'paid:'+pk},url:'./#/bills',icon:'receipt'})}
+    if(d.getDate()===1)for(const g of priorities()){const P=prioPlan(g);if(P.status==='done'||!P.months)continue;add('prio:'+g.id,N.money.time,'Money',`${ptype(g.ptype)[2]} Put money towards “${g.title}”`,`${inr(P.need)} this month keeps you on track. ${countdown(g.deadline)} to go, ${kfmt(P.p.cur)} of ${kfmt(P.p.tgt)} saved.`,{url:'./#/goals',icon:'target'})}
     if(dk===ds(today()))add('overdue','10:30','Money','Overdue payments ⚠️',()=>{const l=lateThisMonth();return l.slice(0,3).map(e=>`${e.title} ${inr(e.amount)}`).join(' · ')+(l.length>3?` +${l.length-3} more`:'')},{check:()=>lateThisMonth().length>0,url:'./#/bills',icon:'receipt'});
   }
   if(N.dates.on)for(const e of eventsBetween(d,addDays(d,366)).filter(x=>x.src==='reminder')){
@@ -3286,6 +3307,7 @@ function debtPlanInput(){
     total_emi:Math.round(f.emi),emi_to_income_pct:f.income?Math.round(f.emi/f.income*100):null,
     savings_total:Math.round(f.assets),emergency_fund:Math.round(f.ef),
     baseline:{months_to_debt_free:base.stuck?'never':base.months,interest_still_to_pay:Math.round(base.interest)},
+    priorities:priorities().map(g=>{const P=prioPlan(g);return {title:g.title,type:ptype(g.ptype)[1],target:P.p.tgt,saved:P.p.cur,deadline:g.deadline||'',needed_per_month:P.need}}),
     person:{age:state.profile.age||'',city:state.profile.city||''}};
 }
 const planKey=()=>JSON.stringify(debtPlanInput()).replace(/"spent_last_month":\d+,/,'');
@@ -3318,6 +3340,76 @@ function debtPlanCard(){
   ${(r.months||[]).length?`<details class="dp-months"><summary><b>Month by month</b><span class="small muted">${r.months.length} months</span>${ic('right')}</summary><div class="tablewrap"><table><thead><tr><th>Month</th><th>Pay</th><th class="n">Debt left</th></tr></thead><tbody>${r.months.map(m=>`<tr><td><b>${esc(m.month)}</b></td><td>${(m.actions||[]).map(a=>`<div class="small"><b>${inr(a.pay)}</b> → ${esc(a.name)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</div>`).join('')}</td><td class="n">${inr(m.debt_left)}</td></tr>`).join('')}</tbody></table></div></details>`:''}
   <div class="inline" style="margin-top:16px;gap:8px"><button class="btn sm lime" data-act="applyPlan">${ic('tick')} Use ${inr(r.extra_per_month)}/month in the calculator</button><span class="tiny faint">AI can make mistakes. Check big decisions with your lender.</span></div>
   </div>`;
+}
+
+/* ================= life priorities ================= */
+const ptype=k=>PTYPES.find(p=>p[0]===k)||PTYPES[PTYPES.length-1];
+const priorities=()=>state.goals.filter(g=>g.priority).sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+const ymLabel=d=>fmt(d,{month:'short',year:'numeric'});
+function countdown(dl){if(!dl)return 'No date set';const t=today(),e=pd(dl);if(e<t)return 'Date passed';let m=(e.getFullYear()-t.getFullYear())*12+(e.getMonth()-t.getMonth());if(e.getDate()<t.getDate())m--;const y=Math.floor(m/12),mo=m%12;if(m<1)return daysBetween(t,e)+' days';return [y?`${y} yr`:'',mo?`${mo} mo`:''].filter(Boolean).join(' ')}
+// What it takes: monthly amount needed vs what you can actually put aside, and when you'd get there.
+function prioPlan(g){
+  const p=goalProg(g),f=fin(),t=today();
+  const remaining=Math.max(0,p.tgt-p.cur);
+  const months=g.deadline?Math.max(1,(pd(g.deadline).getFullYear()-t.getFullYear())*12+(pd(g.deadline).getMonth()-t.getMonth())):null;
+  const need=months?Math.ceil(remaining/months):0;
+  const tagged=state.savings.filter(s=>s.goal===g.id),planned=sum(tagged,s=>s.monthly);
+  const others=priorities().filter(x=>x.id!==g.id&&x.deadline&&(!g.deadline||x.deadline<g.deadline)),reserved=sum(others,x=>{const q=goalProg(x),mm=Math.max(1,monthsTo(x.deadline));return Math.max(0,q.tgt-q.cur)/mm});
+  const free=Math.max(0,Math.round(f.left-reserved)),can=Math.max(planned,free);
+  // Project month by month: loans that close free up their EMI for this goal.
+  const ls=state.loans.filter(l=>num(l.outstanding)>0&&num(l.emi)>0).map(l=>({emi:num(l.emi),n:loanSim(l).n}));
+  let bal=0,m=0,firstFree=null;
+  if(remaining>0&&(can>0||ls.length)){while(bal<remaining&&m<600){const freed=sum(ls.filter(l=>isFinite(l.n)&&m>=l.n),l=>l.emi);if(freed&&firstFree===null)firstFree=m;bal+=can+freed;m++}}
+  const eta=remaining<=0?t:m<600&&(can>0||ls.some(l=>isFinite(l.n)))?addMonths(t,m):null;
+  const gap=Math.max(0,need-can),status=remaining<=0?'done':!months?'nodate':need<=can?'ontrack':eta&&g.deadline&&eta<=pd(g.deadline)?'ontrack':can>=need*.6?'behind':'far';
+  const checkpoints=months?[3,6,12].filter(k=>k<months).map(k=>({date:addMonths(t,k),amount:Math.round(p.cur+need*k)})):[];
+  return {p,remaining,months,need,planned,free,can,gap,eta,status,checkpoints,tagged,firstFree};
+}
+const monthsTo=dl=>{const t=today(),e=pd(dl);return (e.getFullYear()-t.getFullYear())*12+(e.getMonth()-t.getMonth())};
+const PST={done:['Reached 🎉','lime'],ontrack:['On track','lime'],behind:['Behind','yellow'],far:['Not reachable at this pace','red'],nodate:['Add a date','nodot']};
+function prioCard(g,big){
+  const P=prioPlan(g),[k,lbl,em]=ptype(g.ptype),S=PST[P.status],ai=g.aiPlan,stale=ai&&ai.key!==prioKey(g);
+  return `<div class="card prio ${big?'prio-lg':''}">
+  <div class="ch" style="align-items:center;flex-wrap:nowrap"><span class="pemoji">${em}</span><div style="flex:1;min-width:0"><h3>${esc(g.title)}</h3><div class="sub">${lbl}${g.deadline?' · by '+fmt(pd(g.deadline),{day:'numeric',month:'short',year:'numeric'}):''}</div></div><button class="ic" data-edit="goals" data-id="${g.id}" aria-label="Edit">${ic('edit')}</button></div><span class="pill ${S[1]}">${S[0]}</span>
+  <div class="pcount"><b>${countdown(g.deadline)}</b><span>to go</span></div>
+  <div class="inline" style="justify-content:space-between;margin:10px 0 8px"><span class="mid">${kfmt(P.p.cur)}</span><span class="small muted">of ${kfmt(P.p.tgt)} · ${pct(P.p.p)}</span></div>${gbar(P.p.p)}
+  ${P.status==='done'?'':`<div class="pkp">
+    <div><small>Needed each month</small><b>${P.months?inr(P.need):'—'}</b></div>
+    <div><small>You can set aside</small><b class="${P.can>=P.need?'pos':'warn'}">${inr(P.can)}</b></div>
+    <div><small>At this pace</small><b>${P.eta?ymLabel(P.eta):'Never'}</b></div></div>
+  <p class="small muted" style="margin-top:10px">${P.status==='ontrack'?`Keep putting ${inr(Math.max(P.need,0))} a month towards it and you’ll get there on time.`:P.months?`You’re short by about <b class="neg">${inr(P.gap)}</b> a month.${P.firstFree!==null?` Once your loans start closing (${ymLabel(addMonths(today(),P.firstFree))}), their EMIs can go here.`:''}`:'Add a target date to see what it takes each month.'}</p>
+  ${P.checkpoints.length?`<div class="pchk">${P.checkpoints.map(c=>`<span><small>${ymLabel(c.date)}</small><b>${kfmt(c.amount)}</b></span>`).join('')}</div>`:''}`}
+  ${ai?`<div class="pai"><div class="inline" style="justify-content:space-between"><b class="small">${ic('sparkle')} AI plan${stale?' · <span class="warn">numbers changed</span>':''}</b><span class="tiny faint">${fmt(new Date(ai.at),{day:'numeric',month:'short'})}</span></div>
+    <p style="margin:6px 0 0;font-weight:600;font-size:14.5px;line-height:1.45">${esc(ai.r.verdict)}</p>
+    ${ai.r.options?.length?`<div class="popts">${ai.r.options.map(o=>`<div><b class="small">${esc(o.title)}</b><div class="tiny muted">${esc(o.detail)}</div>${o.monthly?`<span class="pill nodot">${inr(o.monthly)}/month</span>`:''}${o.reach_by?` <span class="pill lime">reach by ${esc(o.reach_by)}</span>`:''}</div>`).join('')}</div>`:''}
+    ${ai.r.this_month?.length?`<div class="glabel" style="margin-top:10px">This month</div><ul class="tips">${ai.r.this_month.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`:''}
+  <div class="inline" style="margin-top:14px;gap:8px">${P.status!=='done'&&(!g.link||g.link==='tagged')?`<button class="btn sm lime" data-goaltap="${g.id}">${ic('plus')} Add money</button>`:''}<button class="btn sm" data-ptag="${g.id}">${ic('trend')} ${P.tagged.length?`${P.tagged.length} saving${P.tagged.length>1?'s':''} linked`:'Link a saving'}</button><button class="btn sm" data-pai="${g.id}">${ic('sparkle')} ${ai?(stale?'Update AI plan':'Redo AI plan'):'Make it reachable'}</button></div>
+  </div>`;
+}
+function prioStrip(){
+  const ps=priorities();if(!ps.length)return '';
+  return `<div class="pstrip">${ps.slice(0,3).map(g=>{const P=prioPlan(g),[,,em]=ptype(g.ptype),S=PST[P.status];return `<button class="pmini" data-go="goals">${'<span class="pemoji sm">'+em+'</span>'}<div class="nb"><div class="inline" style="justify-content:space-between;gap:6px"><b>${esc(g.title)}</b><span class="pill ${S[1]}">${S[0]}</span></div><div class="tiny muted">${countdown(g.deadline)} to go · ${kfmt(P.p.cur)} of ${kfmt(P.p.tgt)}${P.months&&P.status!=='done'?` · ${inr(P.need)}/month needed`:''}</div><div style="margin-top:6px">${gbar(P.p.p)}</div></div></button>`}).join('')}</div>`;
+}
+function prioInput(g){const P=prioPlan(g),b=debtPlanInput();return {goal:{title:g.title,type:ptype(g.ptype)[1],target:P.p.tgt,saved_so_far:P.p.cur,deadline:g.deadline||'',months_left:P.months,needed_per_month:P.need,why:g.why||''},other_priorities:priorities().filter(x=>x.id!==g.id).map(x=>{const q=prioPlan(x);return {title:x.title,target:q.p.tgt,saved:q.p.cur,deadline:x.deadline||''}}),monthly_free_after_essentials:Math.round(fin().left),...b}}
+const prioKey=g=>JSON.stringify(prioInput(g)).replace(/"spent_last_month":\d+,/,'');
+async function makePrioPlan(id){
+  const g=state.goals.find(x=>x.id===id);if(!g)return;const P=prioPlan(g);
+  if(!P.p.tgt){toast('Set a target amount first.','x');openForm('goals',id);return}
+  if(!fin().income){toast('Add your monthly income in Budget first.','x');go('budget');return}
+  if(!needAI())return;
+  workDialog('Planning “'+g.title+'”','Looking at your income, EMIs, savings and other priorities…');
+  try{const r=await aiTask('priorityplan',prioInput(g));g.aiPlan={at:Date.now(),key:prioKey(g),r};closeDlg($('#dlg'));commit();toast('Your plan is ready','tick')}
+  catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
+}
+function prioTag(id){
+  const g=state.goals.find(x=>x.id===id),d=$('#dlg');if(!g)return;
+  d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Link savings to “${esc(g.title)}”</h3><button class="ic" data-x>${ic('x')}</button></div>
+  <p class="small muted">Linked accounts count towards this goal automatically, and their monthly contributions count as “planned”.</p>
+  <div style="display:grid;gap:6px">${state.savings.map(s=>`<label class="cbx" style="padding:10px;border:1px solid var(--line);border-radius:12px"><input type="checkbox" data-sv="${s.id}" ${s.goal===id?'checked':''}> <span style="flex:1"><b>${esc(s.name)}</b> <span class="muted small">· ${esc(s.type)} · ${inr(s.current)}${num(s.monthly)?` · ${inr(s.monthly)}/month`:''}</span></span></label>`).join('')||'<div class="empty">No savings yet. Add one in Savings.</div>'}</div>
+  <div class="dlg-actions"><button class="btn" data-addsav>${ic('plus')} New saving for this goal</button><span style="flex:1"></span><button class="btn lime" data-done>Done</button></div></div>`;
+  if(!d.open)d.showModal();
+  d.querySelectorAll('[data-x],[data-done]').forEach(b=>b.onclick=()=>{d.querySelectorAll('[data-sv]').forEach(c=>{const s=state.savings.find(x=>x.id===c.dataset.sv);if(!s)return;if(c.checked){s.goal=id;delete s.sample}else if(s.goal===id)delete s.goal});if(state.savings.some(s=>s.goal===id))g.link='tagged';else if(g.link==='tagged')g.link='';closeDlg(d);commit()});
+  d.querySelector('[data-addsav]').onclick=()=>{closeDlg(d);g.link='tagged';openForm('savings',null,{goal:id,type:'Savings account',name:g.title+' fund'})};
 }
 
 /* ================= shell ================= */
@@ -3447,13 +3539,15 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
   if(menu&&!el.closest('.pop')&&d.act!=='bell'&&d.act!=='new')menu=null;
   if(d.paid){e.stopPropagation();const was=!!state.paid[d.paid];justId=d.paid;togglePaid(d.paid);if(!was){toast('Marked as paid');burst(...lastXY,12)}return}
   if(d.go){go(d.go);return}
+  if(d.ptag){prioTag(d.ptag);return}
+  if(d.pai){makePrioPlan(d.pai);return}
   if(d.cpay){const [id,how]=d.cpay.split(':'),c=state.cards.find(x=>x.id===id);if(!c)return;const st=cardState(c);
     let amt=how==='full'?st.due:how==='min'?st.minDue:cardAskAmount(`How much did you pay on ${c.name}? Bill left: ${inr(st.due)}`,st.minDue);if(!amt)return;
     cardPay(c,amt,how==='full'?'Paid in full':how==='min'?'Minimum due':'Payment');justId=null;commit();
@@ -3476,7 +3570,7 @@ document.addEventListener('click',e=>{
   if(d.check){const c=state.checklist.find(x=>x.id===d.check);if(c){c.done=!c.done;justId=c.id;commit();if(c.done){burst(...lastXY,10);toast('Checked off')}}return}
   if(d.ms){const g=state.goals.find(x=>x.id===d.ms);if(g){const m=g.milestones[+d.i];m.done=!m.done;justId=g.id+':'+d.i;commit();if(m.done){burst(...lastXY,12);toast('Milestone done')}}return}
   if(d.goaltap){const g=state.goals.find(x=>x.id===d.goaltap);if(!g)return;
-    if(g.link){go(g.link==='debt'?'debt':'savings');return}
+    if(g.link&&g.link!=='tagged'){go(g.link==='debt'?'debt':'savings');return}
     if(!num(g.target)){openForm('goals',g.id);return}
     const v=prompt(`Add progress to "${g.title}"${g.unit?' ('+g.unit+')':''}:`,g.unit==='₹'?'':'1');if(v!==null&&num(v)){const before=goalProg(g).p;g.current=Math.max(0,num(g.current)+num(v));commit();if(goalProg(g).p>=1&&before<1){burst(innerWidth/2,innerHeight/3,60);toast(`Goal reached: ${g.title}`,'target')}else toast('Progress added')}return}
   if(d.gset){const g=state.goals.find(x=>x.id===d.gset);const v=prompt(`Current value for "${g.title}"`,g.current);if(v!==null){g.current=num(v);commit()}return}
