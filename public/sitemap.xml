@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://selfstreak.com/</loc><lastmod>2026-11-10</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://selfstreak.com/credit-card-bill-reminder</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/emi-calculator</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/water-reminder</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/habit-tracker</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/expense-tracker</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/debt-payoff-planner</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://selfstreak.com/calorie-protein-tracker</loc><lastmod>2026-11-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://selfstreak.com/terms</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://selfstreak.com/privacy</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://selfstreak.com/refunds</loc><lastmod>2026-11-10</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
