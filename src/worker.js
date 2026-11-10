@@ -340,6 +340,23 @@ async function api(req, env, url) {
       return err(502, status === 429 || status === 529 ? 'The AI is busy right now. Try again in a minute.' : 'The AI couldn’t process that. Please try again.', { used: upstream ? row.count - 1 : row.count, limit });
     }
   }
+  if (p === '/api/stt' && m === 'POST') {
+    // Speech-to-text for the assistant mic (Whisper on Workers AI). We record the audio ourselves,
+    // so phones don't play their system dictation beep.
+    if (!env.AI) return err(501, 'no_stt');
+    if (planStatus(u) === 'expired') return err(402, 'trial_ended');
+    const buf = await req.arrayBuffer();
+    if (!buf.byteLength) return err(400, 'empty');
+    if (buf.byteLength > 4_000_000) return err(413, 'Recording too long. Keep it under a minute.');
+    const day = 'stt-' + istDay(), cap = Number(env.DAILY_STT_MB || 40) * 1_000_000;
+    const row = await env.DB.prepare('INSERT INTO usage (user_id, day, count) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET count = count + ? WHERE count + ? <= ? RETURNING count').bind(u.id, day, buf.byteLength, buf.byteLength, buf.byteLength, cap).first();
+    if (!row) return err(429, 'Voice limit reached for today. Type instead, or try tomorrow.');
+    let bin = ''; const bytes = new Uint8Array(buf); for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    try {
+      const r = await env.AI.run('@cf/openai/whisper-large-v3-turbo', { audio: btoa(bin), task: 'transcribe', vad_filter: true, initial_prompt: 'Indian English and Hinglish about habits, steps, water, gym, rupees, bills, EMI, Zomato, Swiggy, UPI.' });
+      return json({ text: String(r?.text || '').trim() });
+    } catch (e) { console.error('stt', e); return err(502, 'Couldn’t understand that. Please try again.'); }
+  }
   if (p === '/api/tts' && m === 'POST') {
     // Natural voice for talk-back (Deepgram Aura-2 on Workers AI). Capped per user per day.
     if (!env.AI) return err(501, 'no_tts');

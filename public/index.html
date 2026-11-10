@@ -679,6 +679,7 @@ main{padding-bottom:110px!important}
 .as-chip svg.ok{color:var(--lime-text);width:16px;height:16px;stroke-width:2.6}
 .as-btns{display:flex;flex-wrap:wrap;gap:6px}
 .as-bar{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
+.as-bar .as-btn.go.on{box-shadow:0 0 0 calc(var(--lvl,0) * 16px) color-mix(in srgb,var(--lime) 30%,transparent);transition:box-shadow .08s linear}
 .as-field{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:4px 12px}
 .as-field textarea{display:block;width:100%;min-height:0;height:38px;border:0;background:none;padding:8px 0;resize:none;font-size:15.5px;line-height:22px;max-height:140px;outline:0;overflow-y:hidden;box-shadow:none}
 .as-field textarea:focus{outline:0}
@@ -3220,7 +3221,7 @@ async function asSend(){
   if(r.note)toast(r.note,'x');
   speak(r.reply||(r.res.length?spokenSummary(r.res):''));
 }
-async function asMic(){
+async function asMicSR(){
   if(!SR){toast('Voice needs Chrome, Edge or Safari. On iPhone, use the keyboard’s 🎤 key.','x');$('#asIn')?.focus();return}
   stopSpeak();try{asRec?.abort()}catch(e){}
   await micHint();if(NV.tip){toast(NV.tip,'mic');NV.tip=''}
@@ -3234,10 +3235,54 @@ async function asMic(){
   try{asRec.start()}catch(e){AS.listening=false;renderAsst()}
 }
 function asStop(send,ended){
+  if(asMR&&asMR.state!=='inactive'){asRecStop(send);return}
   clearTimeout(asSil);if(!AS.listening)return;AS.listening=false;
   if(AS.interim)AS.draft=(AS.draft+' '+AS.interim).trim();AS.interim='';
   if(!ended)try{asRec?.stop()}catch(e){}
   renderAsst();if(send&&AS.draft.trim())asSend();
+}
+/* Mic: record audio ourselves (no system dictation beep), soft chime, auto-stop on silence, transcribe on the server. */
+let asMR=null,asStream=null,asChunks=[],asRaf=0,asSend2=false;
+function chime(up){try{unlockAudio();if(!actx)return;const t=actx.currentTime+.01,notes=up?[659.25,987.77]:[783.99,523.25];notes.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain(),st=t+i*.085;o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,st);g.gain.linearRampToValueAtTime(.09,st+.02);g.gain.exponentialRampToValueAtTime(.0001,st+.42);o.connect(g);g.connect(actx.destination);o.start(st);o.stop(st+.45)});if(navigator.vibrate)navigator.vibrate(up?12:8)}catch(e){}}
+const canRec=()=>!!(navigator.mediaDevices?.getUserMedia&&window.MediaRecorder&&account&&navigator.onLine&&!ui.sttOff&&account.user.status!=='expired');
+async function asMic(){
+  if(!canRec())return asMicSR();
+  stopSpeak();unlockAudio();
+  try{asStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){toast(e?.name==='NotAllowedError'?'Microphone is blocked. Allow it for this site in your browser or phone settings.':'Couldn’t start the microphone.','x');return}
+  const mt=['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg;codecs=opus'].find(t=>window.MediaRecorder.isTypeSupported?.(t))||'';
+  asChunks=[];try{asMR=new MediaRecorder(asStream,mt?{mimeType:mt}:undefined)}catch(e){asStream.getTracks().forEach(t=>t.stop());return asMicSR()}
+  asMR.ondataavailable=e=>{if(e.data&&e.data.size)asChunks.push(e.data)};
+  asMR.onstop=()=>asTranscribe();
+  AS.listening=true;AS.interim='';AS.heard=false;renderAsst();chime(true);
+  setTimeout(()=>{try{if(asMR.state==='inactive')asMR.start(250)}catch(e){}},260);
+  let an=null,data=null;try{const src=actx.createMediaStreamSource(asStream);an=actx.createAnalyser();an.fftSize=1024;src.connect(an);data=new Uint8Array(an.fftSize)}catch(e){}
+  const t0=performance.now();let loud=t0;
+  const tick=()=>{if(!AS.listening)return;const now=performance.now();let rms=0;
+    if(an){an.getByteTimeDomainData(data);let sum=0;for(let i=0;i<data.length;i++){const x=(data[i]-128)/128;sum+=x*x}rms=Math.sqrt(sum/data.length)}
+    const b=$('#asst .as-btn.go');if(b)b.style.setProperty('--lvl',Math.min(1,rms*9).toFixed(2));
+    if(rms>.03){loud=now;if(now-t0>350)AS.heard=true}
+    if((AS.heard&&now-loud>1700)||(!AS.heard&&now-t0>9000)||now-t0>55000){asRecStop(true);return}
+    asRaf=requestAnimationFrame(tick)};
+  if(an)asRaf=requestAnimationFrame(tick);else asSil=setTimeout(()=>asRecStop(true),15000);
+}
+function asRecStop(send){
+  cancelAnimationFrame(asRaf);clearTimeout(asSil);if(!AS.listening&&!(asMR&&asMR.state!=='inactive'))return;
+  AS.listening=false;asSend2=!!send;chime(false);
+  try{if(asMR&&asMR.state!=='inactive')asMR.stop();else asTranscribe()}catch(e){asTranscribe()}
+  try{asStream?.getTracks().forEach(t=>t.stop())}catch(e){}
+  if(send)AS.busy=true;renderAsst();
+}
+async function asTranscribe(){
+  const parts=asChunks;asChunks=[];const type=asMR?.mimeType||'audio/webm';asMR=null;
+  if(!asSend2){AS.busy=false;renderAsst();return}
+  if(!AS.heard||!parts.length){AS.busy=false;renderAsst();toast('Didn’t hear anything. Tap the mic and speak.','mic');return}
+  try{const r=await fetch('/api/stt',{method:'POST',headers:{'content-type':type},body:new Blob(parts,{type}),credentials:'same-origin'});
+    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error&&!/^[a-z_]+$/.test(d.error)?d.error:'Couldn’t understand that.');
+    AS.busy=false;const text=String(d.text||'').trim();
+    if(!text){renderAsst();toast('Didn’t catch that. Try again a little closer to the mic.','mic');return}
+    AS.draft=((AS.draft||'')+' '+text).trim();renderAsst();asSend();
+  }catch(e){AS.busy=false;renderAsst();toast(e.message||'Voice didn’t work. Try again or type.','x')}
 }
 async function asCamera(){
   const file=await pickFile('image/*,application/pdf');if(!file)return;
@@ -3751,7 +3796,7 @@ matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>rend
 function afterOpen(){if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
 $('#dlg').addEventListener('close',()=>{if(imp){imp=null}$('#dlg').classList.remove('wide')});
 $('#voice').addEventListener('close',onNotesClose);
-$('#asst').addEventListener('close',()=>{clearTimeout(asSil);AS.listening=false;try{asRec?.abort()}catch(e){}});
+$('#asst').addEventListener('close',()=>{clearTimeout(asSil);if(asMR&&asMR.state!=='inactive')asRecStop(false);AS.listening=false;try{asRec?.abort()}catch(e){}});
 $('#asst').addEventListener('click',e=>{if(e.target===$('#asst'))closeDlg($('#asst'))});
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('hcard')){ui.nzOpen=e.target.open;saveUI()}},true);
 $('#voice').addEventListener('click',e=>{if(e.target===$('#voice'))closeDlg($('#voice'))});
