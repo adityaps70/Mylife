@@ -2421,28 +2421,53 @@ async function scanBill(){
   try{const r=await aiTask('receipt',{...(await fileToAI(file)),cats:impCats().filter(c=>!['Income','Salary (already counted)','Bill payment','EMI','Transfer / ignore'].includes(c)),bills:state.bills.map(b=>b.name)});billReview(r)}
   catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
 }
+const FREQS=[['none','One time'],['monthly','Every month'],['quarterly','Every 3 months'],['half-yearly','Every 6 months'],['yearly','Every year']];
+const normName=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function findBill(r){
+  if(r.matched_bill){const b=state.bills.find(x=>x.name===r.matched_bill);if(b)return b}
+  const n=normName(r.title||r.merchant),m=normName(r.merchant);if(!n&&!m)return null;
+  return state.bills.find(b=>{const x=normName(b.name);return x&&(x===n||x===m||(n&&(x.includes(n)||n.includes(x)))||(m&&m.length>3&&(x.includes(m)||m.includes(x))))})||null;
+}
+// Same amount, same payee (or close), within 5 days: almost certainly the same bill scanned twice.
+function dupTx(amount,title,date){const d=pd(date),n=normName(title);return state.tx.find(t=>num(t.amount)===num(amount)&&Math.abs(daysBetween(pd(t.date),d))<=5&&(!n||normName(t.payee).includes(n.slice(0,6))||n.includes(normName(t.payee).slice(0,6))))}
 function billReview(r){
-  const d=$('#dlg'),isBill=r.kind==='bill',match=state.bills.find(b=>b.name===r.matched_bill);
-  const FQ=[['none','One time'],['monthly','Every month'],['quarterly','Every 3 months'],['half-yearly','Every 6 months'],['yearly','Every year']];
-  d.innerHTML=`<form class="vbody" id="billf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${ic('receipt')} ${isBill?'Bill to pay':r.kind==='receipt'?'Receipt (already paid)':'Scanned document'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
-  ${r.summary?`<p class="small muted">${esc(r.summary)}</p>`:''}${match?`<div class="banner">${ic('tick')} Matches your bill “${esc(match.name)}”.</div>`:''}
-  <div class="review-grid"><div class="fld" style="grid-column:1/-1"><label>Name</label><input name="title" value="${esc(r.title||r.merchant||'Bill')}"></div>
+  const d=$('#dlg'),match=findBill(r),billish=r.kind==='bill'||r.recurring||!!match||['Utilities','Phone & Internet','Insurance','Subscriptions','Rent / Home','Credit card'].includes(r.bill_category);
+  const dueStr=r.due_date||'',billStr=r.bill_date||'',ref=dueStr||billStr||ds(today());
+  const paidDefault=r.kind==='receipt'||!!r.already_paid||(dueStr&&pd(dueStr)<today());
+  const freq0=match?.freq||(r.recurring&&r.frequency&&r.frequency!=='none'?r.frequency:billish?'monthly':'none');
+  d.innerHTML=`<form class="vbody" id="billf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${ic('receipt')} ${billish?'Scanned bill':'Receipt'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
+  ${r.summary?`<p class="small muted">${esc(r.summary)}</p>`:''}${match?`<div class="banner">${ic('tick')} This is your bill “${esc(match.name)}”. Saving will update it.</div>`:''}
+  <div class="review-grid"><div class="fld" style="grid-column:1/-1"><label>Name</label><input name="title" value="${esc(match?.name||r.title||r.merchant||'Bill')}"></div>
   <div class="fld"><label>Amount (₹)</label><input name="amount" type="number" step="any" value="${num(r.amount)||''}"></div>
-  <div class="fld"><label>${isBill?'Due date':'Date'}</label><input name="date" type="date" value="${esc((isBill?r.due_date:r.bill_date)||r.bill_date||ds(today()))}"></div>
-  ${isBill?`<div class="fld"><label>Repeats</label><select name="freq">${FQ.map(([v,l])=>`<option value="${v}" ${(r.recurring?r.frequency:'none')===v?'selected':''}>${l}</option>`).join('')}</select></div><div class="fld"><label>Bill type</label><select name="bcat">${BILL_CATS.map(c=>`<option ${c===r.bill_category?'selected':''}>${esc(c)}</option>`).join('')}</select></div>`
-  :`<div class="fld" style="grid-column:1/-1"><label>Spending category</label><select name="scat">${state.expenses.map(e=>e.name).concat('Other').map(c=>`<option ${c===r.spend_category?'selected':''}>${esc(c)}</option>`).join('')}</select></div>`}</div>
-  <div class="dlg-actions">${isBill?'<button type="button" class="btn" data-paidnow>Already paid · log it</button>':''}<span style="flex:1"></span><button type="button" class="btn" data-x>Cancel</button><button class="btn lime">${isBill?'Save & remind me':'Log expense'}</button></div></form>`;
+  <div class="fld"><label>${billish?'Due date':'Date'}</label><input name="date" type="date" value="${esc(ref)}"></div>
+  <div class="fld"><label>Repeats</label><select name="freq">${FREQS.map(([v,l])=>`<option value="${v}" ${freq0===v?'selected':''}>${l}</option>`).join('')}</select></div>
+  <div class="fld"><label>Bill type</label><select name="bcat">${BILL_CATS.map(c=>`<option ${c===(match?.category||r.bill_category)?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+  <div class="fld" style="grid-column:1/-1"><label>Spending category</label><select name="scat">${state.expenses.map(e=>e.name).concat('Other').map(c=>`<option ${c===r.spend_category?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+  <label class="cbx" style="grid-column:1/-1"><input type="checkbox" name="paid" ${paidDefault?'checked':''}> Already paid: log it as an expense${billStr&&dueStr?` (bill of ${fmt(pd(billStr),{day:'numeric',month:'short'})})`:''}</label></div>
+  <p class="tiny muted" id="brHint"></p>
+  <div class="dlg-actions"><span style="flex:1"></span><button type="button" class="btn" data-x>Cancel</button><button class="btn lime" id="brSave">Save</button></div></form>`;
   if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));
-  const read=()=>Object.fromEntries(new FormData($('#billf')));
-  const logPaid=(v)=>{const dt=v.date||ds(today()),dd=pd(dt);state.tx.push({id:uid(),date:dt,payee:v.title,category:v.scat||state.expenses.find(e=>/util|bill/i.test(e.name))?.name||'Other',amount:num(v.amount),dir:'out',method:'UPI',note:'Scanned bill'});if(match)state.paid[`B:${match.id}|${ym(dd.getFullYear(),dd.getMonth())}`]=true};
-  const pn=d.querySelector('[data-paidnow]');if(pn)pn.onclick=()=>{const v=read();if(!num(v.amount))return toast('Add the amount','x');logPaid(v);closeDlg(d);commit();toast('Logged as paid','receipt')};
-  $('#billf').onsubmit=e=>{e.preventDefault();const v=read();if(!num(v.amount))return toast('Add the amount','x');
-    if(!isBill){logPaid(v);closeDlg(d);commit();toast(`Logged ${inr(num(v.amount))} · ${v.title}`,'receipt');return}
-    const due=pd(v.date||ds(today()));
-    if(match){Object.assign(match,{amount:num(v.amount),dueDay:due.getDate()});delete match.sample;toast(`Updated “${match.name}”: ${inr(num(v.amount))} due ${fmt(due,{day:'numeric',month:'short'})}`,'receipt')}
-    else if(v.freq&&v.freq!=='none'){state.bills.push({id:uid(),name:v.title,category:v.bcat||'Other',amount:num(v.amount),freq:v.freq,dueDay:due.getDate(),startMonth:due.getMonth(),autopay:false,notes:'Added from a scanned bill'});toast(`Bill added · you’ll be reminded 2 days before each due date`,'receipt')}
-    else{state.reminders.push({id:uid(),title:`Pay ${v.title}`,type:'Bill/Payment',date:ds(due),repeat:'none',lead:2,amount:num(v.amount),notes:'From a scanned bill'});toast(`Reminder set for ${fmt(due,{day:'numeric',month:'short'})}`,'bell')}
-    closeDlg(d);commit();burst(...lastXY,14)};
+  const F=$('#billf'),read=()=>Object.fromEntries(new FormData(F)),hint=$('#brHint');
+  const upd=()=>{const v=read(),rep=v.freq!=='none',paid=!!v.paid;hint.textContent=[rep?(match?`Updates “${match.name}” to ${inr(num(v.amount))} ${FREQS.find(f=>f[0]===v.freq)[1].toLowerCase()}.`:`Adds a bill to Bills, ${FREQS.find(f=>f[0]===v.freq)[1].toLowerCase()}, with reminders.`):(paid?'':'Sets a one-time reminder.'),paid?'Logs the payment and marks that bill paid.':''].filter(Boolean).join(' ');$('#brSave').textContent=rep?(paid?'Save bill & log payment':'Save bill & remind me'):(paid?'Log expense':'Remind me')};
+  F.oninput=upd;upd();
+  let done=false;
+  F.onsubmit=e=>{e.preventDefault();if(done)return;const v=read(),amt=num(v.amount);if(!amt)return toast('Add the amount','x');
+    const date=v.date||ds(today()),due=pd(date),paid=!!v.paid;
+    if(paid){const dup=dupTx(amt,v.title,billStr||date);if(dup&&!confirm(`You already logged ${inr(amt)} to “${dup.payee}” on ${fmt(pd(dup.date),{day:'numeric',month:'short'})}. Log it again?`))return}
+    done=true;$('#brSave').disabled=true;
+    let bill=match,msg=[];
+    if(v.freq!=='none'){
+      const step={monthly:1,quarterly:3,'half-yearly':6,yearly:12}[v.freq]||1;
+      if(bill){Object.assign(bill,{name:v.title||bill.name,amount:amt,freq:v.freq,dueDay:due.getDate(),startMonth:due.getMonth(),category:v.bcat||bill.category});delete bill.sample;msg.push(`Updated “${bill.name}”`)}
+      else{bill={id:uid(),name:v.title,category:v.bcat||'Other',amount:amt,freq:v.freq,dueDay:due.getDate(),startMonth:due.getMonth(),autopay:false,notes:'Added from a scanned bill'};state.bills.push(bill);msg.push(`Added “${bill.name}” to Bills`)}
+    }
+    if(paid){{state.tx.push({id:uid(),date:billStr&&pd(billStr)<=today()?billStr:(due<=today()?date:ds(today())),payee:v.title,category:v.scat||'Other',amount:amt,dir:'out',method:'UPI',note:'Scanned bill'})}
+      if(bill)state.paid[`B:${bill.id}|${ym(due.getFullYear(),due.getMonth())}`]=true;msg.push(`logged ${inr(amt)} as paid`)}
+    else if(v.freq==='none'){state.reminders.push({id:uid(),title:`Pay ${v.title}`,type:'Bill/Payment',date:ds(due),repeat:'none',lead:2,amount:amt,notes:'From a scanned bill'});msg.push(`reminder set for ${fmt(due,{day:'numeric',month:'short'})}`)}
+    else msg.push(`you’ll be reminded 2 days before ${fmt(due,{day:'numeric',month:'short'})}`);
+    closeDlg(d);commit();const t=msg.join(', ');toast(t.charAt(0).toUpperCase()+t.slice(1),'receipt');burst(...lastXY,14);
+    if($('#asst').open)asPush({who:'ai',text:t.charAt(0).toUpperCase()+t.slice(1)+'.'});
+  };
 }
 
 /* ---------- push from the server (works when the app is closed) ---------- */
@@ -3144,7 +3169,7 @@ function renderAsst(){
     if(a==='close')closeDlg(d);else if(a==='send')asSend();else if(a==='mic')AS.listening?asStop(true):asMic();else if(a==='camera')asCamera();
     else if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderAsst()}else if(a==='clear'){state.chat=[];save();renderAsst()}});
   d.querySelectorAll('[data-assugg]').forEach(b=>b.onclick=()=>{AS.draft=b.dataset.assugg;asSend()});
-  d.querySelectorAll('[data-asb]').forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.asb.split(':'),m=asMsgs().find(x=>x.id===id),fn=AS.cb[id+':'+k];if(m){m.used=true;save()}if(fn)fn();else renderAsst()});
+  d.querySelectorAll('[data-asb]').forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.asb.split(':'),m=asMsgs().find(x=>x.id===id),fn=AS.cb[id+':'+k];if(m?.used)return;if(m){m.used=true;save()}Object.keys(AS.cb).forEach(c=>{if(c.startsWith(id+':'))delete AS.cb[c]});renderAsst();if(fn)fn()});
   d.querySelectorAll('[data-asundo]').forEach(b=>b.onclick=()=>{const m=asMsgs().find(x=>x.id===b.dataset.asundo);if(!m||!m.undo)return;const chat=asMsgs(),notes=state.notes;state={...JSON.parse(m.undo),notes,chat};m.undone=true;delete m.undo;commit();renderAsst();toast('Undone','x');speak('Undone.')});
 }
 async function asSend(){
@@ -3207,8 +3232,8 @@ function asRoute(kind,r){
   }
   if(kind==='statement'){asAsk('This looks like a bank statement. Import its transactions?',[['Import transactions',()=>{closeDlg($('#asst'));openImport();runImport(AS.file)}],['Ignore',()=>asPush({who:'ai',text:'Okay, nothing imported.'})]]);return}
   const doc=r.doc||{};doc.kind=kind;
-  const desc=kind==='bill'?`a ${esc(doc.title||doc.merchant||'bill')} bill for ${inr(num(doc.amount))}${doc.due_date?`, due ${fmt(pd(doc.due_date),{day:'numeric',month:'short'})}`:''}`:`a receipt from ${esc(doc.merchant||doc.title||'a shop')} for ${inr(num(doc.amount))}`;
-  asAsk(`Looks like ${desc}.`,[[kind==='bill'?'Review & save':'Review & log',()=>billReview(doc)],['Not right',()=>asRoute('other',{confident:false})]]);
+  const desc=kind==='bill'||doc.recurring?`a ${esc(doc.title||doc.merchant||'bill')} bill${doc.already_paid?' (already paid)':''} for ${inr(num(doc.amount))}${doc.due_date?`, due ${fmt(pd(doc.due_date),{day:'numeric',month:'short'})}`:''}`:`a receipt from ${esc(doc.merchant||doc.title||'a shop')} for ${inr(num(doc.amount))}`;
+  asAsk(`Looks like ${desc}.`,[[kind==='bill'||doc.recurring?'Review & save bill':'Review & log',()=>billReview(doc)],['Not right',()=>asRoute('other',{confident:false})]]);
 }
 
 /* ================= Notes page (plain notes; filing is optional) ================= */
