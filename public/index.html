@@ -470,7 +470,18 @@ svg.bars text{fill:var(--faint);font-size:11px;font-family:inherit}
 .hm-legend span{display:inline-flex;gap:5px;align-items:center}
 .hm-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .cairn{display:block;margin:4px auto 0;overflow:visible}
-.cairn .st.new{animation:drop .75s var(--spring) backwards;animation-delay:calc(var(--s)*110ms + .15s)}
+.cairn .st.new{animation:cnDrop .62s cubic-bezier(.5,0,.75,.4) backwards,cnSettle .5s ease-out;animation-delay:calc(var(--s)*110ms + .15s),calc(var(--s)*110ms + .77s);transform-box:fill-box;transform-origin:50% 100%}
+@keyframes cnDrop{from{opacity:0;transform:translateY(-110px) rotate(-6deg)}20%{opacity:1}to{transform:translateY(0)}}
+@keyframes cnSettle{0%{transform:scale(1.05,.9)}35%{transform:scale(.98,1.03) rotate(1.6deg)}65%{transform:rotate(-.8deg)}100%{transform:none}}
+.cairn .cn-rim{fill:none;stroke:rgba(0,0,0,.28);stroke-width:.7}
+.cairn .cn-contact{fill:rgba(0,0,0,.45);filter:url(#cnBlur)}
+.cairn .cn-ground{fill:rgba(0,0,0,.4);filter:url(#cnBlur)}
+.cairn .cn-ghost{fill:color-mix(in srgb,var(--text) 3%,transparent);stroke:var(--faint);stroke-opacity:.45;stroke-dasharray:3 4;stroke-width:1}
+.cairn .cn-dust circle{fill:#d8cfbf;opacity:0}
+.cairn .st.new .cn-dust circle{animation:cnDust .6s ease-out backwards;animation-delay:calc(var(--s)*110ms + .76s)}
+@keyframes cnDust{0%{opacity:.75;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.4)}}
+.cairn .cn-glow{fill:none;stroke:#e8ff8a;stroke-width:2;filter:url(#cnBlur);opacity:.9;animation:cnPulse 2.2s ease-in-out infinite}
+@keyframes cnPulse{50%{opacity:.35}}
 @keyframes drop{from{opacity:0;transform:translateY(-70px)}}
 .moods{display:flex;gap:9px;align-items:center}
 .mood{width:22px;height:22px;border-radius:50%;border:0;cursor:pointer;padding:0;background:color-mix(in srgb,var(--lime) calc(var(--m)*19%),var(--line2))}
@@ -2145,14 +2156,43 @@ function heatmap(){
   let months='<span></span>',last=-1;for(let c=0;c<16;c++){const d=addDays(start,c*7);months+=`<span>${d.getMonth()!==last?MONTHS[d.getMonth()]:''}</span>`;last=d.getMonth()}
   return `<div class="heat">${cells}</div><div class="hm-months">${months}</div>`}
 let cairnFrom=0;
+// Realistic stone cairn: organic pebble outlines, stone shading + grain, slight tilt, contact shadows.
+const CAIRN_TONES=[['#b9b2a6','#7d766b'],['#c7b29c','#8c735c'],['#a7b0ad','#6b7672'],['#c9bfae','#8f8370'],['#9ea6ab','#626b72'],['#bfae9f','#85705f'],['#b3b9ab','#757d6d'],['#d3cab8','#958a76']];
+function cnRand(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
+function stonePath(cx,cy,rx,ry,seed){const R=cnRand(seed),N=11,P=[];
+  for(let k=0;k<N;k++){const a=k/N*Math.PI*2+R()*.12,j=1+(R()-.5)*.14,sy=Math.sin(a),bot=sy>0;
+    P.push([cx+Math.cos(a)*rx*j,cy+sy*ry*j*(bot?.78:1.04)])}
+  let d=`M${P[0][0].toFixed(1)} ${P[0][1].toFixed(1)}`;
+  for(let k=0;k<N;k++){const p0=P[(k-1+N)%N],p1=P[k],p2=P[(k+1)%N],p3=P[(k+2)%N],t=.2;
+    d+=`C${(p1[0]+(p2[0]-p0[0])*t).toFixed(1)} ${(p1[1]+(p2[1]-p0[1])*t).toFixed(1)} ${(p2[0]-(p3[0]-p1[0])*t).toFixed(1)} ${(p2[1]-(p3[1]-p1[1])*t).toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`}
+  return d+'Z'}
 function cairn(done,total){
-  const slots=8,n=total?Math.min(slots,Math.round(done/total*slots)):0,tones=['#d8d2c4','#c9a58f','#a9b6a7','#9fb3c4','#cfc7ab','#d3ac96','#b9c6b1','#e4ddcb'];
-  const from=pageChanged?0:cairnFrom;cairnFrom=n;let y=146,s='';
-  for(let i=0;i<slots;i++){const w=118-i*10,h=23-i*1.3,cy=y-h/2;
-    s+=i<n?`<g class="st ${i>=from?'new':''}" style="--s:${Math.max(0,i-from)}"><ellipse cx="100" cy="${cy.toFixed(1)}" rx="${w/2}" ry="${(h/2).toFixed(1)}" style="fill:${n===slots&&i===slots-1?'var(--lime)':tones[i]}"/><ellipse cx="100" cy="${cy.toFixed(1)}" rx="${w/2}" ry="${(h/2).toFixed(1)}" fill="url(#stoneHi)"/></g>`
-      :`<ellipse cx="100" cy="${cy.toFixed(1)}" rx="${w/2}" ry="${(h/2).toFixed(1)}" style="fill:none;stroke:var(--faint);stroke-opacity:.6;stroke-dasharray:3 4"/>`;
-    y-=h-4}
-  return `<svg class="cairn" viewBox="0 0 200 150" width="100%" style="max-width:210px" role="img" aria-label="${n} of ${slots} stones">${s}</svg>`}
+  const slots=8,n=total?Math.min(slots,Math.round(done/total*slots)):0,full=n===slots;
+  const from=pageChanged?0:cairnFrom;const adding=!pageChanged&&n>cairnFrom;cairnFrom=n;
+  let y=196,defs='',st='',ghost='',shadows='';
+  for(let i=0;i<slots;i++){
+    const R=cnRand(1000+i*7919),w=108-i*8.5+(R()-.5)*10,h=33-i*1.6+(R()-.5)*4,cx=100+(R()-.5)*(6+i*1.2),cy=y-h*.5,rot=((R()-.5)*(5+i*1.4)).toFixed(1);
+    const d=stonePath(cx,cy,w/2,h/2,4242+i*131),[c1,c2]=full&&i===slots-1?['#e8ff8a','#9fbf1d']:CAIRN_TONES[i];
+    defs+=`<linearGradient id="cnG${i}" x1="0" y1="0" x2=".25" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
+    if(i<n){const isNew=i>=from;
+      st+=`<g class="st ${isNew?'new':''}" style="--s:${Math.max(0,i-from)}"><g transform="rotate(${rot} ${cx.toFixed(1)} ${(cy+h*.3).toFixed(1)})">
+        ${i>0?`<ellipse class="cn-contact" cx="${cx.toFixed(1)}" cy="${(cy+h*.42).toFixed(1)}" rx="${(w*.42).toFixed(1)}" ry="3.2"/>`:''}
+        <path d="${d}" fill="url(#cnG${i})"/><path d="${d}" fill="url(#cnHi)"/><path d="${d}" fill="#000" filter="url(#cnTex)" opacity=".55"/><path d="${d}" class="cn-rim"/>
+        ${full&&i===slots-1?`<path d="${d}" class="cn-glow"/>`:''}
+        <g class="cn-dust">${[-1,1].map(sg=>[0,1,2].map(k=>`<circle cx="${(cx+sg*(w*.38+k*3)).toFixed(1)}" cy="${(cy+h*.38).toFixed(1)}" r="${(1.6+k*.5).toFixed(1)}" style="--dx:${sg*(10+k*7)}px;--dy:${-(3+k*3)}px"/>`).join('')).join('')}</g>
+      </g></g>`}
+    else ghost+=`<path d="${d}" transform="rotate(${rot} ${cx.toFixed(1)} ${(cy+h*.3).toFixed(1)})" class="cn-ghost"/>`;
+    y-=h*.78}
+  if(adding&&state.profile.motion!=='off'&&!RM())for(let i=from;i<n;i++)setTimeout(()=>cnClack(i),150+(i-from)*110+420);
+  return `<svg class="cairn ${full?'full':''}" viewBox="0 -8 200 212" width="100%" style="max-width:200px" role="img" aria-label="${n} of ${slots} stones">
+  <defs>${defs}<radialGradient id="cnHi" cx=".32" cy=".22" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient>
+  <filter id="cnTex" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.35" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 1.12"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+  <filter id="cnBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter></defs>
+  <ellipse cx="100" cy="197" rx="${n?62:48}" ry="6" class="cn-ground"/>${ghost}${st}</svg>`}
+function cnClack(i){if(state.game&&state.game.sound===false)return;try{unlockAudio();const a=actx;if(!a)return;const t=a.currentTime+.003,len=Math.floor(a.sampleRate*.12),b=a.createBuffer(1,len,a.sampleRate),dd=b.getChannelData(0);for(let k=0;k<len;k++)dd[k]=(Math.random()*2-1)*Math.exp(-k/(a.sampleRate*.012));
+  const n=a.createBufferSource();n.buffer=b;const bp=a.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1700+i*120+Math.random()*300;bp.Q.value=3.5;const g=a.createGain();g.gain.value=.5;n.connect(bp);bp.connect(g);g.connect(a.destination);n.start(t);
+  const o=a.createOscillator(),g2=a.createGain();o.type='sine';o.frequency.setValueAtTime(260-i*8,t);o.frequency.exponentialRampToValueAtTime(110,t+.08);g2.gain.setValueAtTime(.0001,t);g2.gain.linearRampToValueAtTime(.12,t+.003);g2.gain.exponentialRampToValueAtTime(.0001,t+.12);o.connect(g2);g2.connect(a.destination);o.start(t);o.stop(t+.15);
+  try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}catch(e){}}
 
 function pHealth(){
   const t=today(),k=ds(t),log=state.health.logs[k]||{},w=num(log.water);
