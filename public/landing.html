@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Self Streak · Habits, money and reminders in one app</title>
+<meta name="description" content="Self Streak keeps your habits, health, bills, EMIs, credit cards and reminders in one place. Log anything by voice or photo. 7-day free trial, then ₹499/month.">
+<meta name="theme-color" content="#09090b">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="Self Streak">
+<meta property="og:description" content="Your whole life, one streak. Habits, money and reminders in one app.">
+<meta property="og:image" content="icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#09090b;--bg2:#0f0f12;--card:#141418;--card2:#1a1a1f;--line:#26262c;--line2:#34343c;--text:#f4f4f5;--muted:#a1a1aa;--faint:#71717a;
+  --lime:#d7f64a;--ink:#10120a;--cyan:#45dfe6;--orange:#ff8a4c;--red:#ff4f6e;--violet:#a78bfa;--green:#6fe28a;--yellow:#f5c84c;
+  --spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 20px;border-radius:999px;font:600 15px/1 inherit;font-family:inherit;border:1px solid var(--line2);background:var(--card);color:var(--text);cursor:pointer;transition:transform .2s var(--spring),filter .2s,background .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn.lime{background:var(--lime);color:var(--ink);border-color:transparent}
+.btn.lime:hover{filter:brightness(1.06)}
+.btn.lg{height:54px;padding:0 26px;font-size:16px}
+svg.i{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+nav.scrolled{border-color:var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.brand svg{width:34px;height:34px}
+nav .links{display:flex;gap:22px;margin-left:12px;color:var(--muted);font-size:14.5px;font-weight:500}
+nav .links a:hover{color:var(--text)}
+nav .sp{flex:1}
+nav .login{color:var(--muted);font-weight:600;font-size:14.5px}
+nav .login:hover{color:var(--text)}
+nav .btn{height:40px;font-size:14px;padding:0 16px}
+
+/* hero */
+.hero{position:relative;padding:70px 0 40px}
+.glow{position:absolute;inset:-120px 0 auto;height:820px;pointer-events:none;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent);background:radial-gradient(600px 380px at 20% 30%,color-mix(in srgb,var(--lime) 16%,transparent),transparent 70%),radial-gradient(520px 360px at 85% 20%,color-mix(in srgb,var(--cyan) 12%,transparent),transparent 70%),radial-gradient(500px 300px at 60% 90%,color-mix(in srgb,var(--violet) 12%,transparent),transparent 70%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:13px;color:var(--muted);font-weight:500}
+.eyebrow b{color:var(--lime);font-weight:700}
+h1{font-size:clamp(40px,6.2vw,72px);line-height:1.02;letter-spacing:-.035em;margin:18px 0 18px;font-weight:800}
+h1 .hl{color:var(--lime);position:relative;white-space:nowrap}
+h1 .hl svg{position:absolute;left:0;right:0;bottom:-10px;width:100%;height:14px}
+h1 .hl path{stroke:var(--lime);stroke-width:4;fill:none;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;animation:draw 1.2s .6s var(--ease) forwards}
+.lead{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:540px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:22px;color:var(--faint);font-size:13.5px}
+.trust span{display:inline-flex;align-items:center;gap:6px}
+.trust svg{color:var(--lime);width:16px;height:16px}
+
+/* phone mockup */
+.phone{position:relative;justify-self:center;width:min(330px,86vw);aspect-ratio:9/18.5;border-radius:44px;padding:12px;background:linear-gradient(160deg,#2a2a31,#0d0d10);box-shadow:0 40px 120px -30px color-mix(in srgb,var(--lime) 30%,transparent),0 0 0 1px var(--line2) inset;animation:float 7s ease-in-out infinite}
+.screen{position:relative;height:100%;border-radius:34px;background:var(--bg2);overflow:hidden;padding:44px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:90px;height:24px;border-radius:20px;background:#000}
+.m-top{display:flex;align-items:center;justify-content:space-between}
+.m-top b{font-size:17px}
+.m-top small{color:var(--faint);font-size:11px;display:block}
+.ring{width:46px;height:46px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:6}
+.ring .bg{stroke:var(--line)}
+.ring .fg{stroke:var(--lime);stroke-linecap:round;stroke-dasharray:126;stroke-dashoffset:126;animation:ring 2.2s .4s var(--ease) forwards}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700}
+.m-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px}
+.m-card h6{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between}
+.hab{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:5px 0}
+.hab i{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--line2);display:grid;place-items:center;flex:none}
+.hab i svg{width:12px;height:12px;stroke:var(--ink);stroke-width:3;opacity:0}
+.hab.on i{animation:tick .5s var(--spring) forwards}
+.hab.on i svg{animation:fade .3s forwards}
+.hab:nth-child(2).on i,.hab:nth-child(2).on i svg{animation-delay:1.2s}
+.hab:nth-child(3).on i,.hab:nth-child(3).on i svg{animation-delay:1.8s}
+.hab:nth-child(4).on i,.hab:nth-child(4).on i svg{animation-delay:2.4s}
+.glasses{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.gl{height:28px;border-radius:4px 4px 7px 7px;border:1.5px solid color-mix(in srgb,var(--cyan) 50%,var(--line2));position:relative;overflow:hidden}
+.gl::after{content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(var(--cyan),color-mix(in srgb,var(--cyan) 60%,#0a4a50));animation:fill 1s var(--ease) forwards}
+.gl:nth-child(1)::after{animation-delay:.8s}.gl:nth-child(2)::after{animation-delay:1.1s}.gl:nth-child(3)::after{animation-delay:1.4s}.gl:nth-child(4)::after{animation-delay:1.7s}.gl:nth-child(5)::after{animation-delay:2s}
+.gl:nth-child(n+6)::after{display:none}
+.bill{display:flex;align-items:center;gap:10px;font-size:12.5px}
+.bill .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--violet) 18%,transparent);color:var(--violet)}
+.bill .ic svg{width:15px;height:15px}
+.bill .nb{flex:1}.bill small{color:var(--faint);display:block;font-size:11px}
+.bill b{font-size:13px}
+.m-ask{margin-top:auto;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:6px 6px 6px 14px;font-size:12.5px;color:var(--faint)}
+.m-ask .typed{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;border-right:2px solid var(--lime);width:0;animation:type 2.4s steps(30) 3s forwards,caret .8s step-end infinite}
+.m-ask .mic{width:32px;height:32px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:var(--ink);flex:none}
+.m-ask .mic svg{width:15px;height:15px}
+.toast{position:absolute;left:14px;right:14px;top:40px;background:color-mix(in srgb,var(--card2) 92%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:16px;padding:10px 12px;display:flex;gap:10px;align-items:center;font-size:12px;transform:translateY(-140%);opacity:0;animation:toast 6s 5.6s var(--ease) infinite}
+.toast .ic{width:28px;height:28px;border-radius:8px;background:var(--lime);display:grid;place-items:center;flex:none}
+.toast .ic svg{width:15px;height:15px;stroke:var(--ink)}
+.toast b{display:block;font-size:12.5px}
+.toast span{color:var(--muted)}
+.chip-float{position:absolute;padding:8px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line2);font-size:12.5px;font-weight:600;display:flex;gap:8px;align-items:center;box-shadow:0 20px 40px -20px #000}
+.chip-float svg{width:15px;height:15px}
+.cf1{left:-70px;top:24%;animation:float 6s 1s ease-in-out infinite}
+.cf2{right:-60px;top:58%;animation:float 6.5s .4s ease-in-out infinite}
+.cf1 svg{color:var(--orange)}.cf2 svg{color:var(--green)}
+
+/* sections */
+section{padding:90px 0;position:relative}
+.kicker{color:var(--lime);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+h2{font-size:clamp(30px,4.2vw,48px);line-height:1.08;letter-spacing:-.03em;margin:12px 0 14px;font-weight:800}
+.sub{color:var(--muted);font-size:17px;max-width:600px}
+.center{text-align:center}.center .sub{margin:0 auto}
+.strip{padding:26px 0;border-block:1px solid var(--line);overflow:hidden}
+.marq{display:flex;gap:42px;width:max-content;animation:marq 38s linear infinite;color:var(--muted);font-weight:600;font-size:15px}
+.marq span{display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.marq svg{color:var(--lime)}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.feat{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px;position:relative;overflow:hidden;transition:transform .35s var(--spring),border-color .3s}
+.feat:hover{transform:translateY(-4px);border-color:var(--line2)}
+.feat .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.feat .ic svg{width:22px;height:22px}
+.feat h3{font-size:19px;margin-bottom:8px;letter-spacing:-.01em}
+.feat p{color:var(--muted);font-size:14.5px}
+.feat.big{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+.feat::before{content:"";position:absolute;inset:auto -40% -60% auto;width:240px;height:240px;border-radius:50%;background:radial-gradient(color-mix(in srgb,var(--c) 18%,transparent),transparent 70%);opacity:0;transition:opacity .4s}
+.feat:hover::before{opacity:1}
+
+.demo-chat{display:grid;gap:8px;font-size:13px}
+.bub{padding:9px 12px;border-radius:14px;max-width:88%;opacity:0;transform:translateY(8px)}
+.in .bub{animation:rise .5s var(--spring) forwards}
+.bub.me{justify-self:end;background:color-mix(in srgb,var(--lime) 16%,var(--card2));border:1px solid color-mix(in srgb,var(--lime) 30%,transparent);border-bottom-right-radius:5px}
+.bub.ai{background:var(--card2);border:1px solid var(--line);border-bottom-left-radius:5px}
+.bub.ai div{display:flex;gap:8px;align-items:center;padding:3px 0}
+.bub.ai i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.in .bub:nth-child(2){animation-delay:.5s}.in .bub:nth-child(3){animation-delay:1.1s}.in .bub:nth-child(4){animation-delay:1.6s}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px;counter-reset:s}
+.step{padding:26px;border-radius:24px;border:1px dashed var(--line2);position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:22px;right:24px;font-size:48px;font-weight:800;color:var(--line2);line-height:1}
+.step .ic{width:46px;height:46px;border-radius:50%;background:var(--lime);color:var(--ink);display:grid;place-items:center;margin-bottom:16px}
+.step h3{font-size:19px;margin-bottom:6px}
+.step p{color:var(--muted);font-size:14.5px}
+
+.money{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px}
+.mcard .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.mcard .big{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:8px 0 18px}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width 1.6s var(--ease)}
+.in .bar i{width:var(--w)}
+.cb{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cb>div{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--card2)}
+.cb>div.next{border-style:dashed}
+.cb small{color:var(--faint);font-size:11px;font-weight:600;letter-spacing:.06em}
+.cb b{display:block;font-size:20px;margin:2px 0}
+.cb span{color:var(--muted);font-size:12px}
+ul.ticks{list-style:none;display:grid;gap:12px;margin-top:22px}
+ul.ticks li{display:flex;gap:10px;color:var(--muted)}
+ul.ticks li b{color:var(--text)}
+ul.ticks svg{color:var(--lime);margin-top:3px}
+
+.pricing{display:grid;place-items:center;margin-top:40px}
+.price-card{width:min(460px,100%);background:linear-gradient(180deg,color-mix(in srgb,var(--lime) 8%,var(--card)),var(--card));border:1px solid color-mix(in srgb,var(--lime) 35%,var(--line));border-radius:28px;padding:32px;position:relative}
+.price-card .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--lime);color:var(--ink);font-size:12px;font-weight:800;padding:5px 12px;border-radius:999px;letter-spacing:.04em}
+.price-card h3{font-size:20px}
+.amt{font-size:56px;font-weight:800;letter-spacing:-.04em;margin:8px 0 2px}
+.amt small{font-size:17px;color:var(--muted);font-weight:500;letter-spacing:0}
+.price-card .btn{width:100%;margin-top:24px}
+.fine{color:var(--faint);font-size:13px;margin-top:12px;text-align:center}
+
+.faq{max-width:760px;margin:40px auto 0;display:grid;gap:10px}
+details{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 20px}
+summary{list-style:none;cursor:pointer;padding:18px 0;font-weight:600;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--lime);font-size:22px;line-height:1;transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);padding:0 0 18px;font-size:15px}
+
+.final{margin:0 20px;border-radius:32px;padding:70px 20px;text-align:center;background:radial-gradient(500px 240px at 50% 0%,color-mix(in srgb,var(--lime) 22%,transparent),transparent 70%),var(--card);border:1px solid var(--line)}
+footer{padding:50px 0 40px;color:var(--faint);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}
+footer h4{color:var(--text);font-size:14px;margin-bottom:12px}
+footer a{display:block;padding:4px 0}
+footer a:hover{color:var(--text)}
+footer .legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}
+
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes ring{to{stroke-dashoffset:30}}
+@keyframes tick{to{background:var(--lime);border-color:var(--lime);transform:scale(1.08)}}
+@keyframes fade{to{opacity:1}}
+@keyframes fill{to{height:82%}}
+@keyframes type{to{width:100%}}
+@keyframes caret{50%{border-color:transparent}}
+@keyframes toast{0%,6%{transform:translateY(-140%);opacity:0}12%,48%{transform:none;opacity:1}56%,100%{transform:translateY(-140%);opacity:0}}
+@keyframes marq{to{transform:translateX(-50%)}}
+@keyframes rise{to{opacity:1;transform:none}}
+
+@media (max-width:920px){
+  .hero .wrap,.money{grid-template-columns:1fr}
+  .hero{padding-top:40px}
+  .phone{margin-top:20px}
+  .cf1{left:-14px}.cf2{right:-10px}
+  .grid,.steps{grid-template-columns:1fr}
+  .feat.big{grid-column:auto;grid-template-columns:1fr}
+  nav .links{display:none}
+  footer .wrap{grid-template-columns:1fr 1fr}
+  footer .wrap>div:first-child{grid-column:1/-1}
+}
+@media (max-width:420px){nav .wrap{gap:14px}nav .btn{padding:0 13px}.cb{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="#d7f64a"/><path d="M68 31c-3-9-11-14-21-14-12 0-20 7-20 16 0 21 47 13 47 35 0 10-9 17-22 17-11 0-20-5-24-14" fill="none" stroke="#10120a" stroke-width="12" stroke-linecap="round"/><circle cx="77" cy="23" r="7" fill="#10120a"/></symbol>
+  <symbol id="tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+  <symbol id="cam" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></symbol>
+  <symbol id="rupee" viewBox="0 0 24 24"><path d="M7 5h10M7 9h10M9.5 5c3.5 0 5 1.6 5 4s-2 4-5 4H7l7 6"/></symbol>
+  <symbol id="card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.5"/><path d="M3 10h18M7 15h3"/></symbol>
+  <symbol id="drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.5a6 6 0 0 1-12 0c0-4.1 6-10.5 6-10.5z"/></symbol>
+  <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></symbol>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="scissors" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M8 8.5L20 17M8 15.5L20 7"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+  <symbol id="phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 17.5h2"/></symbol>
+  <symbol id="receipt" viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3zM9 8h6M9 12h6"/></symbol>
+  <symbol id="flame" viewBox="0 0 24 24"><path d="M12 21a6 6 0 0 0 6-6c0-4-3-6-4-9-1.5 2-2 3.5-2 5-1-1-1.6-2-1.8-3.3C8.5 9.300 6 11.700 6 15a6 6 0 0 0 6 6z"/></symbol>
+  <symbol id="food" viewBox="0 0 24 24"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10M16 3c-1.7 0-3 2-3 5s1.3 4 3 4v9"/></symbol>
+</svg>
+
+<nav id="nav"><div class="wrap">
+  <a class="brand" href="/"><svg><use href="#logo"/></svg>Self Streak</a>
+  <div class="links"><a href="#features">Features</a><a href="#money">Money</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
+  <span class="sp"></span>
+  <a class="login" href="/app">Log in</a>
+  <a class="btn lime" href="/app#signup">Start free trial</a>
+</div></nav>
+
+<header class="hero">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow rv"><b>New</b> Snap a bill, a meal or a receipt and it logs itself</span>
+      <h1 class="rv d1">Your whole life,<br><span class="hl">one streak.<svg viewBox="0 0 300 14" preserveAspectRatio="none"><path d="M3 10 C 80 2, 180 2, 297 8"/></svg></span></h1>
+      <p class="lead rv d2">Habits, health, bills, EMIs, credit cards and every date that matters, in one calm app. Say it or snap it, and Self Streak files it and reminds you at the right time.</p>
+      <div class="cta rv d3">
+        <a class="btn lime lg" href="/app#signup">Start 7-day free trial <svg class="i"><use href="#arrow"/></svg></a>
+        <a class="btn lg" href="#features">See what it does</a>
+      </div>
+      <div class="trust rv d3">
+        <span><svg class="i"><use href="#tick"/></svg>No card needed for the trial</span>
+        <span><svg class="i"><use href="#tick"/></svg>Works on iPhone, Android and laptop</span>
+        <span><svg class="i"><use href="#tick"/></svg>Made in Lucknow 🇮🇳</span>
+      </div>
+    </div>
+    <div class="phone rv d2" aria-hidden="true">
+      <div class="screen">
+        <span class="notch"></span>
+        <div class="toast"><span class="ic"><svg class="i"><use href="#bell"/></svg></span><div><b>Water break 💧</b><span>You're at 5/12 glasses. One more now?</span></div></div>
+        <div class="m-top"><div><small>Tuesday, 10 Nov</small><b>Good morning, Aditya</b></div><div class="ring"><svg viewBox="0 0 50 50"><circle class="bg" cx="25" cy="25" r="20"/><circle class="fg" cx="25" cy="25" r="20"/></svg><span>76</span></div></div>
+        <div class="m-card"><h6>Today <span style="color:var(--lime)">🔥 12-day streak</span></h6>
+          <div class="hab on"><i><svg class="i"><use href="#tick"/></svg></i>Walk 10,000 steps</div>
+          <div class="hab on"><i><svg class="i"><use href="#tick"/></svg></i>Gym · upper body</div>
+          <div class="hab on"><i><svg class="i"><use href="#tick"/></svg></i>Sunscreen</div>
+          <div class="hab"><i><svg class="i"><use href="#tick"/></svg></i>Read 20 pages</div>
+        </div>
+        <div class="m-card"><h6>Water <span>5 / 12</span></h6><div class="glasses"><span class="gl"></span><span class="gl"></span><span class="gl"></span><span class="gl"></span><span class="gl"></span><span class="gl"></span></div></div>
+        <div class="m-card"><div class="bill"><span class="ic"><svg class="i"><use href="#card"/></svg></span><div class="nb">Credit card bill<small>Due 15 Nov · min ₹250</small></div><b>₹5,000</b></div></div>
+        <div class="m-ask"><span class="typed">spent 450 on Zomato, slept 7 h</span><span class="mic"><svg class="i"><use href="#mic"/></svg></span></div>
+      </div>
+      <div class="chip-float cf1"><svg class="i"><use href="#flame"/></svg>12-day streak</div>
+      <div class="chip-float cf2"><svg class="i"><use href="#tick"/></svg>EMI paid</div>
+    </div>
+  </div>
+</header>
+
+<div class="strip" aria-hidden="true"><div class="marq">
+  <span><svg class="i"><use href="#heart"/></svg>Daily habits</span><span><svg class="i"><use href="#drop"/></svg>Water tracker</span><span><svg class="i"><use href="#food"/></svg>Meal photos → macros</span><span><svg class="i"><use href="#receipt"/></svg>Bill & receipt scan</span><span><svg class="i"><use href="#card"/></svg>Credit cards & pay later</span><span><svg class="i"><use href="#rupee"/></svg>Budget & bank statements</span><span><svg class="i"><use href="#bell"/></svg>Push reminders</span><span><svg class="i"><use href="#scissors"/></svg>Grooming</span><span><svg class="i"><use href="#target"/></svg>Goals</span>
+  <span><svg class="i"><use href="#heart"/></svg>Daily habits</span><span><svg class="i"><use href="#drop"/></svg>Water tracker</span><span><svg class="i"><use href="#food"/></svg>Meal photos → macros</span><span><svg class="i"><use href="#receipt"/></svg>Bill & receipt scan</span><span><svg class="i"><use href="#card"/></svg>Credit cards & pay later</span><span><svg class="i"><use href="#rupee"/></svg>Budget & bank statements</span><span><svg class="i"><use href="#bell"/></svg>Push reminders</span><span><svg class="i"><use href="#scissors"/></svg>Grooming</span><span><svg class="i"><use href="#target"/></svg>Goals</span>
+</div></div>
+
+<section id="features"><div class="wrap">
+  <div class="center rv"><div class="kicker">Everything in one place</div><h2>Stop juggling five apps<br>and a notes file.</h2><p class="sub">Self Streak replaces your habit tracker, expense app, EMI sheet, reminder list and grocery-of-life notes.</p></div>
+  <div class="grid">
+    <div class="feat big rv" style="--c:var(--lime)">
+      <div><div class="ic"><svg class="i"><use href="#spark"/></svg></div><h3>Just say it. Or snap it.</h3><p>One bar for everything. Talk, type or point your camera at a meal, a bill or a receipt. Self Streak works out what it is and logs it in the right place. If it isn't sure, it asks.</p></div>
+      <div class="demo-chat rv">
+        <div class="bub me">did gym, 10k steps, paid rent 12000</div>
+        <div class="bub ai"><div><i style="--c:var(--green);background:var(--green)"></i>Gym ✓ · Steps 10,000</div><div><i style="background:var(--orange)"></i>− ₹12,000 · Rent</div></div>
+        <div class="bub me">📷 photo of dal-chawal</div>
+        <div class="bub ai"><div><i style="background:var(--yellow)"></i>≈ 520 kcal · 18 g protein</div></div>
+      </div>
+    </div>
+    <div class="feat rv d1" style="--c:var(--cyan)"><div class="ic"><svg class="i"><use href="#bell"/></svg></div><h3>Reminders that know you</h3><p>Water, habits, bills, birthdays and renewals, sent as real push notifications, even when the app is closed. Anything you've already done is skipped.</p></div>
+    <div class="feat rv" style="--c:var(--green)"><div class="ic"><svg class="i"><use href="#heart"/></svg></div><h3>Health, day by day</h3><p>Habits with streaks, steps, sleep, mood, weight and a 12-glass water tracker. Meals from a photo, with protein and calories.</p></div>
+    <div class="feat rv d1" style="--c:var(--orange)"><div class="ic"><svg class="i"><use href="#rupee"/></svg></div><h3>Money without spreadsheets</h3><p>Budget, bank-statement import, bills, EMIs, credit cards and pay later. See where the month went and when you'll be debt-free.</p></div>
+    <div class="feat rv d2" style="--c:var(--violet)"><div class="ic"><svg class="i"><use href="#scissors"/></svg></div><h3>Grooming & life admin</h3><p>Haircut due dates, products that are about to run out, a life checklist for insurance, documents and the things adults forget.</p></div>
+  </div>
+</div></section>
+
+<section style="padding-top:20px"><div class="wrap">
+  <div class="center rv"><div class="kicker">How it works</div><h2>Three taps a day.</h2></div>
+  <div class="steps">
+    <div class="step rv"><div class="ic"><svg class="i"><use href="#target"/></svg></div><h3>Set up in 2 minutes</h3><p>Tell it your wake time, gym time and what matters to you. It builds your daily routine and reminders.</p></div>
+    <div class="step rv d1"><div class="ic"><svg class="i"><use href="#mic"/></svg></div><h3>Log as you live</h3><p>Tick a habit, tap a glass, say what you spent or snap a bill. Everything updates everywhere.</p></div>
+    <div class="step rv d2"><div class="ic"><svg class="i"><use href="#flame"/></svg></div><h3>Keep the streak</h3><p>Gentle nudges at the right time, and a streak that shows how consistent you really are.</p></div>
+  </div>
+</div></section>
+
+<section id="money"><div class="wrap money">
+  <div class="rv"><div class="kicker">Money, finally clear</div><h2>Know what's due,<br>before it's due.</h2><p class="sub">Credit cards work like the real thing: spends after the bill date roll to next month, with minimum due and full payment options. EMIs, bills and pay-later all in one calendar.</p>
+    <ul class="ticks">
+      <li><svg class="i"><use href="#tick"/></svg><span><b>Bill-cycle aware cards.</b> See this bill, next bill and what's left on your limit.</span></li>
+      <li><svg class="i"><use href="#tick"/></svg><span><b>Debt-free date.</b> Avalanche or snowball, and how much interest an extra ₹5,000 a month saves.</span></li>
+      <li><svg class="i"><use href="#tick"/></svg><span><b>Bank statement import.</b> Upload the PDF and every payment is categorised.</span></li>
+    </ul></div>
+  <div class="mcard rv d1">
+    <div class="row"><span style="color:var(--muted);font-size:14px">HDFC credit card</span><span style="color:var(--faint);font-size:13px">₹4,500 available</span></div>
+    <div class="big">₹8,000 <span style="font-size:15px;color:var(--muted);font-weight:500">used of ₹12,500</span></div>
+    <div class="bar"><i style="--w:64%"></i></div>
+    <div class="cb"><div><small>BILL OF 30 OCT</small><b>₹5,000</b><span>Due 15 Nov · min ₹250</span></div><div class="next"><small>NEXT BILL · 30 NOV</small><b>₹3,000</b><span>Spent since the last bill</span></div></div>
+    <div class="row" style="margin-top:20px"><span style="color:var(--muted);font-size:14px">Debt-free by</span><b>Aug 2028</b></div>
+    <div class="bar"><i style="--w:38%;background:linear-gradient(90deg,var(--violet),var(--lime))"></i></div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="wrap">
+  <div class="center rv"><div class="kicker">Pricing</div><h2>One plan. Everything included.</h2><p class="sub">Try every feature free for 7 days. No card needed to start.</p></div>
+  <div class="pricing"><div class="price-card rv">
+    <span class="tag">7 DAYS FREE</span>
+    <h3>Self Streak Plus</h3>
+    <div class="amt">₹499<small> / month</small></div>
+    <p style="color:var(--muted);font-size:14.5px">Pay monthly with UPI, card or netbanking. No auto-debit, no lock-in.</p>
+    <ul class="ticks">
+      <li><svg class="i"><use href="#tick"/></svg>Unlimited habits, goals, bills, loans and reminders</li>
+      <li><svg class="i"><use href="#tick"/></svg>Push reminders on your phone and laptop</li>
+      <li><svg class="i"><use href="#tick"/></svg>AI logging by voice, text and photo (20 a day)</li>
+      <li><svg class="i"><use href="#tick"/></svg>Bank statement, bill, receipt and meal scanning</li>
+      <li><svg class="i"><use href="#tick"/></svg>Synced across all your devices</li>
+    </ul>
+    <a class="btn lime lg" href="/app#signup">Start free trial <svg class="i"><use href="#arrow"/></svg></a>
+    <p class="fine">Payments are processed securely by Cashfree Payments.</p>
+  </div></div>
+</div></section>
+
+<section id="faq" style="padding-top:20px"><div class="wrap">
+  <div class="center rv"><div class="kicker">FAQ</div><h2>Questions, answered.</h2></div>
+  <div class="faq">
+    <details class="rv"><summary>Do I need to install anything?</summary><p>No. Self Streak runs in your browser. On iPhone, tap Share → Add to Home Screen; on Android, tap Install. It then opens like a normal app and can send you notifications.</p></details>
+    <details class="rv"><summary>What happens after the 7-day trial?</summary><p>You keep all your data. To keep using the app, pay ₹499 for the next month. Nothing is charged automatically; you choose when to pay.</p></details>
+    <details class="rv"><summary>Is my data private?</summary><p>Your data is stored in your own account and is never sold or shared for advertising. Photos you scan are sent to our AI provider only to read them. You can download or delete everything from Settings at any time.</p></details>
+    <details class="rv"><summary>Does it connect to my bank?</summary><p>No. Self Streak never asks for bank logins. You can upload a statement PDF or photo, and it reads the payments from it.</p></details>
+    <details class="rv"><summary>Can I cancel?</summary><p>There's nothing to cancel: each payment covers 30 days and doesn't renew on its own. See our <a href="/refunds" style="color:var(--lime)">refund policy</a> for refunds.</p></details>
+  </div>
+</div></section>
+
+<section style="padding-top:20px"><div class="final rv">
+  <h2 style="margin-top:0">Start your streak today.</h2>
+  <p class="sub" style="margin:0 auto 26px">Set up in two minutes. Free for 7 days.</p>
+  <a class="btn lime lg" href="/app#signup">Start free trial <svg class="i"><use href="#arrow"/></svg></a>
+</div></section>
+
+<footer><div class="wrap">
+  <div><a class="brand" href="/" style="margin-bottom:12px"><svg><use href="#logo"/></svg>Self Streak</a><p style="max-width:320px">Habits, money and reminders in one app. Built in Lucknow, India.</p></div>
+  <div><h4>Product</h4><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="/app">Log in</a><a href="/app#signup">Start free trial</a></div>
+  <div><h4>Company</h4><a href="/contact">Contact us</a><a href="/terms">Terms & conditions</a><a href="/privacy">Privacy policy</a><a href="/refunds">Refunds & cancellation</a></div>
+  <div class="legal"><span>© <span id="yr">2026</span> Self Streak. All rights reserved.</span><span>Prices in Indian Rupees (INR), inclusive of applicable taxes.</span></div>
+</div></footer>
+
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+const nav=document.getElementById('nav');addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>10),{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv,.mcard,.demo-chat').forEach(el=>io.observe(el));
+// Safety net: anything already on screen shows even if the observer is slow.
+setTimeout(()=>document.querySelectorAll('.rv:not(.in)').forEach(el=>{const r=el.getBoundingClientRect();if(r.top<innerHeight)el.classList.add('in')}),1200);
+// Signed-in visitors (e.g. opening the installed app) go straight to the app.
+try{if(localStorage.getItem('selfstreak-last'))document.querySelectorAll('a[href="/app#signup"]').forEach(a=>a.href='/app')}catch(e){}
+</script>
+</body>
+</html>

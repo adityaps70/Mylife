@@ -4,7 +4,7 @@
   "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/", "/app", "/app/"] },
   "d1_databases": [{ "binding": "DB", "database_name": "self-streak", "database_id": "f98709f8-60b2-4740-9623-230f2877f9a7" }],
   "triggers": { "crons": ["*/5 * * * *"] },
   "observability": { "enabled": true },
@@ -13,7 +13,8 @@
     "TRIAL_DAYS": "7",
     "PRICE_INR": "499",
     "VAPID_PUBLIC_KEY": "BD-VBa02pcA2wwTGLv16rP9666MiyTnAvwKevoYVnuqi6KVBhISN42hqMhiSpUORRf1Dgghcs6q2UUaISaSKhUk",
-    "VAPID_SUBJECT": "mailto:support@selfstreak.app"
+    "VAPID_SUBJECT": "mailto:support@selfstreak.app",
+    "CASHFREE_ENV": "production"
   }
-  // Secrets (set with wrangler secret put): ANTHROPIC_API_KEY, VAPID_PRIVATE_JWK
+  // Secrets (set with wrangler secret put): ANTHROPIC_API_KEY, VAPID_PRIVATE_JWK, CASHFREE_APP_ID, CASHFREE_SECRET_KEY
 }

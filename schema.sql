@@ -43,3 +43,12 @@ CREATE TABLE IF NOT EXISTS push_schedule (
   last_sent INTEGER NOT NULL DEFAULT 0,
   updated INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS payments (
+  order_id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  status TEXT NOT NULL,          -- created | paid | expired | terminated
+  created INTEGER NOT NULL,
+  paid_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS payments_user ON payments(user_id);

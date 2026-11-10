@@ -2087,8 +2087,8 @@ function pSettings(){
     <div class="inline"><button class="btn lime" data-act="export">${ic('download')} Export backup</button><button class="btn" data-act="importBackup">${ic('upload')} Import backup</button><button class="btn" data-act="ics">${ic('calendar')} Export to calendar (.ics)</button><button class="btn" data-act="csv">${ic('download')} Payments CSV</button></div>
     <p class="small muted" style="margin-top:14px">The calendar file has every reminder, bill and EMI with alerts. Open it on your phone or import it into Google Calendar (Settings → Import) to get real push notifications.</p></div>
   <div class="card"><div class="ch">${icoBox('users','var(--lime)')}<div><h3>Account</h3><div class="sub">${esc(account?.user?.email||'')}</div></div><span class="sp"></span><span class="pill lime">${esc(statusLabel())}</span></div>
-    <div class="kpis"><div class="kpi"><div class="l">Plan</div><div class="v" style="font-size:18px">${account?.user?.status==='owner'?'Owner':account?.user?.status==='active'?'Plus':'Free trial'}</div><div class="h">${account?.user?.status==='trial'?'then ₹'+(account?.price||499)+'/month':account?.user?.status==='expired'?'ended':'no limits on features'}</div></div><div class="kpi"><div class="l">AI actions today</div><div class="v" style="font-size:18px">${usage.used} / ${usage.limit}</div><div class="h">resets at midnight</div></div></div>
-    <div class="inline" style="margin-top:14px">${account?.user?.status==='owner'||account?.user?.status==='active'?'':`<button class="btn lime" data-act="subscribe">Subscribe · ₹${account?.price||499}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
+    <div class="kpis"><div class="kpi"><div class="l">Plan</div><div class="v" style="font-size:18px">${account?.user?.status==='owner'?'Owner':account?.user?.status==='active'?'Plus':'Free trial'}</div><div class="h">${account?.user?.status==='trial'?'then ₹'+(account?.price||499)+'/month':account?.user?.status==='expired'?'ended':account?.user?.status==='active'?'until '+fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short',year:'numeric'}):'no limits on features'}</div></div><div class="kpi"><div class="l">AI actions today</div><div class="v" style="font-size:18px">${usage.used} / ${usage.limit}</div><div class="h">resets at midnight</div></div></div>
+    <div class="inline" style="margin-top:14px">${account?.user?.status==='owner'?'':account?.user?.status==='active'?`<button class="btn" data-act="subscribe">Add a month · ₹${account?.price||499}</button>`:`<button class="btn lime" data-act="subscribe">Subscribe · ₹${account?.price||499}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
     <form id="pwform" class="fields" style="margin-top:16px"><div class="fld"><label>Current password</label><input type="password" name="cur" autocomplete="current-password" required></div><div class="fld"><label>New password</label><input type="password" name="nw" autocomplete="new-password" minlength="8" required></div>
     <div class="inline wide" style="grid-column:1/-1"><button class="btn" type="submit">${ic('lock')} Change password</button><span id="pwmsg" class="small"></span></div></form></div>
   <div class="card"><h3 style="margin-bottom:6px">Sections</h3><p class="small muted" style="margin-bottom:12px">Choose what shows in the menu.</p><div class="chips">${FOCUS.filter(([k])=>FOCUS_PAGES[k]).map(([k,l])=>{const on=!(FOCUS_PAGES[k]||[]).every(pg=>(state.profile.hidden||[]).includes(pg));return `<button class="chip ${on?'on':''}" data-sect="${k}">${on?'✓ ':''}${l}</button>`}).join('')}</div>
@@ -2200,20 +2200,22 @@ async function logout(){
   try{await caches.delete('nudges')}catch(e){}
   try{await apiFetch('/api/logout',{method:'POST',body:{endpoint}})}catch(e){}
   try{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last')}catch(e){}
-  location.href=location.pathname;
+  location.href='/';
 }
 async function boot(){
   showAuth('loading');
-  try{const m=await apiFetch('/api/me');await enterApp(m,false)}
+  const q=new URLSearchParams(location.search),oid=q.get('order_id');
+  if(oid)history.replaceState(null,'',location.pathname+location.hash);
+  try{const m=await apiFetch('/api/me');await enterApp(m,false);if(oid)verifyPayment(oid)}
   catch(e){
-    if(e.status===401){showAuth('login');return}
+    if(e.status===401){showAuth(/signup|start/.test(location.hash)?'signup':'login');return}
     let last=null;try{last=JSON.parse(localStorage.getItem('selfstreak-last'))}catch(x){}
     if(last&&last.user){account=last;KEY='selfstreak-data-'+last.user.id;UIKEY='selfstreak-ui-'+last.user.id;state=load();if(state.profile.onboarded){openApp();toast('You’re offline. Changes will sync when you’re back online.','x');return}}
     showAuth('login','Can’t reach Self Streak. Check your internet connection.');
   }
 }
 
-/* ---------- paywall (Cashfree checkout plugs in later) ---------- */
+/* ---------- paywall + Cashfree checkout ---------- */
 function checkPaywall(){
   const P=$('#pay');if(!account||account.user.status!=='expired'){P.classList.remove('show');return}
   P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center">${logo(64)}</div>
@@ -2225,9 +2227,34 @@ function checkPaywall(){
   <p class="tiny faint" id="paymsg"></p></div>`;
   P.classList.add('show');
 }
-async function subscribe(){
-  try{await apiFetch('/api/billing/checkout',{method:'POST',body:{}})}
-  catch(e){const m=$('#paymsg');if(m)m.textContent=e.message;toast(e.message,'x')}
+function loadCashfree(){return window.Cashfree?Promise.resolve(window.Cashfree):new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://sdk.cashfree.com/js/v3/cashfree.js';sc.onload=()=>res(window.Cashfree);sc.onerror=()=>rej(new Error('Couldn’t load the payment page. Check your internet and try again.'));document.head.appendChild(sc)})}
+function subscribe(){
+  const d=$('#dlg');let saved='';try{saved=localStorage.getItem('selfstreak-phone')||''}catch(e){}
+  const u=account?.user||{},renew=u.status==='active';
+  d.innerHTML=`<form class="vbody" id="payf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${renew?'Add a month of Self Streak Plus':'Subscribe to Self Streak Plus'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
+  <div class="price" style="margin:6px 0">₹${account?.price||499}<small> for 1 month</small></div>
+  <p class="small muted">${renew?`Your plan runs until ${fmt(new Date(u.paidUntil),{day:'numeric',month:'short',year:'numeric'})}. This adds 30 days after that.`:'Pay once for 30 days. No auto-debit: we’ll remind you before it ends.'} UPI, cards and netbanking via Cashfree.</p>
+  <div class="fld"><label for="payPhone">Mobile number</label><input id="payPhone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="14" placeholder="98XXXXXXXX" value="${esc(saved)}" required><small>Cashfree needs it for the payment receipt.</small></div>
+  <p class="tiny faint" id="paymsg2"></p>
+  <div class="dlg-actions"><span style="flex:1"></span><button type="button" class="btn" data-x>Cancel</button><button class="btn lime" id="payGo">Continue to pay ₹${account?.price||499}</button></div>
+  <p class="tiny faint">By paying you agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/refunds" target="_blank">Refund policy</a>.</p></form>`;
+  if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));
+  $('#payf').onsubmit=async e=>{e.preventDefault();const btn=$('#payGo'),msg=$('#paymsg2'),phone=$('#payPhone').value;btn.disabled=true;btn.textContent='Opening payment…';msg.textContent='';
+    try{try{localStorage.setItem('selfstreak-phone',phone)}catch(x){}
+      const [o,CF]=await Promise.all([apiFetch('/api/billing/checkout',{method:'POST',body:{phone}}),loadCashfree()]);
+      try{sessionStorage.setItem('selfstreak-order',o.orderId)}catch(x){}
+      CF({mode:o.mode}).checkout({paymentSessionId:o.paymentSessionId,redirectTarget:'_self'});
+    }catch(err){msg.textContent=err.message;btn.disabled=false;btn.textContent=`Continue to pay ₹${account?.price||499}`;const m=$('#paymsg');if(m)m.textContent=err.message}};
+}
+async function verifyPayment(orderId){
+  workDialog('Confirming your payment','This takes a few seconds…');
+  for(let i=0;i<6;i++){
+    try{const r=await apiFetch('/api/billing/verify',{method:'POST',body:{order_id:orderId}});
+      if(r.status==='paid'){account={...account,...r.me};closeDlg($('#dlg'));checkPaywall();render();toast(`You’re on Plus until ${fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short'})} 🎉`,'tick');burst(innerWidth/2,innerHeight/2,40);return}
+      if(['expired','terminated','unknown'].includes(r.status))break;}catch(e){if(e.status===404)break}
+    await new Promise(r=>setTimeout(r,2500));
+  }
+  closeDlg($('#dlg'));toast('Payment not confirmed yet. If money was taken, it will show here within a few minutes.','x');
 }
 
 /* ---------- onboarding ---------- */
@@ -3425,7 +3452,7 @@ document.addEventListener('click',e=>{
     case'logout':logout();return;
     case'subscribe':subscribe();return;
     case'exportData':download(`self-streak-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;
-    case'delacct':if(confirm('Delete your Self Streak account and all its data? This can’t be undone.')&&prompt('Type DELETE to confirm')==='DELETE'){apiFetch('/api/account',{method:'DELETE'}).then(()=>{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last');location.href=location.pathname}).catch(x=>toast(x.message,'x'))}return;
+    case'delacct':if(confirm('Delete your Self Streak account and all its data? This can’t be undone.')&&prompt('Type DELETE to confirm')==='DELETE'){apiFetch('/api/account',{method:'DELETE'}).then(()=>{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last');location.href='/'}).catch(x=>toast(x.message,'x'))}return;
     case'scanBill':scanBill();return;
     case'mealPhoto':mealPhoto();return;
     case'mealText':mealText();return;

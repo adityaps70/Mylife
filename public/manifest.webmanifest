@@ -2,7 +2,7 @@
   "name": "Self Streak",
   "short_name": "Self Streak",
   "description": "Goals, money, bills, reminders, health and grooming in one place.",
-  "start_url": "./",
+  "start_url": "./app",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -14,8 +14,8 @@
     {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ],
   "shortcuts": [
-    {"name": "Quick log", "short_name": "Quick log", "url": "./?do=voice", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
-    {"name": "Import bank statement", "short_name": "Import", "url": "./?do=import", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
-    {"name": "Notifications", "short_name": "Reminders", "url": "./#/notify", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}
+    {"name": "Quick log", "short_name": "Quick log", "url": "./app?do=voice", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Import bank statement", "short_name": "Import", "url": "./app?do=import", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
+    {"name": "Notifications", "short_name": "Reminders", "url": "./app#/notify", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}
   ]
 }

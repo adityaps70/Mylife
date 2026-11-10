@@ -146,6 +146,33 @@ async function runAI(env, spec) {
   return { result: JSON.parse(text) };
 }
 
+/* ---------------- Cashfree payments ---------------- */
+const cfReady = (env) => !!(env.CASHFREE_APP_ID && env.CASHFREE_SECRET_KEY);
+const cfMode = (env) => (env.CASHFREE_ENV === 'sandbox' ? 'sandbox' : 'production');
+const cf = (env, path, init = {}) => fetch((cfMode(env) === 'sandbox' ? 'https://sandbox.cashfree.com/pg' : 'https://api.cashfree.com/pg') + path, {
+  ...init, headers: { 'content-type': 'application/json', 'x-api-version': '2023-08-01', 'x-client-id': env.CASHFREE_APP_ID, 'x-client-secret': env.CASHFREE_SECRET_KEY },
+});
+// Ask Cashfree for the order's real status; on PAID extend the plan by a month (once per order).
+async function settleOrder(env, orderId) {
+  const row = await env.DB.prepare('SELECT * FROM payments WHERE order_id = ?').bind(orderId).first();
+  if (!row) return 'unknown';
+  if (row.status === 'paid') return 'paid';
+  const r = await cf(env, '/orders/' + encodeURIComponent(orderId));
+  const o = await r.json().catch(() => ({}));
+  const st = String(o.order_status || '').toUpperCase();
+  if (st === 'PAID' && Number(o.order_amount) >= row.amount) {
+    const claimed = await env.DB.prepare("UPDATE payments SET status = 'paid', paid_at = ? WHERE order_id = ? AND status <> 'paid' RETURNING user_id").bind(Date.now(), orderId).first();
+    if (claimed) {
+      const u = await env.DB.prepare('SELECT paid_until FROM users WHERE id = ?').bind(claimed.user_id).first();
+      const from = Math.max(Date.now(), Number(u?.paid_until) || 0);
+      await env.DB.prepare("UPDATE users SET paid_until = ?, plan = CASE WHEN plan = 'owner' THEN plan ELSE 'active' END WHERE id = ?").bind(from + 30 * DAY, claimed.user_id).run();
+    }
+    return 'paid';
+  }
+  if (st === 'EXPIRED' || st === 'TERMINATED') await env.DB.prepare('UPDATE payments SET status = ? WHERE order_id = ? AND status <> \'paid\'').bind(st.toLowerCase(), orderId).run();
+  return st.toLowerCase() || 'pending';
+}
+
 /* ---------------- API router ---------------- */
 async function api(req, env, url) {
   const p = url.pathname, m = req.method;
@@ -189,6 +216,18 @@ async function api(req, env, url) {
       await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await sha256(t)).run();
     }
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, '', 0) });
+  }
+
+  if (p === '/api/billing/webhook' && m === 'POST') {
+    if (!cfReady(env)) return err(404, 'not_found');
+    const raw = await req.text(), ts = req.headers.get('x-webhook-timestamp') || '', sig = req.headers.get('x-webhook-signature') || '';
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(env.CASHFREE_SECRET_KEY), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const mac = btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(ts + raw)))));
+    if (!sig || !safeEqual(mac, sig)) return err(401, 'bad_signature');
+    let ev = {}; try { ev = JSON.parse(raw); } catch {}
+    const orderId = ev?.data?.order?.order_id;
+    if (orderId) await settleOrder(env, String(orderId));
+    return json({ ok: true });
   }
 
   const u = await currentUser(env, req);
@@ -282,7 +321,31 @@ async function api(req, env, url) {
     return json({ ok: true, sent, devices: subs.length });
   }
   if (p === '/api/billing/checkout' && m === 'POST') {
-    return err(501, 'Online payments are launching soon. We’ll email you as soon as you can subscribe.');
+    if (!cfReady(env)) return err(501, 'Online payments are launching soon. We’ll email you as soon as you can subscribe.');
+    if (u.plan === 'owner') return err(400, 'You’re the owner. No subscription needed.');
+    const b = await body(), phone = String(b.phone || '').replace(/\D/g, '').slice(-10);
+    if (!/^[6-9]\d{9}$/.test(phone)) return err(400, 'Enter your 10-digit mobile number. The payment page needs it.');
+    const amount = Number(env.PRICE_INR || 499), orderId = 'ss_' + u.id.replace(/-/g, '').slice(0, 12) + '_' + Date.now();
+    const r = await cf(env, '/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        order_id: orderId, order_amount: amount, order_currency: 'INR', order_note: 'Self Streak Plus · 1 month',
+        customer_details: { customer_id: u.id.replace(/-/g, '').slice(0, 40), customer_email: u.email, customer_phone: phone, customer_name: (u.name || '').slice(0, 60) || undefined },
+        order_meta: { return_url: `${url.origin}/app?order_id={order_id}`, notify_url: `${url.origin}/api/billing/webhook` },
+      }),
+    });
+    const o = await r.json().catch(() => ({}));
+    if (!r.ok || !o.payment_session_id) { console.error('cashfree order', r.status, JSON.stringify(o)); return err(502, 'Couldn’t start the payment. Please try again in a minute.'); }
+    await env.DB.prepare('INSERT INTO payments (order_id, user_id, amount, status, created) VALUES (?, ?, ?, ?, ?)').bind(orderId, u.id, amount, 'created', Date.now()).run();
+    return json({ orderId, paymentSessionId: o.payment_session_id, mode: cfMode(env) });
+  }
+  if (p === '/api/billing/verify' && m === 'POST') {
+    const b = await body(), orderId = String(b.order_id || '');
+    const row = await env.DB.prepare('SELECT * FROM payments WHERE order_id = ? AND user_id = ?').bind(orderId, u.id).first();
+    if (!row) return err(404, 'Payment not found.');
+    const st = await settleOrder(env, orderId);
+    const fresh = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(u.id).first();
+    return json({ status: st, me: await me(env, fresh) });
   }
   return err(404, 'not_found');
 }
@@ -310,6 +373,13 @@ export default {
     const url = new URL(req.url);
     if (url.pathname.startsWith('/api/')) {
       try { return await api(req, env, url); } catch (e) { console.error(e); return err(500, 'Something went wrong. Please try again.'); }
+    }
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/app' || url.pathname === '/app/')) {
+      const app = url.pathname !== '/' || !!cookie(req, 'ss_session');
+      const r = await env.ASSETS.fetch(new Request(new URL(app ? '/' : '/landing', url), req));
+      if (app) return r;
+      const h = new Headers(r.headers); h.set('x-ss-page', 'landing'); h.set('cache-control', 'no-store');
+      return new Response(r.body, { status: r.status, headers: h });
     }
     return env.ASSETS.fetch(req);
   },
