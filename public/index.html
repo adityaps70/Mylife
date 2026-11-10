@@ -954,6 +954,23 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gchest.ready span{animation:gchIdle 1.6s ease-in-out infinite}
 .gtchest{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:10px 14px;border-radius:14px;border:1px solid #f5c84c;background:color-mix(in srgb,#f5c84c 12%,transparent);color:inherit;font:inherit;font-weight:700;cursor:pointer}
 .gtchest span{font-size:24px;animation:gchIdle 1.6s ease-in-out infinite}
+
+/* ---- goal slider ---- */
+.gsl{position:relative;height:44px;margin:4px 12px 0;cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;outline:none}
+.gsl-track{position:absolute;left:0;right:0;top:50%;height:12px;margin-top:-6px;border-radius:99px;background:var(--line);box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+.gsl-fill{position:absolute;left:0;top:0;bottom:0;width:calc(var(--gp)*100%);border-radius:inherit;background:linear-gradient(90deg,#6fe28a,var(--lime) 35%,#f5c84c 65%,var(--orange,#ff8a4c));background-size:calc(100% / max(var(--gp),.05)) 100%;transition:width .35s cubic-bezier(.3,1.4,.5,1)}
+.gsl-mk{position:absolute;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:rgba(255,255,255,.35)}
+.gsl-thumb{position:absolute;top:50%;left:calc(var(--gp)*100%);width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 0 6px color-mix(in srgb,var(--lime) 22%,transparent);transition:left .35s cubic-bezier(.3,1.4,.5,1),transform .2s cubic-bezier(.3,1.6,.5,1),box-shadow .2s}
+.gsl.drag .gsl-fill,.gsl.drag .gsl-thumb{transition:transform .2s cubic-bezier(.3,1.6,.5,1),box-shadow .2s}
+.gsl.drag .gsl-thumb,.gsl:focus-visible .gsl-thumb{transform:scale(1.22);box-shadow:0 6px 18px rgba(0,0,0,.45),0 0 0 10px color-mix(in srgb,var(--lime) 28%,transparent)}
+.gsl-tip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);padding:3px 9px;border-radius:9px;background:var(--lime);color:var(--lime-ink,#10120a);font-weight:800;font-size:13px;white-space:nowrap;opacity:0;transition:opacity .15s}
+.gsl-tip::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border:5px solid transparent;border-top-color:var(--lime)}
+.gsl.drag .gsl-tip,.gsl:focus-visible .gsl-tip{opacity:1}
+.gsl-tip.gbop{animation:gslPop .22s cubic-bezier(.3,1.6,.5,1)}
+@keyframes gslPop{0%{transform:translateX(-50%) scale(.8)}100%{transform:translateX(-50%) scale(1)}}
+.gsl-lbl{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:15px}
+.gsl-e{font-size:20px;display:inline-block}.gsl-e.gbop{animation:gpop .4s cubic-bezier(.3,1.6,.5,1)}
+.gsl-scale{display:flex;justify-content:space-between;margin:4px 0 0;padding:0 2px}
 </style>
 </head>
 <body>
@@ -4101,9 +4118,9 @@ function pStreak(){
     <div class="gh-r">${gWeekStrip()}<div class="inline small" style="gap:14px;margin-top:10px"><span title="A freeze covers one missed day automatically. Earn one every 7-day streak.">🧊 <b>${g.freezes}</b>/2 streak freezes</span>${g.lost&&g.lost.gap===1?`<span class="pill red nodot">Repair: earn ${2*g.goal} XP today</span>`:''}<button class="btn sm ghost" data-g="sharecard" data-n="${Math.max(st,1)}">${ic('upload')} Share streak</button></div>
     <p class="tiny muted" style="margin-top:8px">${x?'Today counts. Your streak is safe until midnight tomorrow.':'Log anything today (one glass of water counts) to keep your streak.'}</p></div></div>
   <div class="r2">
-    <div class="card"><div class="ch"><h3>Daily goal</h3><span class="sp"></span><span class="pill lime nodot">${x>=g.goal?'Done ✓':`${g.goal-x} XP to go`}</span></div>
+    <div class="card"><div class="ch"><h3>Daily goal</h3><span class="sp"></span><span class="pill lime nodot" id="gGoalPill">${x>=g.goal?'Done ✓':`${g.goal-x} XP to go`}</span></div>
       <div class="ggoal"><div class="gring-wrap big">${gRing(x,g.goal,110)}<span>${x}<small>/${g.goal} XP</small></span></div>
-      <div class="ggoal-r"><div class="glabel">Goal</div><div class="gseg">${G_GOALS.map(([v,l])=>`<button class="${g.goal===v?'on':''}" data-g="goal" data-v="${v}">${l}<small>${v} XP</small></button>`).join('')}</div>
+      <div class="ggoal-r"><div class="glabel">Drag to set your goal</div>${gSlider(g.goal)}
       <div class="glabel" style="margin-top:14px">Level ${lv.n} · ${gTotal().toLocaleString('en-IN')} XP total</div><div class="gbar lv"><i style="width:${lv.pct}%"></i></div><div class="tiny muted">${lv.hi-gTotal()} XP to level ${lv.n+1}</div></div></div>
       <details class="tiny muted" style="margin-top:12px"><summary>How XP works</summary><p style="margin-top:6px">Habit +10 · glass of water +2 · meal +10 · expense or income +5 · bill or EMI paid +20 · journal +15 · steps +5 (10k steps +10 more) · sleep +5 · weight +5 · each quest +20 · today’s chest (all 3 quests done) 20 to 100 XP, tap to open it.</p></details></div>
     <div class="card"><div class="ch"><h3>Daily quests</h3><span class="sp"></span><span class="pill ${n===3?'lime':'cyan'} nodot">${n}/3</span></div>${gQuestRows(q)}
@@ -4218,6 +4235,40 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-g="chest"],[data-g="chlater"],[data-g="chcollect"]');if(!b)return;e.preventDefault();
   if(b.dataset.g==='chest'){if(!gShow)gChestShow(null)}else gChestClose();
 });
+
+
+/* ---- daily goal slider: drag, snaps every 10 XP with a soft tick ---- */
+const GS_MIN=10,GS_MAX=200,GS_STEP=10;
+const gGoalName=v=>v<=20?['Casual','🌱']:v<=50?['Regular','🙂']:v<=100?['Serious','💪']:v<=150?['Intense','🔥']:['Beast mode','🚀'];
+function gSlider(v){const p=(v-GS_MIN)/(GS_MAX-GS_MIN),[n,e]=gGoalName(v);
+  return `<div class="gsl" id="gsl" role="slider" tabindex="0" aria-label="Daily XP goal" aria-valuemin="${GS_MIN}" aria-valuemax="${GS_MAX}" aria-valuenow="${v}" aria-valuetext="${v} XP, ${n}" style="--gp:${p}">
+  <div class="gsl-track"><div class="gsl-fill"></div>${[20,50,100,150].map(m=>`<i class="gsl-mk" style="left:${(m-GS_MIN)/(GS_MAX-GS_MIN)*100}%"></i>`).join('')}</div>
+  <div class="gsl-thumb"><span class="gsl-tip" id="gslTip">${v}</span></div></div>
+  <div class="gsl-lbl"><span class="gsl-e" id="gslE">${e}</span><b id="gslName">${n}</b><span class="muted" id="gslSub">· ${v} XP a day</span></div>
+  <div class="gsl-scale tiny faint"><span>${GS_MIN} XP</span><span>${GS_MAX} XP</span></div>`}
+function gSlTick(v,big){const a=gAud();if(!a)return;const t=a.currentTime+.002,f=420+(v-GS_MIN)/(GS_MAX-GS_MIN)*900;
+  const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;gEnv(a,g,t,big?.07:.04,.002,big?.16:.07);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.2);
+  const n=a.createBufferSource();n.buffer=gNoise(a);const hp=a.createBiquadFilter();hp.type='highpass';hp.frequency.value=2800;const g2=a.createGain();gEnv(a,g2,t,.035,.001,.02);n.connect(hp);hp.connect(g2);g2.connect(a.destination);n.start(t);n.stop(t+.04)}
+function gSlSet(){const a=gAud();if(!a)return;const t=a.currentTime+.01;[659.25,987.77].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain(),st=t+i*.07;o.type='sine';o.frequency.value=f;gEnv(a,g,st,.06,.005,.35);o.connect(g);g.connect(a.destination);o.start(st);o.stop(st+.4)})}
+let gSl=null;
+function gSlPreview(v){const el=$('#gsl');if(!el)return;const [n,e]=gGoalName(v);el.setAttribute('aria-valuenow',v);el.setAttribute('aria-valuetext',`${v} XP, ${n}`);
+  $('#gslTip').textContent=v;$('#gslTip').classList.remove('gbop');void $('#gslTip').offsetWidth;$('#gslTip').classList.add('gbop');
+  if($('#gslName').textContent!==n){$('#gslName').textContent=n;$('#gslE').textContent=e;$('#gslE').classList.remove('gbop');void $('#gslE').offsetWidth;$('#gslE').classList.add('gbop')}
+  $('#gslSub').textContent=`· ${v} XP a day`;
+  const x=gToday(),ring=document.querySelector('.ggoal .gr circle:last-child');if(ring){const C=+ring.getAttribute('stroke-dasharray');ring.setAttribute('stroke-dashoffset',C*(1-Math.min(1,x/v)))}
+  const sm=document.querySelector('.ggoal .gring-wrap small');if(sm)sm.textContent=`/${v} XP`;
+  const pill=$('#gGoalPill');if(pill)pill.textContent=x>=v?'Done ✓':`${v-x} XP to go`}
+function gSlFrom(e){const tr=$('#gsl .gsl-track').getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-tr.left)/tr.width));return {p,v:Math.round((GS_MIN+p*(GS_MAX-GS_MIN))/GS_STEP)*GS_STEP}}
+function gSlCommit(v){const g=G();if(g.goal===v)return;g.goal=v;gSlSet();gBuzz(18);commit()}
+document.addEventListener('pointerdown',e=>{const el=e.target.closest('#gsl');if(!el)return;e.preventDefault();el.setPointerCapture?.(e.pointerId);
+  gSl={el,v:G().goal};el.classList.add('drag');const r=gSlFrom(e);el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);gBuzz(6)}});
+document.addEventListener('pointermove',e=>{if(!gSl)return;const r=gSlFrom(e);gSl.el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);gBuzz(5)}});
+const gSlEnd=()=>{if(!gSl)return;const {el,v}=gSl;gSl=null;el.classList.remove('drag');el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));setTimeout(()=>gSlCommit(v),260)};
+document.addEventListener('pointerup',gSlEnd);document.addEventListener('pointercancel',gSlEnd);
+let gSlKT=0;
+document.addEventListener('keydown',e=>{const el=e.target.closest?.('#gsl');if(!el)return;const d={ArrowRight:GS_STEP,ArrowUp:GS_STEP,ArrowLeft:-GS_STEP,ArrowDown:-GS_STEP,PageUp:50,PageDown:-50}[e.key];if(!d&&e.key!=='Home'&&e.key!=='End')return;e.preventDefault();
+  let v=+el.getAttribute('aria-valuenow');v=e.key==='Home'?GS_MIN:e.key==='End'?GS_MAX:Math.max(GS_MIN,Math.min(GS_MAX,v+d));el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));gSlPreview(v);gSlTick(v);
+  clearTimeout(gSlKT);gSlKT=setTimeout(()=>{gSlCommit(v);setTimeout(()=>$('#gsl')?.focus(),50)},700)});
 
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
