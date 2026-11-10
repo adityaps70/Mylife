@@ -2121,6 +2121,9 @@ function pSettings(){
     <div class="fld"><label>Theme</label><select data-prof="theme">${[['dark','Dark'],['light','Light'],['auto','Match system']].map(([v,l])=>`<option value="${v}" ${p.theme===v?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="fld"><label>Animations</label><select data-prof="motion">${[['on','On'],['off','Off (reduce motion)']].map(([v,l])=>`<option value="${v}" ${(p.motion||'on')===v?'selected':''}>${l}</option>`).join('')}</select></div>
   </div></div>
+  <div class="card"><div class="ch">${icoBox('mic','var(--violet)')}<div><h3>Assistant voice</h3><div class="sub">The voice that talks back when talk-back is on</div></div></div>
+    <div class="inline" style="gap:10px"><select class="sel" data-ui="voice" aria-label="Voice" style="min-width:220px">${VOICES.map(([v,l])=>`<option value="${v}" ${(ui.voice||'luna')===v?'selected':''}>${l}</option>`).join('')}</select><button class="btn" data-act="voiceTest">${ic('sparkle')} Play a sample</button></div>
+    <p class="tiny muted" style="margin-top:10px">Natural voices need internet. Offline, the phone’s own voice is used.</p></div>
   <div class="card"><h3 style="margin-bottom:6px">Your data</h3><p class="small muted" style="margin-bottom:14px">Saved to your Self Streak account and synced across your devices. You can download a full copy any time.</p>
     ${storageOK?'':'<div class="banner red" style="margin-bottom:12px">Browser storage is blocked here, so changes won’t survive a reload. Export before closing.</div>'}
     <div class="inline"><button class="btn lime" data-act="export">${ic('download')} Export backup</button><button class="btn" data-act="importBackup">${ic('upload')} Import backup</button><button class="btn" data-act="ics">${ic('calendar')} Export to calendar (.ics)</button><button class="btn" data-act="csv">${ic('download')} Payments CSV</button></div>
@@ -2779,10 +2782,27 @@ function newNote(){state.notes=state.notes||[];const n={id:uid(),created:Date.no
 function noteHTML(t){if(!t)return '';const L=t.split('\n');return `<div class="nt-title">${esc(L[0])||'<br>'}</div>`+L.slice(1).map(l=>`<div>${esc(l)||'<br>'}</div>`).join('')}
 const noteTitle=n=>(n.text.split('\n').find(l=>l.trim())||'New Note').slice(0,60);
 const sayClean=s=>String(s).replace(/−\s?/g,'').replace(/₹\s?([\d,]+(?:\.\d+)?)/g,'$1 rupees').replace(/\+(\d)/g,'$1').replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu,'').replace(/\s+/g,' ').trim();
-function speak(t){
-  if(ui.talk===false||!('speechSynthesis' in window)||!t)return;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(sayClean(t)),lang=ui.vlang||'en-IN',V=speechSynthesis.getVoices();
-    u.lang=lang;u.voice=V.find(v=>v.lang===lang)||V.find(v=>v.lang.replace('_','-').startsWith(lang.slice(0,2)))||null;u.rate=1.03;speechSynthesis.speak(u)}catch(e){}
+const VOICES=[['luna','Luna · warm, female'],['thalia','Thalia · bright, female'],['asteria','Asteria · calm, female'],['aurora','Aurora · soft, female'],['orion','Orion · friendly, male'],['arcas','Arcas · deep, male'],['apollo','Apollo · confident, male'],['hermes','Hermes · upbeat, male'],['device','Phone’s built-in voice (offline)']];
+let actx=null,ttsSrc=null,ttsSeq=0;
+// iPhone only lets audio play after a tap, so wake the audio engine on the first tap and reuse it.
+function unlockAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();if(!actx._ok){const b=actx.createBuffer(1,1,22050),s=actx.createBufferSource();s.buffer=b;s.connect(actx.destination);s.start(0);actx._ok=true}}catch(e){}}
+document.addEventListener('pointerdown',unlockAudio,{passive:true});document.addEventListener('keydown',unlockAudio);
+function stopSpeak(){ttsSeq++;try{speechSynthesis.cancel()}catch(e){}try{ttsSrc?.stop()}catch(e){}ttsSrc=null}
+function deviceSpeak(text){
+  if(!('speechSynthesis' in window))return;
+  try{const u=new SpeechSynthesisUtterance(text),lang=ui.vlang||'en-IN',V=speechSynthesis.getVoices(),good=/natural|neural|enhanced|premium|siri|google/i;
+    const pick=V.filter(v=>v.lang.replace('_','-')===lang).sort((a,b)=>good.test(b.name)-good.test(a.name))[0]||V.filter(v=>v.lang.startsWith('en')&&good.test(v.name))[0]||V.find(v=>v.lang.replace('_','-').startsWith(lang.slice(0,2)))||null;
+    u.lang=pick?.lang||lang;u.voice=pick;u.rate=1;speechSynthesis.speak(u)}catch(e){}
+}
+async function speak(t){
+  if(ui.talk===false||!t)return;
+  const text=sayClean(t);if(!text)return;stopSpeak();const my=ttsSeq;
+  if(account&&navigator.onLine&&(ui.voice||'luna')!=='device'&&account.user.status!=='expired'){
+    try{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,voice:ui.voice||'luna'}),credentials:'same-origin'});
+      if(r.ok&&my===ttsSeq){unlockAudio();const buf=await actx.decodeAudioData(await r.arrayBuffer());if(my!==ttsSeq)return;const src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start(0);ttsSrc=src;return}
+    }catch(e){}
+  }
+  if(my===ttsSeq)deviceSpeak(text);
 }
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{};
 function openVoice(auto=true){
@@ -2865,7 +2885,7 @@ async function micHint(){
 }
 async function startListen(){
   if(!SR){NV.tip='Voice input needs Chrome, Edge or Safari. On iPhone you can also use the keyboard’s 🎤 dictation key.';renderNotes();focusNote(true);return}
-  try{speechSynthesis.cancel()}catch(e){}
+  stopSpeak();
   try{rec?.abort()}catch(e){}
   await micHint();
   rec=new SR();rec.lang=ui.vlang||'en-IN';rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
@@ -2920,7 +2940,7 @@ function spokenSummary(res){
 function noteAction(a){
   const n=curNote();
   if(a==='mic'){NV.listening?finishListening():startListen();return}
-  if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderNotes();if(ui.talk!==false)speak('Talk back is on.');else try{speechSynthesis.cancel()}catch(e){}return}
+  if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderNotes();if(ui.talk!==false)speak('Talk back is on.');else stopSpeak();return}
   if(a==='lang'){ui.vlang=ui.vlang==='hi-IN'?'en-IN':'hi-IN';saveUI();renderNotes();toast(ui.vlang==='hi-IN'?'Listening in Hindi':'Listening in English','mic');return}
   if(a==='undo'){if(!NV.snap)return;const s=NV.snap,notes=state.notes;state={...JSON.parse(s.snap),notes};const m=notes.find(x=>x.id===s.noteId);if(m)m.done.splice(-s.count);NV.snap=null;NV.status='Undone';commit();renderNotes();speak('Undone.');return}
   if(a==='done'){if(NV.listening){finishListening();return}closeDlg($('#voice'));return}
@@ -3201,7 +3221,7 @@ async function asSend(){
 }
 async function asMic(){
   if(!SR){toast('Voice needs Chrome, Edge or Safari. On iPhone, use the keyboard’s 🎤 key.','x');$('#asIn')?.focus();return}
-  try{speechSynthesis.cancel()}catch(e){}try{asRec?.abort()}catch(e){}
+  stopSpeak();try{asRec?.abort()}catch(e){}
   await micHint();if(NV.tip){toast(NV.tip,'mic');NV.tip=''}
   const base=AS.draft?AS.draft.trim()+' ':'';let finals='';
   asRec=new SR();asRec.lang=ui.vlang||'en-IN';asRec.continuous=true;asRec.interimResults=true;
@@ -3652,6 +3672,7 @@ document.addEventListener('click',e=>{
     case'jsave':{const card=el.closest('.card'),t=$('#jl').value.trim(),k=ds(today()),J=state.journal=state.journal||{},m=num(card.dataset.mood||J[k]?.m);if(!t&&!m){toast('Write a line first','journal');return}J[k]={t,m};commit();toast('Saved today’s line','journal');return}
     case'logout':logout();return;
     case'subscribe':subscribe();return;
+    case'voiceTest':{const was=ui.talk;ui.talk=true;speak(`Hi ${state.profile.first||'there'}! This is your Self Streak assistant. You’ve done six of eight habits today, and you’re two glasses away from your water goal. Nice work.`);ui.talk=was;return}
     case'debtPlan':makeDebtPlan();return;
     case'applyPlan':{const r=state.debtPlan?.r;if(!r)return;ui.extra=Math.max(0,Math.round(r.extra_per_month));ui.strategy=r.strategy==='snowball'?'snowball':'avalanche';saveUI();render();toast(`Calculator set to ${inr(ui.extra)} extra a month`,'tick');return}
     case'exportData':download(`self-streak-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;

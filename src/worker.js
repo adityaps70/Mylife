@@ -340,6 +340,23 @@ async function api(req, env, url) {
       return err(502, status === 429 || status === 529 ? 'The AI is busy right now. Try again in a minute.' : 'The AI couldn’t process that. Please try again.', { used: upstream ? row.count - 1 : row.count, limit });
     }
   }
+  if (p === '/api/tts' && m === 'POST') {
+    // Natural voice for talk-back (Deepgram Aura-2 on Workers AI). Capped per user per day.
+    if (!env.AI) return err(501, 'no_tts');
+    if (planStatus(u) === 'expired') return err(402, 'trial_ended');
+    const b = await body(), text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 600);
+    if (!text) return err(400, 'empty');
+    const VOICES = ['luna', 'thalia', 'asteria', 'athena', 'aurora', 'orion', 'arcas', 'apollo', 'hermes', 'zeus'];
+    const speaker = VOICES.includes(b.voice) ? b.voice : 'luna';
+    const day = 'tts-' + istDay(), cap = Number(env.DAILY_TTS_CHARS || 30000);
+    const row = await env.DB.prepare('INSERT INTO usage (user_id, day, count) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET count = count + ? WHERE count + ? <= ? RETURNING count').bind(u.id, day, text.length, text.length, text.length, cap).first();
+    if (!row) return err(429, 'tts_limit');
+    try {
+      const r = await env.AI.run('@cf/deepgram/aura-2-en', { text, speaker, encoding: 'mp3' }, { returnRawResponse: true });
+      const h = new Headers({ 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=3600' });
+      return new Response(r.body, { status: r.ok ? 200 : 502, headers: h });
+    } catch (e) { console.error('tts', e); return err(502, 'tts_failed'); }
+  }
   if (p === '/api/push/subscribe' && m === 'POST') {
     const b = await body();
     if (!/^https:\/\//.test(b.endpoint || '') || !b.keys?.p256dh || !b.keys?.auth) return err(400, 'bad_subscription');
