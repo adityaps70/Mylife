@@ -85,9 +85,10 @@ function buildTask(task, input) {
 - A note about the day → journal (value = mood 1-5 if they said how the day felt, else 0).
 - "remind me to …" → reminder_add with a date.
 - A goal, plan or life priority ("I'll get married in 2 years and need ₹50 lakh before that", "buy a house by 2030", "save 6 months of expenses", "create a goal …") → goal_add: text = short title ("Get married", "Buy a house"), value = target in rupees (0 if no amount; "50 lakh" = 5000000, "1 crore" = 10000000; if digits look garbled from speech, use the amount they clearly mean), date = target date YYYY-MM-DD worked out from today ("in two years" → same day two years later), ref = one of marriage, house, emergency, car, education, travel, business, retire, custom. Never save a goal as a journal entry.
+- A goal to do something on a number of days ("10,000 steps on 300 days this year", "gym 200 days in 2027", "read every day for 100 days") → goal_add with ref = 'habit:' + the matching habit id from the habit lists (or 'habit:new' if none fits), value = number of days, text = short title ("10,000 steps on 300 days"), start = first day to count (YYYY-MM-DD; 'this year' = Jan 1 of this year, 'from today' = today, a named year = Jan 1 of it), date = last day (e.g. Dec 31 of that year). For other actions set start to empty.
 Never invent things the user didn't say. If nothing fits, return no actions. reply: one short friendly spoken sentence.`,
         content: [{ type: 'text', text: String(input.context || '').slice(0, 20000) + '\n\nWHAT I SAID: ' + String(input.text || '').slice(0, 4000) }],
-        schema: obj({ reply: S, actions: { type: 'array', items: obj({ kind: { type: 'string', enum: LOG_KINDS }, ref: S, value: N, text: S, date: S, protein: N, carbs: N, fat: N }) } }),
+        schema: obj({ reply: S, actions: { type: 'array', items: obj({ kind: { type: 'string', enum: LOG_KINDS }, ref: S, value: N, text: S, date: S, start: S, protein: N, carbs: N, fat: N }) } }),
       };
     }
     case 'statement':
