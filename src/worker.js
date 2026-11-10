@@ -126,6 +126,32 @@ payee: a short readable name (e.g. "Swiggy", "Rahul Sharma"), never UPI ids or r
         content: [fileBlock(input), { type: 'text', text: 'What did I eat? ' + String(input.note || '').slice(0, 300) }],
         schema: MEAL,
       };
+    case 'debtplan': {
+      const D = JSON.stringify(input || {}).slice(0, 12000);
+      return {
+        effort: 'medium', maxTokens: 12000, stream: true,
+        system: `You are a careful, kind debt-repayment coach for people in India. You get one person's real numbers as JSON (monthly income, budget, bills, loans with outstanding/EMI/interest, credit cards and pay-later with limit/bill/minimum/interest, savings, emergency fund, and a computed baseline). Build a realistic month-by-month plan to become debt-free as fast as is safe on THEIR income.
+Rules:
+- Use only the numbers given; never invent loans or income. All money in rupees, whole numbers.
+- First protect essentials: rent, food, utilities, existing EMIs and at least card minimums. Never suggest skipping an EMI.
+- Keep or build a small emergency buffer (aim 1 month of essentials) before aggressive prepayment, unless card interest is very high.
+- Credit cards/pay-later at 30%+ yearly (≈2.5%+/month) are usually cleared first; otherwise compare avalanche (highest rate) vs snowball (smallest balance) and pick what suits them; say why.
+- If EMIs exceed ~50% of income or income can't cover essentials + EMIs, say so plainly and give concrete options: talk to the lender about restructuring/tenure extension, balance transfer, consolidating high-interest debt into a cheaper personal loan, selling unused items, or extra income ideas. Mention RBI rules only if relevant (no foreclosure charges on floating-rate individual loans). Never suggest new borrowing to pay EMIs, or illegal/unsafe lending apps.
+- budget_cuts: only from their listed budget categories, with realistic cuts.
+- months: plan for the next 6 months (labels like "Dec 2026"), what to pay on each debt beyond the EMI, and the expected total remaining at month end.
+- Plain, warm, short sentences. No jargon without a 3-word explanation. Today is ${new Date().toISOString().slice(0, 10)}.`,
+        content: [{ type: 'text', text: 'My numbers:\n' + D }],
+        schema: obj({
+          headline: S, summary: S, health: { type: 'string', enum: ['good', 'tight', 'stretched', 'critical'] },
+          monthly_free: N, extra_per_month: N, strategy: { type: 'string', enum: ['avalanche', 'snowball', 'cards_first', 'stabilise'] }, strategy_why: S,
+          debt_free_month: S, interest_saved: N,
+          order: { type: 'array', items: obj({ name: S, why: S, target_month: S }) },
+          months: { type: 'array', items: obj({ month: S, actions: { type: 'array', items: obj({ name: S, pay: N, note: S }) }, debt_left: N }) },
+          budget_cuts: { type: 'array', items: obj({ category: S, cut: N, how: S }) },
+          quick_wins: { type: 'array', items: S }, warnings: { type: 'array', items: S },
+        }),
+      };
+    }
     case 'meal_text':
       return {
         effort: 'low', maxTokens: 6000,

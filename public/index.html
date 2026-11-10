@@ -115,6 +115,7 @@ main{padding:4px 28px 64px;max-width:1480px}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill.nodot::before{display:none}
 .pill.red{color:var(--red);background:color-mix(in srgb,var(--red) 13%,transparent)}
+.pill.orange{color:var(--orange);background:color-mix(in srgb,var(--orange) 13%,transparent)}
 .pill.yellow{color:var(--yellow);background:color-mix(in srgb,var(--yellow) 13%,transparent)}
 .pill.lime{color:var(--lime-text);background:color-mix(in srgb,var(--lime) 13%,transparent)}
 .pill.cyan{color:var(--cyan);background:color-mix(in srgb,var(--cyan) 13%,transparent)}
@@ -153,6 +154,15 @@ main{padding:4px 28px 64px;max-width:1480px}
 .cbill{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card2)}.cbill .mid{font-size:22px;margin:4px 0 2px}
 .cbill.late{border-color:color-mix(in srgb,var(--red) 55%,transparent)}.cbill.paid{border-color:color-mix(in srgb,var(--lime) 45%,transparent)}.cbill.next{border-style:dashed}
 .ctx{margin-top:12px;border-top:1px solid var(--line);padding-top:8px;display:grid;gap:2px}.ctx-i{display:flex;align-items:center;gap:8px;min-height:34px}.ctx-i .ic{width:28px;height:28px;opacity:.6}
+.dplan-empty{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:radial-gradient(400px 160px at 0% 0%,color-mix(in srgb,var(--lime) 12%,transparent),transparent 70%),var(--card)}
+.dplan{background:radial-gradient(500px 200px at 0% 0%,color-mix(in srgb,var(--lime) 10%,transparent),transparent 70%),var(--card)}
+.dp-head{font-size:clamp(20px,2.4vw,26px);letter-spacing:-.02em;line-height:1.2;margin-top:4px}
+.dp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:22px;margin-top:20px}
+.dp-order{list-style:none;display:grid;gap:12px;margin-top:12px;padding:0}.dp-order li{display:flex;gap:12px;align-items:flex-start}
+.dp-order .n{width:26px;height:26px;border-radius:50%;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.dp-cut{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.dp-months{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:0 14px}.dp-months summary{display:flex;gap:10px;align-items:center;cursor:pointer;padding:12px 0;list-style:none}.dp-months summary::-webkit-details-marker{display:none}.dp-months summary .i{margin-left:auto;transition:transform .2s}.dp-months[open] summary .i{transform:rotate(90deg)}
+.banner.warnb{border-color:color-mix(in srgb,var(--orange) 45%,transparent);align-items:flex-start}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -1818,6 +1828,7 @@ function pDebt(){
     <div style="flex:1;min-width:240px"><div class="tiny faint" style="letter-spacing:.08em;text-transform:uppercase;font-weight:600">Total outstanding</div><div class="big">${inr(f.debt)}</div>
     <div class="small muted">${inr(P-f.debt)} repaid of ${inr(P)} borrowed</div>
     <div class="kpis" style="margin-top:14px">${kpi('EMIs / month',inr(f.emi),pct(f.emiRatio)+' of income',f.emiRatio>.4?'neg':f.emiRatio>.3?'warn':'')}${kpi('Debt-free (current pace)',base.stuck?'Never':dfd(base.months),base.months?base.months+' months':'')}${kpi('Interest still to pay',inr(base.interest),'','neg')}</div></div></div>
+  ${debtPlanCard()}
   <div class="card"><div class="ch"><div><h3>Get debt-free faster</h3><div class="sub">When a loan closes, its EMI rolls into the next one.</div></div></div>
     <div class="inline"><label for="extra">Extra I can pay each month</label><input id="extra" type="number" inputmode="decimal" data-ui="extra" value="${esc(ui.extra)}" style="width:130px">
     <div class="seg"><button class="${ui.strategy==='avalanche'?'on':''}" data-set="strategy:avalanche">Avalanche · highest interest first</button><button class="${ui.strategy==='snowball'?'on':''}" data-set="strategy:snowball">Snowball · smallest balance first</button></div></div>
@@ -3257,6 +3268,55 @@ function cardSection(){
 }
 function cardAskAmount(title,def){const v=prompt(title,def?String(def):'');if(v===null)return null;const n=num(String(v).replace(/[₹,\s]/g,''));return n>0?n:null}
 
+
+/* ================= AI debt repayment plan ================= */
+function debtPlanInput(){
+  const f=fin(),real=a=>a.filter(x=>!x.sample),t=today(),pm=addMonths(t,-1);
+  const loans=real(state.loans).filter(l=>num(l.outstanding)>0).map(l=>{const s=loanSim(l);return {name:l.name,type:l.type||'',lender:l.lender||'',outstanding:num(l.outstanding),emi:num(l.emi),rate_pct_year:num(l.rate),due_day:num(l.dueDay),first_emi:l.startDate||'',months_left:isFinite(s.n)?s.n:'never (EMI below interest)',interest_left:isFinite(s.int)?Math.round(s.int):null}});
+  const cards=(state.cards||[]).map(c=>{const s=cardState(c);return {name:c.name,kind:c.kind,limit:num(c.limit),used:Math.round(s.used),current_bill_left:Math.round(s.due),minimum_due:Math.round(s.minDue),bill_due_date:ds(s.stmt.due),unbilled:Math.round(s.unbilled),interest_pct_month:num(c.rate)}}).filter(c=>c.used>0);
+  const base=simulate(0,'avalanche',false);
+  return {loans,cards,
+    income_monthly:Math.round(f.income),income_sources:real(state.income).map(i=>({name:i.name,amount:num(i.amount)})),
+    budget:real(state.expenses).map(e=>({category:e.name,monthly_cap:num(e.amount),type:e.kind==='want'?'want':'need'})),
+    bills_monthly:Math.round(f.bills),bills:real(state.bills).filter(b=>num(b.amount)).map(b=>({name:b.name,amount:num(b.amount),every:b.freq})),
+    spent_last_month:Math.round(txOut(pm.getFullYear(),pm.getMonth())),
+    total_emi:Math.round(f.emi),emi_to_income_pct:f.income?Math.round(f.emi/f.income*100):null,
+    savings_total:Math.round(f.assets),emergency_fund:Math.round(f.ef),
+    baseline:{months_to_debt_free:base.stuck?'never':base.months,interest_still_to_pay:Math.round(base.interest)},
+    person:{age:state.profile.age||'',city:state.profile.city||''}};
+}
+const planKey=()=>JSON.stringify(debtPlanInput()).replace(/"spent_last_month":\d+,/,'');
+async function makeDebtPlan(){
+  const inp=debtPlanInput();
+  if(!inp.loans.length&&!inp.cards.length){toast('Add your loans or credit cards first (not the examples).','x');return}
+  if(!inp.income_monthly){toast('Add your monthly income in Budget first, so the plan fits what you earn.','x');go('budget');return}
+  if(!needAI())return;
+  workDialog('Building your repayment plan','Looking at your income, EMIs, cards and spending…');
+  try{const r=await aiTask('debtplan',inp);state.debtPlan={at:Date.now(),key:planKey(),r};closeDlg($('#dlg'));commit();toast('Your plan is ready','tick');setTimeout(()=>$('#dplan')?.scrollIntoView({behavior:'smooth',block:'start'}),120)}
+  catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
+}
+function debtPlanCard(){
+  const P=state.debtPlan,hasDebt=state.loans.some(l=>!l.sample&&num(l.outstanding)>0)||(state.cards||[]).some(c=>cardState(c).used>0);
+  if(!P)return `<div class="card dplan-empty" id="dplan">${icoBox('sparkle','var(--lime)')}<div class="nb"><h3>Get your personal repayment plan</h3><p class="small muted" style="margin-top:4px">AI looks at your income, budget, EMIs and cards and tells you exactly what to pay, in which order, month by month, to become debt-free faster without missing essentials.</p></div><button class="btn lime" data-act="debtPlan" ${hasDebt?'':'disabled title="Add your loans or cards first"'}>${ic('sparkle')} Make my plan</button></div>`;
+  const r=P.r,stale=P.key!==planKey(),H={good:['On track','lime'],tight:['Tight','yellow'],stretched:['Stretched','orange'],critical:['Needs action now','red']}[r.health]||['','nodot'];
+  const S={avalanche:'Highest interest first',snowball:'Smallest balance first',cards_first:'Cards first',stabilise:'Stabilise first'}[r.strategy]||r.strategy;
+  const li=a=>(a||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+  return `<div class="card dplan" id="dplan">
+  <div class="ch" style="align-items:center">${icoBox('sparkle','var(--lime)')}<div style="flex:1;min-width:180px"><h3>Your repayment plan</h3><div class="sub">Made ${fmt(new Date(P.at),{day:'numeric',month:'short'})} by AI from your numbers${stale?' · <span class="warn">your numbers changed since</span>':''}</div></div><span class="pill ${H[1]}">${H[0]}</span><button class="btn sm" data-act="debtPlan">${ic('sparkle')} ${stale?'Update plan':'Redo'}</button></div>
+  <h2 class="dp-head">${esc(r.headline)}</h2><p class="muted" style="margin-top:6px">${esc(r.summary)}</p>
+  <div class="kpis" style="margin-top:16px">${kpi('Free each month',inr(r.monthly_free),'after essentials & EMIs',r.monthly_free<0?'neg':'')}${kpi('Put towards debt',inr(r.extra_per_month),'extra, on top of EMIs','pos')}${kpi('Debt-free by',esc(r.debt_free_month||'—'))}${kpi('Interest saved',inr(r.interest_saved),'vs. paying only EMIs','pos')}</div>
+  ${r.warnings?.length?`<div class="banner warnb" style="margin-top:16px">${ic('bell')}<ul class="tips" style="margin:0">${li(r.warnings)}</ul></div>`:''}
+  <div class="dp-grid">
+    <div><div class="glabel">Strategy · ${esc(S)}</div><p class="small muted">${esc(r.strategy_why)}</p>
+      <ol class="dp-order">${(r.order||[]).map((o,i)=>`<li><span class="n">${i+1}</span><div><b>${esc(o.name)}</b>${o.target_month?` <span class="pill nodot">clear by ${esc(o.target_month)}</span>`:''}<div class="small muted">${esc(o.why)}</div></div></li>`).join('')}</ol></div>
+    <div>${(r.budget_cuts||[]).length?`<div class="glabel">Where the extra money comes from</div>${r.budget_cuts.map(c=>`<div class="dp-cut"><div class="nb"><b class="small">${esc(c.category)}</b><div class="tiny muted">${esc(c.how)}</div></div><b class="pos">−${inr(c.cut)}</b></div>`).join('')}`:''}
+      ${(r.quick_wins||[]).length?`<div class="glabel" style="margin-top:14px">Quick wins this week</div><ul class="tips">${li(r.quick_wins)}</ul>`:''}</div>
+  </div>
+  ${(r.months||[]).length?`<details class="dp-months"><summary><b>Month by month</b><span class="small muted">${r.months.length} months</span>${ic('right')}</summary><div class="tablewrap"><table><thead><tr><th>Month</th><th>Pay</th><th class="n">Debt left</th></tr></thead><tbody>${r.months.map(m=>`<tr><td><b>${esc(m.month)}</b></td><td>${(m.actions||[]).map(a=>`<div class="small"><b>${inr(a.pay)}</b> → ${esc(a.name)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</div>`).join('')}</td><td class="n">${inr(m.debt_left)}</td></tr>`).join('')}</tbody></table></div></details>`:''}
+  <div class="inline" style="margin-top:16px;gap:8px"><button class="btn sm lime" data-act="applyPlan">${ic('tick')} Use ${inr(r.extra_per_month)}/month in the calculator</button><span class="tiny faint">AI can make mistakes. Check big decisions with your lender.</span></div>
+  </div>`;
+}
+
 /* ================= shell ================= */
 const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
@@ -3451,6 +3511,8 @@ document.addEventListener('click',e=>{
     case'jsave':{const card=el.closest('.card'),t=$('#jl').value.trim(),k=ds(today()),J=state.journal=state.journal||{},m=num(card.dataset.mood||J[k]?.m);if(!t&&!m){toast('Write a line first','journal');return}J[k]={t,m};commit();toast('Saved today’s line','journal');return}
     case'logout':logout();return;
     case'subscribe':subscribe();return;
+    case'debtPlan':makeDebtPlan();return;
+    case'applyPlan':{const r=state.debtPlan?.r;if(!r)return;ui.extra=Math.max(0,Math.round(r.extra_per_month));ui.strategy=r.strategy==='snowball'?'snowball':'avalanche';saveUI();render();toast(`Calculator set to ${inr(ui.extra)} extra a month`,'tick');return}
     case'exportData':download(`self-streak-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;
     case'delacct':if(confirm('Delete your Self Streak account and all its data? This can’t be undone.')&&prompt('Type DELETE to confirm')==='DELETE'){apiFetch('/api/account',{method:'DELETE'}).then(()=>{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last');location.href='/'}).catch(x=>toast(x.message,'x'))}return;
     case'scanBill':scanBill();return;
