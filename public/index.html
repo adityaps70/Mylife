@@ -197,6 +197,10 @@ main{padding:4px 28px 64px;max-width:1480px}
 .gwrap{display:grid;gap:10px;justify-items:center}.gwrap[hidden]{display:none}.gor{display:flex;align-items:center;gap:10px;width:100%;color:var(--faint);font-size:12px}.gor::before,.gor::after{content:'';flex:1;height:1px;background:var(--line)}#gbtn{width:100%;display:flex;justify-content:center;min-height:44px}#gbtn iframe{color-scheme:normal}
 .abar{display:grid;grid-template-columns:minmax(80px,38%) 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:13px}.abar .al{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}.abar .at{height:8px;border-radius:99px;background:var(--line);overflow:hidden}.abar .at i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime))}
 .admt td{vertical-align:middle;font-size:13px}.admt .sel{height:32px;font-size:12px}
+.kpi-jump{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;transition:border-color .2s,transform .2s var(--spring)}.kpi-jump:hover{border-color:color-mix(in srgb,var(--lime) 45%,var(--line))}.kpi-jump:active{transform:scale(.98)}
+.kpi-jump .l{display:flex;align-items:center;gap:4px}.kj{margin-left:auto;opacity:.45;display:inline-flex}.kj svg.i{width:14px;height:14px}
+main [id^="sec-"],main [id^="adm-"]{scroll-margin-top:calc(80px + env(safe-area-inset-top))}
+.jumped{animation:jumpGlow 1.4s ease-out}@keyframes jumpGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 60%,transparent)}30%{box-shadow:0 0 0 6px color-mix(in srgb,var(--lime) 30%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -1669,7 +1673,7 @@ const SEASON=[
   ['Smog & early winter',['Post-Diwali smog: N95 mask, check AQI before running','Review festive spending vs budget','Longer warm-ups for winter workouts']],
   ['Winter, year end',['Advance tax 3rd instalment on 15 Dec','Belated ITR deadline on 31 Dec','Review this year’s goals and set next year’s']],
 ];
-const kpi=(l,v,h='',cls='')=>`<div class="kpi"><div class="l">${l}</div><div class="v ${cls}">${v}</div>${h?`<div class="h">${h}</div>`:''}</div>`;
+const kpi=(l,v,h='',cls='',jump='')=>jump?`<button type="button" class="kpi kpi-jump" data-jump="${jump}" aria-label="${esc(String(l))}: ${esc(String(v))}. Show details"><div class="l">${l}<span class="kj">${ic('right')}</span></div><div class="v ${cls}">${v}</div>${h?`<div class="h">${h}</div>`:''}</button>`:`<div class="kpi"><div class="l">${l}</div><div class="v ${cls}">${v}</div>${h?`<div class="h">${h}</div>`:''}</div>`;
 function sampleBanner(){
   const n=['income','expenses','bills','loans','savings','tx'].reduce((s,k)=>s+state[k].filter(x=>x.sample).length,0);
   return n?`<div class="banner">${ic('bulb')}<span><b>${n} sample finance entries</b> show how this works. Replace them with your real numbers, or clear them.</span><span class="sp"></span><button class="btn sm" data-act="clearSamples">Clear sample data</button></div>`:'';
@@ -1883,14 +1887,14 @@ function pDebt(){
   <div class="card" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;justify-content:center">${donut(paidPct,150,pct(paidPct),'repaid')}
     <div style="flex:1;min-width:240px"><div class="tiny faint" style="letter-spacing:.08em;text-transform:uppercase;font-weight:600">Total outstanding</div><div class="big">${inr(f.debt)}</div>
     <div class="small muted">${inr(P-f.debt)} repaid of ${inr(P)} borrowed</div>
-    <div class="kpis" style="margin-top:14px">${kpi('EMIs / month',inr(f.emi),pct(f.emiRatio)+' of income',f.emiRatio>.4?'neg':f.emiRatio>.3?'warn':'')}${kpi('Debt-free (current pace)',base.stuck?'Never':dfd(base.months),base.months?base.months+' months':'')}${kpi('Interest still to pay',inr(base.interest),'','neg')}</div></div></div>
+    <div class="kpis" style="margin-top:14px">${kpi('EMIs / month',inr(f.emi),pct(f.emiRatio)+' of income',f.emiRatio>.4?'neg':f.emiRatio>.3?'warn':'','sec-loans')}${kpi('Debt-free (current pace)',base.stuck?'Never':dfd(base.months),base.months?base.months+' months':'')}${kpi('Interest still to pay',inr(base.interest),'','neg')}</div></div></div>
   ${debtPlanCard()}
   <div class="card"><div class="ch"><div><h3>Get debt-free faster</h3><div class="sub">When a loan closes, its EMI rolls into the next one.</div></div></div>
     <div class="inline"><label for="extra">Extra I can pay each month</label><input id="extra" type="number" inputmode="decimal" data-ui="extra" value="${esc(ui.extra)}" style="width:130px">
     <div class="seg"><button class="${ui.strategy==='avalanche'?'on':''}" data-set="strategy:avalanche">Avalanche · highest interest first</button><button class="${ui.strategy==='snowball'?'on':''}" data-set="strategy:snowball">Snowball · smallest balance first</button></div></div>
     <div class="kpis" style="margin-top:16px">${kpi('New debt-free date',plan.stuck?'Never':dfd(plan.months),plan.months+' months')}${kpi('Months saved',Math.max(0,msaved),'','pos')}${kpi('Interest saved',inr(Math.max(0,saved)),'','pos')}</div>
     ${plan.order.length?`<p class="small" style="margin-top:14px"><b>Payoff order:</b> ${plan.order.map((l,i)=>`${i+1}. ${esc(l.name)} <span class="muted">(${dfd(l.done)})</span>`).join(' → ')}</p>`:''}</div>
-  <div class="r2">${cards||'<div class="card empty">No loans. Enjoy the freedom! 🎉</div>'}</div>
+  <div class="r2" id="sec-loans">${cards||'<div class="card empty">No loans. Enjoy the freedom! 🎉</div>'}</div>
   ${cardSection()}
   <div class="card"><h3 style="margin-bottom:8px">Debt rules worth keeping</h3><ul class="tips">
     <li>Pay credit cards in <b>full</b> every month. “Minimum due” keeps ~40% yearly interest running.</li>
@@ -1907,8 +1911,8 @@ function pSavings(){
     return `<div class="ri clickable" data-edit="savings" data-id="${s.id}">${icoBox(s.type==='Emergency fund'?'shield':'trend',pcol(s.type))}<div class="rb"><div class="rt">${esc(s.name)}</div><div class="rs">${esc(s.type)}${num(s.monthly)?` · ${inr(s.monthly)}/month`:''}${s.notes?' · '+esc(s.notes):''}</div>${p!==null?`<div style="margin-top:7px;max-width:320px">${gbar(p)}</div><div class="tiny muted" style="margin-top:4px">${pct(p)} of ${inr(tg)}</div>`:''}</div><div class="ra">${inr(s.current)}</div></div>`}).join('');
   return `${phead('Money · Savings & net worth','Savings',`<button class="btn lime" data-add="savings">${ic('plus')} Add</button>`)}
   <div class="stack">${sampleBanner()}
-  <div class="kpis">${kpi('Savings & investments',inr(f.assets))}${kpi('Debt',inr(f.debt))}${kpi('Net worth',inr(f.net),'',f.net<0?'neg':'pos')}${kpi('Emergency fund',f.efMonths.toFixed(1)+' months','target 6 months = '+inr(f.out*6),f.efMonths>=6?'pos':f.efMonths>=3?'warn':'neg')}${kpi('Invested per month',inr(sum(state.savings,s=>s.monthly)))}</div>
-  <div class="card"><div class="ch"><div><h3>Accounts & investments</h3><div class="sub">Tap any row to update its value</div></div></div>${rows||'<div class="empty">Nothing added yet.</div>'}</div>
+  <div class="kpis">${kpi('Savings & investments',inr(f.assets),'','','sec-accounts')}${kpi('Debt',inr(f.debt),'','','go:debt')}${kpi('Net worth',inr(f.net),'',f.net<0?'neg':'pos')}${kpi('Emergency fund',f.efMonths.toFixed(1)+' months','target 6 months = '+inr(f.out*6),f.efMonths>=6?'pos':f.efMonths>=3?'warn':'neg')}${kpi('Invested per month',inr(sum(state.savings,s=>s.monthly)))}</div>
+  <div class="card" id="sec-accounts"><div class="ch"><div><h3>Accounts & investments</h3><div class="sub">Tap any row to update its value</div></div></div>${rows||'<div class="empty">Nothing added yet.</div>'}</div>
   <div class="card"><h3 style="margin-bottom:8px">Order of priorities at 27</h3><ol class="tips">
     <li>Own health insurance (₹10 lakh+), plus term insurance if anyone depends on you.</li>
     <li>Emergency fund of 1 month first, then clear high-interest debt, then grow it to 6 months.</li>
@@ -3671,14 +3675,14 @@ function todayBoard(){
 function pToday(){
   const B=todayBoard(),t=today(),S=(state.summaries||{})[ds(t)],h=new Date().getHours();
   const row=i=>`<div class="trow">${icoBox(i.icon,i.col)}<div class="nb"><div class="tx">${esc(i.title)}</div>${i.sub?`<div class="tiny muted">${esc(i.sub)}</div>`:''}</div>${i.time?`<span class="pill nodot">${esc(i.time)}</span>`:''}${i.act||''}</div>`;
-  const block=(title,cls,list,empty)=>`<div class="card ${cls}"><div class="ch"><h3>${title}</h3><span class="sp"></span><span class="pill ${cls==='tmiss'?'red':cls==='tnext'?'cyan':'lime'} nodot">${list.length}</span></div>${list.map(row).join('')||`<div class="empty small">${empty}</div>`}</div>`;
+  const block=(title,cls,list,empty,id='')=>`<div class="card ${cls}"${id?` id="${id}"`:''}><div class="ch"><h3>${title}</h3><span class="sp"></span><span class="pill ${cls==='tmiss'?'red':cls==='tnext'?'cyan':'lime'} nodot">${list.length}</span></div>${list.map(row).join('')||`<div class="empty small">${empty}</div>`}</div>`;
   return `${phead(fmt(t,{weekday:'long',day:'numeric',month:'long'}),'Today',`<button class="btn" data-go="history">${ic('clock')} Day history</button>`)}
   <div class="stack">
-  <div class="kpis">${kpi('Done',B.done.length,'','pos')}${kpi('Missed',B.missed.length,'',B.missed.length?'neg':'')}${kpi('Up next',B.next.length)}${kpi('Any time today',B.anytime.length)}</div>
+  <div class="kpis">${kpi('Done',B.done.length,'','pos','sec-done')}${kpi('Missed',B.missed.length,'',B.missed.length?'neg':'','sec-missed')}${kpi('Up next',B.next.length,'','','sec-next')}${kpi('Any time today',B.anytime.length,'','',B.anytime.length?'sec-any':'sec-next')}</div>
   ${daySummaryCard(ds(t),S,h)}
-  <div class="r2">${block('Missed so far','tmiss',B.missed,'Nothing missed. Nice! 🎉')}${block('Up next','tnext',B.next,'Nothing else scheduled today.')}</div>
-  ${B.anytime.length?block('Any time today','tany',B.anytime,''):''}
-  <details class="card tdone"><summary><b>Done today · ${B.done.length}</b>${ic('right')}</summary>${B.done.map(row).join('')||'<div class="empty small">Nothing yet.</div>'}</details>
+  <div class="r2">${block('Missed so far','tmiss',B.missed,'Nothing missed. Nice! 🎉','sec-missed')}${block('Up next','tnext',B.next,'Nothing else scheduled today.','sec-next')}</div>
+  ${B.anytime.length?block('Any time today','tany',B.anytime,'','sec-any'):''}
+  <details class="card tdone" id="sec-done"><summary><b>Done today · ${B.done.length}</b>${ic('right')}</summary>${B.done.map(row).join('')||'<div class="empty small">Nothing yet.</div>'}</details>
   </div>`;
 }
 const RATE={great:['Great','lime'],good:['Good','lime'],okay:['Okay','yellow'],needs_attention:['Needs attention','red']};
@@ -3735,10 +3739,10 @@ function pAdmin(){
   const rows=(ADM.users||[]).map(x=>`<tr><td><b>${esc(x.name||'—')}</b><div class="tiny muted">${esc(x.email)}</div></td><td><span class="pill ${st[x.status][1]}">${st[x.status][0]}</span><div class="tiny muted">${x.status==='trial'?'ends '+dshort(x.trial_ends):x.status==='active'?'until '+dshort(x.paid_until):''}</div></td><td>${dshort(x.created)}</td><td>${ago(x.last_seen)}</td><td class="n">${x.active30}</td><td class="n">${x.ai_today||0}</td><td class="n">${x.devices}</td><td class="n">${x.paid?inr(x.paid):'—'}</td><td>${x.status==='owner'?'':`<select class="sel" data-adm="${x.id}" aria-label="Actions for ${esc(x.email)}"><option value="">Actions…</option><option value="extend_trial">Extend trial +7 days</option><option value="grant_month">Give 1 month Plus</option><option value="revoke">End plan now</option><option value="reset_ai">Reset today’s AI count</option><option value="logout">Sign out everywhere</option><option value="delete">Delete user…</option></select>`}</td></tr>`).join('');
   return `${phead('Owner · Only you can see this','Admin',`<button class="btn" data-act="admRefresh">${ic('clock')} Refresh</button>`)}
   <div class="stack">
-  <div class="kpis">${kpi('Total users',U.total,`+${U.new7} this week · +${U.new30} in 30 days`)}${kpi('Active today',U.dau,`${U.wau} this week · ${U.mau} this month`)}${kpi('Online now',U.online,'active in the last 15 min')}${kpi('Paying (Plus)',U.active,`${U.trial} on trial · ${U.expired} expired`,'pos')}</div>
-  <div class="kpis">${kpi('Monthly revenue (MRR)',inr(M.mrr),`${U.active} × ${inr(M.price)}`,'pos')}${kpi('Collected, 30 days',inr(M.paid30),`${M.paid30Count} payments · ${inr(M.paidTotal)} all time`)}${kpi('Trial → paid',paidConv,'of finished trials')}${kpi('Payments',M.cashfree?'Live':'Not connected',M.cashfree?'Cashfree':'add Cashfree keys',M.cashfree?'pos':'warn')}</div>
+  <div class="kpis">${kpi('Total users',U.total,`+${U.new7} this week · +${U.new30} in 30 days`,'','adm-users')}${kpi('Active today',U.dau,`${U.wau} this week · ${U.mau} this month`,'','adm-activity')}${kpi('Online now',U.online,'active in the last 15 min','','adm-users')}${kpi('Paying (Plus)',U.active,`${U.trial} on trial · ${U.expired} expired`,'pos','adm-users')}</div>
+  <div class="kpis">${kpi('Monthly revenue (MRR)',inr(M.mrr),`${U.active} × ${inr(M.price)}`,'pos','adm-pay')}${kpi('Collected, 30 days',inr(M.paid30),`${M.paid30Count} payments · ${inr(M.paidTotal)} all time`,'','adm-pay')}${kpi('Trial → paid',paidConv,'of finished trials')}${kpi('Payments',M.cashfree?'Live':'Not connected',M.cashfree?'Cashfree':'add Cashfree keys',M.cashfree?'pos':'warn')}</div>
   <div class="r2">
-    <div class="card"><div class="ch"><div><h3>Sign-ups & active users</h3><div class="sub">Last 30 days</div></div></div>${chart(lbl,[{name:'Sign-ups',color:'var(--lime)',values:S.series.signups},{name:'Active users',color:'var(--cyan)',values:S.series.active}],'line',200)}</div>
+    <div class="card" id="adm-activity"><div class="ch"><div><h3>Sign-ups & active users</h3><div class="sub">Last 30 days</div></div></div>${chart(lbl,[{name:'Sign-ups',color:'var(--lime)',values:S.series.signups},{name:'Active users',color:'var(--cyan)',values:S.series.active}],'line',200)}</div>
     <div class="card"><div class="ch"><div><h3>Website visitors</h3><div class="sub">${W.visitors30.toLocaleString('en-IN')} visitors · ${W.views30.toLocaleString('en-IN')} page views in 30 days · ${conv} signed up</div></div></div>${chart(lbl,[{name:'Visitors',color:'var(--violet)',values:S.series.visitors},{name:'Page views',color:'var(--line2)',values:S.series.views}],'bar',200)}</div>
   </div>
   <div class="r2">
@@ -3749,8 +3753,8 @@ function pAdmin(){
     <div class="card"><div class="ch"><div><h3>Countries & devices</h3><div class="sub">30 days</div></div></div>${bar(W.countries,'country',cmax)}<div style="height:10px"></div>${bar(W.devices,'device',dmax)}</div>
     <div class="card"><div class="ch"><div><h3>AI usage</h3><div class="sub">${S.ai.today} actions today · ${S.ai.d30.toLocaleString('en-IN')} in 30 days · limit ${S.ai.limit}/user/day</div></div></div>${chart(lbl,[{name:'AI actions',color:'var(--orange)',values:S.series.ai}],'bar',150)}<div class="glabel" style="margin-top:10px">Top users this week</div>${bar(S.ai.top,'email',Math.max(1,...S.ai.top.map(r=>r.n)))}</div>
   </div>
-  <div class="card"><div class="ch"><div><h3>Recent payments</h3><div class="sub">${S.push.n} devices get push reminders (${S.push.u} users)</div></div></div>${S.recentPay.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>User</th><th>Order</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody>${S.recentPay.map(p=>`<tr><td>${dshort(p.created)}</td><td>${esc(p.email||'')}</td><td class="tiny">${esc(p.order_id)}</td><td class="n">${inr(p.amount)}</td><td><span class="pill ${p.status==='paid'?'lime':'nodot'}">${esc(p.status)}</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty small">No payments yet.</div>'}</div>
-  <div class="card"><div class="ch" style="align-items:center"><div><h3>Users</h3><div class="sub">Newest first</div></div><span class="sp"></span><input class="sel" id="admQ" placeholder="Search email or name" value="${esc(ADM.q)}" style="max-width:240px" aria-label="Search users"></div>
+  <div class="card" id="adm-pay"><div class="ch"><div><h3>Recent payments</h3><div class="sub">${S.push.n} devices get push reminders (${S.push.u} users)</div></div></div>${S.recentPay.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>User</th><th>Order</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody>${S.recentPay.map(p=>`<tr><td>${dshort(p.created)}</td><td>${esc(p.email||'')}</td><td class="tiny">${esc(p.order_id)}</td><td class="n">${inr(p.amount)}</td><td><span class="pill ${p.status==='paid'?'lime':'nodot'}">${esc(p.status)}</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty small">No payments yet.</div>'}</div>
+  <div class="card" id="adm-users"><div class="ch" style="align-items:center"><div><h3>Users</h3><div class="sub">Newest first</div></div><span class="sp"></span><input class="sel" id="admQ" placeholder="Search email or name" value="${esc(ADM.q)}" style="max-width:240px" aria-label="Search users"></div>
     <div class="tablewrap"><table class="admt"><thead><tr><th>User</th><th>Plan</th><th>Joined</th><th>Last seen</th><th class="n">Days active (30d)</th><th class="n">AI today</th><th class="n">Devices</th><th class="n">Paid</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="9" class="empty">No users.</td></tr>'}</tbody></table></div></div>
   <p class="tiny faint">Visitor numbers count people on the public pages (home, features, policies) without cookies. “Active” means opened the app that day.</p>
   </div>`;
@@ -3891,7 +3895,7 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday],[data-dsum]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday],[data-dsum],[data-jump]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
@@ -3900,6 +3904,8 @@ document.addEventListener('click',e=>{
   if(d.go){go(d.go);return}
   if(d.lsedit!==undefined){ui.lsEdit=d.lsedit||null;render();if(d.lsedit)setTimeout(()=>document.getElementById('ls-'+d.lsedit)?.focus(),50);return}
   if(d.lsave){const l=state.loans.find(x=>x.id===d.lsave),v=document.getElementById('ls-'+d.lsave)?.value;if(!l)return;if(!v){toast('Pick a date first','x');return}l.startDate=v;delete l.sample;ui.lsEdit=null;commit();toast(`First EMI: ${fmt(pd(v),{day:'numeric',month:'short',year:'numeric'})}`,'calendar');return}
+  if(d.jump&&d.jump.startsWith('go:')){go(d.jump.slice(3));return}
+  if(d.jump){const t=document.getElementById(d.jump);if(!t)return;if(t.tagName==='DETAILS')t.open=true;const y0=scrollY,top=Math.max(0,t.getBoundingClientRect().top+scrollY-(parseFloat(getComputedStyle(t).scrollMarginTop)||80));window.scrollTo({top,behavior:RM()?'auto':'smooth'});setTimeout(()=>{if(Math.abs(scrollY-y0)<2&&Math.abs(top-y0)>2)window.scrollTo(0,top)},450);t.classList.remove('jumped');void t.offsetWidth;t.classList.add('jumped');return}
   if(d.dsum){makeDaySummary(d.dsum);return}
   if(d.hday){ui.histDay=d.hday;render();return}
   if(d.jdel){if(confirm('Delete this journal entry?')){delete state.journal[d.jdel];commit()}return}
