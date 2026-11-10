@@ -219,6 +219,20 @@ async function runAI(env, spec) {
   return { result: JSON.parse(text) };
 }
 
+/* ---------------- Email (password resets) ---------------- */
+// Cloudflare Email Sending if the EMAIL binding exists, otherwise Resend if RESEND_API_KEY is set.
+const MAIL_FROM = (env) => env.MAIL_FROM || 'no-reply@selfstreak.com';
+const mailReady = (env) => !!(env.EMAIL || env.RESEND_API_KEY);
+async function sendMail(env, { to, subject, html, text }) {
+  if (env.EMAIL) return env.EMAIL.send({ from: { email: MAIL_FROM(env), name: 'Self Streak' }, to, subject, html, text });
+  if (env.RESEND_API_KEY) {
+    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, 'content-type': 'application/json' }, body: JSON.stringify({ from: `Self Streak <${MAIL_FROM(env)}>`, to: [to], subject, html, text }) });
+    if (!r.ok) throw new Error('resend ' + r.status + ' ' + (await r.text()).slice(0, 200));
+    return r.json();
+  }
+  throw new Error('mail_not_configured');
+}
+
 /* ---------------- Cashfree payments ---------------- */
 const cfReady = (env) => !!(env.CASHFREE_APP_ID && env.CASHFREE_SECRET_KEY);
 const cfMode = (env) => (env.CASHFREE_ENV === 'sandbox' ? 'sandbox' : 'production');
@@ -301,6 +315,39 @@ async function api(req, env, url) {
     const orderId = ev?.data?.order?.order_id;
     if (orderId) await settleOrder(env, String(orderId));
     return json({ ok: true });
+  }
+
+  if (p === '/api/forgot' && m === 'POST') {
+    const b = await body(), email = String(b.email || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err(400, 'Enter the email you signed up with.');
+    if (!mailReady(env)) return err(503, 'Password reset emails aren’t switched on yet. Email adityaps700@gmail.com and we’ll reset it for you.');
+    const usr = await env.DB.prepare('SELECT id, name FROM users WHERE email = ?').bind(email).first();
+    // Same answer whether or not the account exists, so nobody can probe for emails.
+    const okMsg = { ok: true, message: 'If that email has an account, a reset link is on its way. Check spam too. It works for 30 minutes.' };
+    if (!usr) { await hashPassword('x', '00'.repeat(16)); return json(okMsg); }
+    const recent = await env.DB.prepare('SELECT COUNT(*) AS n FROM password_resets WHERE user_id = ? AND created > ?').bind(usr.id, Date.now() - 3600e3).first();
+    if ((recent?.n || 0) >= 3) return json(okMsg);
+    const token = randHex(32), now = Date.now();
+    await env.DB.prepare('INSERT INTO password_resets (token_hash, user_id, expires, used, created) VALUES (?, ?, ?, 0, ?)').bind(await sha256(token), usr.id, now + 30 * 60e3, now).run();
+    const link = `${url.origin}/app#reset=${token}`, hi = usr.name ? `Hi ${usr.name},` : 'Hi,';
+    try {
+      await sendMail(env, { to: email, subject: 'Reset your Self Streak password',
+        text: `${hi}\n\nTap this link to choose a new password (valid for 30 minutes):\n${link}\n\nIf you didn’t ask for this, you can ignore this email. Your password won’t change.\n\n— Self Streak`,
+        html: `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:480px;margin:auto;padding:24px;color:#18181b"><div style="display:inline-block;background:#d7f64a;color:#10120a;font-weight:800;font-size:20px;width:40px;height:40px;line-height:40px;text-align:center;border-radius:11px">S</div><h2 style="margin:18px 0 8px">Reset your password</h2><p>${hi}</p><p>Tap the button to choose a new password for Self Streak. The link works for 30 minutes.</p><p style="margin:24px 0"><a href="${link}" style="background:#d7f64a;color:#10120a;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;display:inline-block">Choose a new password</a></p><p style="color:#71717a;font-size:13px">If you didn’t ask for this, ignore this email. Your password won’t change.</p></div>` });
+    } catch (e) { console.error('mail', e); return err(502, 'Couldn’t send the email right now. Please try again in a minute.'); }
+    return json(okMsg);
+  }
+  if (p === '/api/reset' && m === 'POST') {
+    const b = await body(), token = String(b.token || ''), pw = String(b.password || '');
+    if (pw.length < 8) return err(400, 'Use at least 8 characters.');
+    const row = await env.DB.prepare('SELECT * FROM password_resets WHERE token_hash = ?').bind(await sha256(token)).first();
+    if (!row || row.used || row.expires < Date.now()) return err(400, 'This reset link has expired or was already used. Ask for a new one.');
+    const salt = randHex(16);
+    await env.DB.prepare('UPDATE users SET pass_hash = ?, salt = ?, fail_count = 0, locked_until = 0 WHERE id = ?').bind(await hashPassword(pw, salt), salt, row.user_id).run();
+    await env.DB.prepare('UPDATE password_resets SET used = 1 WHERE user_id = ?').bind(row.user_id).run();
+    await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(row.user_id).run();
+    const usr = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(row.user_id).first();
+    return json(await me(env, usr), 200, { 'set-cookie': await newSession(env, req, usr.id) });
   }
 
   const u = await currentUser(env, req);
