@@ -1,5 +1,5 @@
 /* Aditya OS service worker: offline app shell + reminder notifications */
-const CACHE='aditya-os-v1';
+const CACHE='selfstreak-v11101109';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL).catch(()=>{})).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=='nudges').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
@@ -27,7 +27,8 @@ self.addEventListener('notificationclick',e=>{
   const d=e.notification.data||{},act=e.action&&d.acts?d.acts[e.action]:null,url=new URL(d.url||'./',self.registration.scope);
   if(act)url.searchParams.set('do',act);
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{
-    for(const c of cs){if('focus' in c){if(act)c.postMessage({type:'notif-action',act});else if(url.hash)c.navigate?.(url.href);return c.focus()}}
+    const q=act||url.searchParams.get('do');
+    for(const c of cs){if('focus' in c){if(q)c.postMessage({type:'notif-action',act:q});else if(url.hash)c.navigate?.(url.href);return c.focus()}}
     return self.clients.openWindow(url.href);
   }));
 });

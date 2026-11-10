@@ -606,6 +606,130 @@ input[type=time]{width:112px}
 .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:560px){.review-grid,.onb .fields{grid-template-columns:1fr}}
 
+/* ================= logo ================= */
+.logo-mk{display:block;flex:0 0 auto;border-radius:24%}
+.logo-mk.draw .lp{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.1s var(--ease) .2s forwards}
+.logo-mk.draw .ld{animation:bump .6s var(--spring) 1.1s backwards}
+/* ================= assistant bar (Google-style pill) ================= */
+.askbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:4px;width:min(440px,calc(100vw - 32px));height:58px;padding:0 6px 0 8px;border-radius:30px;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line2);box-shadow:0 18px 40px -16px rgba(0,0,0,.55),0 0 0 1px color-mix(in srgb,var(--lime) 18%,transparent);animation:rise .6s var(--spring) .2s backwards}
+.askbar .ask-text{flex:1;display:flex;align-items:center;gap:10px;height:100%;border:0;background:none;color:var(--muted);font-size:15px;text-align:left;cursor:text;padding:0 6px;min-width:0}
+.askbar .ask-text span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.askbar .ab{width:44px;height:44px;border-radius:50%;border:0;background:var(--card2);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:0 0 44px;transition:transform .2s var(--spring),background-color .2s}
+.askbar .ab:active{transform:scale(.9)}
+.askbar .ab.mic{background:var(--lime);color:var(--lime-ink)}
+.askbar .ab svg.i{width:21px;height:21px;stroke-width:2}
+body.locked .askbar{display:none}
+@media (min-width:861px){.askbar{left:auto;right:24px;transform:none;width:380px}}
+#toasts{bottom:calc(92px + env(safe-area-inset-bottom))!important}
+main{padding-bottom:110px!important}
+/* ================= assistant sheet ================= */
+#asst{padding:0;width:min(680px,calc(100vw - 24px));height:min(820px,calc(100dvh - 40px));max-height:calc(100dvh - 24px);overflow:hidden;background:var(--bg);border:1px solid var(--line2)}
+#asst[open]{display:flex;flex-direction:column}
+.as-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top));border-bottom:1px solid var(--line)}
+.as-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.as-brand b{font-size:15px}
+.as-log{flex:1;overflow-y:auto;padding:18px 14px;display:flex;flex-direction:column;gap:14px;overscroll-behavior:contain}
+.as-hello{margin:auto;text-align:center;display:grid;gap:10px;justify-items:center;max-width:420px;padding:10px}
+.as-hello h3{font-size:22px;letter-spacing:-.02em}
+.as-sugg{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px}
+.as-row{display:flex;gap:10px;align-items:flex-end;animation:rise .4s var(--spring) backwards}
+.as-row.me{justify-content:flex-end;border:0;background:none;padding:0;margin:0;cursor:auto;align-items:flex-end}
+.as-b.me{display:grid;margin:0;width:auto;cursor:auto;text-align:left;padding:11px 14px;border-radius:18px}
+.as-av{flex:0 0 26px}
+.as-b{max-width:min(82%,520px);padding:11px 14px;border-radius:18px;font-size:14.5px;line-height:1.5;display:grid;gap:8px}
+.as-b.me{background:color-mix(in srgb,var(--lime) 16%,var(--card2));border:1px solid color-mix(in srgb,var(--lime) 30%,transparent);border-bottom-right-radius:6px}
+.as-b.ai{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:6px}
+.as-b img{max-width:220px;width:100%;border-radius:12px;display:block}
+.as-file{display:flex;gap:6px;align-items:center;font-weight:600}
+.as-chips{display:grid;gap:6px}
+.as-chip{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--card2);border:1px solid var(--line);animation:chipIn .5s var(--spring) backwards;animation-delay:calc(var(--k)*60ms)}
+.as-chip .ico{width:32px;height:32px;flex-basis:32px;border-radius:9px}
+.as-chip .nb{flex:1;min-width:0}
+.as-chip .to{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--lime-text)}
+.as-chip .tx{font-weight:600;font-size:13.5px}
+.as-chip .sb{font-size:12px;color:var(--muted)}
+.as-chip svg.ok{color:var(--lime-text);width:16px;height:16px;stroke-width:2.6}
+.as-btns{display:flex;flex-wrap:wrap;gap:6px}
+.as-bar{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg)}
+.as-field{flex:1;min-width:0;position:relative;background:var(--card);border:1px solid var(--line2);border-radius:22px;padding:4px 12px}
+.as-field textarea{border:0;background:none;padding:8px 0;resize:none;font-size:15.5px;line-height:1.4;max-height:140px;outline:0}
+.as-field textarea:focus{outline:0}
+.as-interim{font-size:14px;color:var(--muted);padding:0 0 6px}
+.as-btn{width:46px;height:46px;border-radius:50%;border:0;background:var(--card2);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:0 0 46px;transition:transform .2s var(--spring),background-color .2s}
+.as-btn:active{transform:scale(.9)}
+.as-btn svg.i{width:21px;height:21px;stroke-width:2}
+.as-btn.go{background:var(--lime);color:var(--lime-ink)}
+.as-btn.go.on{background:#ff3b30;color:#fff;animation:micPulse 1.4s ease-in-out infinite}
+.as-bar.rec .as-field{border-color:#ff3b30}
+@media (max-width:860px){#asst{width:100vw;height:100dvh;max-width:100vw;max-height:100dvh;margin:0;border:0;border-radius:0}#asst[open]{animation:sheetUp .45s var(--spring)}}
+/* ================= notes page ================= */
+.note-card{text-align:left;cursor:pointer;display:grid;gap:6px;align-content:start;min-height:130px;color:var(--text);font:inherit}
+.note-card b{font-size:16px}
+.note-card p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* ================= water glasses ================= */
+.glasses2{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:14px}
+.glass2{border:0;background:none;padding:0;cursor:pointer;aspect-ratio:40/54;position:relative;transition:transform .25s var(--spring)}
+.glass2:hover{transform:translateY(-2px)}
+.glass2:active{transform:scale(.9)}
+.glass2 svg{width:100%;height:100%;display:block;overflow:visible}
+.glass2 .rim{fill:color-mix(in srgb,var(--cyan) 6%,transparent);stroke:var(--line2);stroke-width:2;stroke-linejoin:round}
+.glass2.on .rim{stroke:color-mix(in srgb,var(--cyan) 70%,var(--line2))}
+.glass2 .shine{stroke:rgba(255,255,255,.35);stroke-width:2;stroke-linecap:round;fill:none}
+.glass2 .wv{transform:translateY(46px);transition:transform .9s var(--spring)}
+.glass2.on .wv{transform:translateY(0)}
+.glass2 .wa{fill:var(--cyan);opacity:.95;animation:wave 2.2s linear infinite}
+.glass2 .wb{fill:color-mix(in srgb,var(--cyan) 70%,#fff);opacity:.45;animation:wave 3.1s linear infinite reverse}
+@keyframes wave{to{transform:translateX(20px)}}
+.glass2 .bub{fill:rgba(255,255,255,.7);opacity:0}
+.glass2.on .bub{animation:bub 2.6s ease-in infinite}
+.glass2.on .bub.b2{animation-delay:1.2s}
+@keyframes bub{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-28px)}}
+.glass2.fill .wv{animation:fillGlass 1.1s var(--spring) backwards;animation-delay:calc(var(--g)*90ms)}
+@keyframes fillGlass{from{transform:translateY(46px)}}
+.drop{position:fixed;width:7px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--cyan);pointer-events:none;z-index:95}
+.water-big{display:flex;align-items:baseline;gap:8px}
+/* ================= notifications page ================= */
+.nhero{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.nhero .nb{flex:1;min-width:240px}
+.nbell{position:relative;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--card2);color:var(--muted);flex:0 0 64px}
+.nhero.on .nbell{background:var(--lime);color:var(--lime-ink)}
+.nbell svg.i{width:28px;height:28px}
+.nhero.on .nbell svg{animation:ring 2.8s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes ring{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(14deg)}80%{transform:rotate(-12deg)}85%{transform:rotate(8deg)}90%{transform:rotate(-4deg)}}
+.nhero.on .pulse{position:absolute;inset:0;border-radius:20px;box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 50%,transparent);animation:ping 2.4s ease-out infinite}
+.nact{display:flex;flex-direction:column;gap:8px}
+.ntl{display:grid;gap:16px}
+.ntl-h{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.ntl-i{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.ntl-i:last-child{border-bottom:0}
+.ntl-i.sent .tx,.ntl-i.skip .tx,.ntl-i.willskip .tx,.ntl-i.passed .tx{color:var(--muted)}
+.ntl-t{font-weight:700;font-variant-numeric:tabular-nums;width:46px;flex:0 0 46px;font-size:13px;color:var(--muted)}
+.ntl-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}
+.ntl-i .nb{flex:1;min-width:0}
+.ntl-i .tx{font-weight:600;font-size:14px}
+.rules{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
+.rule{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:12px;transition:opacity .25s}
+.rule.off{opacity:.55}
+.rule.master{background:none;border:0;padding:0;opacity:1}
+.rule.master .ico,.rule.master .nb{display:none}
+.rule-h{display:flex;gap:12px;align-items:center}
+.rule-h .nb{flex:1;min-width:0}
+.tchip-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tpill2{display:inline-flex;align-items:center;gap:2px;height:34px;padding:0 4px 0 10px;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--text)}
+.tpill2 input[type=time]{border:0;background:none;padding:0;width:auto;font-weight:600;font-size:13.5px;height:100%;color:var(--text)}
+.tpill2 input:focus{outline:0}
+.tpill2 .x{border:0;background:none;color:var(--muted);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;cursor:pointer}
+.tpill2 .x svg.i{width:12px;height:12px}
+.tpill2.add{padding:0 10px;cursor:pointer;border-style:dashed}
+.tpill2.add svg.i{width:14px;height:14px}
+.hcard summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none}
+.hcard summary::-webkit-details-marker{display:none}
+.hcard[open] summary>svg{transform:rotate(90deg)}
+.hrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid var(--line)}
+.hrow .nb{flex:1;min-width:170px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hsteps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
+.hsteps>div{display:grid;gap:6px;align-content:start}
+
 /* lock screen */
 #lock{display:none}
 body.locked .side,body.locked .app,body.locked .overlay{display:none!important}
@@ -689,7 +813,8 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
   <main id="main"></main>
 </div>
 <dialog id="dlg"></dialog>
-<button class="fab" id="fab" data-act="voice" aria-label="New note: speak or type" title="New note (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>
+<div class="askbar" role="group" aria-label="Assistant"><button class="ask-text" data-act="ask"><svg class="i" viewBox="0 0 24 24" style="color:var(--lime-text)"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span>Log anything…</span></button><button class="ab" data-act="askcam" aria-label="Camera: meal, bill or receipt" title="Camera"><svg class="i" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg></button><button class="ab mic" data-act="askmic" aria-label="Speak" title="Speak (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button></div>
+<dialog id="asst" aria-label="Assistant"></dialog>
 <dialog id="voice" aria-label="Quick log"></dialog>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
@@ -732,6 +857,8 @@ const checkPw=pw=>stretch(pw,lockCfg().salt)===lockCfg().hash;
 const IC={
  flame:'<path d="M12 21c-4 0-7-2.8-7-6.6 0-3.4 2.4-5.4 4-7.9.4 1.8 1.4 3 2.7 3.6C11.5 7 13 4.5 15 3c.2 2.7 1.3 4.4 2.6 6.1 1.4 1.8 2.4 3.3 2.4 5.3C20 18.2 16 21 12 21z"/>',
  journal:'<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M10 8h5M10 12h5"/>',
+ camera:'<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/>',
+ send:'<path d="M12 19V5M6 11l6-6 6 6"/>',
  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>',
  stop:'<rect x="7" y="7" width="10" height="10" rx="2.5"/>',
  bank:'<path d="M3 9.5L12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3.5 20.5h17"/>',
@@ -1300,13 +1427,14 @@ function fin(){
   const wants=sum(state.expenses.filter(e=>e.kind==='want'),e=>e.amount);
   return {income,bills,emi,spend,out,left,rate:income?left/income:NaN,debt,assets,net:assets-debt,emiRatio:income?emi/income:NaN,ef,efMonths:out?ef/out:0,needs,wants};
 }
+const loanOff=l=>{const t=today();return state.paid['L:'+l.id+'|'+ym(t.getFullYear(),t.getMonth())]?1:0};
 function loanEmiInMonth(l,y,m){
   const e=num(l.emi);if(!e)return 0;
   const mEnd=new Date(y,m+1,0),t=today();
   if(l.startDate&&pd(l.startDate)>mEnd)return 0;
   const diff=(y-t.getFullYear())*12+(m-t.getMonth());
   if(diff<0)return e;
-  return diff<loanSim(l).n?e:0;
+  return diff-loanOff(l)<loanSim(l).n?e:0;
 }
 function monthRow(y,m){
   const key=ym(y,m),o=state.months[key]||{};
@@ -1354,14 +1482,14 @@ function eventsBetween(from,to){
     const n=loanSim(l).n,start=l.startDate?pd(l.startDate):null;
     for(const d of monthlyOcc(2000,0,num(l.dueDay)||1,1,from,to,start)){
       const diff=(d.getFullYear()-t.getFullYear())*12+(d.getMonth()-t.getMonth());
-      if(diff>=0&&isFinite(n)&&diff>=n)continue;
+      if(diff>=0&&isFinite(n)&&diff-loanOff(l)>=n)continue;
       ev.push({date:d,title:l.name+' EMI',type:'EMI',amount:num(l.emi),src:'loan',id:l.id,notes:l.lender,extra:'',lead:2});
     }
   }
   return ev.sort((a,b)=>a.date-b.date||a.title.localeCompare(b.title));
 }
 const paidKey=e=>e.src==='bill'?`B:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:e.src==='loan'?`L:${e.id}|${ym(e.date.getFullYear(),e.date.getMonth())}`:null;
-function lateThisMonth(){const t=today();return eventsBetween(new Date(t.getFullYear(),t.getMonth(),1),addDays(t,-1)).filter(e=>(e.src==='bill'||e.src==='loan')&&num(e.amount)>0&&!state.paid[paidKey(e)])}
+function lateThisMonth(){const t=today();return eventsBetween(new Date(t.getFullYear(),t.getMonth(),1),addDays(t,-1)).filter(e=>(e.src==='bill'||e.src==='loan')&&num(e.amount)>0&&e.extra!=='autopay'&&!state.paid[paidKey(e)])}
 function evRow(e){
   const dd=daysBetween(today(),e.date);
   const when=dd===0?'Today':dd===1?'Tomorrow':dd<0?`${-dd}d ago`:`in ${dd} days`;
@@ -1389,9 +1517,8 @@ function streak(h){let n=0,d=today();if(!isDone(h,d))d=addDays(d,-1);while(isDon
 function autoHabits(){
   const log=state.health.logs[ds(today())]||{};
   for(const h of state.health.habits){
-    if(h.auto==='steps'&&num(log.steps)>=10000)setDone(h,true);
-    if(h.auto==='water'&&num(log.water)>=12)setDone(h,true);
-    if(h.auto==='sleep'&&num(log.sleep)>=7)setDone(h,true);
+    const A={steps:['steps',10000],water:['water',12],sleep:['sleep',7]}[h.auto];if(!A)continue;
+    const v=num(log[A[0]]);if(v>=A[1])setDone(h,true);else if(v>0&&isDone(h))setDone(h,false);
   }
 }
 function goalProg(g){
@@ -1510,7 +1637,7 @@ function pOverview(){
   const recent=[...state.tx].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
   const S=SEASON[m];
   return `${phead(fmt(t,{weekday:'long',month:'long',day:'numeric'}),`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${esc(state.profile.first||'there')}`,
-    `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="voice">${ic('mic')} Note</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
+    `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
   <div class="stack">${sampleBanner()}
   <div class="ov"><div class="stack">
     <div class="card hero"><div style="min-width:0">
@@ -1795,9 +1922,9 @@ function pHealth(){
     <div class="card"><div class="ch"><div><h3>Health score</h3><div class="sub">Today · habits, steps, water, sleep</div></div></div>${dial(sc)}
       <div class="small" style="text-align:center;margin-top:4px"><b class="${delta>=0?'pos':'neg'}">${delta>=0?'+':''}${delta}</b> <span class="muted">vs yesterday</span></div>
       <div style="display:grid;gap:12px;margin-top:16px">${row('steps','var(--lime)','Steps',num(log.steps).toLocaleString('en-IN'),num(log.steps)/10000)}${row('moon','var(--violet)','Sleep',(num(log.sleep)||0)+' h',num(log.sleep)/8)}${row('check','var(--cyan)','Daily habits',Math.round(dayRatio(t)*100)+'%',dayRatio(t))}</div></div>
-    <div class="card"><div class="ch">${icoBox('drop','var(--cyan)')}<div style="flex:1;min-width:0"><h3>Water</h3><div class="sub">Goal 3 L · tap a glass</div></div><span class="sp"></span><span style="display:flex;gap:4px"><button class="ic" style="border:1px solid var(--line2)" data-water="-1" aria-label="One glass less">−</button><button class="ic" style="border:1px solid var(--line2)" data-water="1" aria-label="One glass more">${ic('plus')}</button></span></div>
+    <div class="card"><div class="ch">${icoBox('drop','var(--cyan)')}<div style="flex:1;min-width:120px"><h3>Water</h3><div class="sub">Goal 3 L · tap a glass</div></div><span style="display:flex;gap:4px"><button class="ic" style="border:1px solid var(--line2)" data-water="-1" aria-label="One glass less">−</button><button class="ic" style="border:1px solid var(--line2)" data-water="1" aria-label="One glass more">${ic('plus')}</button></span></div>
       <div class="mid">${+(w*.25).toFixed(2)} <span class="small muted" style="font-weight:500">litres · ${Math.max(0,12-w)?Math.max(0,12-w)+' glasses to go':'goal reached 🎉'}</span></div>
-      <div class="glasses">${[...Array(12)].map((_,i)=>`<button class="glass ${i<w?'on':''} ${i<w&&i>=from?'fill':''}" style="--g:${Math.max(0,i-from)}" data-glass="${i+1}" aria-label="${i+1} glasses"></button>`).join('')}</div>
+      <div class="glasses2">${[...Array(12)].map((_,i)=>`<button class="glass2 ${i<w?'on':''} ${i<w&&i>=from?'fill':''}" style="--g:${Math.max(0,i-from)}" data-glass="${i+1}" aria-label="${i+1} glass${i?'es':''}${i<w?' (drunk)':''}">${glassSVG(i)}</button>`).join('')}</div>
       <p class="tiny faint" style="margin-top:12px">${t.getMonth()>=3&&t.getMonth()<=5?'Summer: aim for 4 L and add ORS on hot days.':'Keep a bottle on your desk; sip every hour.'}</p></div>
     <div class="card"><div class="ch"><div><h3>The streak</h3><div class="sub">Full days in a row (80%+ of daily habits)</div></div><span class="sp"></span>${icoBox('flame','var(--orange)')}</div>
       <div class="inline" style="gap:10px;align-items:baseline"><span class="big">${fs.cur}</span><span class="small muted">day${fs.cur===1?'':'s'} · longest ${fs.best}${fs.best>fs.cur?` · ${fs.best-fs.cur+1} to beat it`:''}</span></div>
@@ -1921,7 +2048,7 @@ function pSettings(){
   </div></div>
   <div class="card"><h3 style="margin-bottom:6px">Your data</h3><p class="small muted" style="margin-bottom:14px">Saved to your Self Streak account and synced across your devices. You can download a full copy any time.</p>
     ${storageOK?'':'<div class="banner red" style="margin-bottom:12px">Browser storage is blocked here, so changes won’t survive a reload. Export before closing.</div>'}
-    <div class="inline"><button class="btn lime" data-act="export">${ic('download')} Export backup</button><button class="btn" data-act="import">${ic('upload')} Import backup</button><button class="btn" data-act="ics">${ic('calendar')} Export to calendar (.ics)</button><button class="btn" data-act="csv">${ic('download')} Payments CSV</button></div>
+    <div class="inline"><button class="btn lime" data-act="export">${ic('download')} Export backup</button><button class="btn" data-act="importBackup">${ic('upload')} Import backup</button><button class="btn" data-act="ics">${ic('calendar')} Export to calendar (.ics)</button><button class="btn" data-act="csv">${ic('download')} Payments CSV</button></div>
     <p class="small muted" style="margin-top:14px">The calendar file has every reminder, bill and EMI with alerts. Open it on your phone or import it into Google Calendar (Settings → Import) to get real push notifications.</p></div>
   <div class="card"><div class="ch">${icoBox('users','var(--lime)')}<div><h3>Account</h3><div class="sub">${esc(account?.user?.email||'')}</div></div><span class="sp"></span><span class="pill lime">${esc(statusLabel())}</span></div>
     <div class="kpis"><div class="kpi"><div class="l">Plan</div><div class="v" style="font-size:18px">${account?.user?.status==='owner'?'Owner':account?.user?.status==='active'?'Plus':'Free trial'}</div><div class="h">${account?.user?.status==='trial'?'then ₹'+(account?.price||499)+'/month':account?.user?.status==='expired'?'ended':'no limits on features'}</div></div><div class="kpi"><div class="l">AI actions today</div><div class="v" style="font-size:18px">${usage.used} / ${usage.limit}</div><div class="h">resets at midnight</div></div></div>
@@ -1936,6 +2063,7 @@ function pSettings(){
 
 /* ================= Self Streak: account, cloud sync, AI via server ================= */
 const BRAND='Self Streak';
+let cloudBase=0,syncFail=0;
 let account=null,usage={used:0,limit:20},cloudT=null,cloudDirty=false,pushOn=false,authMode='login';
 async function apiFetch(path,opts={}){
   const r=await fetch(path,{method:opts.method||'GET',headers:opts.body!==undefined?{'content-type':'application/json'}:{},body:opts.body!==undefined?JSON.stringify(opts.body):undefined,credentials:'same-origin'});
@@ -1945,10 +2073,26 @@ async function apiFetch(path,opts={}){
 }
 function queueCloud(now){
   if(!account)return;cloudDirty=true;clearTimeout(cloudT);
-  cloudT=setTimeout(async()=>{if(!navigator.onLine)return;try{await apiFetch('/api/data',{method:'PUT',body:{data:state,updated:state._u||Date.now()}});cloudDirty=false}catch(e){if(e.status===401)showAuth('login','Your session ended. Please log in again.')}},now?10:1500);
+  cloudT=setTimeout(async()=>{if(!navigator.onLine)return;try{const u=state._u||Date.now(),r=await apiFetch('/api/data',{method:'PUT',body:{data:state,updated:u,base:cloudBase}});cloudBase=r.updated||u;cloudDirty=false;syncFail=0}
+    catch(e){if(e.status===401)showAuth('login','Your session ended. Please log in again.');else if(e.status===409&&e.data?.data)adoptCloud(e.data.data,e.data.updated,true);else if(++syncFail<6)setTimeout(()=>queueCloud(true),15000*syncFail);else toast('Couldn’t sync to the cloud. Your changes are safe on this device.','x')}},now?10:1500);
 }
+function adoptCloud(data,updated,conflict){
+  const fired=state.nudges?.fired||{};state=load(data);state.nudges.fired={...state.nudges.fired,...fired};cloudBase=updated;cloudDirty=false;
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}
+  nzCache.t=0;autoHabits();if(!document.body.classList.contains('locked')){render();syncSW();pushSchedule()}
+  if(conflict)toast('Updated with changes from your other device','tick');
+}
+let pulling=false;
+async function pullCloud(){
+  if(!account||pulling||!navigator.onLine)return;pulling=true;
+  try{const [c,m]=await Promise.all([apiFetch('/api/data'),apiFetch('/api/me').catch(()=>null)]);
+    if(m){account={...account,...m};usage=m.usage||usage}
+    if(c.data&&c.updated>cloudBase){if(cloudDirty)queueCloud(true);else adoptCloud(c.data,c.updated,true)}}catch(e){}finally{pulling=false}
+}
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
 window.addEventListener('online',()=>{if(cloudDirty)queueCloud(true)});
-window.addEventListener('pagehide',()=>{if(cloudDirty&&account)try{fetch('/api/data',{method:'PUT',keepalive:true,headers:{'content-type':'application/json'},body:JSON.stringify({data:state,updated:state._u})})}catch(e){}});
+window.addEventListener('pagehide',()=>{if(cloudDirty&&account)try{fetch('/api/data',{method:'PUT',keepalive:true,headers:{'content-type':'application/json'},body:JSON.stringify({data:state,updated:state._u,base:cloudBase})})}catch(e){}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&cloudDirty)queueCloud(true)});
 const hasAI=()=>!!account&&navigator.onLine&&account.user.status!=='expired'&&usage.used<usage.limit;
 const modelName=()=>'AI';
 const aiLeft=()=>Math.max(0,usage.limit-usage.used);
@@ -1967,9 +2111,9 @@ function showAuth(mode='login',msg=''){
   ['#dlg','#voice'].forEach(s=>{if($(s).open)$(s).close()});if(scryOpen)closeScry();
   document.title=BRAND;applyTheme();
   const box=$('#lock');
-  if(mode==='loading'){box.innerHTML=`<div class="splash"><span class="mk" style="width:52px;height:52px;border-radius:16px;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-weight:800;font-size:26px">S</span><span class="small">Loading your streak…</span></div>`;return}
+  if(mode==='loading'){box.innerHTML=`<div class="splash">${logo(56,'draw')}<span class="small">Loading your streak…</span></div>`;return}
   const S=authMode==='signup';
-  box.innerHTML=`<div class="authwrap"><div class="authbrand"><span class="mk">S</span>${BRAND}</div>
+  box.innerHTML=`<div class="authwrap"><div class="authbrand">${logo(40,'draw')}${BRAND}</div>
   <form class="lockcard" id="authf" autocomplete="on" novalidate>
     <h2 id="authH">${S?'Start your streak':'Welcome back'}</h2>
     <p class="small muted lsub">${S?'Habits, money, reminders and health in one place. 7 days free.':'Log in to pick up where you left off.'}</p>
@@ -2004,7 +2148,7 @@ async function enterApp(m,isNew,name){
   KEY='selfstreak-data-'+m.user.id;UIKEY='selfstreak-ui-'+m.user.id;
   try{Object.assign(ui,JSON.parse(localStorage.getItem(UIKEY))||{})}catch(e){}
   state=load();
-  try{const c=await apiFetch('/api/data');if(c.data&&(c.updated||0)>=(state._u||0))state=load(c.data);else if(state._u)queueCloud(true)}catch(e){}
+  try{const c=await apiFetch('/api/data');cloudBase=c.updated||0;if(c.data&&(c.updated||0)>=(state._u||0))state=load(c.data);else if(state._u)queueCloud(true)}catch(e){}
   if(isNew&&name&&!state.profile.first){state.profile.first=name;state.profile.name=name}
   if(!state.profile.onboarded){startOnboarding();return}
   openApp();
@@ -2015,8 +2159,10 @@ function openApp(){
 }
 async function logout(){
   if(!confirm('Log out of Self Streak on this device?'))return;
-  try{if(cloudDirty)await apiFetch('/api/data',{method:'PUT',body:{data:state,updated:state._u}})}catch(e){}
-  try{await apiFetch('/api/logout',{method:'POST',body:{}})}catch(e){}
+  try{if(cloudDirty)await apiFetch('/api/data',{method:'PUT',body:{data:state,updated:state._u,base:cloudBase}})}catch(e){}
+  let endpoint='';try{const reg=await navigator.serviceWorker?.ready,sub=reg&&await reg.pushManager?.getSubscription();if(sub){endpoint=sub.endpoint;await sub.unsubscribe()}}catch(e){}
+  try{await caches.delete('nudges')}catch(e){}
+  try{await apiFetch('/api/logout',{method:'POST',body:{endpoint}})}catch(e){}
   try{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last')}catch(e){}
   location.href=location.pathname;
 }
@@ -2034,7 +2180,7 @@ async function boot(){
 /* ---------- paywall (Cashfree checkout plugs in later) ---------- */
 function checkPaywall(){
   const P=$('#pay');if(!account||account.user.status!=='expired'){P.classList.remove('show');return}
-  P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center"><span class="hero-ico" style="width:64px;height:64px;border-radius:20px;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;font-size:30px;font-weight:800">S</span></div>
+  P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center">${logo(64)}</div>
   <h2 style="font-size:24px">Your free trial has ended</h2><p class="small muted">Keep your streaks, reminders and AI logging going.</p>
   <div class="price">₹${account.price||499}<small> / month</small></div>
   <ul>${['Unlimited habits, goals, bills and reminders','Push reminders on your phone','Voice and typed notes filed automatically','Bank statement, bill and meal-photo scanning (20 AI actions a day)','Your data synced across devices'].map(x=>`<li>${ic('tick')}${x}</li>`).join('')}</ul>
@@ -2075,7 +2221,7 @@ const FOCUS_PAGES={money:['activity','budget','bills','debt','savings','year'],g
 function renderOnb(){
   const s=OB_STEPS[ob.i],box=$('#onb'),d=k=>`style="--d:${k}"`;
   let body='',next='Continue',skip='';
-  if(s==='welcome'){body=`<div ${d(0)}><span class="hero-ico">S</span></div><h1 ${d(1)}>Welcome to ${BRAND}${ob.first?', '+esc(ob.first):''}</h1><p class="lead" ${d(2)}>One place for your habits, health, money, bills and reminders. Talk or type, and it files everything for you.</p>
+  if(s==='welcome'){body=`<div ${d(0)}>${logo(84,'draw')}</div><h1 ${d(1)}>Welcome to ${BRAND}${ob.first?', '+esc(ob.first):''}</h1><p class="lead" ${d(2)}>One place for your habits, health, money, bills and reminders. Talk or type, and it files everything for you.</p>
     <div class="feat" ${d(3)}>${[['mic','Speak or type notes, filed automatically'],['bell','Reminders that skip what you’ve already done'],['bank','Bank statements, bills and meals read by AI'],['flame','Streaks that keep you going']].map(([i,t])=>`<div>${icoBox(i,'var(--lime)')}${t}</div>`).join('')}</div>`;next='Let’s set it up'}
   if(s==='you'){body=`<h1 ${d(0)}>About you</h1><p class="lead" ${d(1)}>So your dashboard greets you properly and tips fit your city.</p>
     <div class="fields" ${d(2)}><div class="fld wide"><label>First name</label><input id="obFirst" value="${esc(ob.first)}" autocomplete="given-name"></div><div class="fld"><label>City</label><input id="obCity" value="${esc(ob.city)}" placeholder="e.g. Lucknow" autocomplete="address-level2"></div><div class="fld"><label>Age</label><input id="obAge" type="number" inputmode="numeric" value="${esc(ob.age)}"></div></div>`}
@@ -2094,7 +2240,7 @@ function renderOnb(){
     <p class="lead" ${d(2)}>${u?.status==='owner'?'You’re the owner of this Self Streak, so there’s no trial limit.':`Your 7-day free trial has started. After that it’s ₹${account?.price||499}/month.`}</p>
     <div class="feat" ${d(3)}><div>${icoBox('mic','var(--lime)')}Tap the yellow mic any time and just talk.</div><div>${icoBox('sparkle','var(--cyan)')}You get ${usage.limit} AI actions a day: notes, scans and meals.</div></div>`;next='Open my dashboard'}
   box.innerHTML=`<div class="onb-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="onb">
-    <div class="onb-top"><span class="mk">S</span><div class="onb-dots">${OB_STEPS.map((_,k)=>`<i class="${k<=ob.i?'on':''}"></i>`).join('')}</div></div>
+    <div class="onb-top">${logo(36)}<div class="onb-dots">${OB_STEPS.map((_,k)=>`<i class="${k<=ob.i?'on':''}"></i>`).join('')}</div></div>
     <div class="onb-step ${ob.dir<0?'back':''}">${body}</div>
     <div class="onb-nav">${ob.i>0&&s!=='done'?`<button class="btn ghost" data-ob="back">${ic('left')} Back</button>`:''}<span class="sp"></span>${skip?`<button class="btn ghost" data-ob="skip">${skip}</button>`:''}<button class="btn lime" data-ob="next">${next} ${ic('right')}</button></div></div>`;
   box.querySelectorAll('[data-ob]').forEach(b=>b.onclick=()=>obAction(b.dataset.ob));
@@ -2127,7 +2273,6 @@ function finishOnboarding(){
 }
 
 /* ---------- files & AI helpers ---------- */
-function pickFile(accept,capture){return new Promise(res=>{const i=document.createElement('input');i.type='file';i.accept=accept;if(capture)i.setAttribute('capture','environment');i.onchange=()=>res(i.files[0]||null);i.click()})}
 async function fileToAI(file){
   if(/pdf/.test(file.type)||/\.pdf$/i.test(file.name)){const buf=await file.arrayBuffer();if(/\/Encrypt\b/.test(new TextDecoder('latin1').decode(new Uint8Array(buf))))throw new Error('This PDF is password-protected. Open it, choose Print → Save as PDF, and use the new copy.');return {media:'application/pdf',data:b64buf(buf)}}
   if(!/^image\//.test(file.type))throw new Error('Use a photo or a PDF.');
@@ -2174,7 +2319,7 @@ function foodCard(){
 
 /* ---------- bill & receipt scan ---------- */
 async function scanBill(){
-  if(!needAI())return;const file=await pickFile('image/*,application/pdf',true);if(!file)return;
+  if(!needAI())return;const file=await pickFile('image/*,application/pdf');if(!file)return;
   workDialog('Reading your bill','Finding the amount, due date and who it’s from…');
   try{const r=await aiTask('receipt',{...(await fileToAI(file)),cats:impCats().filter(c=>!['Income','Salary (already counted)','Bill payment','EMI','Transfer / ignore'].includes(c)),bills:state.bills.map(b=>b.name)});billReview(r)}
   catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
@@ -2219,9 +2364,9 @@ async function enablePush(){
 }
 let pushT;
 function pushSchedule(){
-  if(!pushOn||!account)return;clearTimeout(pushT);
+  if(!account)return;clearTimeout(pushT);
   pushT=setTimeout(async()=>{try{const now=Date.now();
-    const items=[...todayNudges(),...nudgeItems(addDays(today(),1)),...nudgeItems(addDays(today(),2))].filter(i=>+i.at>now&&+i.at<now+60*3600e3&&relevant(i))
+    const items=!state.nudges.enabled?[]:[...todayNudges(),...nudgeItems(addDays(today(),1)),...nudgeItems(addDays(today(),2))].filter(i=>+i.at>now&&+i.at<now+72*3600e3&&relevant(i))
       .map(i=>({at:+i.at,title:i.title,body:bodyOf(i),tag:i.key,url:i.url,actions:i.actions,acts:i.acts}));
     await apiFetch('/api/push/schedule',{method:'PUT',body:{items}})}catch(e){}},2500);
 }
@@ -2469,7 +2614,7 @@ function applyActions(actions){
     const valid=/^\d{4}-\d{2}-\d{2}$/.test(a.date||''),date=valid&&a.date<=T?a.date:T,d=pd(date),v=num(a.value),txt=String(a.text||'').trim();
     const lg=()=>state.health.logs[date]=state.health.logs[date]||{};
     switch(a.kind){
-      case'habit_done':case'habit_undo':{const h=H(a.ref);if(!h)break;setDone(h,a.kind==='habit_done',d);out.push({icon:'check',col:'var(--lime)',text:h.name,sub:a.kind==='habit_done'?'Marked done':'Unmarked'});break}
+      case'habit_done':case'habit_undo':{const h=H(a.ref);if(!h)break;setDone(h,a.kind==='habit_done',d);habitLogSync(h,a.kind==='habit_done',date);out.push({icon:'check',col:'var(--lime)',text:h.name,sub:a.kind==='habit_done'?'Marked done':'Unmarked'});break}
       case'steps':if(v>0&&v<200000){lg().steps=Math.round(v);out.push({icon:'steps',col:'var(--lime)',text:`Steps: ${Math.round(v).toLocaleString('en-IN')}`,sub:v>=10000?'10k goal hit 🎉':`${(10000-Math.round(v)).toLocaleString('en-IN')} to go`})}break;
       case'water_add':if(v>0&&v<=20){const L=lg();L.water=Math.min(30,num(L.water)+Math.round(v));out.push({icon:'drop',col:'var(--cyan)',text:`+${Math.round(v)} glass${Math.round(v)>1?'es':''} of water`,sub:`${L.water}/12 today`})}break;
       case'water_set':if(v>=0&&v<=30){lg().water=Math.round(v);out.push({icon:'drop',col:'var(--cyan)',text:`Water: ${Math.round(v)}/12 glasses`})}break;
@@ -2493,7 +2638,7 @@ function applyActions(actions){
 }
 /* ================= Notes: dictate or type, everything is filed automatically ================= */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const NOTE_PH='Start writing, or tap the mic and talk…\n\nTry: “Did gym and 10k steps. Drank 3 glasses. Spent 450 on Zomato. Remind me to call the bank tomorrow.”';
+const NOTE_PH='Start writing, or tap the mic and talk…';
 const DEST={meal:'Food',habit_done:'Habits',habit_undo:'Habits',steps:'Health',water_add:'Health',water_set:'Health',sleep:'Health',weight:'Health',expense:'Spending',income:'Income',bill_paid:'Bills',emi_paid:'Debt',haircut:'Grooming',product_bought:'Grooming',goal_progress:'Goals',checklist_done:'Life checklist',journal:'Journal',reminder_add:'Reminders'};
 let rec=null,NV={view:'note',id:null,listening:false,interim:'',queue:'',busy:false,snap:null,status:'',tip:''},typer=null,silT=null,idleT=null;
 const curNote=()=>(state.notes||[]).find(n=>n.id===NV.id);
@@ -2536,7 +2681,7 @@ function renderNotes(){
     const L=(state.notes||[]).filter(n=>n.text.trim());
     const when=t=>{const d0=new Date(t);return ds(d0)===ds(today())?d0.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}):fmt(d0,{day:'numeric',month:'short'})};
     d.innerHTML=`<div class="nt-top"><span></span><div class="nt-actions"><button class="nt-link" data-n="close">Close</button></div></div>
-    <div class="nt-h1">Notes</div><div class="nt-sub">Everything you write or say gets filed into the dashboard.</div>
+    <div class="nt-h1">Notes</div><div class="nt-sub">Thoughts, lists and ideas. Tap ⚡ File it in a note to log it.</div>
     <div class="nt-body nt-list">${L.map(n=>{const prev=n.text.split('\n').filter(l=>l.trim()).slice(1,2)[0]||'';return `<div class="nt-row" data-nid="${n.id}" role="button" tabindex="0"><div class="nb"><b>${esc(noteTitle(n))}</b><div class="sb"><span>${when(n.updated)}</span> ${esc(prev.slice(0,70))}</div></div>${n.done.length?`<span class="nt-count">${n.done.length} filed</span>`:''}<button class="nt-del" data-ndel="${n.id}" aria-label="Delete note">${ic('x')}</button></div>`}).join('')||'<div class="empty">No notes yet. Tap the pencil to start one.</div>'}</div>
     <div class="nt-bar"><span class="nt-status">${L.length} note${L.length===1?'':'s'}</span><button class="nt-mic sm" data-n="new" aria-label="New note">${ic('edit')}</button><span class="nt-status"></span></div>`;
   }else{
@@ -2548,7 +2693,7 @@ function renderNotes(){
     <div class="nt-date">${fmt(dt,{day:'numeric',month:'long',year:'numeric'})} at ${dt.toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'})}</div>
     <div class="nt-body"><div class="nt-text" id="ntx" ${NV.listening?'':'contenteditable="true"'} data-ph="${esc(NOTE_PH)}" spellcheck="true" aria-label="Note">${noteHTML(n.text)}</div>
       <div class="nt-assigned" id="nta">${chipsHTML(n)}</div></div>
-    <div class="nt-bar"><div class="nt-status" id="nts">${statusHTML()}</div><button class="nt-mic ${NV.listening?'on':''}" data-n="mic" aria-label="${NV.listening?'Stop listening':'Dictate'}">${ic(NV.listening?'stop':'mic')}</button><div class="nt-status r">${NV.snap&&NV.snap.noteId===n.id?'<button class="nt-link" data-n="undo">Undo</button>':''}</div></div>`;
+    <div class="nt-bar"><div class="nt-status" id="nts">${statusHTML()}</div><button class="nt-mic ${NV.listening?'on':''}" data-n="mic" aria-label="${NV.listening?'Stop listening':'Dictate'}">${ic(NV.listening?'stop':'mic')}</button><div class="nt-status r">${NV.snap&&NV.snap.noteId===n.id?'<button class="nt-link" data-n="undo">Undo</button>':n.text.slice(n.pl).trim()?'<button class="nt-link" data-n="file" title="Turn this note into dashboard entries">⚡ File it</button>':''}</div></div>`;
     paintLive();
   }
   d.querySelectorAll('[data-n]').forEach(b=>b.onclick=e=>{e.stopPropagation();noteAction(b.dataset.n)});
@@ -2557,9 +2702,8 @@ function renderNotes(){
   const el=$('#ntx');
   if(el&&!NV.listening){
     el.oninput=()=>{const n=curNote();n.text=el.innerText.replace(/ /g,' ').replace(/\n$/,'');n.updated=Date.now();if(n.pl>n.text.length)n.pl=n.text.length;save();
-      clearTimeout(idleT);const pend=n.text.slice(n.pl).trim();setStatus(pend?'typing':'');
-      if(pend)idleT=setTimeout(()=>{if(/[.!?।\n]\s*$/.test(curNote()?.text||'')||document.activeElement!==el)processPending()},2600)};
-    el.onblur=()=>{const n=curNote();if(n&&n.text.slice(n.pl).trim()){clearTimeout(idleT);idleT=setTimeout(processPending,1200)}};
+      clearTimeout(idleT);setStatus('');
+      };
     el.onpaste=e=>{e.preventDefault();document.execCommand('insertText',false,(e.clipboardData||window.clipboardData).getData('text/plain'))};
   }
 }
@@ -2604,7 +2748,7 @@ async function finishListening(ended){
   clearTimeout(silT);if(!NV.listening)return;
   if(NV.interim)typeIn(NV.interim);NV.interim='';NV.listening=false;
   if(!ended){try{rec?.stop()}catch(e){}}
-  await flushQueue();save();renderNotes();processPending();
+  await flushQueue();save();renderNotes();
 }
 async function processPending(){
   clearTimeout(idleT);const n=curNote();if(!n||NV.busy)return;const pend=n.text.slice(n.pl).trim();if(!pend){setStatus('');return}
@@ -2645,14 +2789,14 @@ function noteAction(a){
   if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderNotes();if(ui.talk!==false)speak('Talk back is on.');else try{speechSynthesis.cancel()}catch(e){}return}
   if(a==='lang'){ui.vlang=ui.vlang==='hi-IN'?'en-IN':'hi-IN';saveUI();renderNotes();toast(ui.vlang==='hi-IN'?'Listening in Hindi':'Listening in English','mic');return}
   if(a==='undo'){if(!NV.snap)return;const s=NV.snap,notes=state.notes;state={...JSON.parse(s.snap),notes};const m=notes.find(x=>x.id===s.noteId);if(m)m.done.splice(-s.count);NV.snap=null;NV.status='Undone';commit();renderNotes();speak('Undone.');return}
-  if(a==='done'){if(NV.listening){finishListening();return}if(n&&n.text.slice(n.pl).trim()){processPending();return}closeDlg($('#voice'));return}
-  if(a==='list'){if(NV.listening)finishListening();else if(n&&n.text.slice(n.pl).trim())processPending();NV.view='list';renderNotes();return}
+  if(a==='done'){if(NV.listening){finishListening();return}closeDlg($('#voice'));return}
+  if(a==='file'){processPending();return}
+  if(a==='list'){if(NV.listening)finishListening();NV.view='list';renderNotes();return}
   if(a==='new'){newNote();NV.view='note';NV.status='';NV.snap=null;renderNotes();focusNote(true);return}
   if(a==='close'){closeDlg($('#voice'));return}
 }
 function onNotesClose(){
   clearTimeout(silT);try{rec?.abort()}catch(e){}NV.listening=false;
-  const n=curNote();if(n&&n.text.slice(n.pl).trim())processPending();
   setTimeout(()=>{state.notes=(state.notes||[]).filter(x=>x.text.trim());save()},1500);
 }
 
@@ -2723,20 +2867,20 @@ async function notifTick(){
       const fg=document.visibilityState==='visible'&&document.hasFocus()&&!document.body.classList.contains('locked');
       if(fg)toast(n.title,'bell');else if(pushOn){}else{const ok=await showNotif(n);if(!ok)rel.forEach(i=>F[i.key]={s:'missed',t:now})}
     }
-    pruneFired();save();syncSW();pushSchedule();if(ui.page==='notify'&&!document.body.classList.contains('locked'))render();
+    pruneFired();saveLocal();syncSW();pushSchedule();if(ui.page==='notify'&&!document.body.classList.contains('locked'))render();
   }finally{tickBusy=false}
 }
 function checkMissed(){
   if(document.body.classList.contains('locked'))return;const N=state.nudges;if(!N.enabled)return;
   const now=Date.now(),F=N.fired,miss=todayNudges().filter(i=>!F[i.key]&&+i.at<=now-15*60000&&+i.at>now-8*3600e3);if(!miss.length)return;
-  let n=0;miss.forEach(i=>{const r=relevant(i);F[i.key]={s:r?'missed':'skip',t:now};if(r)n++});save();
+  let n=0;miss.forEach(i=>{const r=relevant(i);F[i.key]={s:r?'missed':'skip',t:now};if(r)n++});saveLocal();
   if(n)toast(`${n} reminder${n>1?'s':''} came up while you were away · see Notifications`,'bell');
 }
 let swT;
 function syncSW(){clearTimeout(swT);swT=setTimeout(async()=>{
   if(!('caches' in window)||!navigator.serviceWorker?.controller)return;
   try{const c=await caches.open('nudges'),now=Date.now();
-    const list=[...todayNudges(),...nudgeItems(addDays(today(),1))].filter(i=>+i.at>now&&+i.at<now+36*3600e3&&relevant(i)).map(i=>({key:i.key,at:+i.at,time:i.time,title:i.title,body:bodyOf(i),tag:i.key,url:i.url,actions:i.actions,acts:i.acts}));
+    const list=!state.nudges.enabled?[]:[...todayNudges(),...nudgeItems(addDays(today(),1))].filter(i=>+i.at>now&&+i.at<now+36*3600e3&&relevant(i)).map(i=>({key:i.key,at:+i.at,time:i.time,title:i.title,body:bodyOf(i),tag:i.key,url:i.url,actions:i.actions,acts:i.acts}));
     await c.put('schedule.json',new Response(JSON.stringify({items:list,written:now}),{headers:{'Content-Type':'application/json'}}));await c.put('lastrun',new Response(String(now)));
   }catch(e){}},1500)}
 let swReg=null,deferredInstall=null,pendingDo=null;
@@ -2753,7 +2897,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredIns
 function runDo(act){
   if(document.body.classList.contains('locked')){pendingDo=act;return}
   const i=act.indexOf(':'),k=i<0?act:act.slice(0,i),v=i<0?'':act.slice(i+1);
-  if(k==='voice'){openVoice();return}
+  if(k==='voice'){openAssistant('mic');return}
   if(k==='import'){openImport();return}
   if(k==='habit'){const h=state.health.habits.find(x=>x.id===v);if(h&&!isDone(h)){setDone(h,true);toast(`${h.name} ✓`)}}
   else if(k==='water'){const key=ds(today()),L=state.health.logs[key]=state.health.logs[key]||{};L.water=Math.min(30,num(L.water)+num(v));autoHabits();toast(`Water: ${L.water}/12 glasses`,'drop')}
@@ -2785,60 +2929,214 @@ function exportRoutineICS(){
 }
 function pNotify(){
   const N=state.nudges,perm='Notification' in window?Notification.permission:'unsupported',ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,secure=location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   const items=todayNudges(),now=Date.now(),F=N.fired;
   const status=i=>{const f=F[i.key];if(f)return f.s;if(+i.at>now)return relevant(i)?'up':'willskip';return 'passed'};
-  const cnt=k=>items.filter(i=>status(i)===k).length;
-  const PILL={sent:'<span class="pill lime">Sent</span>',skip:'<span class="pill nodot">Skipped · done</span>',missed:'<span class="pill yellow">Missed</span>',up:'<span class="pill cyan">Upcoming</span>',willskip:'<span class="pill nodot">Won’t send · done</span>',passed:'<span class="pill nodot">Passed</span>'};
-  const nextUp=items.find(i=>+i.at>now&&relevant(i));
-  const sw=(k,on,label,sub,extra='')=>`<div class="nzrow"><button class="switch ${on?'on':''}" data-nzon="${k}" role="switch" aria-checked="${on}" aria-label="${esc(label)}"></button><div class="nb"><b>${label}</b><div class="tiny muted">${sub}</div></div>${extra}</div>`;
-  const tIn=(path,val)=>`<input type="time" data-nzv="${path}" value="${esc(val)}">`;
-  const tList=(path,arr)=>`<input class="times" data-nzt="${path}" value="${esc((arr||[]).join(', '))}" aria-label="Times" placeholder="09:00, 14:00">`;
+  const on=perm==='granted'&&N.enabled,next=items.find(i=>+i.at>now&&relevant(i));
+  const mins=next?Math.round((+next.at-now)/60000):0,inTxt=next?(mins<60?`in ${mins} min`:`in ${Math.floor(mins/60)} h ${mins%60} min`):'';
+  const sent=items.filter(i=>status(i)==='sent').length,skipped=items.filter(i=>['skip','willskip'].includes(status(i))).length;
+  const ST={sent:['Sent','lime','tick'],skip:['Done already','nodot','check'],willskip:['Done already','nodot','check'],missed:['Missed','yellow','clock'],up:['Upcoming','cyan','clock'],passed:['Passed','nodot','clock']};
+  const groups=[['Morning',0,12],['Afternoon',12,17],['Evening',17,24]].map(([l,a,b])=>[l,items.filter(i=>{const h=+i.time.slice(0,2);return h>=a&&h<b})]);
+  const chipsFor=(path,arr)=>`<div class="tchip-row">${(arr||[]).map((t,k)=>`<span class="tpill2"><input type="time" value="${t}" data-nzti="${path}:${k}" aria-label="Time"><button class="x" data-nzrm="${path}:${k}" aria-label="Remove ${t}">${ic('x')}</button></span>`).join('')}<button class="tpill2 add" data-nzadd="${path}" aria-label="Add a time">${ic('plus')}</button></div>`;
+  const one=(path,val)=>`<div class="tchip-row"><span class="tpill2"><input type="time" value="${val}" data-nzv="${path}" aria-label="Time"></span></div>`;
   const DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const hRow=h=>`<tr><td><b class="small">${esc(h.name)}</b><div class="tiny muted">${esc(h.area||'')}</div></td><td>${h.period==='weekly'?`<select data-hdow="${h.id}" aria-label="Day">${DOW.map((x,i)=>`<option value="${i}" ${num(h.dow)===i?'selected':''}>${x.slice(0,3)}</option>`).join('')}</select>`:h.period==='daily'?'<span class="tiny muted">Every day</span>':`<input type="number" min="1" max="28" data-hdom="${h.id}" value="${esc(h.dom||1)}" style="width:64px" aria-label="Day of month">`}</td><td><input data-ht="${h.id}" value="${esc((h.times||[]).join(', '))}" placeholder="no reminder" style="width:150px" aria-label="Reminder times"></td></tr>`;
-  return `${phead('Life · Never forget anything','Notifications',`<button class="btn" data-act="notifTest">${ic('bell')} Send a test</button>${perm!=='granted'?`<button class="btn lime" data-act="notifOn">${ic('bell')} Turn on notifications</button>`:''}`)}
+  const rule=(key,icon,col,title,desc,ctrl)=>{const v=key==='enabled'?N.enabled:key.split('.').reduce((o,k)=>o[k],N);return `<div class="rule ${v?'':'off'}"><div class="rule-h">${icoBox(icon,col)}<div class="nb"><b>${title}</b><div class="tiny muted">${desc}</div></div><button class="switch ${v?'on':''}" data-nzon="${key}" role="switch" aria-checked="${v}" aria-label="${esc(title)}"></button></div>${ctrl?`<div class="rule-b">${ctrl}</div>`:''}</div>`};
+  return `${phead('Life · Never forget anything','Notifications',`<button class="btn" data-act="routineIcs">${ic('calendar')} Calendar backup</button>`)}
   <div class="stack">
-  <div class="r2">
-    <div class="card"><div class="ch"><div><h3>Status on this device</h3><div class="sub">${items.length} reminders planned today · ${cnt('sent')} sent · ${cnt('skip')+cnt('willskip')} skipped because already done</div></div></div>
-      <div class="lane">${icoBox('bell',perm==='granted'?'var(--lime)':'var(--yellow)')}<div class="rb"><b>Notifications: ${perm==='granted'?'<span class="pos">on</span>':perm==='denied'?'<span class="neg">blocked</span>':perm==='unsupported'?'not supported here':'not turned on yet'}</b><div class="small muted">${perm==='denied'?'Allow notifications for this site in your browser or phone settings, then reload.':perm==='unsupported'?(ios&&!standalone?'On iPhone, first add the dashboard to your Home Screen (below), then open it from there.':'Use Chrome, Edge or Safari for notifications.'):perm==='granted'?'Reminders appear as notifications when the app is in the background, and as pop-ups when it’s open.':'Tap “Turn on notifications” and allow when asked.'}</div></div>${perm==='default'?`<button class="btn sm lime" data-act="notifOn">Turn on</button>`:''}</div>
-      <div class="lane">${icoBox('phone',standalone?'var(--lime)':'var(--cyan)')}<div class="rb"><b>Installed as an app: ${standalone?'<span class="pos">yes</span>':'not yet'}</b><div class="small muted">${standalone?'Opens full-screen from your home screen and works offline.':ios?'In Safari tap Share ⬆ → “Add to Home Screen”, then open Self Streak from your home screen.':deferredInstall?'Install it for a full-screen app with its own icon.':'In Chrome on Android: menu ⋮ → “Install app” / “Add to Home screen”.'}</div></div>${!standalone&&deferredInstall?`<button class="btn sm lime" data-act="install">Install</button>`:''}</div>
-      <div class="lane">${icoBox('calendar','var(--orange)')}<div class="rb"><b>Phone calendar backup</b><div class="small muted">Adds your whole routine (water, steps, every habit at its time) to your phone’s calendar with alerts. Works even when the app is closed, on iPhone and Android.</div></div><button class="btn sm" data-act="routineIcs">Add routine</button></div>
-      ${!secure?'<div class="banner" style="margin-top:12px">Open the dashboard from its web address (GitHub Pages) to use notifications and install it as an app. They don’t work on a file opened from your computer.</div>':''}
-    </div>
-    <div class="card"><div class="ch"><div><h3>How reminders reach you</h3><div class="sub">Honest version</div></div></div>
-      <div class="lane"><span class="pill lime">1</span><div class="rb"><b>App open or in the background</b><div class="small muted">Every reminder fires on time with buttons like “✓ Done”, “+1 glass” or “Mark paid” (Android). Anything you’ve already done is skipped automatically.</div></div></div>
-      <div class="lane"><span class="pill lime">2</span><div class="rb"><b>App fully closed: push ${pushOn?'<span class="pos">on</span>':'off'}</b><div class="small muted">Self Streak’s server sends your reminders as push notifications, even when the app is closed. On iPhone, add it to your Home Screen first.</div></div>${pushOn?'<button class="btn sm" data-act="pushTest">Test push</button>':''}</div>
-      <div class="lane"><span class="pill cyan">3</span><div class="rb"><b>Rock-solid backup: your phone calendar</b><div class="small muted">Use “Add routine” (left) and “Add to phone calendar” on the Reminders page for bills, EMIs and birthdays. Calendar alerts always fire, but can’t skip what you’ve already done.</div></div></div>
-      ${nextUp?`<div class="banner" style="margin-top:12px">${ic('clock')}<span>Next: <b>${esc(nextUp.title)}</b> at ${nextUp.time}</span></div>`:''}
-    </div>
+  <div class="card nhero ${on?'on':''}">
+    <div class="nbell">${ic('bell')}<span class="pulse"></span></div>
+    <div class="nb"><div class="tiny faint" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">${on?'Reminders are on':'Reminders are off'}</div>
+      <h2 style="font-size:22px;margin:4px 0">${on?(next?`Next: ${esc(next.title)}`:'Nothing else today'):perm==='denied'?'Notifications are blocked':perm==='unsupported'?(ios&&!standalone?'Add Self Streak to your Home Screen first':'This browser can’t show notifications'):'Turn on reminders'}</h2>
+      <div class="small muted">${on?(next?`${next.time} · ${inTxt}. ${sent} sent today, ${skipped} skipped because you’d already done them.`:`${sent} sent today, ${skipped} skipped because you’d already done them.`):perm==='denied'?'Allow notifications for this site in your browser or phone settings, then reload.':perm==='unsupported'?(ios?'In Safari: Share ⬆ → Add to Home Screen, then open Self Streak from your home screen.':'Use Chrome, Edge or Safari.'):'Water, habits, bills and birthdays, at the right time. Anything you’ve already done is skipped.'}</div>
+      <div class="chips" style="margin-top:12px"><span class="pill ${perm==='granted'?'lime':''}">Notifications ${perm==='granted'?'on':'off'}</span><span class="pill ${pushOn?'lime':''}">Push when app is closed ${pushOn?'on':'off'}</span><span class="pill ${standalone?'lime':''}">${standalone?'Installed':'Not installed'}</span></div></div>
+    <div class="nact">${perm==='default'?`<button class="btn lime" data-act="notifOn">${ic('bell')} Turn on</button>`:''}${perm==='granted'?`<button class="btn" data-act="${pushOn?'pushTest':'notifTest'}">${ic('bell')} Send a test</button>`:''}${!standalone&&deferredInstall?`<button class="btn" data-act="install">${ic('phone')} Install app</button>`:''}</div>
   </div>
-  <div class="card"><div class="ch"><div><h3>Today’s reminders</h3><div class="sub">${fmt(today(),{weekday:'long',day:'numeric',month:'long'})} · quiet hours ${esc(N.quiet.from)}–${esc(N.quiet.to)}</div></div><span class="sp"></span>${N.enabled?'':'<span class="pill red">All reminders paused</span>'}</div>
-    <div class="tl">${items.map(i=>`<div class="ri"><span class="tm">${i.time}</span>${icoBox(i.icon,NZ_COL[i.cat]||'var(--lime)')}<div class="rb"><div class="rt">${esc(i.title)}</div><div class="rs">${esc(i.cat)} · ${esc(String(bodyOf(i)).slice(0,110))}</div></div>${PILL[status(i)]||''}</div>`).join('')||'<div class="empty">Nothing planned today.</div>'}</div></div>
-  <div class="card"><div class="ch"><div><h3>Reminder rules</h3><div class="sub">Change any time. Separate several times with commas.</div></div></div>
-    ${sw('enabled',N.enabled,'All reminders','Master switch. Turn off to pause everything.')}
-    ${sw('water.on',N.water.on,'Water 💧','Reminds you to drink, adapts to how many glasses you’ve logged, stops once you hit 12.',tList('water.times',N.water.times))}
-    ${sw('steps.on',N.steps.on,'Steps 🚶','Nudges you to walk if you’re under 10,000.',tList('steps.times',N.steps.times))}
-    ${sw('digest.on',N.digest.on,'Morning digest ☀️','Today’s bills, birthdays and plan in one message.',tIn('digest.time',N.digest.time))}
-    ${sw('habits.on',N.habits.on,'Habits & grooming','Each habit at its own time (table below). Skipped if already ticked.')}
-    ${sw('catchup.on',N.catchup.on,'Weekly catch-up','Lists weekly habits still open at the end of the week (and monthly ones on the 25th).',`<select data-nzv="catchup.dow" aria-label="Day">${DOW.map((x,i)=>`<option value="${i}" ${num(N.catchup.dow)===i?'selected':''}>${x}</option>`).join('')}</select>${tIn('catchup.time',N.catchup.time)}`)}
-    ${sw('logday.on',N.logday.on,'Log your day ✍️','Evening prompt to log steps, spends and a journal line.',tIn('logday.time',N.logday.time))}
-    ${sw('money.on',N.money.on,'Bills & EMIs 💸','2 days before and on the due date, until marked paid. Overdue ones daily at 10:30.',tIn('money.time',N.money.time))}
-    ${sw('dates.on',N.dates.on,'Birthdays, tax dates & renewals 🎂','On the day, plus each reminder’s “alert me” days before.',tIn('dates.time',N.dates.time))}
-    ${sw('grooming.on',N.grooming.on,'Haircut & running-low products ✂️','When a haircut is due or a product is about to run out.',tIn('grooming.time',N.grooming.time))}
-    <div class="nzrow"><span class="ico" style="color:var(--violet);background:color-mix(in srgb,var(--violet) 12%,transparent);border-color:color-mix(in srgb,var(--violet) 30%,transparent)">${ic('moon')}</span><div class="nb"><b>Quiet hours</b><div class="tiny muted">Nothing is sent between these times.</div></div>${tIn('quiet.from',N.quiet.from)}<span class="muted">to</span>${tIn('quiet.to',N.quiet.to)}</div>
+  <div class="card"><div class="ch"><div><h3>Today</h3><div class="sub">${fmt(today(),{weekday:'long',day:'numeric',month:'long'})} · ${items.length} reminders · quiet ${esc(N.quiet.from)}–${esc(N.quiet.to)}</div></div><span class="sp"></span>${N.enabled?'':'<span class="pill red">All paused</span>'}</div>
+    <div class="ntl">${groups.map(([l,g])=>g.length?`<div class="ntl-g"><div class="ntl-h"><b>${l}</b><span class="tiny muted">${g.filter(i=>['sent','skip','willskip'].includes(status(i))).length}/${g.length}</span></div>${g.map(i=>{const s=ST[status(i)]||ST.passed;return `<div class="ntl-i ${status(i)}"><span class="ntl-t">${i.time}</span><span class="ntl-dot" style="background:${NZ_COL[i.cat]||'var(--lime)'}"></span><div class="nb"><div class="tx">${esc(i.title)}</div><div class="tiny muted">${esc(String(bodyOf(i)).slice(0,90))}</div></div><span class="pill ${s[1]}">${s[0]}</span></div>`}).join('')}</div>`:'').join('')||'<div class="empty">Nothing planned today.</div>'}</div></div>
+  <div class="ch" style="margin:6px 0 -4px"><div><h3>What to remind you about</h3><div class="sub">Tap a time to change it, + to add one.</div></div><span class="sp"></span>${rule('enabled','bell','var(--lime)','All reminders','Master switch','').replace('class="rule','class="rule master')}</div>
+  <div class="rules">
+    ${rule('water.on','drop','var(--cyan)','Water','Adapts to what you’ve logged; stops at 12 glasses',chipsFor('water.times',N.water.times))}
+    ${rule('steps.on','steps','var(--lime)','Steps','Only if you’re under 10,000',chipsFor('steps.times',N.steps.times))}
+    ${rule('habits.on','heart','var(--green)','Habits & grooming','Each at its own time (below); skipped if done','')}
+    ${rule('digest.on','sun','var(--yellow)','Morning plan','Today’s bills, birthdays and habits',one('digest.time',N.digest.time))}
+    ${rule('logday.on','mic','var(--violet)','Log your day','Evening nudge to log steps, spends and a note',one('logday.time',N.logday.time))}
+    ${rule('money.on','receipt','var(--orange)','Bills & EMIs','2 days before and on the due date, until paid',one('money.time',N.money.time))}
+    ${rule('dates.on','gift','var(--red)','Birthdays & renewals','On the day and your “alert me” days before',one('dates.time',N.dates.time))}
+    ${rule('grooming.on','scissors','var(--violet)','Haircut & products','When a haircut is due or something runs out',one('grooming.time',N.grooming.time))}
+    ${rule('catchup.on','flame','var(--orange)','Weekly catch-up','Lists weekly habits still open',`<div class="tchip-row"><select data-nzv="catchup.dow" aria-label="Day" class="sel">${DOW.map((x,i)=>`<option value="${i}" ${num(N.catchup.dow)===i?'selected':''}>${x}</option>`).join('')}</select><span class="tpill2"><input type="time" value="${N.catchup.time}" data-nzv="catchup.time" aria-label="Time"></span></div>`)}
+    <div class="rule"><div class="rule-h">${icoBox('moon','var(--violet)')}<div class="nb"><b>Quiet hours</b><div class="tiny muted">Nothing is sent in this window</div></div></div><div class="rule-b"><div class="tchip-row"><span class="tpill2"><input type="time" value="${N.quiet.from}" data-nzv="quiet.from" aria-label="From"></span><span class="muted small">to</span><span class="tpill2"><input type="time" value="${N.quiet.to}" data-nzv="quiet.to" aria-label="To"></span></div></div></div>
   </div>
-  <div class="card"><div class="ch"><div><h3>Habit reminder times</h3><div class="sub">Leave times empty for no reminder. Weekly habits remind on their day; monthly on their date.</div></div></div>
-    ${PERIODS.filter(([p])=>p!=='yearly').map(([p,l])=>{const hs=state.health.habits.filter(h=>h.period===p);return hs.length?`<div class="glabel" style="margin-top:12px">${p}</div><div class="tablewrap"><table class="htable"><tbody>${hs.map(hRow).join('')}</tbody></table></div>`:''}).join('')}
-    <p class="tiny faint" style="margin-top:12px">Yearly check-ups are reminded from your Reminders dates, so they don’t need times here.</p></div>
+  <details class="card hcard" ${ui.nzOpen?'open':''}><summary><div><h3>Habit reminder times</h3><div class="sub">${state.health.habits.filter(h=>(h.times||[]).length).length} habits have reminders</div></div>${ic('right')}</summary>
+    ${PERIODS.filter(([p])=>p!=='yearly').map(([p])=>{const hs=state.health.habits.filter(h=>h.period===p);return hs.length?`<div class="glabel" style="margin-top:14px">${p}</div>${hs.map(h=>`<div class="hrow"><div class="nb"><b class="small">${esc(h.name)}</b>${h.period==='weekly'?`<select class="sel" data-hdow="${h.id}" aria-label="Day">${DOW.map((x,i)=>`<option value="${i}" ${num(h.dow)===i?'selected':''}>${x.slice(0,3)}</option>`).join('')}</select>`:h.period!=='daily'?`<span class="tiny muted">Day <input type="number" min="1" max="28" data-hdom="${h.id}" value="${esc(h.dom||1)}" style="width:56px;height:28px;padding:0 6px;font-size:12px" aria-label="Day of month"></span>`:''}</div>${(h.times||[]).map((t,k)=>`<span class="tpill2"><input type="time" value="${t}" data-hti="${h.id}:${k}" aria-label="Time"><button class="x" data-hrm="${h.id}:${k}" aria-label="Remove">${ic('x')}</button></span>`).join('')}<button class="tpill2 add" data-hadd="${h.id}" aria-label="Add a time">${ic('plus')}</button></div>`).join('')}`:''}).join('')}</details>
+  <div class="card"><h3 style="margin-bottom:10px">How reminders reach you</h3><div class="hsteps">
+    <div>${icoBox('bell','var(--lime)')}<b>App open</b><span class="tiny muted">A pop-up inside the app.</span></div>
+    <div>${icoBox('phone','var(--cyan)')}<b>App closed</b><span class="tiny muted">${pushOn?'Push notifications from the server, even when the app is closed.':'Turn on notifications to get push even when the app is closed.'}</span></div>
+    <div>${icoBox('calendar','var(--orange)')}<b>Calendar backup</b><span class="tiny muted">Adds your routine to your phone calendar. Works offline, but can’t skip what you’ve done.</span></div></div></div>
   </div>`;
 }
 function setNz(path,val){const p=path.split('.');let o=state.nudges;for(let i=0;i<p.length-1;i++)o=o[p[i]];o[p[p.length-1]]=val;nzCache.t=0}
 
+/* ================= Logo ================= */
+const LOGO_PATH='M68 31c-3-9-11-14-21-14-12 0-20 7-20 16 0 21 47 13 47 35 0 10-9 17-22 17-11 0-20-5-24-14';
+function logo(size=32,cls=''){return `<svg class="logo-mk ${cls}" width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="26" style="fill:var(--lime)"/><path class="lp" pathLength="1" d="${LOGO_PATH}" style="fill:none;stroke:var(--lime-ink);stroke-width:12;stroke-linecap:round"/><circle class="ld" cx="77" cy="23" r="7" style="fill:var(--lime-ink)"/></svg>`}
+
+/* ================= Habit ticks keep the logs in step ================= */
+function habitLogSync(h,on,dateKey=ds(today())){
+  if(!h||!h.auto)return;
+  const L=state.health.logs[dateKey]=state.health.logs[dateKey]||{},P=L._prev=L._prev||{};
+  const F={steps:['steps',10000],water:['water',12],sleep:['sleep',7]}[h.auto];if(!F)return;
+  const [k,full]=F;
+  if(on){if(num(L[k])<full){P[k]=num(L[k]);L[k]=full}}
+  else if(num(L[k])>=full){L[k]=P[k]!==undefined?P[k]:Math.min(num(L[k]),full-(k==='sleep'?1:1));delete P[k]}
+}
+
+/* ================= Files: pickers that also work on phones ================= */
+function pickFile(accept,capture){
+  return new Promise(res=>{
+    const i=document.createElement('input');i.type='file';i.accept=accept;if(capture)i.setAttribute('capture','environment');
+    i.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';document.body.appendChild(i);
+    let done=false;const fin=f=>{if(done)return;done=true;res(f);setTimeout(()=>i.remove(),2000)};
+    i.addEventListener('change',()=>fin(i.files&&i.files[0]||null));i.addEventListener('cancel',()=>fin(null));
+    i.click();
+  });
+}
+async function thumbOf(file){if(!/^image\//.test(file.type))return '';try{const bmp=await createImageBitmap(file),k=Math.min(1,360/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}catch(e){return ''}}
+
+/* ================= Text → dashboard entries (shared by the assistant and notes) ================= */
+async function fileText(text){
+  let actions=null,reply='',note='';
+  if(hasAI()){try{const o=await aiTask('log',{text,context:LOG_CONTEXT(),today:ds(today()),weekday:fmt(today(),{weekday:'long'})});actions=o.actions||[];reply=o.reply||''}catch(e){note=aiErr(e)+' Used built-in understanding.'}}
+  if(!actions)actions=parseLocal(text);
+  const notes=state.notes,chat=state.chat,snap=JSON.stringify({...state,notes:undefined,chat:undefined});
+  const res=applyActions(actions);
+  if(res.length){autoHabits();commit()}
+  return {res,reply,note,snap:res.length?snap:null};
+}
+
+/* ================= Assistant: one bar for typing, talking and the camera ================= */
+let AS={draft:'',busy:false,listening:false,interim:'',file:null,cb:{}},asRec=null,asSil=null;
+const ASUGG=['Gym done and 10k steps','Drank 3 glasses of water','Spent 450 on Zomato','Had 2 eggs and toast for breakfast','Paid electricity bill','Remind me to call the bank tomorrow'];
+function openAssistant(mode){
+  menu=null;renderShell();const d=$('#asst');renderAsst();if(!d.open)d.showModal();
+  if(mode==='mic')asMic();else if(mode==='camera')asCamera();else setTimeout(()=>$('#asIn')?.focus(),80);
+}
+function asMsgs(){state.chat=state.chat||[];return state.chat}
+function asPush(m){const L=asMsgs();L.push({id:uid(),t:Date.now(),...m});if(L.length>40)L.splice(0,L.length-40);save();renderAsst();return L[L.length-1]}
+function asChips(res){return res.map((r,k)=>`<div class="as-chip" style="--k:${k}">${icoBox(r.icon,r.col)}<div class="nb"><div class="to">${esc(DEST[r.kind]||'Dashboard')}</div><div class="tx">${esc(r.text)}</div>${r.sub?`<div class="sb">${esc(r.sub)}</div>`:''}</div>${ic('tick').replace('class="i"','class="i ok"')}</div>`).join('')}
+function renderAsst(){
+  const d=$('#asst');if(!d)return;const L=asMsgs(),talk=ui.talk!==false,typing=!!AS.draft.trim();
+  const msgs=L.map(m=>{
+    if(m.who==='me')return `<div class="as-row me"><div class="as-b me">${m.img?`<img src="${m.img}" alt="Photo you sent">`:''}${m.file?`<div class="as-file">${ic('receipt')} ${esc(m.file)}</div>`:''}${m.text?`<div>${esc(m.text)}</div>`:''}</div></div>`;
+    return `<div class="as-row"><span class="as-av">${logo(26)}</span><div class="as-b ai">${m.text?`<div>${esc(m.text)}</div>`:''}${m.chips&&m.chips.length?`<div class="as-chips">${asChips(m.chips)}</div>`:''}${m.btns&&m.btns.length&&!m.used?`<div class="as-btns">${m.btns.map((b,k)=>`<button class="btn sm ${k===0?'lime':''}" data-asb="${m.id}:${k}">${esc(b.label)}</button>`).join('')}</div>`:''}${m.undo&&!m.undone?`<button class="link tiny" data-asundo="${m.id}">Undo</button>`:''}${m.undone?'<span class="tiny faint">Undone</span>':''}</div></div>`;
+  }).join('');
+  d.innerHTML=`<div class="as-head"><div class="as-brand">${logo(30)}<div><b>Self Streak assistant</b><div class="tiny muted">${account?`${aiLeft()} of ${usage.limit} AI actions left today`:'Built-in understanding'}</div></div></div>
+    <div class="inline" style="gap:2px;flex-wrap:nowrap"><button class="ic" data-asact="talk" title="Talk back ${talk?'on':'off'}" aria-label="Talk back ${talk?'on':'off'}">${ic(talk?'speaker':'mute')}</button><button class="ic" data-asact="clear" title="Clear chat" aria-label="Clear chat">${ic('edit')}</button><button class="ic" data-asact="close" aria-label="Close">${ic('x')}</button></div></div>
+  <div class="as-log" id="asLog">${msgs||`<div class="as-hello">${logo(56,'draw')}<h3>What did you do today?</h3><p class="small muted">Type it, say it, or snap a photo of a meal, bill or receipt. I’ll put it in the right place, and ask if I’m not sure.</p><div class="as-sugg">${ASUGG.map(s=>`<button class="chip" data-assugg="${esc(s)}">${esc(s)}</button>`).join('')}</div></div>`}
+    ${AS.busy?`<div class="as-row"><span class="as-av">${logo(26)}</span><div class="as-b ai"><span class="thinking"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></span></div></div>`:''}</div>
+  <div class="as-bar ${AS.listening?'rec':''}">
+    <button class="as-btn" data-asact="camera" aria-label="Camera: photo of a meal, bill or receipt" title="Camera">${ic('camera')}</button>
+    <div class="as-field"><textarea id="asIn" rows="1" placeholder="${AS.listening?'Listening…':'Log anything…'}" aria-label="Message">${esc(AS.draft)}</textarea>${AS.listening&&AS.interim?`<div class="as-interim">${esc(AS.interim)}</div>`:''}</div>
+    <button class="as-btn go ${AS.listening?'on':''}" data-asact="${typing&&!AS.listening?'send':'mic'}" aria-label="${typing&&!AS.listening?'Send':AS.listening?'Stop':'Speak'}">${ic(typing&&!AS.listening?'send':AS.listening?'stop':'mic')}</button>
+  </div>`;
+  const log=$('#asLog');log.scrollTop=log.scrollHeight;
+  const ta=$('#asIn');const fit=()=>{ta.style.height='auto';ta.style.height=Math.min(140,ta.scrollHeight)+'px'};fit();
+  ta.oninput=()=>{AS.draft=ta.value;fit();const b=d.querySelector('.as-btn.go'),t=!!AS.draft.trim()&&!AS.listening;b.dataset.asact=t?'send':'mic';b.innerHTML=ic(t?'send':'mic');b.setAttribute('aria-label',t?'Send':'Speak')};
+  ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();asSend()}};
+  d.querySelectorAll('[data-asact]').forEach(b=>b.onclick=()=>{const a=b.dataset.asact;
+    if(a==='close')closeDlg(d);else if(a==='send')asSend();else if(a==='mic')AS.listening?asStop(true):asMic();else if(a==='camera')asCamera();
+    else if(a==='talk'){ui.talk=ui.talk===false;saveUI();renderAsst()}else if(a==='clear'){state.chat=[];save();renderAsst()}});
+  d.querySelectorAll('[data-assugg]').forEach(b=>b.onclick=()=>{AS.draft=b.dataset.assugg;asSend()});
+  d.querySelectorAll('[data-asb]').forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.asb.split(':'),m=asMsgs().find(x=>x.id===id),fn=AS.cb[id+':'+k];if(m){m.used=true;save()}if(fn)fn();else renderAsst()});
+  d.querySelectorAll('[data-asundo]').forEach(b=>b.onclick=()=>{const m=asMsgs().find(x=>x.id===b.dataset.asundo);if(!m||!m.undo)return;const chat=asMsgs(),notes=state.notes;state={...JSON.parse(m.undo),notes,chat};m.undone=true;delete m.undo;commit();renderAsst();toast('Undone','x');speak('Undone.')});
+}
+async function asSend(){
+  const text=(AS.draft||'').trim();if(!text||AS.busy)return;AS.draft='';
+  asPush({who:'me',text});AS.busy=true;renderAsst();
+  const r=await fileText(text);AS.busy=false;
+  if(r.res.length){asPush({who:'ai',text:r.reply||'Done.',chips:r.res,undo:r.snap});const a=$('#asLog .as-row:last-child .as-chips');if(a)burst(...center(a),16)}
+  else asPush({who:'ai',text:r.reply||'I couldn’t match that to anything in your dashboard. Try “did gym”, “8000 steps”, “spent 200 on chai” or “remind me to pay rent on the 5th”. Want to keep it as a note instead?',btns:r.reply?[]:[{label:'Save as a note'}]});
+  if(!r.res.length&&!r.reply){const m=asMsgs()[asMsgs().length-1];AS.cb[m.id+':0']=()=>{const n=newNote();n.text=text;n.pl=text.length;save();asPush({who:'ai',text:'Saved to Notes.'})}}
+  if(r.note)toast(r.note,'x');
+  speak(r.reply||(r.res.length?spokenSummary(r.res):''));
+}
+async function asMic(){
+  if(!SR){toast('Voice needs Chrome, Edge or Safari. On iPhone, use the keyboard’s 🎤 key.','x');$('#asIn')?.focus();return}
+  try{speechSynthesis.cancel()}catch(e){}try{asRec?.abort()}catch(e){}
+  await micHint();if(NV.tip){toast(NV.tip,'mic');NV.tip=''}
+  const base=AS.draft?AS.draft.trim()+' ':'';let finals='';
+  asRec=new SR();asRec.lang=ui.vlang||'en-IN';asRec.continuous=true;asRec.interimResults=true;
+  AS.listening=true;AS.interim='';renderAsst();
+  const arm=()=>{clearTimeout(asSil);asSil=setTimeout(()=>asStop(true),1800)};
+  asRec.onresult=e=>{let fin='',int='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else int+=r[0].transcript}finals=fin;AS.draft=(base+fin).trim();AS.interim=int.trim();const ta=$('#asIn');if(ta)ta.value=AS.draft;const ii=$('.as-interim');if(ii)ii.textContent=AS.interim;else if(AS.interim)renderAsst();arm()};
+  asRec.onerror=e=>{if(e.error==='aborted')return;const m={'not-allowed':'Microphone is blocked. Allow it from the lock icon in the address bar.','no-speech':'Didn’t hear anything. Tap the mic to try again.','network':'Voice needs an internet connection.'};toast(m[e.error]||'Voice stopped.','x')};
+  asRec.onend=()=>{if(AS.listening)asStop(true,true)};
+  try{asRec.start()}catch(e){AS.listening=false;renderAsst()}
+}
+function asStop(send,ended){
+  clearTimeout(asSil);if(!AS.listening)return;AS.listening=false;
+  if(AS.interim)AS.draft=(AS.draft+' '+AS.interim).trim();AS.interim='';
+  if(!ended)try{asRec?.stop()}catch(e){}
+  renderAsst();if(send&&AS.draft.trim())asSend();
+}
+async function asCamera(){
+  const file=await pickFile('image/*,application/pdf');if(!file)return;
+  const img=await thumbOf(file);asPush({who:'me',img,file:img?'':file.name});
+  if(!hasAI()){asPush({who:'ai',text:navigator.onLine?`You’ve used all ${usage.limit} AI actions for today, so I can’t read photos until midnight.`:'Reading photos needs internet.'});return}
+  AS.busy=true;AS.file=file;renderAsst();
+  try{
+    const data=await fileToAI(file);AS.fileData=data;
+    const r=await aiTask('snap',{...data,cats:spendCats(),bills:state.bills.map(b=>b.name)});AS.busy=false;
+    asRoute(r.kind,r);
+  }catch(e){AS.busy=false;asPush({who:'ai',text:aiErr(e)})}
+}
+const spendCats=()=>state.expenses.map(e=>e.name).concat('Other');
+function asAsk(text,options){const m=asPush({who:'ai',text,btns:options.map(o=>({label:o[0]}))});options.forEach((o,k)=>AS.cb[m.id+':'+k]=o[1])}
+async function asForce(kind){
+  if(!hasAI()){asPush({who:'ai',text:`No AI actions left today.`});return}
+  AS.busy=true;renderAsst();
+  try{const task=kind==='meal'?'meal_photo':'receipt';const r=await aiTask(task,task==='receipt'?{...AS.fileData,cats:spendCats(),bills:state.bills.map(b=>b.name)}:AS.fileData);AS.busy=false;
+    if(kind==='meal')asRoute('meal',{kind:'meal',confident:true,meal:r});else asRoute(kind,{kind,confident:true,doc:{...r,kind}})}
+  catch(e){AS.busy=false;asPush({who:'ai',text:aiErr(e)})}
+}
+function asRoute(kind,r){
+  if(!r.confident||kind==='other'){
+    asAsk(r.question||'I’m not sure what this is. What should I do with it?',[['Log as a meal',()=>asForce('meal')],['It’s a bill to pay',()=>asForce('bill')],['It’s a receipt',()=>asForce('receipt')],['Import bank statement',()=>{closeDlg($('#asst'));openImport();runImport(AS.file)}],['Ignore',()=>asPush({who:'ai',text:'Okay, nothing saved.'})]]);return;
+  }
+  if(kind==='meal'){const m=r.meal||{};
+    asAsk(`Looks like ${m.name||'a meal'}: about ${Math.round(num(m.calories))} kcal, ${Math.round(num(m.protein_g))} g protein, ${Math.round(num(m.carbs_g))} g carbs, ${Math.round(num(m.fat_g))} g fat.${m.note?' '+m.note:''}`,
+      [['Log meal',()=>{const snap=JSON.stringify({...state,notes:undefined,chat:undefined});addMeal({name:m.name,kcal:m.calories,p:m.protein_g,c:m.carbs_g,f:m.fat_g,src:'photo'});commit();const F=dayFood();asPush({who:'ai',text:`Logged. You’re at ${F.p} g protein and ${F.kcal} kcal today.`,chips:[{icon:'food',col:'var(--orange)',kind:'meal',text:`${m.name||'Meal'} · ${Math.round(num(m.calories))} kcal`,sub:`${Math.round(num(m.protein_g))} g protein`}],undo:snap});speak(`Logged. ${F.p} grams of protein today.`)}],
+       ['Edit first',()=>mealReview(m,'photo')],['Not a meal',()=>asRoute('other',{confident:false})]]);return;
+  }
+  if(kind==='statement'){asAsk('This looks like a bank statement. Import its transactions?',[['Import transactions',()=>{closeDlg($('#asst'));openImport();runImport(AS.file)}],['Ignore',()=>asPush({who:'ai',text:'Okay, nothing imported.'})]]);return}
+  const doc=r.doc||{};doc.kind=kind;
+  const desc=kind==='bill'?`a ${esc(doc.title||doc.merchant||'bill')} bill for ${inr(num(doc.amount))}${doc.due_date?`, due ${fmt(pd(doc.due_date),{day:'numeric',month:'short'})}`:''}`:`a receipt from ${esc(doc.merchant||doc.title||'a shop')} for ${inr(num(doc.amount))}`;
+  asAsk(`Looks like ${desc}.`,[[kind==='bill'?'Review & save':'Review & log',()=>billReview(doc)],['Not right',()=>asRoute('other',{confident:false})]]);
+}
+
+/* ================= Notes page (plain notes; filing is optional) ================= */
+function pNotes(){
+  const L=(state.notes||[]).filter(n=>n.text.trim());
+  return `${phead('Life · Your notes','Notes',`<button class="btn" data-act="ask">${ic('sparkle')} Ask the assistant</button><button class="btn lime" data-act="newnote">${ic('edit')} New note</button>`)}
+  <div class="stack">${L.length?`<div class="auto">${L.map(n=>{const lines=n.text.split('\n').filter(l=>l.trim());return `<button class="card note-card" data-nopen="${n.id}"><b>${esc(noteTitle(n))}</b><p class="small muted">${esc(lines.slice(1).join(' ').slice(0,160))}</p><span class="tiny faint">${fmt(new Date(n.updated),{day:'numeric',month:'short'})}${n.done.length?` · ${n.done.length} filed`:''}</span></button>`}).join('')}</div>`
+    :`<div class="card empty">${logo(48)}<p style="margin-top:10px">No notes yet. Notes are for thoughts, lists and ideas. To log habits, spends or meals, use the assistant bar at the bottom.</p></div>`}</div>`;
+}
+
+/* ================= Water glasses ================= */
+function glassSVG(i){return `<svg viewBox="0 0 40 54" aria-hidden="true"><defs><clipPath id="gcl${i}"><path d="M5 5h30l-3.4 42.5a3.2 3.2 0 0 1-3.2 2.9H11.6a3.2 3.2 0 0 1-3.2-2.9z"/></clipPath></defs>
+  <g clip-path="url(#gcl${i})"><g class="wv"><path class="wa" d="M-40 14q5-3 10 0t10 0t10 0t10 0t10 0t10 0t10 0t10 0t10 0V60H-40z"/><path class="wb" d="M-40 16q5-3 10 0t10 0t10 0t10 0t10 0t10 0t10 0t10 0t10 0V60H-40z"/><circle class="bub" cx="14" cy="44" r="1.4"/><circle class="bub b2" cx="24" cy="46" r="1"/></g></g>
+  <path class="rim" d="M5 5h30l-3.4 42.5a3.2 3.2 0 0 1-3.2 2.9H11.6a3.2 3.2 0 0 1-3.2-2.9z"/><path class="shine" d="M10 10l2.4 33"/></svg>`}
+function splash(btn){
+  if(RM()||!btn)return;const [x,y]=center(btn);
+  for(let k=0;k<7;k++){const p=document.createElement('i');p.className='drop';p.style.left=x+'px';p.style.top=(y-18)+'px';document.body.appendChild(p);
+    const a=-Math.PI/2+(Math.random()-.5)*1.6,d=26+Math.random()*30;
+    p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d+38}px)) scale(.4)`,opacity:0}],{duration:650+Math.random()*250,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>p.remove()}
+}
+
 /* ================= shell ================= */
-const NAV=[['Life',[['overview','Overview','grid'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+const NAV=[['Life',[['overview','Overview','grid'],['notes','Notes','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
-const PAGES={notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
+const PAGES={notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
 function alerts(){
   const t=today(),late=lateThisMonth().map(e=>({...e,late:true}));
   const soon=eventsBetween(t,addDays(t,60)).filter(e=>{const d=daysBetween(t,e.date);return d<=Math.max(2,num(e.lead))&&!(paidKey(e)&&state.paid[paidKey(e)])});
@@ -2848,7 +3146,7 @@ function renderShell(){
   const al=alerts(),late=lateThisMonth().length;
   const badges={bills:late||'',grooming:groomAlerts().length||'',reminders:eventsBetween(today(),addDays(today(),2)).filter(e=>e.src==='reminder').length||''};
   const ini=(state.profile.name||'A').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
-  $('#side').innerHTML=`<div class="logo"><span class="mk">S</span><b>Self Streak</b><span class="sp"></span><button class="ic collapse-btn" data-act="collapse" title="Collapse sidebar">${ic('panel')}</button></div>
+  $('#side').innerHTML=`<div class="logo">${logo(32)}<b>Self Streak</b><span class="sp"></span><button class="ic collapse-btn" data-act="collapse" title="Collapse sidebar">${ic('panel')}</button></div>
   <div class="navscroll">${NAV.map(([sec,items])=>`${sec?`<div class="navsec">${sec}</div>`:'<div style="height:14px"></div>'}${items.filter(([k])=>!(state.profile.hidden||[]).includes(k)).map(([k,l,icn])=>`<button class="nav ${ui.page===k?'on':''}" data-go="${k}" title="${l}">${ic(icn)}<span class="lbl">${l}</span>${badges[k]?`<span class="badge">${badges[k]}</span>`:''}</button>`).join('')}`).join('')}</div>
   <button class="me" data-go="settings"><span class="av">${esc(ini)}</span><span class="t"><b>${esc(state.profile.name)}</b><span>${esc(statusLabel())}</span></span></button>`;
   const yy=today().getFullYear(),yp=Math.round((Date.now()-new Date(yy,0,1))/(new Date(yy+1,0,1)-new Date(yy,0,1))*100),dleft=daysBetween(today(),new Date(yy,11,31)),fs=fullStreak().cur;
@@ -2860,7 +3158,7 @@ function renderShell(){
     ${menu==='bell'?`<div class="pop wide"><h4>Needs attention <span class="faint">· ${al.length}</span></h4><div style="padding:0 10px;max-height:60vh;overflow-y:auto">${al.slice(0,12).map(e=>evRow(e)).join('')||'<div class="empty">You’re all caught up.</div>'}</div></div>`:''}</div>
   <button class="ibtn lumen" data-act="theme" title="Switch to ${dark?'light':'dark'} mode" aria-label="Switch to ${dark?'light':'dark'} mode">${ic(dark?'sun':'moon')}</button>
   <div class="menuwrap"><button class="btn lime ${menu==='new'?'open':''}" style="height:42px;border-radius:12px" data-act="new" aria-label="New">${ic('plus')}<span class="newlbl">New</span></button>
-    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="voice">${ic('mic')} New note (speak or type)<small>V</small></button><button class="mi" data-act="notes">${ic('journal')} All notes</button><button class="mi" data-act="scanBill">${ic('receipt')} Scan a bill or receipt</button><button class="mi" data-act="mealPhoto">${ic('food')} Snap a meal</button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
+    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="ask">${ic('sparkle')} Ask or log anything<small>V</small></button><button class="mi" data-act="askcam">${ic('camera')} Camera: meal, bill, receipt</button><button class="mi" data-act="newnote">${ic('journal')} New note</button><button class="mi" data-act="scanBill">${ic('receipt')} Scan a bill or receipt</button><button class="mi" data-act="mealPhoto">${ic('food')} Snap a meal</button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
 }
 function applyTheme(){document.documentElement.dataset.theme=state.profile.theme||'dark';document.documentElement.classList.toggle('nomotion',state.profile.motion==='off')}
 function render(){
@@ -2882,7 +3180,7 @@ function render(){
   }
   pageChanged=false;justId=null;
   if(location.hash!=='#/'+ui.page)history.replaceState(null,'','#/'+ui.page);
-  document.title=(ui.page==='overview'?'':({notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
+  document.title=(ui.page==='overview'?'':({notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
 function go(p){const [pg,v]=String(p).split(':');if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
@@ -2961,7 +3259,7 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
@@ -2971,11 +3269,11 @@ document.addEventListener('click',e=>{
   if(d.add){let pre={};try{pre=JSON.parse(d.pre||'{}')}catch(x){}if(d.date){pre.date=d.date;pre.repeat='none'}if(d.type)pre.type=d.type;if(d.add==='tx'){pre.date=pre.date||ds(today());pre.dir=pre.dir||'out';pre.method=pre.method||'UPI'}if(d.add==='reminders'&&!pre.repeat)pre.repeat='yearly';menu=null;openForm(d.add,null,pre);renderShell();return}
   if(d.edit){openForm(d.edit,d.id);return}
   if(d.set){const [k,v]=d.set.split(':');ui[k]=['bm','txDays','ovRange'].includes(k)?+v:v;render();return}
-  if(d.habit){const h=state.health.habits.find(x=>x.id===d.habit);if(!h)return;const now=!isDone(h);setDone(h,now);justId=h.id;commit();
+  if(d.habit){const h=state.health.habits.find(x=>x.id===d.habit);if(!h)return;const now=!isDone(h);setDone(h,now);habitLogSync(h,now);justId=h.id;commit();
     if(now){burst(...lastXY,8);const per=state.health.habits.filter(x=>x.period===h.period&&x.area===h.area);if(per.every(x=>isDone(x))){burst(innerWidth/2,innerHeight/3,46);toast(`All ${h.period} ${h.area==='Grooming'?'grooming':'health'} habits done!`,'flame')}}return}
-  if(d.hd){const h=state.health.habits.find(x=>x.id===d.hd);if(!h||!ui.hmDay)return;const day=pd(ui.hmDay);setDone(h,!isDone(h,day),day);justId=h.id+'@'+ui.hmDay;commit();return}
+  if(d.hd){const h=state.health.habits.find(x=>x.id===d.hd);if(!h||!ui.hmDay)return;const day=pd(ui.hmDay),nv=!isDone(h,day);setDone(h,nv,day);habitLogSync(h,nv,ui.hmDay);justId=h.id+'@'+ui.hmDay;commit();return}
   if(d.hm){ui.hmDay=ui.hmDay===d.hm?null:d.hm;render();return}
-  if(d.glass){const k=ds(today()),lg=state.health.logs[k]=state.health.logs[k]||{},n=+d.glass;lg.water=num(lg.water)===n?n-1:n;autoHabits();commit();if(lg.water===12){burst(...lastXY,30,['var(--cyan)','#fff','var(--lime)']);toast('3 litres! Water goal done','drop')}return}
+  if(d.glass){splash(el);const k=ds(today()),lg=state.health.logs[k]=state.health.logs[k]||{},n=+d.glass;lg.water=num(lg.water)===n?n-1:n;autoHabits();commit();if(lg.water===12){burst(...lastXY,30,['var(--cyan)','#fff','var(--lime)']);toast('3 litres! Water goal done','drop')}return}
   if(d.mood){document.querySelectorAll('.mood').forEach(b=>b.classList.toggle('on',b===el));el.closest('.card').dataset.mood=d.mood;return}
   if(d.check){const c=state.checklist.find(x=>x.id===d.check);if(c){c.done=!c.done;justId=c.id;commit();if(c.done){burst(...lastXY,10);toast('Checked off')}}return}
   if(d.ms){const g=state.goals.find(x=>x.id===d.ms);if(g){const m=g.milestones[+d.i];m.done=!m.done;justId=g.id+':'+d.i;commit();if(m.done){burst(...lastXY,12);toast('Milestone done')}}return}
@@ -2987,6 +3285,11 @@ document.addEventListener('click',e=>{
   if(d.prepay){const l=state.loans.find(x=>x.id===d.prepay);const v=prompt(`Prepayment amount for "${l.name}" (₹). This reduces the outstanding balance directly.`);if(v!==null&&num(v)>0){l.outstanding=Math.max(0,num(l.outstanding)-num(v));delete l.sample;commit()}return}
   if(d.day){ui.dayPick=ui.dayPick===d.day?null:d.day;render();return}
   if(d.ins){ui.ins=(ui.ins||0)+1;render();return}
+  if(d.nopen){openVoice(false);NV.id=d.nopen;NV.view='note';renderNotes();return}
+  if(d.nzadd){const arr=d.nzadd.split('.').reduce((o,k)=>o[k],state.nudges);arr.push(arr.length?tm(arr[arr.length-1],120):'09:00');setNz(d.nzadd,parseTimes(arr.join(',')));commit();return}
+  if(d.nzrm){const [path,k]=d.nzrm.split(':'),arr=path.split('.').reduce((o,x)=>o[x],state.nudges);arr.splice(+k,1);setNz(path,arr);commit();return}
+  if(d.hadd){const h=state.health.habits.find(x=>x.id===d.hadd);if(h){h.times=parseTimes([...(h.times||[]),(h.times||[]).length?tm(h.times[h.times.length-1],120):'09:00'].join(','));ui.nzOpen=true;nzCache.t=0;commit()}return}
+  if(d.hrm){const [id,k]=d.hrm.split(':'),h=state.health.habits.find(x=>x.id===id);if(h){h.times.splice(+k,1);ui.nzOpen=true;nzCache.t=0;commit()}return}
   if(d.mdel){const L=(state.meals||{})[ds(today())]||[];const i=L.findIndex(m=>m.id===d.mdel);if(i>=0){L.splice(i,1);commit()}return}
   if(d.sect){const pg=FOCUS_PAGES[d.sect]||[],H=new Set(state.profile.hidden||[]),on=!pg.every(x=>H.has(x));pg.forEach(x=>on?H.add(x):H.delete(x));state.profile.hidden=[...H];commit();return}
   if(d.nzon){const p=d.nzon,cur=p==='enabled'?state.nudges.enabled:p.split('.').reduce((o,k)=>o[k],state.nudges);setNz(p,!cur);commit();return}
@@ -2998,8 +3301,12 @@ document.addEventListener('click',e=>{
     case'nav':document.body.classList.toggle('navopen');return;
     case'collapse':ui.collapsed=!ui.collapsed;render();return;
     case'search':openScry();return;
-    case'voice':openVoice();return;
-    case'notes':openNotesList();return;
+    case'voice':openAssistant('mic');return;
+    case'ask':openAssistant();return;
+    case'askmic':openAssistant('mic');return;
+    case'askcam':openAssistant('camera');return;
+    case'newnote':openVoice(false);return;
+    case'notes':go('notes');return;
     case'import':openImport();return;
     case'notifOn':askNotif();return;
     case'notifTest':if(window.Notification?.permission==='granted'){showNotif({title:'Test reminder 💧',body:'Water check: tap “+1 glass” to log it.',tag:'test',url:'./#/health',actions:[{action:'w1',title:'+1 glass'}],acts:{w1:'water:1'}});toast('Test sent. Check your notifications.')}else askNotif();return;
@@ -3020,7 +3327,7 @@ document.addEventListener('click',e=>{
     case'new':menu=menu==='new'?null:'new';renderShell();return;
     case'theme':lumen(el);return;
     case'export':download(`life-dashboard-backup-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;
-    case'import':$('#importFile').click();return;
+    case'importBackup':$('#importFile').click();return;
     case'ics':exportICS();return;
     case'csv':exportCSV();return;
     case'clearSamples':clearSamples();return;
@@ -3038,6 +3345,8 @@ document.addEventListener('change',e=>{
   if(d.groom){state.grooming[d.groom]=d.groom==='cutEvery'?num(el.value):el.value;commit();return}
   if(d.nzv){const v=d.nzv.endsWith('dow')?num(el.value):el.value;if(!d.nzv.endsWith('dow')&&!/^\d{2}:\d{2}$/.test(v))return;setNz(d.nzv,v);commit();return}
   if(d.nzt){setNz(d.nzt,parseTimes(el.value));commit();toast('Times updated','clock');return}
+  if(d.nzti){const [path,k]=d.nzti.split(':'),arr=path.split('.').reduce((o,x)=>o[x],state.nudges);if(!/^\d{2}:\d{2}$/.test(el.value))return;arr[+k]=el.value;setNz(path,parseTimes(arr.join(',')));commit();return}
+  if(d.hti){const [id,k]=d.hti.split(':'),h=state.health.habits.find(x=>x.id===id);if(h&&/^\d{2}:\d{2}$/.test(el.value)){h.times[+k]=el.value;h.times=parseTimes(h.times.join(','));ui.nzOpen=true;nzCache.t=0;commit()}return}
   if(d.ht){const h=state.health.habits.find(x=>x.id===d.ht);if(h){h.times=parseTimes(el.value);commit()}return}
   if(d.hdow){const h=state.health.habits.find(x=>x.id===d.hdow);if(h){h.dow=num(el.value);commit()}return}
   if(d.hdom){const h=state.health.habits.find(x=>x.id===d.hdom);if(h){h.dom=Math.max(1,Math.min(28,num(el.value)||1));commit()}return}
@@ -3054,9 +3363,9 @@ document.addEventListener('keydown',e=>{
   const typing=e.target.matches('input,textarea,select');
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();scryOpen?closeScry():openScry();return}
   if(typing){if(e.key==='Enter'&&e.target.matches('input[data-log],input[data-month],input[data-ui="extra"],input[data-prof]'))e.target.blur();return}
-  if($('#dlg').open||$('#voice').open)return;
+  if($('#dlg').open||$('#voice').open||$('#asst').open)return;
   if(e.key==='/'){e.preventDefault();openScry()}
-  else if(e.key.toLowerCase()==='v'&&!e.metaKey&&!e.ctrlKey){e.preventDefault();openVoice()}
+  else if(e.key.toLowerCase()==='v'&&!e.metaKey&&!e.ctrlKey){e.preventDefault();openAssistant('mic')}
   else if(e.key.toLowerCase()==='n'&&!e.metaKey&&!e.ctrlKey){e.preventDefault();openForm('tx',null,{date:ds(today()),dir:'out',method:'UPI'})}
   else if(e.key==='Escape'&&menu){menu=null;renderShell()}
 });
@@ -3073,8 +3382,11 @@ matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>rend
 function afterOpen(){if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
 $('#dlg').addEventListener('close',()=>{if(imp){imp=null}$('#dlg').classList.remove('wide')});
 $('#voice').addEventListener('close',onNotesClose);
+$('#asst').addEventListener('close',()=>{clearTimeout(asSil);AS.listening=false;try{asRec?.abort()}catch(e){}});
+$('#asst').addEventListener('click',e=>{if(e.target===$('#asst'))closeDlg($('#asst'))});
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('hcard')){ui.nzOpen=e.target.open;saveUI()}},true);
 $('#voice').addEventListener('click',e=>{if(e.target===$('#voice'))closeDlg($('#voice'))});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){nzCache.t=0;notifTick();checkMissed()}});
+document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){await pullCloud();nzCache.t=0;notifTick();checkMissed()}});
 boot();
 initPWA();setInterval(notifTick,20000);setTimeout(notifTick,3000);
 </script>

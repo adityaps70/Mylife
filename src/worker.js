@@ -64,6 +64,8 @@ function fileBlock(input) {
   if (/^image\/(jpeg|png|webp|gif)$/.test(media)) return { type: 'image', source: { type: 'base64', media_type: media, data } };
   throw new Error('bad_file');
 }
+const docProps = (kinds, catEnum) => ({ kind: { type: 'string', enum: kinds }, title: S, merchant: S, amount: N, bill_date: S, due_date: S, recurring: { type: 'boolean' }, frequency: { type: 'string', enum: ['monthly', 'quarterly', 'half-yearly', 'yearly', 'none'] }, bill_category: { type: 'string', enum: BILL_CATS }, spend_category: { type: 'string', enum: catEnum }, matched_bill: S, summary: S });
+const docSchema = (kinds, catEnum) => obj(docProps(kinds, catEnum));
 function buildTask(task, input) {
   const cats = strList(input.cats, 40);
   const catEnum = cats.length ? cats : ['Other'];
@@ -108,7 +110,14 @@ payee: a short readable name (e.g. "Swiggy", "Rahul Sharma"), never UPI ids or r
         effort: 'low', maxTokens: 8000,
         system: `You read photos or PDFs of Indian bills and receipts. Decide if it is a bill still to be paid (has a due date / amount payable), a receipt for something already paid, or other. Dates as YYYY-MM-DD, empty if absent. Amount in rupees (total payable or total paid). Known bills the user already tracks: ${strList(input.bills, 40).join(' | ') || 'none'} — set matched_bill to the exact name if this is one of them, else empty.`,
         content: [fileBlock(input), { type: 'text', text: 'Read this bill or receipt.' }],
-        schema: obj({ kind: { type: 'string', enum: ['bill', 'receipt', 'other'] }, title: S, merchant: S, amount: N, bill_date: S, due_date: S, recurring: { type: 'boolean' }, frequency: { type: 'string', enum: ['monthly', 'quarterly', 'half-yearly', 'yearly', 'none'] }, bill_category: { type: 'string', enum: BILL_CATS }, spend_category: { type: 'string', enum: catEnum }, matched_bill: S, summary: S }),
+        schema: docSchema(['bill', 'receipt', 'other'], catEnum),
+      };
+    case 'snap':
+      return {
+        effort: 'low', maxTokens: 8000,
+        system: `You look at one photo or PDF a user of an Indian life-tracking app snapped and decide what it is: "meal" (food or drink they ate), "bill" (still to be paid: has an amount payable / due date, e.g. electricity, phone, card statement), "receipt" (already paid: shop/restaurant/online order receipt, UPI payment screenshot), "statement" (a bank or card statement with many transactions), or "other". confident=false if you genuinely cannot tell; then put a short friendly question in question. Fill meal only for meals (realistic Indian portions, calories and grams of protein, carbs, fat), and doc only for bills and receipts (dates YYYY-MM-DD or empty, amount in rupees). Known bills: ${strList(input.bills, 40).join(' | ') || 'none'} — set doc.matched_bill to the exact name if it is one of them. For unused sections return empty strings and zeros.`,
+        content: [fileBlock(input), { type: 'text', text: 'What is this? ' + String(input.note || '').slice(0, 300) }],
+        schema: obj({ kind: { type: 'string', enum: ['meal', 'bill', 'receipt', 'statement', 'other'] }, confident: { type: 'boolean' }, question: S, meal: MEAL, doc: docSchema(['bill', 'receipt', 'other'], catEnum) }),
       };
     case 'meal_photo':
       return {
@@ -173,7 +182,12 @@ async function api(req, env, url) {
   }
   if (p === '/api/logout' && m === 'POST') {
     const t = cookie(req, 'ss_session');
-    if (t) await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await sha256(t)).run();
+    const b = await body();
+    if (t) {
+      const s = await env.DB.prepare('SELECT user_id FROM sessions WHERE token_hash = ?').bind(await sha256(t)).first();
+      if (s && b.endpoint) await env.DB.prepare('DELETE FROM push_subs WHERE user_id = ? AND endpoint = ?').bind(s.user_id, String(b.endpoint)).run();
+      await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await sha256(t)).run();
+    }
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, '', 0) });
   }
 
@@ -192,6 +206,7 @@ async function api(req, env, url) {
     if (String(b.next || '').length < 8) return err(400, 'Use at least 8 characters.');
     const salt = randHex(16);
     await env.DB.prepare('UPDATE users SET pass_hash = ?, salt = ? WHERE id = ?').bind(await hashPassword(String(b.next), salt), salt, u.id).run();
+    await env.DB.prepare('DELETE FROM sessions WHERE user_id = ? AND token_hash <> ?').bind(u.id, await sha256(cookie(req, 'ss_session') || '')).run();
     return json({ ok: true });
   }
   if (p === '/api/account' && m === 'DELETE') {
@@ -206,9 +221,13 @@ async function api(req, env, url) {
     }
     if (m === 'PUT') {
       const text = await req.text();
-      if (text.length > 3_000_000) return err(413, 'Your data is too large to sync.');
+      if (text.length > 1_900_000) return err(413, 'Your data is too large to sync.');
       let b; try { b = JSON.parse(text); } catch { return err(400, 'bad_json'); }
       const updated = Number(b.updated) || Date.now();
+      if (b.base != null) {
+        const cur = await env.DB.prepare('SELECT json, updated FROM user_data WHERE user_id = ?').bind(u.id).first();
+        if (cur && cur.updated > Number(b.base)) return json({ conflict: true, data: JSON.parse(cur.json), updated: cur.updated }, 409);
+      }
       await env.DB.prepare('INSERT INTO user_data (user_id, json, updated) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET json = excluded.json, updated = excluded.updated')
         .bind(u.id, JSON.stringify(b.data ?? null), updated).run();
       return json({ ok: true, updated });
@@ -224,15 +243,13 @@ async function api(req, env, url) {
     if (!row) return err(429, `You’ve used all ${limit} AI actions for today. They reset at midnight.`, { used: limit, limit });
     try {
       const out = await runAI(env, spec);
-      if (out.error) {
-        await env.DB.prepare('UPDATE usage SET count = MAX(count - 1, 0) WHERE user_id = ? AND day = ?').bind(u.id, day).run();
-        return err(422, out.error === 'refused' ? 'The AI declined this one.' : 'That was too long to read in one go. Try a shorter statement period.', { used: row.count - 1, limit });
-      }
+      if (out.error) return err(422, out.error === 'refused' ? 'The AI declined this one.' : 'That was too long to read in one go. Try a shorter statement period.', { used: row.count, limit });
       return json({ result: out.result, used: row.count, limit });
     } catch (e) {
-      await env.DB.prepare('UPDATE usage SET count = MAX(count - 1, 0) WHERE user_id = ? AND day = ?').bind(u.id, day).run();
-      const status = e?.status || 0;
-      return err(502, status === 429 || status === 529 ? 'The AI is busy right now. Try again in a minute.' : 'The AI couldn’t process that. Please try again.', { used: row.count - 1, limit });
+      // Refund only when the request never produced output (overloaded / network / auth); a bad reply still cost tokens.
+      const status = e?.status || 0, upstream = status >= 400 || e?.name === 'APIConnectionError' || /connection|fetch/i.test(String(e?.message || ''));
+      if (upstream) await env.DB.prepare('UPDATE usage SET count = MAX(count - 1, 0) WHERE user_id = ? AND day = ?').bind(u.id, day).run();
+      return err(502, status === 429 || status === 529 ? 'The AI is busy right now. Try again in a minute.' : 'The AI couldn’t process that. Please try again.', { used: upstream ? row.count - 1 : row.count, limit });
     }
   }
   if (p === '/api/push/subscribe' && m === 'POST') {
