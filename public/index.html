@@ -888,7 +888,8 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gbn{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1}
 .gring-wrap{position:relative;display:grid;place-items:center;flex:none}.gring-wrap span{position:absolute;font-weight:800;font-size:17px;text-align:center;line-height:1.1}.gring-wrap span small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
 .gring-wrap.big span{font-size:24px}.gr circle{transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1)}
-.gseg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.ggoal{display:flex;gap:18px;align-items:center}.ggoal-r{flex:1;min-width:0}
+.gseg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:6px}
 .gseg button{border:1px solid var(--line2);background:var(--card2);color:var(--text);border-radius:12px;padding:8px 4px;font:600 12.5px inherit;cursor:pointer;display:grid;gap:1px}
 .gseg button small{font-size:10.5px;color:var(--muted)}.gseg button.on{background:color-mix(in srgb,var(--lime) 18%,var(--card2));border-color:var(--lime)}
 .gbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}.gbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .8s cubic-bezier(.2,.8,.2,1)}.gbar.lv{height:12px}
@@ -910,7 +911,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gset{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.gset .nb{flex:1;min-width:0}.gq .nb,.gfr .nb{flex:1;min-width:0}.gset:last-child{border-bottom:0}
 .gtoday{display:grid;grid-template-columns:minmax(220px,auto) 1fr;gap:20px;align-items:center}
 .gt-l{display:flex;gap:14px;align-items:center;cursor:pointer}
-@media (max-width:760px){.gtoday{grid-template-columns:1fr}.gstats{grid-template-columns:repeat(2,minmax(0,1fr))}.gbn{font-size:52px}.gflame{font-size:56px}.ghero{gap:14px}.gpill{padding:0 9px 0 7px}.gpill .gring{display:none}}
+@media (max-width:760px){.ggoal{flex-direction:column;align-items:stretch}.ggoal .gring-wrap{align-self:center}.gseg button{padding:8px 2px;font-size:12px}.gseg button small{font-size:10px}.gtoday{grid-template-columns:1fr}.gstats{grid-template-columns:repeat(2,minmax(0,1fr))}.gbn{font-size:52px}.gflame{font-size:56px}.ghero{gap:14px}.gpill{padding:0 9px 0 7px}.gpill .gring{display:none}}
 </style>
 </head>
 <body>
@@ -4059,8 +4060,8 @@ function pStreak(){
     <p class="tiny muted" style="margin-top:8px">${x?'Today counts. Your streak is safe until midnight tomorrow.':'Log anything today (one glass of water counts) to keep your streak.'}</p></div></div>
   <div class="r2">
     <div class="card"><div class="ch"><h3>Daily goal</h3><span class="sp"></span><span class="pill lime nodot">${x>=g.goal?'Done ✓':`${g.goal-x} XP to go`}</span></div>
-      <div class="inline" style="gap:18px;align-items:center"><div class="gring-wrap big">${gRing(x,g.goal,110)}<span>${x}<small>/${g.goal} XP</small></span></div>
-      <div style="flex:1;min-width:180px"><div class="glabel">Goal</div><div class="gseg">${G_GOALS.map(([v,l])=>`<button class="${g.goal===v?'on':''}" data-g="goal" data-v="${v}">${l}<small>${v} XP</small></button>`).join('')}</div>
+      <div class="ggoal"><div class="gring-wrap big">${gRing(x,g.goal,110)}<span>${x}<small>/${g.goal} XP</small></span></div>
+      <div class="ggoal-r"><div class="glabel">Goal</div><div class="gseg">${G_GOALS.map(([v,l])=>`<button class="${g.goal===v?'on':''}" data-g="goal" data-v="${v}">${l}<small>${v} XP</small></button>`).join('')}</div>
       <div class="glabel" style="margin-top:14px">Level ${lv.n} · ${gTotal().toLocaleString('en-IN')} XP total</div><div class="gbar lv"><i style="width:${lv.pct}%"></i></div><div class="tiny muted">${lv.hi-gTotal()} XP to level ${lv.n+1}</div></div></div>
       <details class="tiny muted" style="margin-top:12px"><summary>How XP works</summary><p style="margin-top:6px">Habit +10 · glass of water +2 · meal +10 · expense or income +5 · bill or EMI paid +20 · journal +15 · steps +5 (10k steps +10 more) · sleep +5 · weight +5 · each quest +20 · all 3 quests +30 bonus.</p></details></div>
     <div class="card"><div class="ch"><h3>Daily quests</h3><span class="sp"></span><span class="pill ${n===3?'lime':'cyan'} nodot">${n}/3</span></div>${gQuestRows(q)}
