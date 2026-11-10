@@ -1843,7 +1843,7 @@ function pDebt(){
     <div class="kpis" style="margin-top:14px;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px">
       ${[['Rate',r+'%'],['EMI',inr(num(l.emi))],['Months left',isFinite(s.n)?s.n:'∞'],['Payoff',isFinite(s.n)?dfd(s.n):'Never'],['Interest left',isFinite(s.int)?`<span class="neg">${inr(s.int)}</span>`:'—']].map(([a,b])=>`<div><div class="tiny muted">${a}</div><b>${b}</b></div>`).join('')}</div>
     ${!isFinite(s.n)&&num(l.outstanding)>0?'<p class="small neg" style="margin-top:10px">The EMI doesn’t cover the monthly interest, so the balance keeps growing.</p>':''}
-    <div class="inline small" style="margin-top:12px;gap:8px"><span class="muted">First EMI</span>${l.startDate?`<b>${fmt(pd(l.startDate),{day:'numeric',month:'short',year:'numeric'})}</b>${pd(l.startDate)>t?' <span class="pill cyan nodot">starts later</span>':''}`:`<input type="date" class="sel" data-lstart="${l.id}" aria-label="First EMI date" style="height:30px"><span class="tiny muted">Add it so past and future months are right</span>`}</div>
+    <div class="inline small" style="margin-top:12px;gap:8px;flex-wrap:wrap"><span class="muted">First EMI</span>${l.startDate&&ui.lsEdit!==l.id?`<b>${fmt(pd(l.startDate),{day:'numeric',month:'short',year:'numeric'})}</b>${pd(l.startDate)>t?' <span class="pill cyan nodot">starts later</span>':''}<button class="link tiny" data-lsedit="${l.id}">Change</button>`:`<input type="date" class="sel" id="ls-${l.id}" value="${esc(l.startDate||'')}" aria-label="First EMI date" style="height:32px"><button class="btn sm lime" data-lsave="${l.id}">Save</button>${l.startDate?`<button class="btn sm ghost" data-lsedit="">Cancel</button>`:'<span class="tiny muted" style="flex-basis:100%">Pick the date, then tap Save.</span>'}`}</div>
     ${l.notes?`<p class="tiny muted" style="margin-top:10px">${esc(l.notes)}</p>`:''}
     <div class="inline" style="margin-top:14px">${num(l.outstanding)>0?`<button class="btn sm ${paid?'done':''} ${justId===pk?'bump':''}" data-paid="${pk}">${paid?ic('tick')+` ${MONTHS[t.getMonth()]} EMI paid`:`Mark ${MONTHS[t.getMonth()]} EMI paid`}</button><button class="btn sm ghost" data-prepay="${l.id}">Record prepayment</button>`:'<span class="pill lime">Closed 🎉</span>'}</div></div>`}).join('');
   const saved=base.interest-plan.interest,msaved=base.months-plan.months;
@@ -3574,13 +3574,15 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
   if(menu&&!el.closest('.pop')&&d.act!=='bell'&&d.act!=='new')menu=null;
   if(d.paid){e.stopPropagation();const was=!!state.paid[d.paid];justId=d.paid;togglePaid(d.paid);if(!was){toast('Marked as paid');burst(...lastXY,12)}return}
   if(d.go){go(d.go);return}
+  if(d.lsedit!==undefined){ui.lsEdit=d.lsedit||null;render();if(d.lsedit)setTimeout(()=>document.getElementById('ls-'+d.lsedit)?.focus(),50);return}
+  if(d.lsave){const l=state.loans.find(x=>x.id===d.lsave),v=document.getElementById('ls-'+d.lsave)?.value;if(!l)return;if(!v){toast('Pick a date first','x');return}l.startDate=v;delete l.sample;ui.lsEdit=null;commit();toast(`First EMI: ${fmt(pd(v),{day:'numeric',month:'short',year:'numeric'})}`,'calendar');return}
   if(d.ptag){prioTag(d.ptag);return}
   if(d.pai){makePrioPlan(d.pai);return}
   if(d.cpay){const [id,how]=d.cpay.split(':'),c=state.cards.find(x=>x.id===id);if(!c)return;const st=cardState(c);
@@ -3673,7 +3675,6 @@ document.addEventListener('change',e=>{
   if(d.prof){state.profile[d.prof]=['age','proteinTarget','kcalTarget'].includes(d.prof)?num(el.value):el.value;commit();return}
   if(d.groom){state.grooming[d.groom]=d.groom==='cutEvery'?num(el.value):el.value;commit();return}
   if(d.nzv){const v=d.nzv.endsWith('dow')?num(el.value):el.value;if(!d.nzv.endsWith('dow')&&!/^\d{2}:\d{2}$/.test(v))return;setNz(d.nzv,v);commit();return}
-  if(d.lstart){const l=state.loans.find(x=>x.id===d.lstart);if(l&&el.value){l.startDate=el.value;delete l.sample;commit();toast('First EMI date saved','calendar')}return}
   if(d.nzt){setNz(d.nzt,parseTimes(el.value));commit();toast('Times updated','clock');return}
   if(d.nzti){const [path,k]=d.nzti.split(':'),arr=path.split('.').reduce((o,x)=>o[x],state.nudges);if(!/^\d{2}:\d{2}$/.test(el.value))return;arr[+k]=el.value;setNz(path,parseTimes(arr.join(',')));commit();return}
   if(d.hti){const [id,k]=d.hti.split(':'),h=state.health.habits.find(x=>x.id===id);if(h&&/^\d{2}:\d{2}$/.test(el.value)){h.times[+k]=el.value;h.times=parseTimes(h.times.join(','));ui.nzOpen=true;nzCache.t=0;commit()}return}
