@@ -2428,9 +2428,10 @@ async function scanBill(){
 }
 const FREQS=[['none','One time'],['monthly','Every month'],['quarterly','Every 3 months'],['half-yearly','Every 6 months'],['yearly','Every year']];
 const normName=s=>String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const cleanBillName=t=>String(t||'').replace(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\b\.?/gi,'').replace(/\b(19|20)\d{2}\b/g,'').replace(/\b(bill|invoice|statement)\s*(for|of)?\s*$/i,'$1').replace(/[-–·,]\s*$/,'').replace(/\s{2,}/g,' ').trim();
 function findBill(r){
   if(r.matched_bill){const b=state.bills.find(x=>x.name===r.matched_bill);if(b)return b}
-  const n=normName(r.title||r.merchant),m=normName(r.merchant);if(!n&&!m)return null;
+  const n=normName(cleanBillName(r.title||r.merchant)),m=normName(r.merchant);if(!n&&!m)return null;
   return state.bills.find(b=>{const x=normName(b.name);return x&&(x===n||x===m||(n&&(x.includes(n)||n.includes(x)))||(m&&m.length>3&&(x.includes(m)||m.includes(x))))})||null;
 }
 // Same amount, same payee (or close), within 5 days: almost certainly the same bill scanned twice.
@@ -2442,7 +2443,7 @@ function billReview(r){
   const freq0=match?.freq||(r.recurring&&r.frequency&&r.frequency!=='none'?r.frequency:billish?'monthly':'none');
   d.innerHTML=`<form class="vbody" id="billf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${ic('receipt')} ${billish?'Scanned bill':'Receipt'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
   ${r.summary?`<p class="small muted">${esc(r.summary)}</p>`:''}${match?`<div class="banner">${ic('tick')} This is your bill “${esc(match.name)}”. Saving will update it.</div>`:''}
-  <div class="review-grid"><div class="fld" style="grid-column:1/-1"><label>Name</label><input name="title" value="${esc(match?.name||r.title||r.merchant||'Bill')}"></div>
+  <div class="review-grid"><div class="fld" style="grid-column:1/-1"><label>Name</label><input name="title" value="${esc(match?.name||cleanBillName(r.title||r.merchant)||'Bill')}"></div>
   <div class="fld"><label>Amount (₹)</label><input name="amount" type="number" step="any" value="${num(r.amount)||''}"></div>
   <div class="fld"><label>${billish?'Due date':'Date'}</label><input name="date" type="date" value="${esc(ref)}"></div>
   <div class="fld"><label>Repeats</label><select name="freq">${FREQS.map(([v,l])=>`<option value="${v}" ${freq0===v?'selected':''}>${l}</option>`).join('')}</select></div>
@@ -2755,6 +2756,11 @@ function applyActions(actions){
       case'product_bought':{const p=state.grooming.products.find(x=>x.id===a.ref);if(!p)break;p.bought=date;out.push({icon:'bottle',col:pcol(p.category),text:`${p.name} restocked`});break}
       case'goal_progress':{const g=state.goals.find(x=>x.id===a.ref&&!x.link);if(!g||!v)break;g.current=Math.max(0,num(g.current)+v);out.push({icon:GOAL_IC[g.category]||'target',col:GOAL_COL[g.category]||'var(--lime)',text:`${g.title}: +${v}`,sub:`${num(g.current)} of ${num(g.target)} ${g.unit||''}`});break}
       case'checklist_done':{const c=state.checklist.find(x=>x.id===a.ref);if(!c)break;c.done=true;out.push({icon:'check',col:'var(--lime)',text:c.item,sub:'Checked off'});break}
+      case'goal_add':{if(!txt)break;const dl=valid?a.date:'';const pt=PTYPES.some(p=>p[0]===a.ref)?a.ref:'custom';const nk=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+        let g=state.goals.find(x=>nk(x.title)===nk(txt)||(x.priority&&x.ptype===pt&&pt!=='custom'));const isNew=!g;
+        if(!g){g={id:uid(),title:txt.slice(0,80),category:{marriage:'Relationships',education:'Learning',travel:'Travel',house:'Finance',emergency:'Finance',car:'Personal',business:'Business',retire:'Finance'}[pt]||'Personal',link:'',current:0,target:0,unit:'',deadline:'',why:'',milestones:[]};state.goals.push(g)}
+        if(v>0){g.target=Math.round(v);g.unit='₹'}if(dl)g.deadline=dl;g.priority=true;g.ptype=pt;delete g.sample;
+        const P=prioPlan(g);out.push({icon:'target',col:'var(--lime)',text:`${isNew?'New life priority':'Updated'}: ${g.title}`,sub:[g.target?kfmt(g.target):'',g.deadline?'by '+fmt(pd(g.deadline),{month:'short',year:'numeric'}):'',P.months&&P.need?inr(P.need)+'/month needed':''].filter(Boolean).join(' · ')});break}
       case'journal':{if(!txt)break;state.journal=state.journal||{};const J=state.journal[date]||{};state.journal[date]={t:txt.slice(0,500),m:v>=1&&v<=5?v:num(J.m)};out.push({icon:'journal',col:'var(--violet)',text:'Journal line saved',sub:txt.slice(0,60)});break}
       case'meal':{if(!txt&&!v)break;addMeal({name:txt||'Meal',kcal:v,p:a.protein,c:a.carbs,f:a.fat,src:'note'},date);out.push({icon:'food',col:'var(--orange)',text:`${txt||'Meal'} · ${Math.round(v)} kcal`,sub:`${Math.round(num(a.protein))} g protein · ${Math.round(num(a.carbs))} g carbs · ${Math.round(num(a.fat))} g fat`});break}
       case'reminder_add':{if(!txt)break;const rd=valid&&a.date>=T?a.date:T;state.reminders.push({id:uid(),title:txt.slice(0,120),type:'Personal',date:rd,repeat:'none',lead:0,notes:'Added by voice'});out.push({icon:'bell',col:'var(--cyan)',text:`Reminder: ${txt.slice(0,60)}`,sub:fmt(pd(rd),{weekday:'short',day:'numeric',month:'short'})});break}
@@ -2904,6 +2910,7 @@ function spokenSummary(res){
       case'sleep':return r.text.replace(/^Sleep:\s*([\d.]+)\s*h/,'$1 hours of sleep');
       case'weight':return 'weight '+r.text.replace(/^Weight:\s*/,'');
       case'expense':case'income':{const m=r.text.match(/₹\s?([\d,]+(?:\.\d+)?)\s*·\s*(.*)$/);return m?`${m[1]} rupees ${r.kind==='income'?'from':'on'} ${m[2]}`:r.text}
+      case'goal_add':return 'your goal '+r.text.replace(/^(New life priority|Updated):\s*/,'');
       case'reminder_add':return 'a reminder to '+r.text.replace(/^Reminder:\s*/,'')+' for '+r.sub;
       default:return r.text;
     }});

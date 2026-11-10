@@ -52,7 +52,7 @@ async function me(env, u) {
 
 /* ---------------- AI tasks (prompts and schemas live on the server) ---------------- */
 const BILL_CATS = ['Rent / Home', 'Utilities', 'Phone & Internet', 'Subscriptions', 'Insurance', 'Credit card', 'Tax', 'Fitness', 'Household help', 'Other'];
-const LOG_KINDS = ['habit_done', 'habit_undo', 'steps', 'water_add', 'water_set', 'sleep', 'weight', 'expense', 'income', 'bill_paid', 'emi_paid', 'haircut', 'product_bought', 'goal_progress', 'checklist_done', 'journal', 'reminder_add', 'meal'];
+const LOG_KINDS = ['habit_done', 'habit_undo', 'steps', 'water_add', 'water_set', 'sleep', 'weight', 'expense', 'income', 'bill_paid', 'emi_paid', 'haircut', 'product_bought', 'goal_progress', 'checklist_done', 'journal', 'reminder_add', 'meal', 'goal_add'];
 const strList = (a, max = 60) => (Array.isArray(a) ? a : []).map((x) => String(x).slice(0, 80)).filter(Boolean).slice(0, max);
 const obj = (props) => ({ type: 'object', additionalProperties: false, required: Object.keys(props), properties: props });
 const S = { type: 'string' }, N = { type: 'number' };
@@ -84,6 +84,7 @@ function buildTask(task, input) {
 - "got a haircut" → haircut. Bought a listed grooming product → product_bought.
 - A note about the day → journal (value = mood 1-5 if they said how the day felt, else 0).
 - "remind me to …" → reminder_add with a date.
+- A goal, plan or life priority ("I'll get married in 2 years and need ₹50 lakh before that", "buy a house by 2030", "save 6 months of expenses", "create a goal …") → goal_add: text = short title ("Get married", "Buy a house"), value = target in rupees (0 if no amount; "50 lakh" = 5000000, "1 crore" = 10000000; if digits look garbled from speech, use the amount they clearly mean), date = target date YYYY-MM-DD worked out from today ("in two years" → same day two years later), ref = one of marriage, house, emergency, car, education, travel, business, retire, custom. Never save a goal as a journal entry.
 Never invent things the user didn't say. If nothing fits, return no actions. reply: one short friendly spoken sentence.`,
         content: [{ type: 'text', text: String(input.context || '').slice(0, 20000) + '\n\nWHAT I SAID: ' + String(input.text || '').slice(0, 4000) }],
         schema: obj({ reply: S, actions: { type: 'array', items: obj({ kind: { type: 'string', enum: LOG_KINDS }, ref: S, value: N, text: S, date: S, protein: N, carbs: N, fat: N }) } }),
@@ -108,7 +109,7 @@ payee: a short readable name (e.g. "Swiggy", "Rahul Sharma"), never UPI ids or r
     case 'receipt':
       return {
         effort: 'low', maxTokens: 8000,
-        system: `You read photos or PDFs of Indian bills and receipts. kind: 'bill' for any utility/service bill (internet, phone, electricity, gas, water, insurance, rent, subscription, card statement) even if it is already paid; 'receipt' for a one-off purchase (shop, restaurant, online order); else 'other'. already_paid: true if it shows paid / payment received / zero balance, or the user says so. recurring: true for service bills. frequency: from the billing period on the bill (about 1 month → monthly, about 3 months → quarterly, 6 → half-yearly, 12 → yearly); if unclear use monthly for utilities. billing_period: as printed, e.g. '01 Aug–31 Oct 2026'. bill_date = bill/invoice date; due_date = pay-by date. Dates as YYYY-MM-DD, empty if absent. Amount in rupees (total payable, or total paid). Known bills the user already tracks: ${strList(input.bills, 40).join(' | ') || 'none'} — set matched_bill to the exact name if this is one of them, else empty.`,
+        system: `You read photos or PDFs of Indian bills and receipts. kind: 'bill' for any utility/service bill (internet, phone, electricity, gas, water, insurance, rent, subscription, card statement) even if it is already paid; 'receipt' for a one-off purchase (shop, restaurant, online order); else 'other'. already_paid: true if it shows paid / payment received / zero balance, or the user says so. recurring: true for service bills. frequency: from the billing period on the bill (about 1 month → monthly, about 3 months → quarterly, 6 → half-yearly, 12 → yearly); if unclear use monthly for utilities. billing_period: as printed, e.g. '01 Aug–31 Oct 2026'. title: the provider and service only, never a month or year (e.g. 'Airtel Fiber', 'BSES Electricity'). bill_date = bill/invoice date; due_date = pay-by date. Dates as YYYY-MM-DD, empty if absent. Amount in rupees (total payable, or total paid). Known bills the user already tracks: ${strList(input.bills, 40).join(' | ') || 'none'} — set matched_bill to the exact name if this is one of them, else empty.`,
         content: [fileBlock(input), { type: 'text', text: 'Read this bill or receipt.' }],
         schema: docSchema(['bill', 'receipt', 'other'], catEnum),
       };
