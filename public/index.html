@@ -201,6 +201,11 @@ main{padding:4px 28px 64px;max-width:1480px}
 .kpi-jump .l{display:flex;align-items:center;gap:4px}.kj{margin-left:auto;opacity:.45;display:inline-flex}.kj svg.i{width:14px;height:14px}
 main [id^="sec-"],main [id^="adm-"]{scroll-margin-top:calc(80px + env(safe-area-inset-top))}
 .jumped{animation:jumpGlow 1.4s ease-out}@keyframes jumpGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 60%,transparent)}30%{box-shadow:0 0 0 6px color-mix(in srgb,var(--lime) 30%,transparent)}100%{box-shadow:0 0 0 0 transparent}}
+.setupc .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}.setupc .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width .6s var(--ease)}
+.setupc{background:radial-gradient(420px 160px at 0 0,color-mix(in srgb,var(--lime) 9%,transparent),transparent 70%),var(--card)}
+.srow{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}.srow .nb{flex:1;min-width:180px}.srow b{font-size:14.5px}
+.sck{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line2);display:grid;place-items:center;flex:none;color:var(--lime-ink)}.srow.ok .sck{background:var(--lime);border-color:var(--lime)}.sck svg.i{width:13px;height:13px;stroke-width:3}
+.srow.ok b{color:var(--muted)}.sbtn{display:flex;gap:6px;flex-wrap:wrap}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .kpi .l{font-size:12.5px;color:var(--muted)}
@@ -739,7 +744,7 @@ main{padding-bottom:110px!important}
 @keyframes bub{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-28px)}}
 .glass2.fill .wv{animation:fillGlass 1.1s var(--spring) backwards;animation-delay:calc(var(--g)*90ms)}
 @keyframes fillGlass{from{transform:translateY(46px)}}
-.drop{position:fixed;width:7px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--cyan);pointer-events:none;z-index:95}
+.wdrop{position:fixed;width:7px;height:9px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--cyan);pointer-events:none;z-index:95}
 .water-big{display:flex;align-items:baseline;gap:8px}
 /* ================= notifications page ================= */
 .nhero{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
@@ -1674,6 +1679,25 @@ const SEASON=[
   ['Winter, year end',['Advance tax 3rd instalment on 15 Dec','Belated ITR deadline on 31 Dec','Review this year’s goals and set next year’s']],
 ];
 const kpi=(l,v,h='',cls='',jump='')=>jump?`<button type="button" class="kpi kpi-jump" data-jump="${jump}" aria-label="${esc(String(l))}: ${esc(String(v))}. Show details"><div class="l">${l}<span class="kj">${ic('right')}</span></div><div class="v ${cls}">${v}</div>${h?`<div class="h">${h}</div>`:''}</button>`:`<div class="kpi"><div class="l">${l}</div><div class="v ${cls}">${v}</div>${h?`<div class="h">${h}</div>`:''}</div>`;
+// What the person has actually told us (sample entries don't count).
+function moneySetup(){
+  const real=a=>(a||[]).filter(x=>!x.sample),P=state.profile;
+  const income=real(state.income).some(x=>num(x.amount)>0);
+  const budget=real(state.expenses).some(x=>num(x.amount)>0)||real(state.tx).length>0;
+  const savings=real(state.savings).length>0||!!P.noSavings;
+  const debts=real(state.loans).length>0||(state.cards||[]).length>0||!!P.noDebt;
+  const steps=[['income','Add your monthly income','Salary or any regular income',income,`<button class="btn sm lime" data-add="income">${ic('plus')} Add income</button>`],
+    ['savings','Add savings & investments','Bank balance, FD, SIP, PPF, gold…',savings,`<button class="btn sm lime" data-add="savings">${ic('plus')} Add</button><button class="btn sm ghost" data-act="noSavings">I have none yet</button>`],
+    ['debts','Add loans & credit cards','EMIs, personal loans, cards, pay later',debts,`<button class="btn sm lime" data-add="loans">${ic('plus')} Add loan</button><button class="btn sm" data-add="cards">Add card</button><button class="btn sm ghost" data-act="noDebt">No loans or cards</button>`],
+    ['budget','Set a budget or log spending','Or import a bank statement',budget,`<button class="btn sm lime" data-go="budget">Set budget</button><button class="btn sm" data-act="import">Import statement</button>`]];
+  return {income,budget,savings,debts,ready:income&&savings&&debts,steps,done:steps.filter(x=>x[3]).length};
+}
+function setupCard(){
+  const M=moneySetup();
+  return `<div class="card setupc"><div class="ch" style="align-items:center">${icoBox('rupee','var(--lime)')}<div style="flex:1;min-width:0"><h3>Let’s get your real numbers</h3><div class="sub">Net worth and monthly figures appear once these are filled in. Nothing is guessed.</div></div><span class="pill lime nodot">${M.done} of 4</span></div>
+  <div class="bar" style="margin:4px 0 12px"><i style="width:${M.done*25}%"></i></div>
+  ${M.steps.map(([k,t,sub,ok,btns])=>`<div class="srow ${ok?'ok':''}"><span class="sck">${ok?ic('tick'):''}</span><div class="nb"><b>${t}</b><div class="tiny muted">${sub}</div></div>${ok?'<span class="pill lime nodot">Done</span>':`<div class="sbtn">${btns}</div>`}</div>`).join('')}</div>`;
+}
 function sampleBanner(){
   const n=['income','expenses','bills','loans','savings','tx'].reduce((s,k)=>s+state[k].filter(x=>x.sample).length,0);
   return n?`<div class="banner">${ic('bulb')}<span><b>${n} sample finance entries</b> show how this works. Replace them with your real numbers, or clear them.</span><span class="sp"></span><button class="btn sm" data-act="clearSamples">Clear sample data</button></div>`:'';
@@ -1741,7 +1765,7 @@ function pOverview(){
     `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
   <div class="stack">${sampleBanner()}${prioStrip()}
   <div class="ov"><div class="stack">
-    <div class="card hero"><div style="min-width:0">
+    ${!moneySetup().ready?setupCard():`<div class="card hero"><div style="min-width:0">
       <div class="ch"><div><div class="big">${inr(f.net)}</div><div class="small muted">Net worth · <span class="${cur.left>=0?'pos':'neg'}" style="font-weight:600">${cur.left>=0?'+':''}${inr(cur.left)}</span> set aside this month</div></div><span class="sp"></span>
         <select class="sel" data-ui="ovRange"><option value="6" ${N==6?'selected':''}>Last 6 months</option><option value="12" ${N==12?'selected':''}>Last 12 months</option></select>
         <div class="seg"><button class="${ui.ovMode==='bar'?'on':''}" data-set="ovMode:bar" title="Bars">${ic('bars')}</button><button class="${ui.ovMode==='line'?'on':''}" data-set="ovMode:line" title="Lines">${ic('trend')}</button></div></div>
@@ -1751,7 +1775,7 @@ function pOverview(){
         <div class="stat"><div class="l">Income this month</div><div class="v">${inr(cur.income)}</div>${trend(cur.income,prev.income,true)}</div>
         <div class="stat"><div class="l">Spending</div><div class="v">${inr(cur.out)}</div>${trend(cur.out,prev.out,false)}</div>
         <div class="stat"><div class="l">Set aside</div><div class="v">${inr(cur.left)}</div>${trend(cur.left,prev.left,true)}</div>
-      </div></div>
+      </div></div>`}
     <div class="r2">
       <div class="card"><div class="ch"><div><h3>Monthly budget</h3><div class="sub">${dim(y,m)-t.getDate()} days left in ${MONTHS_FULL[m]}</div></div><span class="sp"></span><button class="ic" data-go="budget" title="Open budget">${ic('edit')}</button></div>
         <div class="mid">${inr(spent)} <span class="small muted" style="font-weight:500">of ${inr(cap)}</span></div>
@@ -1911,7 +1935,7 @@ function pSavings(){
     return `<div class="ri clickable" data-edit="savings" data-id="${s.id}">${icoBox(s.type==='Emergency fund'?'shield':'trend',pcol(s.type))}<div class="rb"><div class="rt">${esc(s.name)}</div><div class="rs">${esc(s.type)}${num(s.monthly)?` · ${inr(s.monthly)}/month`:''}${s.notes?' · '+esc(s.notes):''}</div>${p!==null?`<div style="margin-top:7px;max-width:320px">${gbar(p)}</div><div class="tiny muted" style="margin-top:4px">${pct(p)} of ${inr(tg)}</div>`:''}</div><div class="ra">${inr(s.current)}</div></div>`}).join('');
   return `${phead('Money · Savings & net worth','Savings',`<button class="btn lime" data-add="savings">${ic('plus')} Add</button>`)}
   <div class="stack">${sampleBanner()}
-  <div class="kpis">${kpi('Savings & investments',inr(f.assets),'','','sec-accounts')}${kpi('Debt',inr(f.debt),'','','go:debt')}${kpi('Net worth',inr(f.net),'',f.net<0?'neg':'pos')}${kpi('Emergency fund',f.efMonths.toFixed(1)+' months','target 6 months = '+inr(f.out*6),f.efMonths>=6?'pos':f.efMonths>=3?'warn':'neg')}${kpi('Invested per month',inr(sum(state.savings,s=>s.monthly)))}</div>
+  <div class="kpis">${kpi('Savings & investments',inr(f.assets),'','','sec-accounts')}${kpi('Debt',inr(f.debt),'','','go:debt')}${moneySetup().ready?kpi('Net worth',inr(f.net),'',f.net<0?'neg':'pos'):kpi('Net worth','—','add savings and loans first','','go:overview')}${kpi('Emergency fund',f.efMonths.toFixed(1)+' months','target 6 months = '+inr(f.out*6),f.efMonths>=6?'pos':f.efMonths>=3?'warn':'neg')}${kpi('Invested per month',inr(sum(state.savings,s=>s.monthly)))}</div>
   <div class="card" id="sec-accounts"><div class="ch"><div><h3>Accounts & investments</h3><div class="sub">Tap any row to update its value</div></div></div>${rows||'<div class="empty">Nothing added yet.</div>'}</div>
   <div class="card"><h3 style="margin-bottom:8px">Order of priorities at 27</h3><ol class="tips">
     <li>Own health insurance (₹10 lakh+), plus term insurance if anyone depends on you.</li>
@@ -3424,7 +3448,7 @@ function glassSVG(i){return `<svg viewBox="0 0 40 54" aria-hidden="true"><defs><
   <path class="rim" d="M5 5h30l-3.4 42.5a3.2 3.2 0 0 1-3.2 2.9H11.6a3.2 3.2 0 0 1-3.2-2.9z"/><path class="shine" d="M10 10l2.4 33"/></svg>`}
 function splash(btn){
   if(RM()||!btn)return;const [x,y]=center(btn);
-  for(let k=0;k<7;k++){const p=document.createElement('i');p.className='drop';p.style.left=x+'px';p.style.top=(y-18)+'px';document.body.appendChild(p);
+  for(let k=0;k<7;k++){const p=document.createElement('i');p.className='wdrop';p.style.left=x+'px';p.style.top=(y-18)+'px';document.body.appendChild(p);
     const a=-Math.PI/2+(Math.random()-.5)*1.6,d=26+Math.random()*30;
     p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d+38}px)) scale(.4)`,opacity:0}],{duration:650+Math.random()*250,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>p.remove()}
 }
@@ -3974,6 +3998,8 @@ document.addEventListener('click',e=>{
     case'subscribe':subscribe();return;
     case'jsave2':{const t=($('#jl2')?.value||'').trim(),k=ds(today()),J=state.journal=state.journal||{};if(!t){toast('Write a line first','x');return}J[k]={...(J[k]||{}),t:t.slice(0,500)};commit();toast('Saved to your journal','journal');return}
     case'admRefresh':admLoad(true);toast('Refreshing…','clock');return;
+    case'noSavings':state.profile.noSavings=true;commit();toast('Got it. Add savings any time from Savings.','tick');return;
+    case'noDebt':state.profile.noDebt=true;commit();toast('Great, no debts to track.','tick');return;
     case'voiceTest':{const was=ui.talk;ui.talk=true;speak(`Hi ${state.profile.first||'there'}! This is your Self Streak assistant. You’ve done six of eight habits today, and you’re two glasses away from your water goal. Nice work.`);ui.talk=was;return}
     case'debtPlan':makeDebtPlan();return;
     case'applyPlan':{const r=state.debtPlan?.r;if(!r)return;ui.extra=Math.max(0,Math.round(r.extra_per_month));ui.strategy=r.strategy==='snowball'?'snowball':'avalanche';saveUI();render();toast(`Calculator set to ${inr(ui.extra)} extra a month`,'tick');return}
