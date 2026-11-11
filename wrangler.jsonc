@@ -17,6 +17,7 @@
   "observability": { "enabled": true },
   "vars": {
     "DAILY_AI_LIMIT": "100",
+    "AUTOPAY_LIVE": "0",
     "TRIAL_DAYS": "7",
     "PRICE_INR": "499",
     "VAPID_PUBLIC_KEY": "BD-VBa02pcA2wwTGLv16rP9666MiyTnAvwKevoYVnuqi6KVBhISN42hqMhiSpUORRf1Dgghcs6q2UUaISaSKhUk",

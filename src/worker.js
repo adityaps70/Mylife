@@ -50,7 +50,7 @@ async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
   return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
     usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY,
-    autopayReady: rzpReady(env), autopay: await autopayOf(env, u.id).catch(() => null) };
+    autopayReady: rzpReady(env) && env.AUTOPAY_LIVE === '1', autopay: await autopayOf(env, u.id).catch(() => null) };
 }
 
 /* ---------------- AI tasks (prompts and schemas live on the server) ---------------- */
