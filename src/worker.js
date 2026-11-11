@@ -248,7 +248,8 @@ async function verifyGoogleToken(env, jwt) {
   const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uBytes(sig), new TextEncoder().encode(h + '.' + p));
   if (!ok) throw new Error('bad_signature');
   if (!['accounts.google.com', 'https://accounts.google.com'].includes(claims.iss)) throw new Error('bad_issuer');
-  if (claims.aud !== env.GOOGLE_CLIENT_ID) throw new Error('bad_audience');
+  // Website (GSI) and Android tokens use the web client ID; the iPhone app's native sign-in uses the iOS client ID.
+  if (![env.GOOGLE_CLIENT_ID, env.GOOGLE_IOS_CLIENT_ID].filter(Boolean).includes(claims.aud)) throw new Error('bad_audience');
   if (!(claims.exp * 1000 > Date.now())) throw new Error('expired');
   if (!claims.email || claims.email_verified !== true && claims.email_verified !== 'true') throw new Error('email_not_verified');
   return claims;
@@ -437,7 +438,7 @@ async function api(req, env, url) {
     }
     return json({ ...(await me(env, usr)), isNew, name: usr.name }, 200, { 'set-cookie': await newSession(env, req, usr.id) });
   }
-  if (p === '/api/config' && m === 'GET') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '' });
+  if (p === '/api/config' && m === 'GET') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '', googleIosClientId: env.GOOGLE_IOS_CLIENT_ID || '' });
   if (p === '/api/forgot' && m === 'POST') {
     const b = await body(), email = String(b.email || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return err(400, 'Enter the email you signed up with.');
