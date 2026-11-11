@@ -894,8 +894,9 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gnum{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--lime-text,var(--lime))}.gnum.bump{animation:gpop .5s var(--spring,cubic-bezier(.3,1.5,.5,1))}
 .gacts{display:grid;gap:8px;margin-top:16px}.gacts .btn{height:46px;justify-content:center;font-weight:700}
 .gcard{width:100%;max-width:260px;border-radius:16px;margin:10px auto 0;display:block;border:1px solid var(--line)}
-.gweek{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0 8px}
-.gwd{display:grid;gap:4px;justify-items:center;font-size:11px;color:var(--faint);font-weight:700}
+.gweek{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0 8px}
+.gwd{display:grid;gap:5px;justify-items:center;font-size:11px;color:var(--faint);font-weight:700;min-width:38px}
+.gwd.next i{background:none;border-style:dashed;border-color:var(--line);opacity:.6}.gwd.today span{color:var(--lime-text,var(--lime))}.gwd.on.today i{box-shadow:0 0 0 3px color-mix(in srgb,var(--lime) 35%,transparent)}
 .gwd i{font-style:normal;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line);font-size:17px}
 .gwd.on i{background:color-mix(in srgb,var(--orange) 18%,var(--card2));border-color:color-mix(in srgb,var(--orange) 45%,transparent)}
 .gwd.ice i{background:color-mix(in srgb,var(--cyan) 16%,var(--card2));border-color:color-mix(in srgb,var(--cyan) 45%,transparent)}
@@ -922,7 +923,7 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gfr{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.gfr .av{flex:none}.gfr .ibtn{width:34px;height:34px;flex:0 0 34px}
 .ginv{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 6px;padding:14px;border-radius:16px;background:var(--card2);border:1px solid var(--line)}.gcode{font-size:22px;letter-spacing:.12em}
 .gstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.gstats b{font-size:20px}
-.gbadges{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gbadges{display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:2px 2px 6px;margin:0 -4px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 36px),transparent)}.gbadges::-webkit-scrollbar{display:none}.gbadges .gbd{flex:0 0 132px;scroll-snap-align:start}
 .gbd{display:grid;gap:3px;justify-items:center;text-align:center;padding:14px 8px;border-radius:16px;border:1px solid var(--line);background:var(--card2)}
 .gbd span{font-size:34px;filter:grayscale(1);opacity:.35}.gbd b{font-size:12.5px}.gbd small{font-size:11px;color:var(--faint);line-height:1.3}
 .gbd.got{border-color:color-mix(in srgb,var(--lime) 40%,transparent)}.gbd.got span{filter:none;opacity:1}
@@ -1076,6 +1077,21 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 .avpick:hover .av-bd,.avpick.on .av-bd{animation-duration:1.1s}
 @media (prefers-reduced-motion:reduce){.avsvg *{animation:none!important}}
 html.nomotion .avsvg *{animation:none!important}
+.wktot{display:flex;align-items:baseline;gap:6px}.wktot b{font-size:28px;letter-spacing:-.02em}.wktot>span{color:var(--muted);font-size:13px;font-weight:600}
+.wkbars{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px;align-items:end;margin:6px 0 16px}
+.wkb{display:grid;grid-template-rows:16px 1fr 18px;height:100%;align-items:end;justify-items:center;gap:4px}
+.wkb i{display:block;width:min(34px,70%);border-radius:9px 9px 5px 5px;background:color-mix(in srgb,var(--lime) 35%,var(--card2));transition:height .8s cubic-bezier(.2,.8,.2,1);align-self:end}
+.wkb.goal i{background:linear-gradient(180deg,var(--lime),color-mix(in srgb,var(--lime) 60%,var(--cyan)))}.wkb.fut i{background:var(--line);opacity:.6}
+.wkb.today i{box-shadow:0 0 0 2px color-mix(in srgb,var(--lime) 45%,transparent)}
+.wkb b{font-size:11px;color:var(--faint);font-weight:700}.wkb.today b{color:var(--lime-text,var(--lime))}.wkv{font-size:11px;font-weight:700;color:var(--muted);align-self:end}
+.wkgoal{position:absolute;left:0;right:0;border-top:1px dashed color-mix(in srgb,var(--lime) 45%,transparent);pointer-events:none}.wkgoal span{position:absolute;right:0;top:-16px;font-size:10px;color:var(--lime-text,var(--lime));font-weight:700}
+.wstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wst{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:var(--card2);border:1px solid var(--line)}.wst .nb{flex:1;min-width:0}
+.wsv{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;margin-top:2px}.wsv b{font-size:22px;letter-spacing:-.02em}.wsv small{color:var(--faint);font-size:12px}
+.wch{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:99px;background:var(--line);color:var(--muted)}.wch.up{background:color-mix(in srgb,var(--green,#6fe28a) 16%,transparent);color:var(--green,#6fe28a)}.wch.dn{background:color-mix(in srgb,var(--red,#ff4f6e) 14%,transparent);color:var(--red,#ff4f6e)}
+.wsbar{height:5px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}.wsbar i{display:block;height:100%;border-radius:inherit}
+.wkbest{display:flex;gap:8px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--yellow,#f5c84c) 10%,transparent);font-size:13px}.wkbest svg{color:var(--yellow,#f5c84c);flex:none}
+@media (max-width:760px){.wstats{grid-template-columns:repeat(2,minmax(0,1fr))}.wst{padding:10px;gap:10px}.wst .ico{width:32px;height:32px;flex-basis:32px}.wsv b{font-size:19px}.wkbars{height:130px;gap:5px}}
 </style>
 </head>
 <body>
@@ -4241,8 +4257,15 @@ function gFloat(txt){const el=document.createElement('div');el.className='gxp';e
 function gConfetti(){if(RM())return;const c=document.createElement('canvas');c.className='gconf';c.width=innerWidth;c.height=innerHeight;document.body.appendChild(c);const x=c.getContext('2d'),cols=['#d7f64a','#45dfe6','#ff8a4c','#b49cff','#f5c84c','#ffffff'];
   const P=[...Array(150)].map(()=>({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*.42,vx:(Math.random()-.5)*16,vy:-Math.random()*15-5,r:Math.random()*6+4,a:Math.random()*6,va:(Math.random()-.5)*.4,c:cols[Math.random()*cols.length|0]}));
   const t0=performance.now();(function f(t){const k=(t-t0)/2400;x.clearRect(0,0,c.width,c.height);for(const p of P){p.vy+=.42;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.globalAlpha=Math.max(0,1-k);x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore()}if(k<1)requestAnimationFrame(f);else c.remove()})(t0)}
-function gWeekStrip(){const g=G(),t=today(),mon=pd(gWeekKey());return `<div class="gweek">${[...Array(7)].map((_,i)=>{const d=addDays(mon,i),k=ds(d),st=g.days[k]?'on':g.frozen[k]?'ice':d<t&&k>=(g.start||'')?'miss':d.getTime()===t.getTime()?'now':'';
-  return `<div class="gwd ${st}"><span>${'MTWTFSS'[i]}</span><i>${st==='on'?'🔥':st==='ice'?'🧊':st==='miss'?'·':''}</i></div>`}).join('')}</div>`}
+function gWeekStrip(){
+  // Show this week only from the day the current streak began (or today, if there is no streak yet).
+  const g=G(),t=today(),mon=pd(gWeekKey()),DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  let s=gOn(ds(t))?t:addDays(t,-1);if(!gOn(ds(s)))s=t;else while(gOn(ds(addDays(s,-1))))s=addDays(s,-1);
+  const first=s<mon?mon:s;const out=[];
+  for(let i=0;i<7;i++){const d=addDays(mon,i);if(d<first)continue;const k=ds(d),isT=d.getTime()===t.getTime();
+    const st=g.days[k]?'on':g.frozen[k]?'ice':isT?'now':d>t?'next':'miss';
+    out.push(`<div class="gwd ${st}${isT?' today':''}"><span>${isT?'Today':DN[i]}</span><i>${st==='on'?'🔥':st==='ice'?'🧊':''}</i></div>`)}
+  return `<div class="gweek">${out.join('')}</div>`}
 function gNext(){
   const c=gQ.shift();if(!c){gShow=false;return}gShow=true;const g=G();let h='',snd='badge',conf=false,auto=0,share=false;
   const big=(e,cls='')=>`<div class="gbig ${cls}">${e}</div>`;
@@ -4328,10 +4351,9 @@ function pStreak(){
       <div class="ginv"><div><div class="glabel">Your friend code</div><b class="gcode">${esc(S.code)}</b></div><span class="sp"></span><button class="btn lime" data-g="invite">Invite · both get 7 free days</button></div>
       <div class="tiny muted">${S.refs?`${S.refs} friend${S.refs>1?'s':''} joined with your link 🎉`:'When a friend signs up with your link, you both get 7 extra free days.'}</div>`}</div>
   </div>
-  <div class="card"><div class="ch"><div><h3>This week</h3><div class="sub">Compared with last week · full recap every Sunday evening</div></div></div>
-    <div class="gstats">${[['⭐ XP',w.xp,lw.xp],['📅 Active days',w.active,lw.active],['✅ Habits',w.habits,lw.habits],['💧 Water',w.water,lw.water],['🍽️ Meals',w.meals,lw.meals],['📓 Journal',w.journal,lw.journal]].map(([l,a,b])=>`<div><div class="tiny muted">${l}</div>${cmp(a,b)}</div>`).join('')}<div><div class="tiny muted">₹ Spent</div><b>${inr(w.spent)}</b></div><div><div class="tiny muted">🏅 Best day</div><b>${w.bestDay||'—'}</b></div></div></div>
-  <div class="card"><div class="ch"><h3>Badges</h3><span class="sp"></span><span class="pill nodot">${Object.keys(g.badges).length}/${G_BADGES.length}</span></div>
-    <div class="gbadges">${G_BADGES.map(([id,e,name,desc])=>`<div class="gbd ${g.badges[id]?'got':''}" title="${esc(desc)}"><span>${e}</span><b>${esc(name)}</b><small>${g.badges[id]?'Earned '+fmt(pd(g.badges[id]),{day:'numeric',month:'short'}):esc(desc)}</small></div>`).join('')}</div></div>
+  ${gWeekCard(w,lw)}
+  <div class="card"><div class="ch"><div><h3>Badges</h3><div class="sub">Swipe to see them all</div></div><span class="sp"></span><span class="pill nodot">${Object.keys(g.badges).length}/${G_BADGES.length}</span></div>
+    <div class="gbadges">${[...G_BADGES].sort((x,y)=>(g.badges[y[0]]?1:0)-(g.badges[x[0]]?1:0)).map(([id,e,name,desc])=>`<div class="gbd ${g.badges[id]?'got':''}" title="${esc(desc)}"><span>${e}</span><b>${esc(name)}</b><small>${g.badges[id]?'Earned '+fmt(pd(g.badges[id]),{day:'numeric',month:'short'}):esc(desc)}</small></div>`).join('')}</div></div>
   <div class="card"><div class="ch"><h3>Settings</h3></div>
     ${[['risk','Streak reminders','A push at 8 pm (and 10:30 pm) only if you haven’t logged anything that day'],['recap','Weekly recap email','Sunday evening summary of your week'],['board','Show me in leagues','Your first name and last initial appear in your weekly league'],['sound','Celebration sounds','Little sounds when you earn XP, hit goals and badges']].map(([k,l,d])=>`<div class="gset"><div class="nb"><b class="small">${l}</b><div class="tiny muted">${d}</div></div><button type="button" class="switch ${g[k]?'on':''}" role="switch" aria-checked="${!!g[k]}" aria-label="${l}" data-g="tog" data-k="${k}"></button></div>`).join('')}</div>
   </div>`}
@@ -4633,6 +4655,27 @@ document.addEventListener('click',e=>{
   const s=e.target.closest('[data-avset]');if(s){state.profile.avatar=+s.dataset.avset;commit();const d=$('#dlg');closeDlg(d);d.classList.remove('wide');toast('Buddy saved','tick');return}
   if(e.target.closest('[data-act="avpicker"]')){e.preventDefault();openAvatarPicker()}
 });
+
+/* ---- "This week" card: daily XP bars + stat tiles with change vs last week ---- */
+function gWeekCard(w,lw){
+  const g=G(),mon=pd(gWeekKey()),t=today(),days=[...Array(7)].map((_,i)=>{const d=addDays(mon,i),k=ds(d);return {d,k,x:g.days[k]||0,f:!!g.frozen[k],fut:d>t,today:d.getTime()===t.getTime()}});
+  const mx=Math.max(g.goal,...days.map(z=>z.x),1);
+  const bars=`<div class="wkbars">${days.map((z,i)=>`<div class="wkb ${z.fut?'fut':''} ${z.today?'today':''} ${z.x>=g.goal?'goal':''}" title="${fmt(z.d,{weekday:'long'})}: ${z.x} XP"><span class="wkv">${z.x||''}</span><i style="height:${z.fut?6:Math.max(z.x?8:4,Math.round(z.x/mx*100))}%"></i><b>${z.today?'Today':'MTWTFSS'[i]}</b></div>`).join('')}<div class="wkgoal" style="bottom:calc(22px + (100% - 42px) * ${(g.goal/mx).toFixed(3)})"><span>Goal ${g.goal}</span></div></div>`;
+  const chg=(a,b)=>{if(!b&&!a)return '';const dlt=a-b;return dlt===0?'<span class="wch">same</span>':`<span class="wch ${dlt>0?'up':'dn'}">${dlt>0?'▲':'▼'} ${Math.abs(dlt).toLocaleString('en-IN')}</span>`};
+  const tile=(icn,col,label,val,prev,max,unit='')=>`<div class="wst">${icoBox(icn,col)}<div class="nb"><div class="tiny muted">${label}</div><div class="wsv"><b>${typeof val==='number'?val.toLocaleString('en-IN'):val}</b>${unit?`<small>${unit}</small>`:''}${prev!==null?chg(val,prev):''}</div>${max?`<div class="wsbar"><i style="width:${Math.min(100,Math.round(val/max*100))}%;background:${col}"></i></div>`:''}</div></div>`;
+  const elapsed=Math.min(7,Math.round((t-mon)/864e5)+1);
+  return `<div class="card wkcard"><div class="ch"><div><h3>This week</h3><div class="sub">${fmt(mon,{day:'numeric',month:'short'})} – ${fmt(addDays(mon,6),{day:'numeric',month:'short'})} · compared with last week</div></div><span class="sp"></span><div class="wktot"><b>${w.xp.toLocaleString('en-IN')}</b><span>XP</span>${chg(w.xp,lw.xp)}</div></div>
+  ${bars}
+  <div class="wstats">
+    ${tile('calendar','var(--lime)','Active days',w.active,lw.active,7,'/ 7')}
+    ${tile('check','var(--green,#6fe28a)','Habits ticked',w.habits,lw.habits,null)}
+    ${tile('drop','var(--cyan)','Glasses of water',w.water,lw.water,12*elapsed,`/ ${12*elapsed}`)}
+    ${tile('food','var(--orange)','Meals logged',w.meals,lw.meals,null)}
+    ${tile('journal','var(--violet,#a78bfa)','Journal entries',w.journal,lw.journal,elapsed,`/ ${elapsed}`)}
+    ${tile('rupee','var(--yellow,#f5c84c)','Spent',inr(w.spent),null,null)}
+  </div>
+  ${w.bestDay?`<div class="wkbest">${ic('star')}<span>Best day so far: <b>${w.bestDay}</b> with ${w.best} XP</span></div>`:''}
+  <p class="tiny faint" style="margin-top:10px">Full recap arrives every Sunday evening.</p></div>`}
 
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
