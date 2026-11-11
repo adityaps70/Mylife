@@ -4,4 +4,5 @@
     <string name="title_activity_main">Self Streak</string>
     <string name="package_name">com.selfstreak.app</string>
     <string name="custom_url_scheme">com.selfstreak.app</string>
+    <string name="health_connect_privacy_policy_url">https://selfstreak.com/privacy</string>
 </resources>

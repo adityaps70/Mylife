@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Self Streak reads your steps, sleep, weight, workouts and mindful minutes from Apple Health so you don't have to type them in. Your health data is never used for ads.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Self Streak saves the glasses of water you log in the app to Apple Health, so your water intake stays in one place.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
