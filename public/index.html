@@ -773,6 +773,8 @@ main{padding-bottom:110px!important}
 .hkc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.hkc-stats div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
 .hkc-stats b{display:block;font-size:18px;letter-spacing:-.01em}.hkc-stats span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hkc-off{background:none;border:0;padding:0;margin-top:12px;color:var(--faint);font:inherit;font-size:12.5px;cursor:pointer}
+#ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 6px);width:34px;height:34px;margin-left:0;transform:translate(-50%,0);opacity:0;z-index:150;border-radius:50%;background:var(--card);border:1px solid var(--line2);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none}
+#ptr i{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--faint);border-top-color:var(--lime)}#ptr.ready i{border-color:var(--lime);border-top-color:transparent}#ptr.spin i{animation:ptrSpin .7s linear infinite}@keyframes ptrSpin{to{transform:rotate(360deg)}}
 #offbar{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);white-space:nowrap;transform:translate(-50%,-140%);z-index:200;display:flex;gap:8px;align-items:center;max-width:calc(100vw - 32px);padding:9px 14px;border-radius:99px;background:#2a2410;color:#ffe089;border:1px solid #5a4a14;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .3s cubic-bezier(.2,.9,.3,1.2)}
 #offbar.show{transform:translate(-50%,0)}#offbar.ok{background:#16240f;color:var(--lime);border-color:#33501c}#offbar svg{width:16px;height:16px;flex:0 0 16px}
 .nhero .nb{flex:1;min-width:240px}
@@ -1581,6 +1583,48 @@ async function lnSchedule(items){if(!LN||lnPerm!=='granted')return;
     if(list.length)await LN.schedule({notifications:list})}catch(e){console.warn('local notifications',e)}}
 async function lnTest(){if(!LN)return;if(lnPerm!=='granted')return lnEnable();try{await LN.schedule({notifications:[{id:7,title:'Test reminder 💧',body:'Water check: open Self Streak to log a glass.',schedule:{at:new Date(Date.now()+5000)},extra:{ss:0,url:'./#/health'}}]});toast('A test reminder arrives in 5 seconds. Lock your phone to see it.','bell')}catch(e){toast('Couldn’t send a test reminder','x')}}
 if(LN){lnCheck();LN.addListener?.('localNotificationActionPerformed',a=>{const u=String(a?.notification?.extra?.url||'');const pg=u.replace(/^.*#\//,'');if(pg&&PAGES[pg.split(':')[0]])go(pg)})}
+
+/* ---------- App: icon badge = reminders due today that aren't done yet ---------- */
+const BADGE=IN_APP?window.Capacitor?.Plugins?.Badge:null;let badgeT=0;
+function appBadge(){if(!BADGE||!account)return;clearTimeout(badgeT);badgeT=setTimeout(()=>{try{const now=Date.now(),n=state.nudges.enabled?todayNudges().filter(i=>+i.at<=now&&now-+i.at<4*3600e3&&relevant(i)&&!(state.nudges.fired[i.key]?.s==='skip')).length:0;
+  n?BADGE.set({count:Math.min(n,99)}):BADGE.clear()}catch(e){}},1200)}
+
+/* ---------- App: long-press shortcuts on the icon (selfstreak://shortcut/…) ---------- */
+function appShortcut(k){if(!account)return;
+  if(k==='water'){const d=ds(today()),lg=state.health.logs[d]=state.health.logs[d]||{};lg.water=Math.min(30,num(lg.water)+1);autoHabits();commit();go('health');toast(`+1 glass · ${lg.water} today`,'drop');try{HP?.notification?.({type:'SUCCESS'})}catch(e){}}
+  else if(k==='spend'){go('activity');setTimeout(()=>{openAssistant();const f=$('#asIn');if(f){f.value=AS.draft='Spent ';f.focus()}},350)}
+  else if(k==='speak')setTimeout(()=>openAssistant('mic'),350);
+  else if(k==='today')go('today')}
+if(IN_APP)window.Capacitor?.Plugins?.App?.addListener?.('appUrlOpen',e=>{const m=String(e?.url||'').match(/^selfstreak:\/\/shortcut\/([a-z]+)/);if(m){const run=()=>account?appShortcut(m[1]):setTimeout(run,600);run()}});
+
+/* ---------- App: Face ID / fingerprint lock for the money pages ---------- */
+const BIO=IN_APP?window.Capacitor?.Plugins?.NativeBiometric:null;let bioOK=false,bioAt=0,bioBg=0;
+const MONEY_PAGES=['activity','budget','bills','debt','savings','year'],BIO_NAME=APP_OS==='ios'?'Face ID':'fingerprint';
+const bioOn=()=>!!(BIO&&hkLS('bio'));
+async function bioCheck(){if(!BIO)return;try{bioOK=!!(await BIO.isAvailable({useFallback:true})).isAvailable}catch(e){bioOK=false}}
+async function bioVerify(why){try{await BIO.verifyIdentity({reason:why||'Unlock your money pages',title:'Unlock Self Streak',subtitle:'Money pages are locked',useFallback:true,fallbackTitle:'Use passcode'});bioAt=Date.now();try{HP?.notification?.({type:'SUCCESS'})}catch(e){}return true}catch(e){return false}}
+async function bioToggle(){if(!BIO)return;await bioCheck();if(!bioOK){toast(`Set up ${BIO_NAME} or a screen lock on your phone first`,'x');return}
+  if(bioOn()){if(await bioVerify('Turn off the money lock')){hkLS('bio',0);toast('Money pages unlocked');render()}}
+  else if(await bioVerify(`Use ${BIO_NAME} to lock your money pages`)){hkLS('bio',1);toast(`Money pages now need ${BIO_NAME}`,'lock');render()}}
+if(BIO){bioCheck();window.Capacitor?.Plugins?.App?.addListener?.('appStateChange',s=>{if(!s?.isActive)bioBg=Date.now();else if(bioBg&&Date.now()-bioBg>60e3){bioAt=0;if(bioOn()&&MONEY_PAGES.includes(ui.page)){go('overview')}}})}
+function lockCard(){return `<div class="card"><div class="ch"><div><h3>App lock</h3><div class="sub">Ask for ${BIO_NAME} before showing Activity, Budget, Bills, Debt, Savings and Year summary</div></div></div>
+  <div class="rule ${bioOn()?'':'off'}"><div class="rule-h">${icoBox('lock','var(--lime)')}<div class="nb"><b>Lock money pages with ${BIO_NAME}</b><div class="tiny muted">${bioOK?'Unlocks for 5 minutes at a time. Locks again when you leave the app.':`Set up ${BIO_NAME} or a passcode on your phone to use this.`}</div></div><button class="switch ${bioOn()?'on':''}" data-bio="1" role="switch" aria-checked="${bioOn()}" aria-label="Lock money pages"></button></div></div></div>`}
+
+/* ---------- App: links to other pages open in an in-app browser (you stay in the app) ---------- */
+const BRW=IN_APP?window.Capacitor?.Plugins?.Browser:null;
+if(BRW)document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a)return;const h=a.getAttribute('href')||'';if(/^(#|mailto:|tel:|javascript:)/i.test(h)||a.hasAttribute('download'))return;
+  let u;try{u=new URL(h,location.href)}catch(x){return}if(!/^https?:$/.test(u.protocol))return;
+  if(u.origin===location.origin&&u.pathname.startsWith('/app'))return;
+  e.preventDefault();e.stopPropagation();BRW.open({url:u.href,presentationStyle:'popover',toolbarColor:'#09090b'}).catch(()=>{})},true);
+
+/* ---------- App: pull down to refresh ---------- */
+if(IN_APP){let y0=0,dy=0,pulling2=false,busy=false;const el=()=>{let p=$('#ptr');if(!p){p=document.createElement('div');p.id='ptr';p.innerHTML='<i></i>';document.body.appendChild(p)}return p};
+  document.addEventListener('touchstart',e=>{pulling2=!busy&&scrollY<=0&&!document.querySelector('dialog[open]')&&!document.body.classList.contains('navopen')&&e.touches[0].clientX>24;y0=e.touches[0].clientY;dy=0},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!pulling2)return;dy=e.touches[0].clientY-y0;if(dy<=0||scrollY>0){el().style.transform='';return}const d=Math.min(110,dy*.5),p=el();p.style.transition='none';p.style.opacity=Math.min(1,d/60);p.style.transform=`translate(-50%,${d}px) rotate(${d*4}deg)`;p.classList.toggle('ready',d>=60)},{passive:true});
+  document.addEventListener('touchend',async()=>{if(!pulling2)return;pulling2=false;const p=el(),go2=dy*.5>=60;p.style.transition='transform .25s ease,opacity .25s ease';
+    if(!go2){p.style.transform='';p.style.opacity=0;return}busy=true;p.classList.add('spin');p.style.transform='translate(-50%,64px)';try{HP?.impact({style:'MEDIUM'})}catch(e){}
+    try{await Promise.all([pullCloud(),hkOn()?hkSync(true):null])}catch(e){}render();
+    setTimeout(()=>{p.classList.remove('spin','ready');p.style.transform='';p.style.opacity=0;busy=false},350)},{passive:true})}
 
 /* ---------- App: haptics on taps ---------- */
 const HP=IN_APP?window.Capacitor?.Plugins?.Haptics:null;
@@ -2810,6 +2854,7 @@ async function enterApp(m,isNew,name){
   openApp();
 }
 function openApp(){
+  if(bioOn()&&MONEY_PAGES.includes(ui.page))ui.page='overview';
   document.body.classList.remove('locked');$('#lock').innerHTML='';$('#onb').classList.remove('show');
   autoHabits();try{genderCats(state.profile.gender)}catch(e){}try{gTick(true);save()}catch(e){console.error(e)}pageChanged=true;render();window.scrollTo(0,0);afterOpen();checkPaywall();initPush();setTimeout(()=>gSocial(),1500);if(hkOn())setTimeout(()=>hkSync(),1200);
 }
@@ -3134,7 +3179,9 @@ function pushSchedule(){
   pushT=setTimeout(async()=>{try{const now=Date.now();
     const items=!state.nudges.enabled?[]:[...todayNudges(),...nudgeItems(addDays(today(),1)),...nudgeItems(addDays(today(),2))].filter(i=>+i.at>now&&+i.at<now+72*3600e3&&relevant(i))
       .map(i=>({at:+i.at,title:i.title,body:bodyOf(i),tag:i.key,url:i.url,actions:i.actions,acts:i.acts}));
-    if(LN)await lnSchedule(items);
+    if(LN){const wk=[...todayNudges().filter(i=>relevant(i)),...[1,2,3,4,5,6].flatMap(n=>nudgeItems(addDays(today(),n)))].filter(i=>+i.at>now&&state.nudges.enabled)
+      .sort((a,b)=>+a.at-+b.at).map(i=>({at:+i.at,title:i.title,body:bodyOf(i),tag:i.key,url:i.url}));await lnSchedule(wk)}
+    appBadge();
     await apiFetch('/api/push/schedule',{method:'PUT',body:{items}})}catch(e){}},2500);
 }
 
@@ -4747,11 +4794,12 @@ document.addEventListener('click',e=>{const bar=document.querySelector('.askbar'
 function chipsIntoView(){if(innerWidth>760)return;document.querySelectorAll('#main .chips').forEach(c=>{const on=c.querySelector('.chip.on');if(on&&c.scrollWidth>c.clientWidth)c.scrollLeft=Math.max(0,on.offsetLeft-c.offsetLeft-40)})}
 
 /* ---------- Settings: a list of sections; each opens on its own (phone) or beside the list (desktop) ---------- */
-const SET_SECS=[['profile','Profile & look','users','Name, city, theme, motion'],['account','Account & plan','card','Plan, autopay, password, log out'],['voice','Assistant voice','mic','The voice used for talk-back'],['sections','Menu & food targets','grid','What shows in the menu; protein and calorie goals'],['data','Your data','download','Backup, import, calendar file, payments CSV'],['shortcuts','Shortcuts','zap','Keyboard shortcuts'],['reset','Reset','x','Clear sample data or start over']];
+const SET_SECS=[['profile','Profile & look','users','Name, city, theme, motion'],['account','Account & plan','card','Plan, autopay, password, log out'],['voice','Assistant voice','mic','The voice used for talk-back'],['sections','Menu & food targets','grid','What shows in the menu; protein and calorie goals'],['lock','App lock','lock','Face ID for money pages'],['data','Your data','download','Backup, import, calendar file, payments CSV'],['shortcuts','Shortcuts','zap','Keyboard shortcuts'],['reset','Reset','x','Clear sample data or start over']];
 const SET_MAP={'Profile':'profile','Assistant voice':'voice','Your data':'data','Account':'account','Sections':'sections','Shortcuts':'shortcuts','Reset':'reset'};
 function pSettings(){
   const t=document.createElement('template');t.innerHTML=pSettingsAll();const cards={};
   t.content.querySelectorAll('.stack > .card').forEach(c=>{const k=SET_MAP[(c.querySelector('h3')?.textContent||'').trim()];if(k&&!cards[k])cards[k]=c.outerHTML});
+  if(BIO)cards.lock=lockCard();
   const phone=innerWidth<=760;let sec=ui.setSec||null;if(sec&&!cards[sec])sec=null;if(!sec&&!phone)sec='profile';
   const list=`<div class="setnav">${SET_SECS.filter(([k])=>cards[k]).map(([k,l,icn,sub])=>`<button class="setitem ${sec===k?'on':''}" data-setsec="${k}">${icoBox(icn,k==='reset'?'var(--red)':k==='account'?'var(--lime)':'var(--cyan)')}<div class="nb"><b>${l}</b><div class="tiny muted">${sub}</div></div>${ic('right')}</button>`).join('')}</div>`;
   if(phone&&!sec)return `${phead('Self Streak','Settings')}${list}`;
@@ -5003,7 +5051,7 @@ function render(){
   renderShell();if(scryOpen)runSearch(scryQ);
   const main=$('#main');
   document.body.classList.toggle('free',!hasPlus());
-  main.innerHTML=plusBanner()+genderPrompt(ui.page)+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved in this browser${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
+  main.innerHTML=plusBanner()+genderPrompt(ui.page)+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved ${IN_APP?'on this phone':'in this browser'}${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
   const animate=pageChanged&&!RM();
   main.classList.toggle('anim',animate);$('#side').classList.toggle('anim-side',animate);
   if(animate){
@@ -5018,7 +5066,7 @@ function render(){
   document.title=(ui.page==='overview'?'':({admin:'Admin',streak:'Streak & rewards',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
-function go(p){const [pg,v]=String(p).split(':');if(!navBack&&pg!==ui.page&&ui.page){navStack.push(ui.page);if(navStack.length>30)navStack.shift()}if(pg==='settings'&&ui.page!=='settings'&&innerWidth<=760)ui.setSec=null;if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
+function go(p){const [pg,v]=String(p).split(':');if(bioOn()&&MONEY_PAGES.includes(pg)&&!MONEY_PAGES.includes(ui.page)&&Date.now()-bioAt>5*60e3){bioVerify().then(ok=>{if(ok)go(p)});return}if(!navBack&&pg!==ui.page&&ui.page){navStack.push(ui.page);if(navStack.length>30)navStack.shift()}if(pg==='settings'&&ui.page!=='settings'&&innerWidth<=760)ui.setSec=null;if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
 
 /* ================= search (Scry: icon slides open into a field, becomes a close button) ================= */
 let scryOpen=false,scryQ='',sHits=[];
@@ -5094,13 +5142,14 @@ function clearSamples(){
 document.addEventListener('click',e=>{
   const hit=e.target.closest('[data-hit]');if(hit){pickHit(+hit.dataset.hit);return}
   if(scryOpen&&!e.target.closest('#scry'))closeScry();
-  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday],[data-dsum],[data-jump],[data-hk]');
+  const el=e.target.closest('[data-go],[data-add],[data-edit],[data-act],[data-set],[data-habit],[data-check],[data-ms],[data-goaltap],[data-gset],[data-paid],[data-prepay],[data-day],[data-water],[data-ins],[data-bought],[data-glass],[data-hm],[data-hd],[data-mood],[data-nzon],[data-mdel],[data-sect],[data-nopen],[data-nzadd],[data-nzrm],[data-hadd],[data-hrm],[data-cpay],[data-cspend],[data-cdel],[data-cmore],[data-cconv],[data-ptag],[data-pai],[data-lsave],[data-lsedit],[data-jdel],[data-hday],[data-dsum],[data-jump],[data-hk],[data-bio]');
   if(!el){if(menu&&!e.target.closest('.pop')){menu=null;renderShell()}return}
   if(el.closest('#dlg'))return;
   const d=el.dataset;
   if(menu&&!el.closest('.pop')&&d.act!=='bell'&&d.act!=='new')menu=null;
   if(d.paid){e.stopPropagation();const was=!!state.paid[d.paid];justId=d.paid;togglePaid(d.paid);if(!was){toast('Marked as paid');burst(...lastXY,12)}return}
   if(d.go){go(d.go);return}
+  if(d.bio){bioToggle();return}
   if(d.hk){if(d.hk==='on')hkConnect();else if(d.hk==='sync'){hkSync(true);setTimeout(render,50)}else if(d.hk==='off')hkOff();return}
   if(d.lsedit!==undefined){ui.lsEdit=d.lsedit||null;render();if(d.lsedit)setTimeout(()=>document.getElementById('ls-'+d.lsedit)?.focus(),50);return}
   if(d.lsave){const l=state.loans.find(x=>x.id===d.lsave),v=document.getElementById('ls-'+d.lsave)?.value;if(!l)return;if(!v){toast('Pick a date first','x');return}l.startDate=v;delete l.sample;ui.lsEdit=null;commit();toast(`First EMI: ${fmt(pd(v),{day:'numeric',month:'short',year:'numeric'})}`,'calendar');return}

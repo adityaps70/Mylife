@@ -64,6 +64,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let activity = connectionOptions.userActivities.first {
             _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: activity, restorationHandler: { _ in })
         }
+        // App launched from a long-press shortcut on the icon
+        if let item = connectionOptions.shortcutItem {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { SceneDelegate.openShortcut(item) }
+        }
+    }
+
+    // Long-press shortcut while the app is already running
+    func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        SceneDelegate.openShortcut(shortcutItem)
+        completionHandler(true)
+    }
+
+    // Hand the shortcut to the web app as selfstreak://shortcut/<type> (Capacitor's App plugin emits appUrlOpen).
+    static func openShortcut(_ item: UIApplicationShortcutItem) {
+        let key = item.type.components(separatedBy: ".").last ?? item.type
+        if let url = URL(string: "selfstreak://shortcut/" + key) {
+            _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, open: url, options: [:])
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

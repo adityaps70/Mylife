@@ -5,4 +5,12 @@
     <string name="package_name">com.selfstreak.app</string>
     <string name="custom_url_scheme">com.selfstreak.app</string>
     <string name="health_connect_privacy_policy_url">https://selfstreak.com/privacy</string>
+    <string name="sc_water_s">Log water</string>
+    <string name="sc_water_l">Log a glass of water</string>
+    <string name="sc_spend_s">Log spend</string>
+    <string name="sc_spend_l">Log a spend</string>
+    <string name="sc_speak_s">Speak</string>
+    <string name="sc_speak_l">Speak to log</string>
+    <string name="sc_today_s">Today</string>
+    <string name="sc_today_l">Today</string>
 </resources>

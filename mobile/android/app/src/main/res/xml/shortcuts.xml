@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="water" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/sc_water_s" android:shortcutLongLabel="@string/sc_water_l">
+        <intent android:action="android.intent.action.VIEW" android:data="selfstreak://shortcut/water" android:targetPackage="com.selfstreak.app" android:targetClass="com.selfstreak.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="spend" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/sc_spend_s" android:shortcutLongLabel="@string/sc_spend_l">
+        <intent android:action="android.intent.action.VIEW" android:data="selfstreak://shortcut/spend" android:targetPackage="com.selfstreak.app" android:targetClass="com.selfstreak.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="speak" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/sc_speak_s" android:shortcutLongLabel="@string/sc_speak_l">
+        <intent android:action="android.intent.action.VIEW" android:data="selfstreak://shortcut/speak" android:targetPackage="com.selfstreak.app" android:targetClass="com.selfstreak.app.MainActivity" />
+    </shortcut>
+    <shortcut android:shortcutId="today" android:enabled="true" android:icon="@mipmap/ic_launcher" android:shortcutShortLabel="@string/sc_today_s" android:shortcutLongLabel="@string/sc_today_l">
+        <intent android:action="android.intent.action.VIEW" android:data="selfstreak://shortcut/today" android:targetPackage="com.selfstreak.app" android:targetClass="com.selfstreak.app.MainActivity" />
+    </shortcut>
+</shortcuts>
