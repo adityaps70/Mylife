@@ -13,3 +13,5 @@ mobile/ios/App/build/
 mobile/ios/DerivedData/
 *.keystore
 *.jks
+*.apk
+*.aab
