@@ -1025,6 +1025,22 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 @keyframes fadein{from{opacity:0}}
 .talktip{display:flex;align-items:center;gap:10px;margin:0 12px 8px;padding:10px 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--violet,#a78bfa) 40%,transparent);background:color-mix(in srgb,var(--violet,#a78bfa) 10%,var(--card));animation:fadein .3s ease}
 .talktip>svg.i{color:var(--violet,#a78bfa);flex:none;width:22px;height:22px}.talktip .nb{flex:1;min-width:0}.talktip .btn{flex:none}.talktip .ic.sm{width:30px;height:30px;flex:none}
+
+/* phone: filter chips (reminder types, categories) become one swipeable row instead of many wrapped rows */
+@media (max-width:760px){
+  .chips:has(> .chip[data-set]){flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;margin-left:-16px;margin-right:-16px;padding:2px 16px 4px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 28px),transparent)}
+  .chips:has(> .chip[data-set])::-webkit-scrollbar{display:none}
+  .chips:has(> .chip[data-set]) > .chip{flex:none;white-space:nowrap;scroll-snap-align:start}
+}
+
+/* tappable list rows look tappable: a pencil at the end + press/hover highlight */
+.ri.clickable{margin:0 -10px;padding-left:10px;padding-right:10px;border-radius:14px;transition:background-color .15s}
+.ri.clickable:hover,.ri.clickable:focus-visible{background:color-mix(in srgb,var(--text) 5%,transparent);outline:none}
+.ri.clickable:active{background:color-mix(in srgb,var(--lime) 10%,transparent)}
+.ri.clickable::after{content:"";flex:none;width:30px;height:30px;border-radius:10px;border:1px solid var(--line2);background:var(--card2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3Cpath d='M14 6l4 4'/%3E%3C/svg%3E") center/15px no-repeat}
+.ri.clickable::before{content:"";position:absolute}
+.ri.clickable{position:relative}
+.ri.clickable .ri-pen{display:none}
 </style>
 </head>
 <body>
@@ -1170,6 +1186,8 @@ function catIcon(n){n=String(n||'').toLowerCase();
   return 'bag'}
 const icoBox=(name,col)=>`<span class="ico" style="color:${col};background:color-mix(in srgb,${col} 12%,transparent);border-color:color-mix(in srgb,${col} 30%,transparent)">${ic(name)}</span>`;
 
+const REM_IC={Birthday:'gift',Anniversary:'heart','Bill/Payment':'receipt',EMI:'card',Tax:'rupee',Finance:'trend',Health:'activity',Grooming:'scissors',Insurance:'shield',Documents:'book',Festival:'star',Home:'home',Personal:'users',Work:'brief',Other:'bell'};
+const remIcon=t=>REM_IC[t]||'bell';
 const REM_TYPES=['Birthday','Anniversary','Bill/Payment','Tax','Finance','Health','Grooming','Insurance','Documents','Festival','Home','Personal','Work','Other'];
 const HUE={Birthday:330,Anniversary:290,'Bill/Payment':28,EMI:355,Tax:262,Finance:200,Health:150,Grooming:310,Insurance:178,Documents:215,Festival:48,Home:80,Personal:240,Work:-1,Other:-1};
 const PROD_CATS=['Face','Hair','Beard / Shave','Body','Oral care','Fragrance','Tools'];
@@ -2162,7 +2180,7 @@ function pReminders(){
     const rl={none:'Once',yearly:'Yearly',monthly:'Monthly',quarterly:'Every 3 months','half-yearly':'Every 6 months',weekly:'Weekly'};
     const list=state.reminders.filter(r=>(ui.remType==='All'||r.type===ui.remType)&&(!q||r.title.toLowerCase().includes(q))).sort((a,b)=>(!a.date)-(!b.date)||String(a.date).slice(5).localeCompare(String(b.date).slice(5)));
     view=`<div class="card"><div class="ch"><div><h3>All reminders</h3><div class="sub">Bills and EMIs live in Money and appear on the calendar automatically.</div></div></div>
-    ${list.map(r=>`<div class="ri clickable" data-edit="reminders" data-id="${r.id}">${icoBox('bell',tcol(r.type))}<div class="rb"><div class="rt">${esc(r.title)}</div><div class="rs">${typeTag(r.type)} · ${rl[r.repeat]||r.repeat} · ${num(r.lead)?r.lead+' days before':'same day'}${r.notes?' · '+esc(r.notes):''}</div></div><div class="ra">${r.date?fmt(pd(r.date),r.repeat==='yearly'?{day:'numeric',month:'short'}:undefined):'<span class="pill yellow">Set date</span>'}</div></div>`).join('')||'<div class="empty">No reminders match.</div>'}</div>`;
+    ${list.map(r=>`<div class="ri clickable" data-edit="reminders" data-id="${r.id}" role="button" tabindex="0" aria-label="Edit ${esc(r.title)}">${icoBox(remIcon(r.type),tcol(r.type))}<div class="rb"><div class="rt">${esc(r.title)}</div><div class="rs">${typeTag(r.type)} · ${rl[r.repeat]||r.repeat} · ${num(r.lead)?r.lead+' days before':'same day'}${r.notes?' · '+esc(r.notes):''}</div></div><div class="ra">${r.date?fmt(pd(r.date),r.repeat==='yearly'?{day:'numeric',month:'short'}:undefined):'<span class="pill yellow">Set date</span>'}</div></div>`).join('')||'<div class="empty">No reminders match.</div>'}</div>`;
   }
   return `${phead('Life · The whole year','Reminders',`${yearSel()}<button class="btn" data-act="ics">${ic('calendar')} Add to phone calendar</button><button class="btn lime" data-add="reminders">${ic('plus')} Add reminder</button>`)}
   <div class="stack">
@@ -4440,6 +4458,9 @@ document.addEventListener('click',e=>{const bar=document.querySelector('.askbar'
   if(bar.classList.contains('open')&&(!e.target.closest('.askbar')||e.target.closest('.askbar [data-act]'))){bar.classList.remove('open');bar.querySelector('.abtog')?.setAttribute('aria-expanded','false')}
 });
 
+/* phone: scroll the selected filter chip into view in swipeable chip rows */
+function chipsIntoView(){if(innerWidth>760)return;document.querySelectorAll('#main .chips').forEach(c=>{const on=c.querySelector('.chip.on');if(on&&c.scrollWidth>c.clientWidth)c.scrollLeft=Math.max(0,on.offsetLeft-c.offsetLeft-40)})}
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
@@ -4505,7 +4526,7 @@ function render(){
     const h1=main.querySelector('.phead h1');if(h1&&!h1.children.length)h1.innerHTML=h1.textContent.split(' ').map((w,k)=>`<span class="w" style="--w:${k}">${esc(w)}</span>`).join(' ');
     countUp(main);
   }
-  pageChanged=false;justId=null;
+  pageChanged=false;justId=null;try{chipsIntoView()}catch(e){}
   if(location.hash!=='#/'+ui.page)history.replaceState(null,'','#/'+ui.page);
   document.title=(ui.page==='overview'?'':({admin:'Admin',streak:'Streak & rewards',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
