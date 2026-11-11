@@ -1051,6 +1051,31 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 .gseg3{display:flex;gap:8px;flex-wrap:wrap}.gseg3 button{flex:1 1 auto;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font:inherit;font-weight:600;font-size:14px;cursor:pointer}
 .gseg3 button.on,.gseg3 button:hover{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 14%,var(--card2))}
 .gprompt{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px;border-color:color-mix(in srgb,var(--violet,#a78bfa) 40%,transparent)}.gprompt .nb{flex:1;min-width:200px}.gprompt .gseg3{flex:1 1 100%}.gprompt .ic.sm{position:absolute;top:10px;right:10px}.gprompt{position:relative;padding-right:44px}
+.avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px;max-height:min(60vh,520px);overflow-y:auto;padding:4px}
+.avpick{border:2px solid transparent;border-radius:50%;padding:2px;background:none;cursor:pointer;display:grid;place-items:center;transition:transform .2s var(--spring),border-color .15s}
+.avpick:hover{transform:scale(1.08)}.avpick.on{border-color:var(--lime);transform:scale(1.06)}.avpick .avsvg{width:100%;height:auto;max-width:56px}
+.obav .avgrid{max-height:190px;grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
+.av.avpic{padding:0;border:0;background:none;overflow:hidden}.av.avpic svg{width:100%;height:100%;display:block}
+.avrow{display:flex;align-items:center;gap:14px;margin-bottom:16px}.avrow .nb{flex:1}.avrow .avsvg{flex:none}
+
+/* buddy animations: gentle bob, blinking, little topper moves (off when motion is reduced) */
+.avsvg .av-bd{transform-box:fill-box;transform-origin:50% 100%;animation:avBob 3.2s ease-in-out var(--d,0s) infinite}
+.avsvg .av-ey{transform-box:fill-box;transform-origin:50% 50%;animation:avBlink var(--bl,4s) ease-in-out var(--d,0s) infinite}
+.avsvg .av-tp{transform-box:fill-box;transform-origin:50% 100%}
+.avsvg .av-antenna,.avsvg .av-sprout{animation:avSway 2.4s ease-in-out var(--d,0s) infinite}
+.avsvg .av-halo{animation:avFloat 2.6s ease-in-out var(--d,0s) infinite}
+.avsvg .av-bunny,.avsvg .av-ears{animation:avTwitch 4.5s ease-in-out var(--d,0s) infinite}
+.avsvg .av-spark{transform-origin:50% 50%;animation:avTwinkle 1.8s ease-in-out var(--d,0s) infinite}
+.avsvg .av-bow{animation:avSway 3s ease-in-out var(--d,0s) infinite}
+@keyframes avBob{0%,100%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-2.5px) scale(.98,1.02)}55%{transform:translateY(-2.5px) scale(.98,1.02)}80%{transform:translateY(0) scale(1.03,.97)}}
+@keyframes avBlink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes avSway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes avFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes avTwitch{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(-6deg)}93%{transform:rotate(5deg)}}
+@keyframes avTwinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.6)}}
+.avpick:hover .av-bd,.avpick.on .av-bd{animation-duration:1.1s}
+@media (prefers-reduced-motion:reduce){.avsvg *{animation:none!important}}
+html.nomotion .avsvg *{animation:none!important}
 </style>
 </head>
 <body>
@@ -2399,7 +2424,7 @@ function pSettingsAll(){
   const p=state.profile;
   return `${phead('Settings','Settings')}
   <div class="stack" style="max-width:780px">
-  <div class="card"><h3 style="margin-bottom:14px">Profile</h3><div class="fields">
+  <div class="card"><h3 style="margin-bottom:14px">Profile</h3><div class="avrow">${hasAv()?myAvatar(64):`<span class="av" style="width:64px;height:64px;font-size:22px">${esc((p.name||'A').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span>`}<div class="nb"><b>Your buddy</b><div class="tiny muted">Shown in the menu and on your profile.</div></div><button class="btn sm" data-act="avpicker">${hasAv()?'Change':'Pick a buddy'}</button></div><div class="fields">
     <div class="fld wide"><label>Full name</label><input data-prof="name" value="${esc(p.name)}"></div>
     <div class="fld"><label>Name in greeting</label><input data-prof="first" value="${esc(p.first)}"></div>
     <div class="fld"><label>Age</label><input type="number" data-prof="age" value="${esc(p.age)}"></div>
@@ -2682,7 +2707,7 @@ let ob=null;
 function startOnboarding(){
   document.body.classList.add('locked');$('#lock').innerHTML='';
   const p=state.profile;
-  ob={i:0,dir:1,gender:p.gender||'',first:p.first||'',city:p.city||'',age:p.age||'',wake:p.wake||'06:30',sleep:p.sleep||'23:00',gym:p.gymTime||'18:30',noGym:false,focus:p.focus||['health','money','grooming','goals'],income:'',examples:false};
+  ob={i:0,dir:1,avatar:Number.isInteger(p.avatar)?p.avatar:Math.floor(Math.random()*100),gender:p.gender||'',first:p.first||'',city:p.city||'',age:p.age||'',wake:p.wake||'06:30',sleep:p.sleep||'23:00',gym:p.gymTime||'18:30',noGym:false,focus:p.focus||['health','money','grooming','goals'],income:'',examples:false};
   $('#onb').classList.add('show');renderOnb();
 }
 const tm=(base,min)=>{const [h,m]=base.split(':').map(Number);const t=((h*60+m+min)%1440+1440)%1440;return pad(Math.floor(t/60))+':'+pad(t%60)};
@@ -2707,7 +2732,8 @@ function renderOnb(){
     <div class="feat" ${d(3)}>${[['mic','Speak or type notes, filed automatically'],['bell','Reminders that skip what you’ve already done'],['bank','Bank statements, bills and meals read by AI'],['flame','Streaks that keep you going']].map(([i,t])=>`<div>${icoBox(i,'var(--lime)')}${t}</div>`).join('')}</div>`;next='Let’s set it up'}
   if(s==='you'){body=`<h1 ${d(0)}>About you</h1><p class="lead" ${d(1)}>So your dashboard greets you properly and tips fit your city.</p>
     <div class="fields" ${d(2)}><div class="fld wide"><label>First name</label><input id="obFirst" value="${esc(ob.first)}" autocomplete="given-name"></div><div class="fld"><label>City</label><input id="obCity" value="${esc(ob.city)}" placeholder="e.g. Lucknow" autocomplete="address-level2"></div><div class="fld"><label>Age</label><input id="obAge" type="number" inputmode="numeric" value="${esc(ob.age)}"></div></div>
-    <div ${d(3)} style="margin-top:14px"><div class="glabel" style="margin-bottom:8px">I am</div><div class="gseg3">${GENDERS.map(([k,l])=>`<button type="button" class="${ob.gender===k?'on':''}" data-gk="${k}">${l}</button>`).join('')}</div><p class="hint" style="margin-top:8px">So grooming, health check-ups and food targets suggest what fits you. You can change it later in Settings.</p></div>`}
+    <div ${d(3)} style="margin-top:14px"><div class="glabel" style="margin-bottom:8px">I am</div><div class="gseg3">${GENDERS.map(([k,l])=>`<button type="button" class="${ob.gender===k?'on':''}" data-gk="${k}">${l}</button>`).join('')}</div><p class="hint" style="margin-top:8px">So grooming, health check-ups and food targets suggest what fits you. You can change it later in Settings.</p></div>
+    <div ${d(4)} style="margin-top:16px"><div class="glabel" style="margin-bottom:8px">Pick your buddy</div><div class="obav">${avGrid(Number.isInteger(ob.avatar)?ob.avatar:-1,'data-obav')}</div></div>`}
   if(s==='day'){body=`<h1 ${d(0)}>Your day</h1><p class="lead" ${d(1)}>We’ll time your reminders around it: water, skincare, gym, wind-down.</p>
     <div class="fields" ${d(2)}><div class="fld"><label>I wake up at</label><input id="obWake" type="time" value="${ob.wake}"></div><div class="fld"><label>I sleep at</label><input id="obSleep" type="time" value="${ob.sleep}"></div>
     <div class="fld"><label>Gym / workout at</label><input id="obGym" type="time" value="${ob.gym}" ${ob.noGym?'disabled':''}></div><label class="cbx" style="align-self:end"><input type="checkbox" id="obNoGym" ${ob.noGym?'checked':''}> I don’t work out yet</label></div>
@@ -2727,6 +2753,7 @@ function renderOnb(){
     <div class="onb-step ${ob.dir<0?'back':''}">${body}</div>
     <div class="onb-nav">${ob.i>0&&s!=='done'?`<button class="btn ghost" data-ob="back">${ic('left')} Back</button>`:''}<span class="sp"></span>${skip?`<button class="btn ghost" data-ob="skip">${skip}</button>`:''}<button class="btn lime" data-ob="next">${next} ${ic('right')}</button></div></div>`;
   box.querySelectorAll('[data-ob]').forEach(b=>b.onclick=()=>obAction(b.dataset.ob));
+  box.querySelectorAll('[data-obav]').forEach(b=>b.onclick=()=>{ob.avatar=+b.dataset.obav;box.querySelectorAll('[data-obav]').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)})});
   box.querySelectorAll('[data-gk]').forEach(b=>b.onclick=()=>{ob.gender=b.dataset.gk;box.querySelectorAll('[data-gk]').forEach(x=>x.classList.toggle('on',x===b))});
   box.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{const k=b.dataset.fk;ob.focus=ob.focus.includes(k)?ob.focus.filter(x=>x!==k):[...ob.focus,k];b.classList.toggle('on')});
   const ng=$('#obNoGym');if(ng)ng.onchange=()=>{ob.noGym=ng.checked;$('#obGym').disabled=ng.checked};
@@ -2753,6 +2780,7 @@ function finishOnboarding(){
   if(num(ob.income)>0)state.income=[{id:uid(),name:'Monthly take-home',amount:num(ob.income),notes:''},...state.income.filter(x=>!x.sample)];
   applyDay(ob.wake,ob.sleep,ob.noGym?'':ob.gym);
   applyGender(ob.gender||'',true);
+  if(Number.isInteger(ob.avatar))p.avatar=ob.avatar;
   if(account?.user?.name!==ob.first)apiFetch('/api/profile',{method:'POST',body:{name:ob.first}}).catch(()=>{});
   ob=null;save();openApp();
 }
@@ -4539,6 +4567,73 @@ function genderPrompt(page){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-gset]');if(!b)return;e.preventDefault();e.stopPropagation();const g=b.dataset.gset;if(g==='skip'){state.profile.genderAsked=true;commit();return}applyGender(g)},true);
 document.addEventListener('change',e=>{const s=e.target.closest('select[data-gender]');if(!s)return;applyGender(s.value)});
 
+/* ---------- 100 cute buddy avatars (original, generated from shapes so every one is different) ---------- */
+const AV_COLS=[['#d7f64a','#2b3410'],['#7ee0c3','#0f3a2e'],['#8ec5ff','#0f2b4a'],['#ffb3c7','#4a1022'],['#ffcf6b','#4a3208'],['#c4a8ff','#2a1a4a'],['#ff9f7a','#4a1d0d'],['#9ae6ff','#0b3442'],['#b8f28a','#1d3a0b'],['#f5f0e6','#3a332a']];
+const AV_BG=['#16161b','#1d2318','#151d26','#24161b','#241f14','#1c1726','#241914','#132126','#18231a','#22201c'];
+function avRng(seed){let t=seed>>>0;return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}}
+function avatarParts(i){
+  // 10 colours × 10 face/shape combos, then shuffled extras: 100 distinct buddies.
+  const col=i%10,R=avRng(1000+i*7919),pick=a=>a[Math.floor(R()*a.length)];
+  const shape=['round','squircle','blob','ghost','bot','bean','round','squircle','blob','bot'][Math.floor(i/10)];
+  return {col,shape,eyes:pick(['dots','shiny','happy','sleepy','wink','big','dots','shiny']),mouth:pick(['smile','open','cat','o','grin','smile','tongue']),
+    cheeks:R()<.7,extra:pick(['none','antenna','sprout','ears','bunny','halo','bow','spark','none','antenna'])};
+}
+function avatarSVG(i,size=40){
+  i=((+i%100)+100)%100;const P=avatarParts(i),[c,ink]=AV_COLS[P.col],bg=AV_BG[P.col];
+  let body='',face='',top='';
+  const cy=56;
+  switch(P.shape){
+    case'round':body=`<circle cx="50" cy="${cy}" r="30" fill="${c}"/>`;break;
+    case'squircle':body=`<rect x="20" y="${cy-29}" width="60" height="58" rx="22" fill="${c}"/>`;break;
+    case'blob':body=`<path d="M50 25c17 0 30 11 30 29 0 19-12 32-30 32S19 75 20 55c1-17 13-30 30-30z" fill="${c}"/>`;break;
+    case'ghost':body=`<path d="M22 56c0-17 12-30 28-30s28 13 28 30v26c-4 3-8 3-11-1-3 4-8 4-11 0-3 4-8 4-11 0-3 4-8 4-11 0-4 4-9 4-12 1z" fill="${c}"/>`;break;
+    case'bot':body=`<rect x="20" y="${cy-26}" width="60" height="54" rx="14" fill="${c}"/><rect x="28" y="${cy-16}" width="44" height="28" rx="12" fill="${ink}" opacity=".9"/>`;break;
+    case'bean':body=`<ellipse cx="50" cy="${cy+2}" rx="27" ry="31" fill="${c}"/>`;break;
+  }
+  const bot=P.shape==='bot',fc=bot?c:ink,ey=bot?cy-3:cy-4;
+  const eye=(x,k)=>{switch(k){
+    case'dots':return `<circle cx="${x}" cy="${ey}" r="4" fill="${fc}"/>`;
+    case'shiny':return `<circle cx="${x}" cy="${ey}" r="5.5" fill="${fc}"/><circle cx="${x+1.8}" cy="${ey-2}" r="1.8" fill="#fff"/>`;
+    case'big':return `<ellipse cx="${x}" cy="${ey}" rx="5" ry="6.5" fill="${fc}"/><circle cx="${x+1.6}" cy="${ey-2.4}" r="2" fill="#fff"/>`;
+    case'happy':return `<path d="M${x-5} ${ey+2}q5-7 10 0" stroke="${fc}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    case'sleepy':return `<path d="M${x-5} ${ey}q5 5 10 0" stroke="${fc}" stroke-width="3" fill="none" stroke-linecap="round"/>`;}};
+  const lx=40,rx=60;
+  face+=`<g class="av-ey">`+(P.eyes==='wink'?eye(lx,'shiny')+`<path d="M${rx-5} ${ey+1}q5-6 10 0" stroke="${fc}" stroke-width="3" fill="none" stroke-linecap="round"/>`:eye(lx,P.eyes)+eye(rx,P.eyes))+`</g>`;
+  const my=bot?cy+6:cy+8;
+  face+={smile:`<path d="M44 ${my}q6 6 12 0" stroke="${fc}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    open:`<path d="M44 ${my-1}q6 9 12 0z" fill="${fc}"/>`,
+    cat:`<path d="M43 ${my}q3.5 4 7 0q3.5 4 7 0" stroke="${fc}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
+    o:`<ellipse cx="50" cy="${my+1}" rx="3" ry="3.6" fill="${fc}"/>`,
+    grin:`<path d="M42 ${my-1}h16q-2 8-8 8t-8-8z" fill="${fc}"/><path d="M45 ${my-1}h10v2.4h-10z" fill="#fff" opacity=".9"/>`,
+    tongue:`<path d="M44 ${my}q6 6 12 0" stroke="${fc}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M48 ${my+3}q2 5 4 0" fill="#ff6b8a"/>`}[P.mouth];
+  if(P.cheeks&&!bot)face+=`<ellipse cx="31" cy="${cy+5}" rx="5" ry="3.2" fill="#ff7a9c" opacity=".45"/><ellipse cx="69" cy="${cy+5}" rx="5" ry="3.2" fill="#ff7a9c" opacity=".45"/>`;
+  const topY=P.shape==='squircle'?cy-29:P.shape==='bot'?cy-26:P.shape==='bean'?cy-29:cy-30;
+  top={none:'',
+    antenna:`<path d="M50 ${topY}v-10" stroke="${c}" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="${topY-12}" r="4.5" fill="${c}"/>`,
+    sprout:`<path d="M50 ${topY+1}v-8" stroke="#6fe28a" stroke-width="3" stroke-linecap="round"/><path d="M50 ${topY-6}c-8-1-11-7-11-10 6 0 11 3 11 10zM50 ${topY-6}c8-1 11-7 11-10-6 0-11 3-11 10z" fill="#6fe28a"/>`,
+    ears:`<path d="M27 ${topY+12}l2-16 12 10z" fill="${c}"/><path d="M73 ${topY+12}l-2-16-12 10z" fill="${c}"/>`,
+    bunny:`<ellipse cx="38" cy="${topY-7}" rx="5" ry="13" fill="${c}"/><ellipse cx="62" cy="${topY-7}" rx="5" ry="13" fill="${c}"/><ellipse cx="38" cy="${topY-6}" rx="2.2" ry="8" fill="#ff9fb4" opacity=".7"/><ellipse cx="62" cy="${topY-6}" rx="2.2" ry="8" fill="#ff9fb4" opacity=".7"/>`,
+    halo:`<ellipse cx="50" cy="${topY-7}" rx="15" ry="4.5" stroke="#ffe089" stroke-width="3" fill="none"/>`,
+    bow:`<path d="M50 ${topY+3}l-11-7v14zM50 ${topY+3}l11-7v14z" fill="#ff6b8a"/><circle cx="50" cy="${topY+3}" r="3" fill="#ff4f6e"/>`,
+    spark:`<path d="M72 ${topY-4}l2.2 5 5 2.2-5 2.2-2.2 5-2.2-5-5-2.2 5-2.2z" fill="#ffe089"/>`}[P.extra];
+  const R2=avRng(77+i*131),dl=(R2()*3).toFixed(2),bl=(2.6+R2()*3).toFixed(2);
+  return `<svg class="avsvg" width="${size}" height="${size}" viewBox="0 0 100 100" role="img" aria-label="Buddy ${i+1}" style="--d:-${dl}s;--bl:${bl}s"><rect width="100" height="100" rx="50" fill="${bg}"/><g class="av-bd"><g class="av-tp av-${P.extra}">${top}</g>${body}${face}</g></svg>`;
+}
+
+const hasAv=()=>Number.isInteger(state.profile.avatar);
+function myAvatar(size=36){return hasAv()?avatarSVG(state.profile.avatar,size):''}
+function avGrid(sel,attr){return `<div class="avgrid">${[...Array(100)].map((_,i)=>`<button type="button" class="avpick ${sel===i?'on':''}" ${attr}="${i}" aria-label="Buddy ${i+1}" aria-pressed="${sel===i}">${avatarSVG(i,56)}</button>`).join('')}</div>`}
+function openAvatarPicker(){
+  const d=$('#dlg');d.classList.add('wide');
+  d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Pick your buddy</h3><button type="button" class="ic" data-x>${ic('x')}</button></div><p class="small muted" style="margin:2px 0 10px">100 little buddies. Tap one to make it yours.</p>${avGrid(hasAv()?state.profile.avatar:-1,'data-avset')}</div>`;
+  if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{closeDlg(d);d.classList.remove('wide')});
+  d.querySelector('.avpick.on')?.scrollIntoView({block:'center'});
+}
+document.addEventListener('click',e=>{
+  const s=e.target.closest('[data-avset]');if(s){state.profile.avatar=+s.dataset.avset;commit();const d=$('#dlg');closeDlg(d);d.classList.remove('wide');toast('Buddy saved','tick');return}
+  if(e.target.closest('[data-act="avpicker"]')){e.preventDefault();openAvatarPicker()}
+});
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
@@ -4573,7 +4668,7 @@ function renderShell(){
   const ini=(state.profile.name||'A').split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
   $('#side').innerHTML=`<div class="logo">${logo(32)}<b>Self Streak</b><span class="sp"></span><button class="ic collapse-btn" data-act="collapse" title="Collapse sidebar">${ic('panel')}</button></div>
   <div class="navscroll">${(account?.user?.plan==='owner'?[...NAV,['Owner',[['admin','Admin','bars']]]]:NAV).map(([sec,items])=>`${sec?`<div class="navsec">${sec}</div>`:'<div style="height:14px"></div>'}${items.filter(([k])=>!(state.profile.hidden||[]).includes(k)).map(([k,l,icn])=>`<button class="nav ${ui.page===k?'on':''}" data-go="${k}" title="${l}">${ic(icn)}<span class="lbl">${l}</span>${badges[k]?`<span class="badge">${badges[k]}</span>`:''}</button>`).join('')}`).join('')}</div>
-  <button class="me" data-go="settings"><span class="av">${esc(ini)}</span><span class="t"><b>${esc(state.profile.name)}</b><span>${esc(statusLabel())}</span></span></button>`;
+  <button class="me" data-go="settings">${hasAv()?`<span class="av avpic">${myAvatar(36)}</span>`:`<span class="av">${esc(ini)}</span>`}<span class="t"><b>${esc(state.profile.name)}</b><span>${esc(statusLabel())}</span></span></button>`;
   const yy=today().getFullYear(),yp=Math.round((Date.now()-new Date(yy,0,1))/(new Date(yy+1,0,1)-new Date(yy,0,1))*100),dleft=daysBetween(today(),new Date(yy,11,31)),fs=fullStreak().cur;
   const dark=document.documentElement.dataset.theme!=='light'&&!(state.profile.theme==='auto'&&matchMedia('(prefers-color-scheme: light)').matches);
   $('#topbar').innerHTML=`<button class="ibtn hamb" data-act="nav" aria-label="Menu">${ic('menu')}</button>
