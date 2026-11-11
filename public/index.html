@@ -3762,7 +3762,10 @@ async function thumbOf(file){if(!/^image\//.test(file.type))return '';try{const 
 /* ================= Text → dashboard entries (shared by the assistant and notes) ================= */
 async function fileText(text){
   let actions=null,reply='',note='';
-  if(hasAI()){try{const o=await aiTask('log',{text,context:LOG_CONTEXT(),today:ds(today()),weekday:fmt(today(),{weekday:'long'})});actions=o.actions||[];reply=o.reply||''}catch(e){note=aiErr(e)+' Used built-in understanding.'}}
+  // Fast path: short, simple sentences the built-in parser fully understands are logged instantly (no AI round trip).
+  const words=String(text).trim().split(/\s+/).length;
+  if(words<=14&&!/\b(yesterday|kal|tomorrow|ago|last|next|goal|plan|save|saving|ate|eat|eaten|had|breakfast|dinner|snack|protein|calories?|but|instead|cancel|undo|not|no|wrong|change|edit|delete|remove|every|daily|weekly|monthly)\b/i.test(text)){const loc=parseLocal(text);if(loc.length)actions=loc}
+  if(!actions&&hasAI()){try{const o=await aiTask('log',{text,context:LOG_CONTEXT(),today:ds(today()),weekday:fmt(today(),{weekday:'long'})});actions=o.actions||[];reply=o.reply||''}catch(e){note=aiErr(e)+' Used built-in understanding.'}}
   if(!actions)actions=parseLocal(text);
   const notes=state.notes,chat=state.chat,snap=JSON.stringify({...state,notes:undefined,chat:undefined});
   const res=applyActions(actions);
