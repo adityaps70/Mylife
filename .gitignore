@@ -15,3 +15,4 @@ mobile/ios/DerivedData/
 *.jks
 *.apk
 *.aab
+mobile/ios/App/build-device/
