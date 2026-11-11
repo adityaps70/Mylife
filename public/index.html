@@ -1116,6 +1116,7 @@ html.nomotion .avsvg *{animation:none!important}
 .mshort{display:none}.mswipe{touch-action:pan-y}.mswipe .on{white-space:nowrap}
 @media (max-width:760px){.mfull{display:none}.mshort{display:inline}.phead .actions:has(.mswipe){flex-wrap:nowrap;width:100%;align-items:center}.phead .actions:has(.mswipe) .mswipe{flex:1}.phead .actions:has(.mswipe) .mswipe .on{flex:1}}
 .mood-scale{flex:1 1 100%;display:flex;justify-content:space-between;padding:0 4px;margin-top:-2px}
+.ovg-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}@media (max-width:760px){.ovg-cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -2046,7 +2047,7 @@ function pOverview(){
         <div style="display:flex;gap:16px;align-items:flex-start"><div style="flex:1"><p class="small muted" style="line-height:1.6">${I.d}</p><button class="link" style="margin-top:12px" data-go="${I.go}">${I.cta} ${ic('right')}</button></div>
         <div><div class="sq">${sq}</div><div class="tiny faint" style="margin-top:6px;text-align:center">Bills paid ${y}</div></div></div></div>
     </div>
-    <div class="r3">
+    <div class="r2">
       <div class="card"><div class="ch"><div><h3>Where it goes</h3><div class="sub">${cats.length&&txIn(wy,wm).length?'Spending by category':'Bills & EMIs (log spends to see more)'}</div></div><span class="sp"></span>
         <select class="sel" data-ui="whereM">${[0,1,2].map(k=>{const d=addMonths(t,-k);return `<option value="${k}" ${ui.whereM==k?'selected':''}>${MONTHS_FULL[d.getMonth()]}</option>`}).join('')}</select></div>
         <div class="mid" style="margin-bottom:12px">${inr(ctot===1&&!cats.length?0:ctot)}</div>
@@ -2056,10 +2057,10 @@ function pOverview(){
         <div class="mid">${inr(cur.left)}</div><div class="small"><b class="${hs[1]}">${ic(kept>=0?'up':'down').replace('class="i"','class="i" style="width:13px;height:13px;vertical-align:-2px"')} ${hs[0]}</b> <span class="muted">· aim for 20% or more</span></div>
         <div class="gauge-wrap">${gauge(kept)}<div class="gv"><b>${pct(Math.max(kept,0))}</b><span>of income kept</span></div></div>
         <p class="small muted" style="margin-top:12px">Income ${inr(cur.income)} · outflow ${inr(cur.out)} in ${MONTHS_FULL[m]}${cur.actual?'':' (planned)'}.</p></div>
-      <div class="card"><div class="ch"><div><h3>Goals</h3><div class="sub">Tap one to add progress</div></div><span class="sp"></span><button class="btn sm" data-add="goals">${ic('plus')} Add goal</button></div>
-        ${yr.length?`<div class="glabel">Next 12 months</div>${yr.slice(0,4).map(gRow).join('')}`:''}${lt.length?`<div class="glabel" style="margin-top:8px">Long term</div>${lt.slice(0,3).map(gRow).join('')}`:''}
-        <button class="link" style="margin-top:8px" data-go="goals">All ${state.goals.length} goals ${ic('right')}</button></div>
     </div>
+      <div class="card ovgoals"><div class="ch"><div><h3>Goals</h3><div class="sub">Tap one to add progress</div></div><span class="sp"></span><button class="btn sm" data-add="goals">${ic('plus')} Add goal</button></div>
+        <div class="ovg-cols">${yr.length?`<div><div class="glabel">Next 12 months</div>${yr.slice(0,4).map(gRow).join('')}</div>`:''}${lt.length?`<div><div class="glabel">Long term</div>${lt.slice(0,4).map(gRow).join('')}</div>`:''}</div>
+        <button class="link" style="margin-top:8px" data-go="goals">All ${state.goals.length} goals ${ic('right')}</button></div>
   </div>
   <div class="aside stack">
     <div class="card"><div class="ch ch-link" data-go="health" role="button" tabindex="0" aria-label="Open Health"><div><h3>Today’s cairn</h3><div class="sub">${dn} of ${daily.length} habits · ${need?need+' more make a full day':'full day reached 🎉'}</div></div><span class="sp"></span><button class="ic" data-go="health" aria-label="Open Health">${ic('right')}</button></div>
