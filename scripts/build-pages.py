@@ -76,7 +76,7 @@ page(slug='credit-card-bill-reminder', nav='Credit card bills',
   faq=[('Is my card number needed?','No. Self Streak never asks for card numbers, CVV or bank logins. You only enter the limit, statement day and due day.'),
        ('Does it work with pay-later and postpaid accounts?','Yes. Set the minimum due to 100% and it tracks them as “pay the full bill every month”.'),
        ('Will I get a notification on my phone?','Yes. Install Self Streak on your home screen and turn on notifications to get push reminders, even when the app is closed.'),
-       ('What does it cost?','7 days free, then ₹499 a month for everything in Self Streak, including habits, money, reminders and AI logging.')])
+       ('What does it cost?','7 days free, then ₹199 a month for everything in Self Streak, including habits, money, reminders and AI logging.')])
 
 page(slug='emi-calculator', nav='EMI calculator',
   title='EMI Calculator & Loan Tracker India · See Interest and Prepayment Savings | Self Streak',
@@ -107,7 +107,7 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${n-m} months sooner`:'–';oNote.te
 <div class="card"><b>Due-date reminders</b><p>A reminder 2 days before each EMI. Mark it paid and the outstanding updates.</p></div>
 <div class="card"><b>Debt-free date</b><p>See the month you’ll be debt-free, and how avalanche or snowball payoff changes it.</p></div>
 <div class="card"><b>AI repayment plan</b><p>Get a month-by-month plan built on your actual income, budget and loans.</p></div></div></section>''',
-  faq=[('Is this EMI calculator free?','Yes, the calculator on this page is free to use. Tracking your loans with reminders is part of Self Streak (7 days free, then ₹499/month).'),
+  faq=[('Is this EMI calculator free?','Yes, the calculator on this page is free to use. Tracking your loans with reminders is part of Self Streak (7 days free, then ₹199/month).'),
        ('Does prepaying a loan always save money?','Prepaying reduces interest, but some fixed-rate loans charge a prepayment fee. As per RBI rules, floating-rate loans to individuals have no foreclosure or prepayment charges. Check your loan agreement.'),
        ('Should I prepay my loan or invest?','A common rule: clear high-interest debt (credit cards, personal loans) first, and keep an emergency fund. Self Streak’s AI plan weighs this against your own numbers.')])
 
@@ -157,7 +157,7 @@ page(slug='habit-tracker', nav='Habit tracker',
 <section><h2>Habits people track with Self Streak</h2><ul class="list">
 <li>10,000 steps, gym or a workout, morning sunlight</li><li>Water, protein target, fruits and vegetables</li>
 <li>Reading, journaling, no screens before bed</li><li>Skincare, sunscreen, haircut every 4 weeks</li><li>Weekly: meal prep, review spending, call family</li></ul></section>''',
-  faq=[('Is there a free habit tracker plan?','You get every feature free for 7 days. After that Self Streak is ₹499 a month, which includes money tracking, reminders and AI features too.'),
+  faq=[('Is there a free habit tracker plan?','You get every feature free for 7 days. After that Self Streak is ₹199 a month, which includes money tracking, reminders and AI features too.'),
        ('Can I track weekly and monthly habits?','Yes. Habits can be daily, weekly, monthly, quarterly or yearly, each with their own reminder.'),
        ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.')])
 
@@ -222,7 +222,7 @@ function pCalc(){const w=+pW.value||0,a=+pA.value||1,g=Math.round(w*a);pG.textCo
 <li>Eggs, chicken, fish</li><li>Peanuts, roasted chana, seeds</li></ul></section>''',
   faq=[('How accurate is the photo calorie estimate?','It’s an estimate based on the dish and a typical portion. You can edit the numbers before logging. Describing quantities (“2 rotis, 1 katori dal”) makes it more accurate.'),
        ('Does it track micronutrients?','The daily summary points out nutrients your meals were likely low in, such as fibre, calcium, iron or magnesium, based on what you ate. It’s guidance, not a lab test.'),
-       ('Is it free?','All features are free for 7 days, then ₹499 a month for the whole app.')])
+       ('Is it free?','All features are free for 7 days, then ₹199 a month for the whole app.')])
 
 ALL = [(p['slug'], p['nav']) for p in PAGES]
 

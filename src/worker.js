@@ -49,7 +49,7 @@ async function usageToday(env, uid) {
 async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
   return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
-    usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY,
+    usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 199), vapidPublicKey: env.VAPID_PUBLIC_KEY,
     autopayReady: rzpReady(env) && (env.AUTOPAY_LIVE === '1' || String(env.AUTOPAY_TESTERS || '').toLowerCase().split(',').map((x) => x.trim()).includes(u.email)), autopay: await autopayOf(env, u.id).catch(() => null) };
 }
 
@@ -289,7 +289,7 @@ async function admin(req, env, url, p, m, body) {
     return json({
       users: { total: users.length, ...cnt, new7: users.filter((x) => x.created > since(7)).length, new30: users.filter((x) => x.created > since(30)).length,
         dau: A[today] || 0, wau: wau.n, mau: mau.n, online: users.filter((x) => x.last_seen > now - 15 * 60e3).length },
-      money: { price: Number(env.PRICE_INR || 499), mrr: cnt.active * Number(env.PRICE_INR || 499), paidTotal: pay.sum, paidCount: pay.n, paid30: pay30.sum, paid30Count: pay30.n, cashfree: cfReady(env) },
+      money: { price: Number(env.PRICE_INR || 199), mrr: cnt.active * Number(env.PRICE_INR || 199), paidTotal: pay.sum, paidCount: pay.n, paid30: pay30.sum, paid30Count: pay30.n, cashfree: cfReady(env) },
       ai: { today: I[today] || 0, d30: d30.reduce((t, d) => t + (I[d] || 0), 0), limit: Number(env.DAILY_AI_LIMIT || 20), top: topAI },
       web: { views30: d30.reduce((t, d) => t + (P[d] || 0), 0), visitors30: d30.reduce((t, d) => t + (V[d] || 0), 0), viewsToday: P[today] || 0, visitorsToday: V[today] || 0, pages, refs, countries, devices },
       push: push, series: { days: d30, signups: d30.map((d) => signups[d]), active: d30.map((d) => A[d] || 0), ai: d30.map((d) => I[d] || 0), views: d30.map((d) => P[d] || 0), visitors: d30.map((d) => V[d] || 0) },
@@ -614,7 +614,7 @@ async function api(req, env, url) {
     if (u.plan === 'owner') return err(400, 'You’re the owner. No subscription needed.');
     const b = await body(), phone = String(b.phone || '').replace(/\D/g, '').slice(-10);
     if (!/^[6-9]\d{9}$/.test(phone)) return err(400, 'Enter your 10-digit mobile number. The payment page needs it.');
-    const amount = Number(env.PRICE_INR || 499), orderId = 'ss_' + u.id.replace(/-/g, '').slice(0, 12) + '_' + Date.now();
+    const amount = Number(env.PRICE_INR || 199), orderId = 'ss_' + u.id.replace(/-/g, '').slice(0, 12) + '_' + Date.now();
     const r = await cf(env, '/orders', {
       method: 'POST',
       body: JSON.stringify({

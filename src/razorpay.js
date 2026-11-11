@@ -21,7 +21,7 @@ const getMeta = async (env, k) => (await env.DB.prepare('SELECT v FROM meta WHER
 const setMeta = (env, k, v) => env.DB.prepare('INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v').bind(k, v).run();
 
 async function ensurePlan(env) {
-  const price = Number(env.PRICE_INR || 499), key = 'rzp_plan:' + price;
+  const price = Number(env.PRICE_INR || 199), key = 'rzp_plan:' + price;
   const have = await getMeta(env, key); if (have) return have;
   const p = await rzp(env, '/plans', { method: 'POST', body: JSON.stringify({ period: 'monthly', interval: 1, item: { name: 'Self Streak Plus', amount: price * 100, currency: 'INR', description: 'Self Streak Plus · monthly' } }) });
   await setMeta(env, key, p.id); return p.id;
@@ -73,7 +73,7 @@ export async function rzpRoutes(req, env, p, m, body, u, url) {
     if (cur && ['active', 'authenticated'].includes(cur.status)) return err(409, 'Autopay is already on for your account.');
     // Reuse an unfinished subscription from an earlier attempt instead of creating a new one each tap.
     if (cur && cur.status === 'created' && Date.now() - (cur.updated || 0) < 6 * DAY) {
-      try { const old = await rzp(env, '/subscriptions/' + cur.id); if (old.status === 'created') return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: old.id, startAt: old.start_at ? old.start_at * 1000 : null, price: Number(env.PRICE_INR || 499) }); } catch {}
+      try { const old = await rzp(env, '/subscriptions/' + cur.id); if (old.status === 'created' && old.plan_id === (await ensurePlan(env))) return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: old.id, startAt: old.start_at ? old.start_at * 1000 : null, price: Number(env.PRICE_INR || 199) }); } catch {}
     }
     // If this person still has trial/paid time, the first charge waits until it runs out.
     const left = Math.max(Number(u.paid_until) || 0, u.plan === 'active' ? 0 : Number(u.trial_ends) || 0);
@@ -81,7 +81,7 @@ export async function rzpRoutes(req, env, p, m, body, u, url) {
     const s = await rzp(env, '/subscriptions', { method: 'POST', body: JSON.stringify({ plan_id: await ensurePlan(env), total_count: 120, quantity: 1, customer_notify: 1, ...(startAt ? { start_at: startAt } : {}), notes: { user_id: u.id, email: u.email } }) });
     await setMeta(env, 'rzpsub:' + s.id, u.id);
     await setMeta(env, 'rzp:' + u.id, JSON.stringify({ id: s.id, status: 'created', currentEnd: null, chargeAt: null, updated: Date.now() }));
-    return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: s.id, startAt: startAt ? startAt * 1000 : null, price: Number(env.PRICE_INR || 499) });
+    return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: s.id, startAt: startAt ? startAt * 1000 : null, price: Number(env.PRICE_INR || 199) });
   }
   if (p === '/api/billing/rzp/verify' && m === 'POST') {
     const b = await body(), pid = String(b.razorpay_payment_id || ''), sid = String(b.razorpay_subscription_id || ''), sig = String(b.razorpay_signature || '');
@@ -89,7 +89,7 @@ export async function rzpRoutes(req, env, p, m, body, u, url) {
     if ((await getMeta(env, 'rzpsub:' + sid)) !== u.id) return err(403, 'This subscription belongs to another account.');
     const s = await rzp(env, '/subscriptions/' + sid);
     const rec = await syncSub(env, s, u.id);
-    try { const pay = await rzp(env, '/payments/' + pid); if (pay.status === 'captured' && pay.amount >= 100 * Number(env.PRICE_INR || 499)) await recordPayment(env, u.id, pay); } catch {}
+    try { const pay = await rzp(env, '/payments/' + pid); if (pay.status === 'captured' && pay.amount >= 100 * Number(env.PRICE_INR || 199)) await recordPayment(env, u.id, pay); } catch {}
     return json({ ok: true, autopay: rec });
   }
   if (p === '/api/billing/rzp/cancel' && m === 'POST') {

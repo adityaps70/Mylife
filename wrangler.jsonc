@@ -20,7 +20,7 @@
     "AUTOPAY_LIVE": "1",
     "AUTOPAY_TESTERS": "igforgamers@gmail.com",
     "TRIAL_DAYS": "7",
-    "PRICE_INR": "499",
+    "PRICE_INR": "199",
     "VAPID_PUBLIC_KEY": "BD-VBa02pcA2wwTGLv16rP9666MiyTnAvwKevoYVnuqi6KVBhISN42hqMhiSpUORRf1Dgghcs6q2UUaISaSKhUk",
     "VAPID_SUBJECT": "mailto:support@selfstreak.app",
     "CASHFREE_ENV": "production",
