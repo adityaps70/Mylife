@@ -1117,6 +1117,16 @@ html.nomotion .avsvg *{animation:none!important}
 @media (max-width:760px){.mfull{display:none}.mshort{display:inline}.phead .actions:has(.mswipe){flex-wrap:nowrap;width:100%;align-items:center}.phead .actions:has(.mswipe) .mswipe{flex:1}.phead .actions:has(.mswipe) .mswipe .on{flex:1}}
 .mood-scale{flex:1 1 100%;display:flex;justify-content:space-between;padding:0 4px;margin-top:-2px}
 .ovg-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}@media (max-width:760px){.ovg-cols{grid-template-columns:1fr}}
+.dp-head{font-size:21px;line-height:1.3;letter-spacing:-.015em;margin-top:6px}
+.dp-more{margin-top:6px}.dp-more>summary{list-style:none;cursor:pointer;font-size:14px}.dp-more>summary::-webkit-details-marker{display:none}.dp-more .lnk{color:var(--lime-text,var(--lime));font-weight:600;font-size:13px}.dp-more[open]>summary{display:none}
+.dpstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}.dps{padding:12px 14px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}.dps b{display:block;font-size:20px;letter-spacing:-.02em;margin-top:2px;line-height:1.2}
+.dp-todo{display:grid;gap:8px;margin-top:6px}.dp-td{display:flex;gap:10px;align-items:center;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font:inherit;font-size:14px;cursor:pointer}.dp-td .tick{flex:none}.dp-td.on span:last-child{color:var(--muted);text-decoration:line-through}
+.dp-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.dp-step{border:1px solid var(--line);border-radius:12px;background:var(--card2);padding:0;max-width:100%}.dp-step>summary{display:flex;gap:8px;align-items:center;padding:8px 12px;cursor:pointer;list-style:none;font-size:14px}.dp-step>summary::-webkit-details-marker{display:none}
+.dp-step .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--lime);color:var(--lime-ink,#10120a);font-size:12px;font-weight:800;flex:none}.dp-step[open]{flex:1 1 100%}.dp-step>div{padding:0 12px 10px 42px}
+.dp-cuts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.dp-cut2{padding:7px 12px;border-radius:99px;background:color-mix(in srgb,var(--green,#6fe28a) 10%,var(--card2));border:1px solid color-mix(in srgb,var(--green,#6fe28a) 30%,transparent);font-size:13px}.dp-cut2 b{color:var(--green,#6fe28a);margin-left:4px}
+.dp-warn{margin-top:16px;border:1px solid color-mix(in srgb,var(--orange,#ff8a4c) 40%,transparent);background:color-mix(in srgb,var(--orange,#ff8a4c) 7%,transparent);border-radius:14px}.dp-warn>summary{display:flex;gap:10px;align-items:center;padding:12px 14px;cursor:pointer;list-style:none}.dp-warn>summary::-webkit-details-marker{display:none}.dp-warn>summary b{flex:1}.dp-warn>summary svg:last-child{transition:transform .25s;color:var(--faint)}.dp-warn[open]>summary svg:last-child{transform:rotate(90deg)}.dp-warn ul{padding:0 16px 12px 36px;margin:0}
+.dbrules>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none}.dbrules>summary::-webkit-details-marker{display:none}.dbrules[open]>summary svg{transform:rotate(90deg)}.dbrules>summary svg{transition:transform .25s}
+@media (max-width:760px){.dpstats{grid-template-columns:repeat(2,minmax(0,1fr))}.dps b{font-size:17px}.dp-head{font-size:18px}}
 </style>
 </head>
 <body>
@@ -2183,13 +2193,13 @@ function pDebt(){
     <div class="seg"><button class="${ui.strategy==='avalanche'?'on':''}" data-set="strategy:avalanche">Avalanche · highest interest first</button><button class="${ui.strategy==='snowball'?'on':''}" data-set="strategy:snowball">Snowball · smallest balance first</button></div></div>
     <div class="kpis" style="margin-top:16px">${kpi('New debt-free date',plan.stuck?'Never':dfd(plan.months),plan.months+' months')}${kpi('Months saved',Math.max(0,msaved),'','pos')}${kpi('Interest saved',inr(Math.max(0,saved)),'','pos')}</div>
     ${plan.order.length?`<p class="small" style="margin-top:14px"><b>Payoff order:</b> ${plan.order.map((l,i)=>`${i+1}. ${esc(l.name)} <span class="muted">(${dfd(l.done)})</span>`).join(' → ')}</p>`:''}</div>
-  <div class="card"><h3 style="margin-bottom:8px">Debt rules worth keeping</h3><ul class="tips">
+  <details class="card dbrules"><summary><h3>6 debt rules worth keeping</h3>${ic('right')}</summary><ul class="tips" style="margin-top:10px">
     <li>Pay credit cards in <b>full</b> every month. “Minimum due” keeps ~40% yearly interest running.</li>
     <li>Prepay the highest-interest loan first. A home loan (~8–9%) is usually last.</li>
     <li>RBI rules: floating-rate loans to individuals carry no foreclosure or prepayment charges. Fixed-rate loans may. Check your agreement.</li>
     <li>Keep total EMIs under 30–40% of take-home pay.</li>
     <li>Never take a new loan or use BNPL to pay an existing EMI.</li>
-    <li>When you close a loan, collect the <b>NOC</b> and check that your CIBIL report shows it as “closed”.</li></ul></div></div>`;
+    <li>When you close a loan, collect the <b>NOC</b> and check that your CIBIL report shows it as “closed”.</li></ul></details></div>`;
 }
 
 function pSavings(){
@@ -3901,20 +3911,22 @@ function debtPlanCard(){
   if(!P)return `<div class="card dplan-empty" id="dplan">${icoBox('sparkle','var(--lime)')}<div class="nb"><h3>Get your personal repayment plan</h3><p class="small muted" style="margin-top:4px">AI looks at your income, budget, EMIs and cards and tells you exactly what to pay, in which order, month by month, to become debt-free faster without missing essentials.</p></div><button class="btn lime" data-act="debtPlan" ${hasDebt?'':'disabled title="Add your loans or cards first"'}>${ic('sparkle')} Make my plan</button></div>`;
   const r=P.r,stale=P.key!==planKey(),H={good:['On track','lime'],tight:['Tight','yellow'],stretched:['Stretched','orange'],critical:['Needs action now','red']}[r.health]||['','nodot'];
   const S={avalanche:'Highest interest first',snowball:'Smallest balance first',cards_first:'Cards first',stabilise:'Stabilise first'}[r.strategy]||r.strategy;
-  const li=a=>(a||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+  const short=(t,n)=>{t=String(t||'').trim();if(t.length<=n)return t;const cut=t.slice(0,n);const k=Math.max(cut.lastIndexOf('. '),cut.lastIndexOf(', '));return (k>n*.5?cut.slice(0,k):cut.replace(/\s+\S*$/,''))+'…'};
+  const firstSentence=t=>{const m=String(t||'').match(/^.+?[.!?](\s|$)/);return m?m[0].trim():String(t||'')};
+  P.done=P.done||{};const wins=(r.quick_wins||[]).slice(0,3),cuts=r.budget_cuts||[],cutTotal=sum(cuts,c=>num(c.cut)),order=r.order||[],warns=(r.warnings||[]).slice(0,4);
+  const dfm=String(r.debt_free_month||'—'),dfShort=dfm.length>22?(/restructur/i.test(dfm)?'After restructuring':short(dfm,22)):dfm;
+  const stat=(l,v,h,cls='')=>`<div class="dps"><div class="tiny muted">${l}</div><b class="${cls}">${v}</b>${h?`<div class="tiny faint">${h}</div>`:''}</div>`;
   return `<div class="card dplan" id="dplan">
-  <div class="ch" style="align-items:center">${icoBox('sparkle','var(--lime)')}<div style="flex:1;min-width:180px"><h3>Your repayment plan</h3><div class="sub">Made ${fmt(new Date(P.at),{day:'numeric',month:'short'})} by AI from your numbers${stale?' · <span class="warn">your numbers changed since</span>':''}</div></div><span class="pill ${H[1]}">${H[0]}</span><button class="btn sm" data-act="debtPlan">${ic('sparkle')} ${stale?'Update plan':'Redo'}</button></div>
-  <h2 class="dp-head">${esc(r.headline)}</h2><p class="muted" style="margin-top:6px">${esc(r.summary)}</p>
-  <div class="kpis" style="margin-top:16px">${kpi('Free each month',inr(r.monthly_free),'after essentials & EMIs',r.monthly_free<0?'neg':'')}${kpi('Put towards debt',inr(r.extra_per_month),'extra, on top of EMIs','pos')}${kpi('Debt-free by',esc(r.debt_free_month||'—'))}${kpi('Interest saved',inr(r.interest_saved),'vs. paying only EMIs','pos')}</div>
-  ${r.warnings?.length?`<div class="banner warnb" style="margin-top:16px">${ic('bell')}<ul class="tips" style="margin:0">${li(r.warnings)}</ul></div>`:''}
-  <div class="dp-grid">
-    <div><div class="glabel">Strategy · ${esc(S)}</div><p class="small muted">${esc(r.strategy_why)}</p>
-      <ol class="dp-order">${(r.order||[]).map((o,i)=>`<li><span class="n">${i+1}</span><div><b>${esc(o.name)}</b>${o.target_month?` <span class="pill nodot">clear by ${esc(o.target_month)}</span>`:''}<div class="small muted">${esc(o.why)}</div></div></li>`).join('')}</ol></div>
-    <div>${(r.budget_cuts||[]).length?`<div class="glabel">Where the extra money comes from</div>${r.budget_cuts.map(c=>`<div class="dp-cut"><div class="nb"><b class="small">${esc(c.category)}</b><div class="tiny muted">${esc(c.how)}</div></div><b class="pos">−${inr(c.cut)}</b></div>`).join('')}`:''}
-      ${(r.quick_wins||[]).length?`<div class="glabel" style="margin-top:14px">Quick wins this week</div><ul class="tips">${li(r.quick_wins)}</ul>`:''}</div>
-  </div>
-  ${(r.months||[]).length?`<details class="dp-months"><summary><b>Month by month</b><span class="small muted">${r.months.length} months</span>${ic('right')}</summary><div class="tablewrap"><table><thead><tr><th>Month</th><th>Pay</th><th class="n">Debt left</th></tr></thead><tbody>${r.months.map(m=>`<tr><td><b>${esc(m.month)}</b></td><td>${(m.actions||[]).map(a=>`<div class="small"><b>${inr(a.pay)}</b> → ${esc(a.name)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:''}</div>`).join('')}</td><td class="n">${inr(m.debt_left)}</td></tr>`).join('')}</tbody></table></div></details>`:''}
-  <div class="inline" style="margin-top:16px;gap:8px"><button class="btn sm lime" data-act="applyPlan">${ic('tick')} Use ${inr(r.extra_per_month)}/month in the calculator</button><span class="tiny faint">AI can make mistakes. Check big decisions with your lender.</span></div>
+  <div class="ch" style="align-items:center">${icoBox('sparkle','var(--lime)')}<div style="flex:1;min-width:160px"><h3>Your repayment plan</h3><div class="sub">AI · ${fmt(new Date(P.at),{day:'numeric',month:'short'})}${stale?' · <span class="warn">numbers changed</span>':''}</div></div><span class="pill ${H[1]}">${H[0]}</span><button class="btn sm" data-act="debtPlan">${ic('sparkle')} ${stale?'Update':'Redo'}</button></div>
+  <h2 class="dp-head">${esc(short(r.headline,150))}</h2>
+  <details class="dp-more"><summary><span class="muted">${esc(firstSentence(r.summary))}</span> <span class="lnk">More</span></summary><p class="muted small">${esc(r.summary)}</p></details>
+  <div class="dpstats">${stat('Free each month',inr(r.monthly_free),'',r.monthly_free<0?'neg':'')}${stat('Extra to debt',inr(r.extra_per_month),'',num(r.extra_per_month)>0?'pos':'')}${stat('Debt-free by',esc(dfShort),'')}${stat('Interest saved',inr(r.interest_saved),'',num(r.interest_saved)>0?'pos':'')}</div>
+  ${wins.length?`<div class="glabel" style="margin-top:18px">Do this week</div><div class="dp-todo">${wins.map((w,k)=>`<button type="button" class="dp-td ${P.done[k]?'on':''}" data-dptodo="${k}"><span class="tick ${P.done[k]?'on':''}">${ic('tick')}</span><span>${esc(short(w,90))}</span></button>`).join('')}</div>`:''}
+  ${order.length?`<div class="glabel" style="margin-top:18px">Payoff order · ${esc(S)}</div><div class="dp-steps">${order.map((o,k)=>`<details class="dp-step"><summary><span class="n">${k+1}</span><b>${esc(o.name)}</b>${o.target_month?`<span class="tiny muted">${esc(o.target_month)}</span>`:''}</summary><div class="tiny muted">${esc(short(o.why,140))}</div></details>`).join('')}</div>${r.strategy_why?`<p class="tiny muted" style="margin-top:8px">${esc(short(r.strategy_why,150))}</p>`:''}`:''}
+  ${cuts.length?`<div class="glabel" style="margin-top:18px">Free up ${inr(cutTotal)}/month</div><div class="dp-cuts">${cuts.map(c=>`<span class="dp-cut2" title="${esc(c.how||'')}">${esc(c.category)} <b>−${inr(c.cut)}</b></span>`).join('')}</div>`:''}
+  ${warns.length?`<details class="dp-warn"><summary>${ic('bell')}<b>${warns.length} thing${warns.length>1?'s':''} to watch</b>${ic('right')}</summary><ul class="tips">${warns.map(w=>`<li>${esc(short(w,160))}</li>`).join('')}</ul></details>`:''}
+  ${(r.months||[]).length?`<details class="dp-months"><summary><b>Month by month</b><span class="small muted">${r.months.length} months</span>${ic('right')}</summary><div class="tablewrap"><table><thead><tr><th>Month</th><th>Pay</th><th class="n">Debt left</th></tr></thead><tbody>${r.months.map(m=>`<tr><td><b>${esc(m.month)}</b></td><td>${(m.actions||[]).map(a=>`<div class="small"><b>${inr(a.pay)}</b> → ${esc(a.name)}${a.note?` <span class="muted">· ${esc(short(a.note,40))}</span>`:''}</div>`).join('')}</td><td class="n">${inr(m.debt_left)}</td></tr>`).join('')}</tbody></table></div></details>`:''}
+  <div class="inline" style="margin-top:14px;gap:8px">${num(r.extra_per_month)>0?`<button class="btn sm lime" data-act="applyPlan">${ic('tick')} Use ${inr(r.extra_per_month)}/month in the calculator</button>`:''}<span class="tiny faint">AI can make mistakes. Check big decisions with your lender.</span></div>
   </div>`;
 }
 
@@ -4745,6 +4757,8 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-ckeep]');i
 /* swipe left/right on a month picker to change month */
 {let sx=null,sy=null;document.addEventListener('touchstart',e=>{const m=e.target.closest('.mswipe');if(!m)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
  document.addEventListener('touchend',e=>{if(sx===null)return;const m=e.target.closest('.mswipe')||document.querySelector('.mswipe');const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;sx=null;if(!m||Math.abs(dx)<36||Math.abs(dy)>Math.abs(dx))return;const b=m.querySelector(dx>0?'[data-mprev]':'[data-mnext]');if(b&&!b.disabled){b.click();try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}}},{passive:true})}
+
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dptodo]');if(!b||!state.debtPlan)return;e.preventDefault();const P=state.debtPlan;P.done=P.done||{};const k=b.dataset.dptodo;P.done[k]=!P.done[k];if(P.done[k]){try{dbSound('mood',1,5,true)}catch(x){}}commit()});
 
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 

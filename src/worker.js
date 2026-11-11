@@ -148,7 +148,14 @@ Rules:
 - budget_cuts: only from their listed budget categories, with realistic cuts.
 - If the JSON has life priorities (e.g. marriage savings by a date), balance debt payoff against them: never starve a near-term priority, and say when freed-up EMIs should switch to the priority.
 - months: plan for the next 6 months (labels like "Dec 2026"), what to pay on each debt beyond the EMI, and the expected total remaining at month end.
-- Plain, warm, short sentences. No jargon without a 3-word explanation. Today is ${new Date().toISOString().slice(0, 10)}.`,
+- WRITE VERY LITTLE. People skim on a phone. Never repeat the same fact in two fields (e.g. don't restate the income/EMI gap in summary, warnings and order).
+  headline: max 12 words. summary: max 2 short sentences, under 220 characters, and it must add something the headline doesn't.
+  debt_free_month: just a month like "Mar 2028", or "After restructuring" — never a sentence.
+  strategy_why: one sentence, max 20 words. order[].why: max 12 words. budget_cuts[].how: max 8 words.
+  quick_wins: at most 3, each max 12 words, starting with a verb (they are this week's to-dos).
+  warnings: at most 3, each max 15 words, only things not already said elsewhere.
+  months[].actions[].note: max 6 words or empty.
+- Plain, warm words. No jargon without a 3-word explanation. Today is ${new Date().toISOString().slice(0, 10)}.`,
         content: [{ type: 'text', text: 'My numbers:\n' + D }],
         schema: obj({
           headline: S, summary: S, health: { type: 'string', enum: ['good', 'tight', 'stretched', 'critical'] },
