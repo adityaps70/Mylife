@@ -263,7 +263,7 @@ def render(p):
 <section><h2>Questions</h2>{faq_html}</section>
 <div class="final"><h2>Start your streak today</h2><p>Habits, money, reminders and health in one app. Set up in two minutes, free for 7 days.</p><a class="btn lime" href="/app#signup">Start free trial</a></div>
 <section><h2 style="font-size:20px">More from Self Streak</h2><div class="more">{more}</div></section></main>
-<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a></div></footer>
+<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/shipping">Shipping</a></div></footer>
 <script>try{{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({{p:location.pathname,r:document.referrer}})],{{type:'application/json'}}))}}catch(e){{}}</script>
 </body></html>'''
 
@@ -273,7 +273,7 @@ for p in PAGES:
 print('built', len(PAGES), 'pages')
 
 # sitemap
-core = [('/', '1.0', 'weekly')] + [('/' + s, '0.8', 'monthly') for s, _ in ALL] + [('/terms', '0.3', 'yearly'), ('/privacy', '0.3', 'yearly'), ('/refunds', '0.3', 'yearly'), ('/contact', '0.4', 'yearly')]
+core = [('/', '1.0', 'weekly')] + [('/' + s, '0.8', 'monthly') for s, _ in ALL] + [('/terms', '0.3', 'yearly'), ('/privacy', '0.3', 'yearly'), ('/refunds', '0.3', 'yearly'), ('/shipping', '0.3', 'yearly'), ('/contact', '0.4', 'yearly')]
 with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
     f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>2026-11-10</lastmod><changefreq>{c}</changefreq><priority>{pr}</priority></url>\n' for u, pr, c in core) + '</urlset>\n')
 print('sitemap updated')

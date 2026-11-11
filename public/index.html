@@ -2584,9 +2584,9 @@ async function startAutopay(){
         try{await apiFetch('/api/billing/rzp/verify',{method:'POST',body:r});const m=await apiFetch('/api/me');account={...account,...m};closeDlg($('#dlg'));checkPaywall();render();
           toast(account.autopay?.status==='active'?`Autopay is on. Plus until ${fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short'})} 🎉`:'Autopay is set up 🎉','tick');burst(innerWidth/2,innerHeight/2,40)}
         catch(e){closeDlg($('#dlg'));toast(e.message||'Couldn’t confirm autopay yet. It will update within a few minutes.','x')}},
-      modal:{ondismiss:()=>{const b=$('#apGo');if(b){b.disabled=false;b.textContent='Set up autopay'}}}});
-    rp.on('payment.failed',e=>{const m=$('#apmsg');if(m)m.textContent=(e?.error?.description||'Payment failed')+'. Try again or use Pay once.'});
-    rp.open();
+      modal:{ondismiss:()=>{toast('Autopay wasn’t set up. You can try again from Settings.','x')}}});
+    rp.on('payment.failed',e=>{toast((e?.error?.description||'Payment failed')+'. Try again, or use Pay once.','x')});
+    closeDlg($('#dlg'));rp.open();
   }catch(err){if(msg)msg.textContent=err.message;if(btn){btn.disabled=false;btn.textContent='Set up autopay'}}
 }
 async function cancelAutopay(){
