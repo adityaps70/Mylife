@@ -194,6 +194,7 @@ Rules:
 - areas: one entry each for Food, Health (steps, water, sleep), Habits, Money, Mind (mood/journal) — and Goals if goals are given. rating one of great, good, okay, needs_attention; summary one sentence with numbers.
 - wins/misses: 1–4 short items each. tomorrow: 3–5 specific actions with the area they belong to (e.g. "Add 2 eggs or a bowl of dal at breakfast to reach 110 g protein").
 - score 0–100 for the whole day. headline: one encouraging, honest sentence.
+- person.gender and person.age (if given) only shape nutrient advice where it genuinely matters (e.g. iron, folate and calcium for women; protein needs by body weight). Don't mention gender otherwise.
 - No medical diagnoses. Plain words.`,
         content: [{ type: 'text', text: 'My day:\n' + D }],
         schema: obj({

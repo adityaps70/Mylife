@@ -1048,6 +1048,9 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 .setwrap{display:grid;grid-template-columns:290px minmax(0,1fr);gap:20px;align-items:start;max-width:1100px}.setwrap .setnav{position:sticky;top:84px}
 .setback{display:inline-flex;align-items:center;gap:4px;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:0;cursor:pointer}.setback svg.i{transform:rotate(180deg);width:15px;height:15px}
 @media (max-width:860px){.setwrap{grid-template-columns:1fr}.setwrap .setnav{position:static}}
+.gseg3{display:flex;gap:8px;flex-wrap:wrap}.gseg3 button{flex:1 1 auto;min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--text);font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.gseg3 button.on,.gseg3 button:hover{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 14%,var(--card2))}
+.gprompt{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px;border-color:color-mix(in srgb,var(--violet,#a78bfa) 40%,transparent)}.gprompt .nb{flex:1;min-width:200px}.gprompt .gseg3{flex:1 1 100%}.gprompt .ic.sm{position:absolute;top:10px;right:10px}.gprompt{position:relative;padding-right:44px}
 </style>
 </head>
 <body>
@@ -1197,14 +1200,13 @@ const REM_IC={Birthday:'gift',Anniversary:'heart','Bill/Payment':'receipt',EMI:'
 const remIcon=t=>REM_IC[t]||'bell';
 const REM_TYPES=['Birthday','Anniversary','Bill/Payment','Tax','Finance','Health','Grooming','Insurance','Documents','Festival','Home','Personal','Work','Other'];
 const HUE={Birthday:330,Anniversary:290,'Bill/Payment':28,EMI:355,Tax:262,Finance:200,Health:150,Grooming:310,Insurance:178,Documents:215,Festival:48,Home:80,Personal:240,Work:-1,Other:-1};
-const PROD_CATS=['Face','Hair','Beard / Shave','Body','Oral care','Fragrance','Tools'];
-const PROD_IC={Face:'sparkle',Hair:'scissors','Beard / Shave':'scissors',Body:'drop','Oral care':'sparkle',Fragrance:'bottle',Tools:'scissors'};
+const PROD_CATS=['Face','Hair','Body','Oral care','Fragrance','Tools','Beard / Shave'];
+const PROD_IC={Face:'sparkle',Hair:'scissors','Beard / Shave':'scissors',Makeup:'sparkle','Period care':'heart','Hair removal':'scissors','Shave / hair removal':'scissors',Body:'drop','Oral care':'sparkle',Fragrance:'bottle',Tools:'scissors'};
 function groomDefaults(){
   const P=(name,category,price,lastsDays,notes='')=>({id:uid(),name,category,price,lastsDays,bought:'',notes});
   return {lastCut:'',cutEvery:28,products:[
     P('Face wash','Face',250,90),P('Sunscreen SPF 50, PA++++','Face',450,60,'Every morning, even on cloudy days'),P('Moisturiser','Face',350,75,'Gel in summer, cream in winter'),
     P('Lip balm','Face',150,60),P('Shampoo','Hair',350,60),P('Hair oil / serum','Hair',250,90),
-    P('Razor blades / cartridges','Beard / Shave',300,30),P('Beard oil','Beard / Shave',350,90),
     P('Deodorant / antiperspirant','Body',250,45),P('Body wash / soap','Body',200,45),P('Anti-fungal / talc powder','Body',150,60,'Monsoon must-have'),
     P('Toothpaste','Oral care',120,45),P('Toothbrush','Oral care',80,90),P('Floss','Oral care',150,60),P('Perfume','Fragrance',1200,120)]};
 }
@@ -1214,17 +1216,12 @@ const GROOM_HABITS=[
   ['Brush twice + floss','daily',''],
   ['Deodorant & fresh, ironed clothes','daily',''],
   ['Face scrub / exfoliate (1–2× a week)','weekly','Gentle; skip on irritated skin'],
-  ['Beard trim & neckline / clean shave','weekly',''],
   ['Trim nails (hands & feet)','weekly',''],
   ['Hair wash & condition (2–3× a week)','weekly','Daily washing dries the scalp'],
-  ['Clean razor, comb & trimmer','weekly',''],
   ['Change bedsheets & pillow covers','weekly','Dirty pillow covers cause breakouts'],
-  ['Haircut (every 3–4 weeks)','monthly','Tracked at the top of this page'],
-  ['Trim eyebrows, nose & ear hair','monthly',''],
   ['Clean & polish shoes','monthly',''],
   ['Check what’s running low on the shelf','monthly',''],
   ['Replace toothbrush','quarterly',''],
-  ['Replace razor / trimmer blade','quarterly',''],
   ['Wardrobe check: donate, repair, replace','quarterly','Keep 2 outfits ready for interviews / events'],
   ['Dermatologist check (skin, hair fall, moles)','yearly','Optional; go sooner if hair fall or acne bothers you'],
 ];
@@ -1402,7 +1399,7 @@ function defaults(){
         H('Half-day digital detox','weekly','Mind'),
         H('Clean & declutter room','weekly','Lifestyle'),
         H('Body measurements + progress photo','monthly','Checkup'),
-        H('Self-check (skin moles, testicular self-exam)','monthly','Checkup'),
+        
         H('Try one new healthy recipe','monthly','Nutrition'),
         H('Review sleep, steps & weight trends','monthly','Checkup'),
         H('Check blood pressure','quarterly','Checkup','Target under 120/80'),
@@ -1608,7 +1605,7 @@ const SCHEMAS={
     {k:'repeat',l:'Repeats',t:'select',o:[['yearly','Every year'],['none','Once'],['monthly','Every month'],['quarterly','Every 3 months'],['half-yearly','Every 6 months'],['weekly','Every week']]},
     {k:'lead',l:'Alert me (days before)',t:'number'},{k:'amount',l:'Amount (₹, optional)',t:'number'},{k:'notes',l:'Notes',t:'textarea',wide:1}]},
   habits:{title:'health habit',fields:[{k:'name',l:'Habit',t:'text',req:1,wide:1},{k:'period',l:'How often',t:'select',o:PERIODS.map(p=>[p[0],p[0][0].toUpperCase()+p[0].slice(1)])},{k:'area',l:'Area',t:'select',o:HABIT_AREAS},{k:'detail',l:'Detail / target',t:'text',wide:1},{k:'times',l:'Remind me at',t:'times',wide:1,help:'e.g. 07:30, 21:00 · leave empty for no reminder'},{k:'dow',l:'Day (weekly habits)',t:'select',o:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((x,i)=>[i,x])},{k:'dom',l:'Day of month (monthly habits)',t:'number'}]},
-  products:{title:'grooming product',fields:[{k:'name',l:'Product',t:'text',req:1,wide:1,ph:'Sunscreen, face wash, beard oil…'},{k:'category',l:'Type',t:'select',o:PROD_CATS},{k:'price',l:'Price (₹)',t:'number'},{k:'lastsDays',l:'Lasts about (days)',t:'number'},{k:'bought',l:'Last bought on',t:'date'},{k:'notes',l:'Notes (brand, where to buy)',t:'text',wide:1}]},
+  products:{title:'grooming product',fields:[{k:'name',l:'Product',t:'text',req:1,wide:1,ph:'Sunscreen, face wash, shampoo…'},{k:'category',l:'Type',t:'select',o:PROD_CATS},{k:'price',l:'Price (₹)',t:'number'},{k:'lastsDays',l:'Lasts about (days)',t:'number'},{k:'bought',l:'Last bought on',t:'date'},{k:'notes',l:'Notes (brand, where to buy)',t:'text',wide:1}]},
   checklist:{title:'checklist item',fields:[{k:'item',l:'Item',t:'text',req:1,wide:1},{k:'area',l:'Area',t:'select',o:CHECK_AREAS},{k:'why',l:'Why / how',t:'textarea',wide:1}]},
 };
 
@@ -2407,6 +2404,7 @@ function pSettingsAll(){
     <div class="fld"><label>Name in greeting</label><input data-prof="first" value="${esc(p.first)}"></div>
     <div class="fld"><label>Age</label><input type="number" data-prof="age" value="${esc(p.age)}"></div>
     <div class="fld"><label>City</label><input data-prof="city" value="${esc(p.city)}"></div>
+    <div class="fld"><label>Gender</label><select class="sel" data-gender aria-label="Gender"><option value="" ${!p.gender?'selected':''}>Not set</option>${GENDERS.map(([k,l])=>`<option value="${k}" ${p.gender===k?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="fld"><label>Theme</label><select data-prof="theme">${[['dark','Dark'],['light','Light'],['auto','Match system']].map(([v,l])=>`<option value="${v}" ${p.theme===v?'selected':''}>${l}</option>`).join('')}</select></div>
     <div class="fld"><label>Animations</label><select data-prof="motion">${[['on','On'],['off','Off (reduce motion)']].map(([v,l])=>`<option value="${v}" ${(p.motion||'on')===v?'selected':''}>${l}</option>`).join('')}</select></div>
   </div></div>
@@ -2561,7 +2559,7 @@ async function enterApp(m,isNew,name){
 }
 function openApp(){
   document.body.classList.remove('locked');$('#lock').innerHTML='';$('#onb').classList.remove('show');
-  autoHabits();try{gTick(true);save()}catch(e){console.error(e)}pageChanged=true;render();window.scrollTo(0,0);afterOpen();checkPaywall();initPush();setTimeout(()=>gSocial(),1500);
+  autoHabits();try{genderCats(state.profile.gender)}catch(e){}try{gTick(true);save()}catch(e){console.error(e)}pageChanged=true;render();window.scrollTo(0,0);afterOpen();checkPaywall();initPush();setTimeout(()=>gSocial(),1500);
 }
 async function logout(){
   if(!confirm('Log out of Self Streak on this device?'))return;
@@ -2684,7 +2682,7 @@ let ob=null;
 function startOnboarding(){
   document.body.classList.add('locked');$('#lock').innerHTML='';
   const p=state.profile;
-  ob={i:0,dir:1,first:p.first||'',city:p.city||'',age:p.age||'',wake:p.wake||'06:30',sleep:p.sleep||'23:00',gym:p.gymTime||'18:30',noGym:false,focus:p.focus||['health','money','grooming','goals'],income:'',examples:false};
+  ob={i:0,dir:1,gender:p.gender||'',first:p.first||'',city:p.city||'',age:p.age||'',wake:p.wake||'06:30',sleep:p.sleep||'23:00',gym:p.gymTime||'18:30',noGym:false,focus:p.focus||['health','money','grooming','goals'],income:'',examples:false};
   $('#onb').classList.add('show');renderOnb();
 }
 const tm=(base,min)=>{const [h,m]=base.split(':').map(Number);const t=((h*60+m+min)%1440+1440)%1440;return pad(Math.floor(t/60))+':'+pad(t%60)};
@@ -2708,7 +2706,8 @@ function renderOnb(){
   if(s==='welcome'){body=`<div ${d(0)}>${logo(84,'draw')}</div><h1 ${d(1)}>Welcome to ${BRAND}${ob.first?', '+esc(ob.first):''}</h1><p class="lead" ${d(2)}>One place for your habits, health, money, bills and reminders. Talk or type, and it files everything for you.</p>
     <div class="feat" ${d(3)}>${[['mic','Speak or type notes, filed automatically'],['bell','Reminders that skip what you’ve already done'],['bank','Bank statements, bills and meals read by AI'],['flame','Streaks that keep you going']].map(([i,t])=>`<div>${icoBox(i,'var(--lime)')}${t}</div>`).join('')}</div>`;next='Let’s set it up'}
   if(s==='you'){body=`<h1 ${d(0)}>About you</h1><p class="lead" ${d(1)}>So your dashboard greets you properly and tips fit your city.</p>
-    <div class="fields" ${d(2)}><div class="fld wide"><label>First name</label><input id="obFirst" value="${esc(ob.first)}" autocomplete="given-name"></div><div class="fld"><label>City</label><input id="obCity" value="${esc(ob.city)}" placeholder="e.g. Lucknow" autocomplete="address-level2"></div><div class="fld"><label>Age</label><input id="obAge" type="number" inputmode="numeric" value="${esc(ob.age)}"></div></div>`}
+    <div class="fields" ${d(2)}><div class="fld wide"><label>First name</label><input id="obFirst" value="${esc(ob.first)}" autocomplete="given-name"></div><div class="fld"><label>City</label><input id="obCity" value="${esc(ob.city)}" placeholder="e.g. Lucknow" autocomplete="address-level2"></div><div class="fld"><label>Age</label><input id="obAge" type="number" inputmode="numeric" value="${esc(ob.age)}"></div></div>
+    <div ${d(3)} style="margin-top:14px"><div class="glabel" style="margin-bottom:8px">I am</div><div class="gseg3">${GENDERS.map(([k,l])=>`<button type="button" class="${ob.gender===k?'on':''}" data-gk="${k}">${l}</button>`).join('')}</div><p class="hint" style="margin-top:8px">So grooming, health check-ups and food targets suggest what fits you. You can change it later in Settings.</p></div>`}
   if(s==='day'){body=`<h1 ${d(0)}>Your day</h1><p class="lead" ${d(1)}>We’ll time your reminders around it: water, skincare, gym, wind-down.</p>
     <div class="fields" ${d(2)}><div class="fld"><label>I wake up at</label><input id="obWake" type="time" value="${ob.wake}"></div><div class="fld"><label>I sleep at</label><input id="obSleep" type="time" value="${ob.sleep}"></div>
     <div class="fld"><label>Gym / workout at</label><input id="obGym" type="time" value="${ob.gym}" ${ob.noGym?'disabled':''}></div><label class="cbx" style="align-self:end"><input type="checkbox" id="obNoGym" ${ob.noGym?'checked':''}> I don’t work out yet</label></div>
@@ -2728,6 +2727,7 @@ function renderOnb(){
     <div class="onb-step ${ob.dir<0?'back':''}">${body}</div>
     <div class="onb-nav">${ob.i>0&&s!=='done'?`<button class="btn ghost" data-ob="back">${ic('left')} Back</button>`:''}<span class="sp"></span>${skip?`<button class="btn ghost" data-ob="skip">${skip}</button>`:''}<button class="btn lime" data-ob="next">${next} ${ic('right')}</button></div></div>`;
   box.querySelectorAll('[data-ob]').forEach(b=>b.onclick=()=>obAction(b.dataset.ob));
+  box.querySelectorAll('[data-gk]').forEach(b=>b.onclick=()=>{ob.gender=b.dataset.gk;box.querySelectorAll('[data-gk]').forEach(x=>x.classList.toggle('on',x===b))});
   box.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{const k=b.dataset.fk;ob.focus=ob.focus.includes(k)?ob.focus.filter(x=>x!==k):[...ob.focus,k];b.classList.toggle('on')});
   const ng=$('#obNoGym');if(ng)ng.onchange=()=>{ob.noGym=ng.checked;$('#obGym').disabled=ng.checked};
   const f=box.querySelector('input:not([type=checkbox])');if(f&&s!=='day')setTimeout(()=>f.focus(),300);
@@ -2752,6 +2752,7 @@ function finishOnboarding(){
   if(!ob.examples)for(const k of ['income','expenses','bills','loans','savings','tx'])state[k]=state[k].filter(x=>!x.sample||k==='expenses').map(x=>{if(k==='expenses')delete x.sample;return x});
   if(num(ob.income)>0)state.income=[{id:uid(),name:'Monthly take-home',amount:num(ob.income),notes:''},...state.income.filter(x=>!x.sample)];
   applyDay(ob.wake,ob.sleep,ob.noGym?'':ob.gym);
+  applyGender(ob.gender||'',true);
   if(account?.user?.name!==ob.first)apiFetch('/api/profile',{method:'POST',body:{name:ob.first}}).catch(()=>{});
   ob=null;save();openApp();
 }
@@ -2767,7 +2768,7 @@ function needAI(){if(hasAI())return true;toast(!navigator.onLine?'You’re offli
 
 /* ---------- meals ---------- */
 function dayFood(date=ds(today())){const L=(state.meals||{})[date]||[];return {L,kcal:sum(L,x=>x.kcal),p:sum(L,x=>x.p),c:sum(L,x=>x.c),f:sum(L,x=>x.f)}}
-function foodTargets(){const w=Object.entries(state.health.logs).filter(([,v])=>num(v.weight)>0).sort(([a],[b])=>b.localeCompare(a))[0];const kg=w?num(w[1].weight):70;return {p:num(state.profile.proteinTarget)||Math.round(kg*1.6),kcal:num(state.profile.kcalTarget)||2200}}
+function foodTargets(){const w=Object.entries(state.health.logs).filter(([,v])=>num(v.weight)>0).sort(([a],[b])=>b.localeCompare(a))[0];const g=state.profile.gender,kg=w?num(w[1].weight):(g==='female'?58:g==='male'?70:65);return {p:num(state.profile.proteinTarget)||Math.round(kg*1.6),kcal:num(state.profile.kcalTarget)||(g==='female'?1800:g==='male'?2200:2000),kg}}
 function addMeal(m,date=ds(today())){
   state.meals=state.meals||{};(state.meals[date]=state.meals[date]||[]).push({id:uid(),t:Date.now(),name:String(m.name||'Meal').slice(0,80),kcal:Math.round(num(m.kcal)),p:Math.round(num(m.p)),c:Math.round(num(m.c)),f:Math.round(num(m.f)),src:m.src||''});
   const F=dayFood(date),h=state.health.habits.find(x=>/protein/i.test(x.name));if(h&&F.p>=foodTargets().p)setDone(h,true,pd(date));
@@ -4010,7 +4011,7 @@ function daySummaryInput(key){
   const tx=state.tx.filter(x=>x.date===key&&!x.sample),byCat={};tx.filter(x=>x.dir!=='in').forEach(x=>byCat[x.category||'Other']=(byCat[x.category||'Other']||0)+num(x.amount));
   const y=d.getFullYear(),m=d.getMonth(),mtd={};state.tx.filter(x=>{const q=pd(x.date);return !x.sample&&x.dir!=='in'&&q.getFullYear()===y&&q.getMonth()===m&&q<=d}).forEach(x=>mtd[x.category||'Other']=(mtd[x.category||'Other']||0)+num(x.amount));
   const over=state.expenses.filter(e=>num(e.amount)&&(mtd[e.name]||0)>num(e.amount)*(d.getDate()/dim(y,m))*1.15).map(e=>({category:e.name,spent_this_month:Math.round(mtd[e.name]||0),monthly_cap:num(e.amount)}));
-  return {date:key,weekday:fmt(d,{weekday:'long'}),person:{age:state.profile.age||'',city:state.profile.city||'',weight_kg:foodTargets().kg||''},
+  return {date:key,weekday:fmt(d,{weekday:'long'}),person:{age:state.profile.age||'',gender:state.profile.gender||'',city:state.profile.city||'',weight_kg:foodTargets().kg||''},
     food:{meals:F.L.map(x=>({name:x.name,time:new Date(x.t).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}),kcal:x.kcal,protein_g:x.p,carbs_g:x.c,fat_g:x.f})),totals:{kcal:F.kcal,protein_g:F.p,carbs_g:F.c,fat_g:F.f},targets:{protein_g:T.p,kcal:T.kcal}},
     health:{steps:num(L.steps),steps_target:10000,water_glasses:num(L.water),water_target_glasses:12,sleep_h:num(L.sleep)||'not logged',weight_kg:num(L.weight)||'',mood_1_to_5:num(J.m)||''},
     habits:{done:daily.filter(h=>isDone(h,d)).map(h=>h.name),not_done:daily.filter(h=>!isDone(h,d)).map(h=>h.name)},
@@ -4483,6 +4484,61 @@ function pSettings(){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-setsec]');if(!b)return;e.preventDefault();ui.setSec=b.dataset.setsec||null;saveUI();pageChanged=true;render();window.scrollTo(0,0)});
 
+/* ---------- gender-aware suggestions (grooming, health, checklist, food targets, AI) ---------- */
+const GENDERS=[['male','Male'],['female','Female'],['other','Other / prefer not to say']];
+const GVAR={
+  groom:{
+    male:[['Beard trim & neckline / clean shave','weekly',''],['Clean razor, comb & trimmer','weekly',''],['Haircut (every 3–4 weeks)','monthly','Tracked at the top of this page'],['Trim eyebrows, nose & ear hair','monthly',''],['Replace razor / trimmer blade','quarterly','']],
+    female:[['Remove makeup before bed','daily','Micellar water or cleansing oil, then face wash'],['Hair mask / deep condition','weekly','Once a week for dry or coloured hair'],['Clean makeup brushes & sponges','weekly','Dirty brushes cause breakouts'],['Hair trim at the salon (every 6–8 weeks)','monthly','Tracked at the top of this page'],['Hair removal (wax / epilator / razor)','monthly',''],['Eyebrow threading / shaping','monthly',''],['Replace mascara & kajal (every 3 months)','quarterly','Old eye makeup can cause infections']],
+    other:[['Shave / hair removal','weekly',''],['Clean razor, comb & tools','weekly',''],['Haircut (every 4–6 weeks)','monthly','Tracked at the top of this page'],['Trim eyebrows, nose & ear hair','monthly','']]},
+  health:{
+    male:[['Self-check (skin moles, testicular self-exam)','monthly','Checkup',''],['PSA / prostate check (ask your doctor)','yearly','Checkup','From 45, or earlier if it runs in the family',45]],
+    female:[['Self-check (skin moles, breast self-exam)','monthly','Checkup','A few days after your period ends'],['Track your period & symptoms','monthly','Checkup','Note dates, flow and pain; irregular cycles are worth a check'],['Iron-rich food 4+ days a week','weekly','Nutrition','Spinach, chana, rajma, dates, jaggery, eggs; with lemon for absorption'],['Calcium & Vitamin D (curd, milk, ragi, sunlight)','weekly','Nutrition','Protects bones, especially after 30'],['Pap smear / cervical screening (every 3 years)','yearly','Checkup','From 25; ask your gynaecologist'],['Mammogram (every 1–2 years)','yearly','Checkup','From 40, or earlier if advised',40]],
+    other:[['Self-check (skin moles & body changes)','monthly','Checkup','']]},
+  products:{
+    male:[['Razor blades / cartridges','Beard / Shave',300,30,''],['Beard oil','Beard / Shave',350,90,'']],
+    female:[['Makeup remover / micellar water','Face',300,60,''],['Conditioner','Hair',350,60,''],['Kajal / eyeliner','Makeup',250,90,'Replace every 3 months'],['Sanitary pads / menstrual cup','Period care',300,30,'A cup lasts years; pads about a month'],['Wax strips / razor','Hair removal',250,45,'']],
+    other:[['Razor / trimmer blades','Shave / hair removal',300,45,'']]},
+  check:{
+    male:[['Health','Learn the testicular self-exam (1 minute a month)','Testicular cancer is most common at 15–35 and very treatable when caught early.']],
+    female:[['Health','HPV vaccine (best before 26; ask your doctor up to 45)','Protects against cervical cancer.'],['Health','See a gynaecologist for irregular periods or PCOS signs','PCOS is common and very manageable once diagnosed.'],['Health','Get haemoglobin and iron (ferritin) checked yearly','Anaemia is very common among Indian women.']],
+    other:[]},
+  cats:{male:['Beard / Shave'],female:['Makeup','Period care','Hair removal'],other:['Shave / hair removal']},
+  cut:{male:28,female:49,other:35}};
+const gKey=g=>['male','female','other'].includes(g)?g:'other';
+function genderCats(g){const base=['Face','Hair','Body','Oral care','Fragrance','Tools'],used=(state.grooming?.products||[]).map(x=>x.category).filter(Boolean);const out=[...new Set([...base,...(g?GVAR.cats[gKey(g)]:[]),...used])];PROD_CATS.length=0;PROD_CATS.push(...out)}
+// Swap only the app's built-in suggestions; never touch what the person added, ticked, bought or completed.
+function applyGender(g,silent){
+  const p=state.profile,k=gKey(g),age=num(p.age);p.gender=g||'';p.genderAsked=true;
+  const all=(sec)=>Object.values(GVAR[sec]).flat();
+  const want=(sec)=>GVAR[sec][k].filter(x=>!x[4]||typeof x[4]!=='number'||age>=x[4]);
+  const habits=state.health.habits;
+  const varNames=new Set([...all('groom').map(x=>x[0]),...all('health').map(x=>x[0])]);
+  const wantNames=new Set([...GVAR.groom[k].map(x=>x[0]),...want('health').map(x=>x[0])]);
+  const used=h=>Object.values(state.health.checks||{}).some(c=>c&&c[h.id]);
+  state.health.habits=habits.filter(h=>!varNames.has(h.name)||wantNames.has(h.name)||used(h));
+  const have=new Set(state.health.habits.map(h=>h.name));let added=0;
+  for(const [n,per,d] of GVAR.groom[k])if(!have.has(n)){const h={id:uid(),name:n,period:per,area:'Grooming',detail:d,auto:''};Object.assign(h,defaultReminder(h));state.health.habits.push(h);added++}
+  for(const [n,per,area,d] of want('health'))if(!have.has(n)){const h={id:uid(),name:n,period:per,area,detail:d,auto:''};Object.assign(h,defaultReminder(h));state.health.habits.push(h);added++}
+  // blood test: add Hb/ferritin for women
+  const bt=state.health.habits.find(h=>h.name==='Full-body blood test');if(bt){const base='CBC, lipid, HbA1c, TSH, Vit D, B12, LFT, KFT';if(bt.detail===base||bt.detail===base+', ferritin')bt.detail=k==='female'?base+', ferritin':base}
+  const G=state.grooming;const pNames=new Set(all('products').map(x=>x[0])),pWant=new Set(GVAR.products[k].map(x=>x[0]));
+  G.products=G.products.filter(x=>!pNames.has(x.name)||pWant.has(x.name)||x.bought);
+  const pHave=new Set(G.products.map(x=>x.name));for(const [n,c,pr,l,no] of GVAR.products[k])if(!pHave.has(n))G.products.push({id:uid(),name:n,category:c,price:pr,lastsDays:l,bought:'',notes:no});
+  if([28,35,49].includes(num(G.cutEvery))||!G.cutEvery)G.cutEvery=GVAR.cut[k];
+  state.checklist=state.checklist||[];const cNames=new Set(all('check').map(x=>x[1])),cWant=new Set(GVAR.check[k].map(x=>x[1]));
+  state.checklist=state.checklist.filter(c=>!cNames.has(c.item)||cWant.has(c.item)||c.done);
+  const cHave=new Set(state.checklist.map(c=>c.item));for(const [a,it,why] of GVAR.check[k])if(!cHave.has(it))state.checklist.push({id:uid(),area:a,item:it,why,done:false});
+  genderCats(g);
+  if(!silent){commit();toast(g?'Grooming, health and food suggestions updated for you':'Saved','tick')}
+}
+function genderPrompt(page){
+  if(!['grooming','health','today'].includes(page)||state.profile.gender||state.profile.genderAsked)return'';
+  return `<div class="card gprompt">${icoBox('users','var(--violet)')}<div class="nb"><b>Personalise your grooming & health lists</b><div class="tiny muted">We’ll suggest the right routine, products and check-ups for you. Your own entries stay as they are.</div></div>
+  <div class="gseg3">${GENDERS.map(([k,l])=>`<button type="button" data-gset="${k}">${l}</button>`).join('')}</div><button class="ic sm" data-gset="skip" aria-label="Not now">${ic('x')}</button></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-gset]');if(!b)return;e.preventDefault();e.stopPropagation();const g=b.dataset.gset;if(g==='skip'){state.profile.genderAsked=true;commit();return}applyGender(g)},true);
+document.addEventListener('change',e=>{const s=e.target.closest('select[data-gender]');if(!s)return;applyGender(s.value)});
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
@@ -4538,7 +4594,7 @@ function render(){
   renderShell();if(scryOpen)runSearch(scryQ);
   const main=$('#main');
   document.body.classList.toggle('free',!hasPlus());
-  main.innerHTML=plusBanner()+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved in this browser${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
+  main.innerHTML=plusBanner()+genderPrompt(ui.page)+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved in this browser${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
   const animate=pageChanged&&!RM();
   main.classList.toggle('anim',animate);$('#side').classList.toggle('anim-side',animate);
   if(animate){
