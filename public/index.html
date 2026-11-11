@@ -4422,7 +4422,7 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='gaddf')return;e.p
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#gcel')?.classList.contains('show'))gClose()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.game&&!document.body.classList.contains('locked')&&G().fchk!==ds(today())){gTick();save();render()}});
 
-const NAV=[['Life',[['today','Today','sun'],['streak','Streak & rewards','flame'],['overview','Overview','grid'],['notes','Notes & journal','journal'],['history','Day history','clock'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+const NAV=[['Life',[['overview','Overview','grid'],['today','Today','sun'],['notes','Notes & journal','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
 const PAGES={admin:pAdmin,streak:pStreak,today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
@@ -4641,7 +4641,7 @@ document.addEventListener('click',e=>{
     case'mealText':mealText();return;
     case'pushTest':apiFetch('/api/push/test',{method:'POST',body:{}}).then(r=>toast(r.devices?`Push sent to ${r.sent} of ${r.devices} device${r.devices>1?'s':''}`:'Turn on notifications on this device first','bell')).catch(x=>toast(x.message,'x'));return;
     case'cutToday':state.grooming.lastCut=ds(today());logAct('scissors','Haircut');{const h=state.health.habits.find(x=>/^Haircut/.test(x.name));if(h)setDone(h,true)}commit();burst(...lastXY,16);toast('Fresh cut logged','scissors');return;
-    case'bell':menu=null;go('today');return;
+    case'bell':menu=null;go('notify');return;
     case'new':menu=menu==='new'?null:'new';renderShell();return;
     case'theme':lumen(el);return;
     case'export':download(`life-dashboard-backup-${ds(today())}.json`,JSON.stringify(state,null,1),'application/json');return;
