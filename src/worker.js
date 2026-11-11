@@ -2,6 +2,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { sendPush } from './webpush.js';
 import { gameRoutes, gameCron, applyReferral } from './game.js';
+import { rzpRoutes, rzpWebhook, rzpReady, autopayOf } from './razorpay.js';
 
 const DAY = 86400000;
 const MODEL = 'claude-haiku-5-5';
@@ -48,7 +49,8 @@ async function usageToday(env, uid) {
 async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
   return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
-    usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY };
+    usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 499), vapidPublicKey: env.VAPID_PUBLIC_KEY,
+    autopayReady: rzpReady(env), autopay: await autopayOf(env, u.id).catch(() => null) };
 }
 
 /* ---------------- AI tasks (prompts and schemas live on the server) ---------------- */
@@ -393,6 +395,7 @@ async function api(req, env, url) {
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, '', 0) });
   }
 
+  if (p === '/api/billing/rzp/webhook' && m === 'POST') return rzpWebhook(req, env);
   if (p === '/api/billing/webhook' && m === 'POST') {
     if (!cfReady(env)) return err(404, 'not_found');
     const raw = await req.text(), ts = req.headers.get('x-webhook-timestamp') || '', sig = req.headers.get('x-webhook-signature') || '';
@@ -474,6 +477,7 @@ async function api(req, env, url) {
   const u = await currentUser(env, req);
   if (!u) return err(401, 'not_signed_in');
   if (p.startsWith('/api/game')) { const r = await gameRoutes(req, env, p, m, body, u); if (r) return r; }
+  if (p.startsWith('/api/billing/rzp/')) { const r = await rzpRoutes(req, env, p, m, body, u, url); if (r) return r; }
   if (Date.now() - (u.last_seen || 0) > 10 * 60e3) {
     await env.DB.prepare('UPDATE users SET last_seen = ? WHERE id = ?').bind(Date.now(), u.id).run();
     await env.DB.prepare('INSERT OR IGNORE INTO active_days (user_id, day) VALUES (?, ?)').bind(u.id, istDay()).run();

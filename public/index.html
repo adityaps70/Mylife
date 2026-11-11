@@ -989,6 +989,8 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gsl-lbl{display:flex;align-items:center;gap:7px;margin-top:6px;font-size:15px}
 .gsl-e{font-size:20px;display:inline-block}.gsl-e.gbop{animation:gpop .4s cubic-bezier(.3,1.6,.5,1)}
 .gsl-scale{display:flex;justify-content:space-between;margin:4px 0 0;padding:0 2px}
+.planopt{border:1px solid var(--line2);border-radius:16px;padding:14px;margin-top:10px;display:grid;gap:8px}.planopt.rec{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 7%,transparent)}.planopt p{margin:0}
+.apline{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line2);background:var(--card2)}.apline svg{flex:none;margin-top:2px}.apline.on{border-color:color-mix(in srgb,var(--lime) 45%,transparent)}.apline.on svg{color:var(--lime)}.apline.warn{border-color:color-mix(in srgb,var(--red,#ff4f6e) 50%,transparent)}
 </style>
 </head>
 <body>
@@ -2358,7 +2360,7 @@ function pSettings(){
     <p class="small muted" style="margin-top:14px">The calendar file has every reminder, bill and EMI with alerts. Open it on your phone or import it into Google Calendar (Settings → Import) to get real push notifications.</p></div>
   <div class="card"><div class="ch">${icoBox('users','var(--lime)')}<div><h3>Account</h3><div class="sub">${esc(account?.user?.email||'')}</div></div><span class="sp"></span><span class="pill lime">${esc(statusLabel())}</span></div>
     <div class="kpis"><div class="kpi"><div class="l">Plan</div><div class="v" style="font-size:18px">${account?.user?.status==='owner'?'Owner':account?.user?.status==='active'?'Plus':'Free trial'}</div><div class="h">${account?.user?.status==='trial'?'then ₹'+(account?.price||499)+'/month':account?.user?.status==='expired'?'ended':account?.user?.status==='active'?'until '+fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short',year:'numeric'}):'no limits on features'}</div></div><div class="kpi"><div class="l">AI actions today</div><div class="v" style="font-size:18px">${usage.used} / ${usage.limit}</div><div class="h">resets at midnight</div></div></div>
-    <div class="inline" style="margin-top:14px">${account?.user?.status==='owner'?'':account?.user?.status==='active'?`<button class="btn" data-act="subscribe">Add a month · ₹${account?.price||499}</button>`:`<button class="btn lime" data-act="subscribe">Subscribe · ₹${account?.price||499}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
+    ${account?.user?.status==='owner'?'':autopayLine()}<div class="inline" style="margin-top:14px">${account?.user?.status==='owner'?'':AP_ON(account?.autopay)?`<button class="btn" data-act="cancelAutopay">Turn off autopay</button>`:account?.user?.status==='active'?`<button class="btn" data-act="subscribe">${account?.autopayReady?'Set up autopay or add a month':'Add a month · ₹'+(account?.price||499)}</button>`:`<button class="btn lime" data-act="subscribe">Subscribe · ₹${account?.price||499}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
     <form id="pwform" class="fields" style="margin-top:16px"><div class="fld"><label>Current password</label><input type="password" name="cur" autocomplete="current-password" required></div><div class="fld"><label>New password</label><input type="password" name="nw" autocomplete="new-password" minlength="8" required></div>
     <div class="inline wide" style="grid-column:1/-1"><button class="btn" type="submit">${ic('lock')} Change password</button><span id="pwmsg" class="small"></span></div></form></div>
   <div class="card"><h3 style="margin-bottom:6px">Sections</h3><p class="small muted" style="margin-bottom:12px">Choose what shows in the menu.</p><div class="chips">${FOCUS.filter(([k])=>FOCUS_PAGES[k]).map(([k,l])=>{const on=!(FOCUS_PAGES[k]||[]).every(pg=>(state.profile.hidden||[]).includes(pg));return `<button class="chip ${on?'on':''}" data-sect="${k}">${on?'✓ ':''}${l}</button>`}).join('')}</div>
@@ -2538,7 +2540,7 @@ function checkPaywall(){
   P.classList.add('show');
 }
 function loadCashfree(){return window.Cashfree?Promise.resolve(window.Cashfree):new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://sdk.cashfree.com/js/v3/cashfree.js';sc.onload=()=>res(window.Cashfree);sc.onerror=()=>rej(new Error('Couldn’t load the payment page. Check your internet and try again.'));document.head.appendChild(sc)})}
-function subscribe(){
+function payOnce(){
   const d=$('#dlg');let saved='';try{saved=localStorage.getItem('selfstreak-phone')||''}catch(e){}
   const u=account?.user||{},renew=u.status==='active';
   d.innerHTML=`<form class="vbody" id="payf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${renew?'Add a month of Self Streak Plus':'Subscribe to Self Streak Plus'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
@@ -2556,6 +2558,48 @@ function subscribe(){
       CF({mode:o.mode}).checkout({paymentSessionId:o.paymentSessionId,redirectTarget:'_self'});
     }catch(err){msg.textContent=err.message;btn.disabled=false;btn.textContent=`Continue to pay ₹${account?.price||499}`;const m=$('#paymsg');if(m)m.textContent=err.message}};
 }
+
+/* ---------- plan chooser: Razorpay autopay (monthly) or Cashfree one-off month ---------- */
+const AP_ON=a=>a&&['active','authenticated'].includes(a.status)&&!a.cancelling;
+function subscribe(){if(!account?.autopayReady)return payOnce();
+  const d=$('#dlg'),u=account?.user||{},price=account?.price||499,left=Math.max(u.paidUntil||0,u.status==='trial'?u.trialEnds||0:0),later=left>Date.now()+2*3600e3;
+  d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Self Streak Plus</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
+  <p class="small muted" style="margin:4px 0 10px">Choose how you want to pay. Same Plus either way.</p>
+  <div class="planopt rec"><div class="inline" style="justify-content:space-between"><b>Autopay · ₹${price}/month</b><span class="pill lime nodot">Recommended</span></div>
+    <p class="small muted">Set it up once with UPI Autopay or a card. Renews every month so your streak never breaks. Cancel anytime in Settings.${later?` <b>Nothing is charged until ${fmt(new Date(left),{day:'numeric',month:'short'})}</b>, when your current access ends (your bank may hold ₹1–5 to verify, then return it).`:''}</p>
+    <button class="btn lime" id="apGo" style="width:100%;justify-content:center;height:46px">Set up autopay</button></div>
+  <div class="planopt"><b>Pay for one month · ₹${price}</b><p class="small muted">UPI, cards or netbanking. No auto-debit; we remind you before it ends.</p><button class="btn" id="onceGo" style="width:100%;justify-content:center">Pay once</button></div>
+  <p class="tiny faint" id="apmsg"></p>
+  <p class="tiny faint">By continuing you agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/refunds" target="_blank">Refund &amp; cancellation policy</a>.</p></div>`;
+  if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));
+  $('#onceGo').onclick=()=>payOnce();$('#apGo').onclick=startAutopay;
+}
+function loadRazorpay(){return window.Razorpay?Promise.resolve(window.Razorpay):new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://checkout.razorpay.com/v1/checkout.js';sc.onload=()=>res(window.Razorpay);sc.onerror=()=>rej(new Error('Couldn’t load the payment page. Check your internet and try again.'));document.head.appendChild(sc)})}
+async function startAutopay(){
+  const btn=$('#apGo'),msg=$('#apmsg');if(btn){btn.disabled=true;btn.textContent='Opening…'}if(msg)msg.textContent='';
+  try{const [o,RP]=await Promise.all([apiFetch('/api/billing/rzp/subscribe',{method:'POST',body:{}}),loadRazorpay()]);
+    const rp=new RP({key:o.key,subscription_id:o.subscriptionId,name:'Self Streak',description:`Self Streak Plus · ₹${o.price}/month`,image:location.origin+'/icon-192.png',
+      prefill:{email:account?.user?.email||'',name:state.profile.name||''},theme:{color:'#09090b'},
+      handler:async r=>{workDialog('Turning on autopay','Confirming with your bank…');
+        try{await apiFetch('/api/billing/rzp/verify',{method:'POST',body:r});const m=await apiFetch('/api/me');account={...account,...m};closeDlg($('#dlg'));checkPaywall();render();
+          toast(account.autopay?.status==='active'?`Autopay is on. Plus until ${fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short'})} 🎉`:'Autopay is set up 🎉','tick');burst(innerWidth/2,innerHeight/2,40)}
+        catch(e){closeDlg($('#dlg'));toast(e.message||'Couldn’t confirm autopay yet. It will update within a few minutes.','x')}},
+      modal:{ondismiss:()=>{const b=$('#apGo');if(b){b.disabled=false;b.textContent='Set up autopay'}}}});
+    rp.on('payment.failed',e=>{const m=$('#apmsg');if(m)m.textContent=(e?.error?.description||'Payment failed')+'. Try again or use Pay once.'});
+    rp.open();
+  }catch(err){if(msg)msg.textContent=err.message;if(btn){btn.disabled=false;btn.textContent='Set up autopay'}}
+}
+async function cancelAutopay(){
+  const a=account?.autopay,u=account?.user||{};
+  if(!confirm(a?.status==='active'?`Turn off autopay? You keep Plus until ${fmt(new Date(u.paidUntil),{day:'numeric',month:'short',year:'numeric'})}, then it won’t renew.`:'Turn off autopay? Nothing more will be charged.'))return;
+  try{await apiFetch('/api/billing/rzp/cancel',{method:'POST',body:{}});const m=await apiFetch('/api/me');account={...account,...m};render();toast('Autopay is off. No more charges.','tick')}
+  catch(e){toast(e.message||'Couldn’t turn off autopay. Please try again.','x')}
+}
+function autopayLine(){const a=account?.autopay;if(!a||!account?.autopayReady)return'';const d=t=>fmt(new Date(t),{day:'numeric',month:'short',year:'numeric'});
+  if(AP_ON(a))return `<div class="apline on">${ic('tick')}<div><b>Autopay on · ₹${account?.price||499}/month</b><div class="tiny muted">${a.chargeAt?'Next charge '+d(a.chargeAt):a.currentEnd?'Renews '+d(a.currentEnd):'Set up, first charge when your current access ends'} · UPI Autopay / card via Razorpay</div></div></div>`;
+  if(a.cancelling||a.status==='cancelled')return `<div class="apline">${ic('x')}<div><b>Autopay off</b><div class="tiny muted">${account.user.status==='active'?'Plus until '+d(account.user.paidUntil)+'. It won’t renew.':'No more charges.'}</div></div></div>`;
+  if(['pending','halted'].includes(a.status))return `<div class="apline warn">${ic('x')}<div><b>Autopay payment failed</b><div class="tiny muted">Razorpay will retry. Check your UPI app or card, or pay once below.</div></div></div>`;
+  return ''}
 async function verifyPayment(orderId){
   workDialog('Confirming your payment','This takes a few seconds…');
   for(let i=0;i<6;i++){
@@ -4540,6 +4584,7 @@ document.addEventListener('click',e=>{
     case'jsave':{const card=el.closest('.card'),t=$('#jl').value.trim(),k=ds(today()),J=state.journal=state.journal||{},m=num(card.dataset.mood||J[k]?.m);if(!t&&!m){toast('Write a line first','journal');return}J[k]={t,m};commit();toast('Saved today’s line','journal');return}
     case'logout':logout();return;
     case'subscribe':subscribe();return;
+    case'cancelAutopay':cancelAutopay();return;
     case'jsave2':{const t=($('#jl2')?.value||'').trim(),k=ds(today()),J=state.journal=state.journal||{};if(!t){toast('Write a line first','x');return}J[k]={...(J[k]||{}),t:t.slice(0,500)};commit();toast('Saved to your journal','journal');return}
     case'admRefresh':admLoad(true);toast('Refreshing…','clock');return;
     case'noSavings':state.profile.noSavings=true;commit();toast('Got it. Add savings any time from Savings.','tick');return;
