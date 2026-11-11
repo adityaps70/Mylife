@@ -1,5 +1,5 @@
 /* Aditya OS service worker: offline app shell + reminder notifications */
-const CACHE='selfstreak-mwbs4b0k';
+const CACHE='selfstreak-mwbsfgdp';
 const SHELL=['./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all([c.addAll(SHELL).catch(()=>{}),fetch('./app').then(r=>r.ok&&c.put('./index.html',r)).catch(()=>{})])).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=='nudges').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
