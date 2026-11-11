@@ -997,6 +997,30 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .upcols ul{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:7px;font-size:13px}.upcols li{display:flex;gap:8px;align-items:flex-start}.upcols li svg{color:var(--lime-text,var(--lime));flex:none;margin-top:2px}.upcols li span{flex:none}.upcols li.hl{font-weight:700;color:var(--text)}
 @media (max-width:560px){.upcols{grid-template-columns:1fr}}
 body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--faint)}
+
+/* phone: assistant bar collapses to one round button; tap to open the full bar */
+.askbar .abtog{display:none}
+@media (max-width:760px){
+  .askbar{left:auto;right:16px;transform:none;width:58px;padding:0 7px;transition:width .35s var(--spring),left .35s var(--spring)}
+  .askbar .abtog{display:grid;background:var(--lime);color:var(--lime-ink);flex:0 0 44px;order:3}
+  .askbar .abtog svg.i{grid-area:1/1;transition:transform .35s var(--spring),opacity .2s}
+  .askbar .abtog .sx{opacity:0;transform:rotate(-90deg) scale(.5)}
+  .askbar:not(.open) .ask-text,.askbar:not(.open) .ab:not(.abtog){display:none}
+  .askbar:not(.open){width:56px;height:56px;padding:0;background:none;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .askbar:not(.open) .abtog{width:56px;height:56px;flex-basis:56px;box-shadow:0 10px 28px -6px rgba(0,0,0,.6),0 0 0 6px color-mix(in srgb,var(--lime) 14%,transparent)}
+  .askbar:not(.open) .abtog svg.i{width:24px;height:24px}
+  .askbar.open{width:calc(100vw - 32px)}
+  .askbar.open .abtog{background:var(--card2);color:var(--text)}
+  .askbar.open .abtog .so{opacity:0;transform:rotate(90deg) scale(.5)}
+  .askbar.open .abtog .sx{opacity:1;transform:none}
+  .askbar.open .ask-text{animation:fadein .25s ease .1s backwards}
+  body.navopen .askbar{transform:translateY(20px)}
+  .ph-hide{display:none}
+  .phead .actions{flex-wrap:nowrap;width:100%}
+  .phead .actions .btn{flex:1 1 0;min-width:0;justify-content:center;padding:0 8px;gap:6px;font-size:13px}
+  .scry-res,.pop.wide.scry-res{max-height:50dvh!important}
+}
+@keyframes fadein{from{opacity:0}}
 </style>
 </head>
 <body>
@@ -1017,7 +1041,7 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
   <main id="main"></main>
 </div>
 <dialog id="dlg"></dialog>
-<div class="askbar" role="group" aria-label="Assistant"><button class="ask-text" data-act="ask"><svg class="i" viewBox="0 0 24 24" style="color:var(--lime-text)"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span>Log anything…</span></button><button class="ab" data-act="askcam" aria-label="Camera: meal, bill or receipt" title="Camera"><svg class="i" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg></button><button class="ab mic" data-act="askmic" aria-label="Speak" title="Speak (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button></div>
+<div class="askbar" role="group" aria-label="Assistant"><button class="ab abtog" type="button" aria-label="Open assistant" aria-expanded="false"><svg class="i so" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><svg class="i sx" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button class="ask-text" data-act="ask"><svg class="i" viewBox="0 0 24 24" style="color:var(--lime-text)"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span>Log anything…</span></button><button class="ab" data-act="askcam" aria-label="Camera: meal, bill or receipt" title="Camera"><svg class="i" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg></button><button class="ab mic" data-act="askmic" aria-label="Speak" title="Speak (V)"><svg class="i" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button></div>
 <dialog id="asst" aria-label="Assistant"></dialog>
 <dialog id="voice" aria-label="Quick log"></dialog>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -1908,7 +1932,7 @@ function pOverview(){
   const recent=[...state.tx].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
   const S=SEASON[m];
   return `${phead(fmt(t,{weekday:'long',month:'long',day:'numeric'}),`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${esc(state.profile.first||'there')}`,
-    `<button class="btn" data-act="import">${ic('bank')} Import statement</button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
+    `<button class="btn" data-act="import">${ic('bank')} <span>Import<span class="ph-hide"> statement</span></span></button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
   <div class="stack">${sampleBanner()}${prioStrip()}
   <div class="ov"><div class="stack">
     ${!moneySetup().ready?setupCard():`<div class="card hero"><div style="min-width:0">
@@ -4402,6 +4426,13 @@ function plusBanner(){
  [['openAssistant','ai'],['openVoice','ai'],['mealText','scan'],['mealPhoto','scan'],['scanBill','scan'],['openImport','import'],['makeDaySummary','summary']].forEach(([n,k])=>lock(n,k));
  const of=window.openForm;window.openForm=function(coll,id,...rest){if(!hasPlus()&&!id&&['bills','loans','cards','goals'].includes(coll)){upsell('add');return}return of.call(this,coll,id,...rest)}}
 document.addEventListener('click',e=>{if(e.target.closest('[data-act="freeinfo"]')){e.preventDefault();upsell(null)}});
+
+/* phone: toggle the collapsed assistant button */
+document.addEventListener('click',e=>{const bar=document.querySelector('.askbar');if(!bar)return;
+  const fab=e.target.closest('.askbar .abtog');
+  if(fab){const o=!bar.classList.contains('open');bar.classList.toggle('open',o);fab.setAttribute('aria-expanded',o);fab.setAttribute('aria-label',o?'Close assistant bar':'Open assistant');return}
+  if(bar.classList.contains('open')&&(!e.target.closest('.askbar')||e.target.closest('.askbar [data-act]'))){bar.classList.remove('open');bar.querySelector('.abtog')?.setAttribute('aria-expanded','false')}
+});
 
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
