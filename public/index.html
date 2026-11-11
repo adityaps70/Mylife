@@ -1536,6 +1536,28 @@ function defaults(){
 /* ================= state ================= */
 try{const r=new URLSearchParams(location.search).get('ref');if(r&&/^[A-Za-z0-9]{6}$/.test(r))localStorage.setItem('ss_ref',r.toUpperCase())}catch(e){}
 const gRef=()=>{try{return localStorage.getItem('ss_ref')||''}catch(e){return ''}};
+/* ---------- running inside the Self Streak Android / iOS app (Capacitor shell) ---------- */
+const IN_APP=/SelfStreakApp\//.test(navigator.userAgent)||!!window.Capacitor?.isNativePlatform?.();
+const APP_OS=IN_APP?(window.Capacitor?.getPlatform?.()||(/iPhone|iPad/.test(navigator.userAgent)?'ios':'android')):'web';
+if(IN_APP){
+  document.documentElement.classList.add('in-app','app-'+APP_OS);
+  const P=window.Capacitor?.Plugins||{};
+  // Native haptics instead of navigator.vibrate (iPhone web views ignore vibrate)
+  if(P.Haptics){const H=P.Haptics;navigator.vibrate=pat=>{const ms=Array.isArray(pat)?Math.max(...pat):+pat||10;try{ms>=25?H.impact({style:'MEDIUM'}):H.impact({style:'LIGHT'})}catch(e){}return true}}
+  try{P.StatusBar?.setStyle({style:'DARK'});if(APP_OS==='android')P.StatusBar?.setBackgroundColor({color:'#09090b'})}catch(e){}
+  try{P.SplashScreen?.hide()}catch(e){}
+  // Android back button: close what's open first, then go back a page, then leave the app
+  P.App?.addListener?.('backButton',()=>{
+    const open=[...document.querySelectorAll('dialog[open]')];if(open.length){closeDlg(open[open.length-1]);return}
+    if($('#gcel')?.classList.contains('show')){gClose();return}if($('#gchest')?.classList.contains('show')){gChestClose();return}
+    if(document.body.classList.contains('navopen')){document.body.classList.remove('navopen');return}
+    if(document.querySelector('.askbar.open')){document.querySelector('.askbar').classList.remove('open');return}
+    if(ui.page==='settings'&&ui.setSec&&innerWidth<=760){ui.setSec=null;render();return}
+    if(ui.page!=='overview'){go('overview');return}
+    P.App.exitApp?.();
+  });
+}
+
 let storageOK=true;
 function load(raw){
   let s=null;
@@ -2599,6 +2621,7 @@ function showReset(mode,msg){
 let gCfg=null;
 function loadGsi(){return window.google?.accounts?.id?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=res;sc.onerror=rej;document.head.appendChild(sc)})}
 async function googleButton(S){
+  if(IN_APP)return; // Google blocks its sign-in inside app web views; email + password works in the app
   try{gCfg=gCfg||await apiFetch('/api/config');if(!gCfg.googleClientId)return;await loadGsi();
     const wrap=$('#gwrap'),host=$('#gbtn');if(!wrap||!host)return;wrap.hidden=false;
     google.accounts.id.initialize({client_id:gCfg.googleClientId,callback:googleCredential,ux_mode:'popup',auto_select:false,itp_support:true,context:S?'signup':'signin'});

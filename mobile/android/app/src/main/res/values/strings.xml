@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Self Streak</string>
+    <string name="title_activity_main">Self Streak</string>
+    <string name="package_name">com.selfstreak.app</string>
+    <string name="custom_url_scheme">com.selfstreak.app</string>
+</resources>

@@ -3,3 +3,13 @@ node_modules/
 .dev.vars
 .claude/
 brag-output*/work/
+# mobile app (Capacitor)
+mobile/node_modules/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/ios/App/build/
+mobile/ios/DerivedData/
+*.keystore
+*.jks
