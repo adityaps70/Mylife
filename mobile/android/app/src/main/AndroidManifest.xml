@@ -34,6 +34,11 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Mic for voice logging, camera for bill / meal scans -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <!-- Health Connect: keep only what Self Streak uses (steps, sleep, weight, workouts, mindfulness read; water write). -->
     <uses-permission android:name="android.permission.health.WRITE_STEPS" tools:node="remove" />
     <uses-permission android:name="android.permission.health.READ_DISTANCE" tools:node="remove" />

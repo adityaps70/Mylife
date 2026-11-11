@@ -1588,20 +1588,20 @@ async function hkSync(loud){
   if(!loud&&Date.now()-hkLast<3*60e3)return;
   hkBusy=true;hkLast=Date.now();
   const t=today(),start=addDays(t,-6),iso=d=>d.toISOString(),now=new Date();
-  const got={steps:0,sleep:0,weight:0,workouts:0,mind:0};
+  const got={steps:0,sleep:0,weight:0,workouts:0,mind:0},seen={steps:0,sleep:0};
   const L=k=>state.health.logs[k]=state.health.logs[k]||{};
   const habit=re=>state.health.habits.find(h=>h.period==='daily'&&re.test(h.name));
   try{
     // Steps: per-day sums (the OS removes phone/watch double counting)
     try{const r=await HK.queryAggregated({dataType:'steps',startDate:iso(start),endDate:iso(now),bucket:'day',aggregation:'sum'});
-      for(const s of r?.samples||[]){const k=ds(new Date(s.startDate)),v=Math.round(num(s.value));if(v>0&&k>=ds(start)&&k<=ds(t)){const l=L(k);if(v>num(l.steps)){l.steps=v;got.steps++}}}}catch(e){console.warn('hk steps',e)}
+      for(const s of r?.samples||[]){const k=ds(new Date(s.startDate)),v=Math.round(num(s.value));if(v>0&&k>=ds(start)&&k<=ds(t)){const l=L(k);if(v!==num(l.steps)){l.steps=v;got.steps++}if(l._prev)delete l._prev.steps;if(k===ds(t))seen.steps=v}}}catch(e){console.warn('hk steps',e)}
     // Sleep: asleep time from 6 pm the evening before to 2 pm, counted on the day you woke up
     try{const r=await HK.readSamples({dataType:'sleep',startDate:iso(new Date(+addDays(start,-1)+18*3600e3)),endDate:iso(now),limit:1000});
       const iv={};const asleep=s=>!s||!['inBed','awake'].includes(s);
       for(const s of r?.samples||[]){
         const parts=s.stages?.length?s.stages.filter(x=>asleep(x.stage)).map(x=>[+new Date(x.startDate),+new Date(x.endDate)]):asleep(s.sleepState)?[[+new Date(s.startDate),+new Date(s.endDate)]]:[];
         for(const p of parts){const wake=new Date(p[1]);const day=wake.getHours()>=18?addDays(wake,1):wake;const k=ds(day);(iv[k]=iv[k]||[]).push(p)}}
-      for(const [k,arr] of Object.entries(iv)){if(k<ds(start)||k>ds(t))continue;const h=Math.round(hkUnion(arr)/36e5*2)/2;if(h>=1&&h<=16){const l=L(k);if(num(l.sleep)!==h){l.sleep=h;got.sleep++}}}}catch(e){console.warn('hk sleep',e)}
+      for(const [k,arr] of Object.entries(iv)){if(k<ds(start)||k>ds(t))continue;const h=Math.round(hkUnion(arr)/36e5*2)/2;if(h>=1&&h<=16){const l=L(k);if(num(l.sleep)!==h){l.sleep=h;got.sleep++}if(l._prev)delete l._prev.sleep;if(k===ds(t))seen.sleep=h}}}catch(e){console.warn('hk sleep',e)}
     // Weight: latest reading of each day, only fills days you haven't typed in
     try{const r=await HK.readSamples({dataType:'weight',startDate:iso(addDays(t,-29)),endDate:iso(now),limit:200,ascending:true});
       for(const s of r?.samples||[]){const k=ds(new Date(s.startDate)),v=Math.round(num(s.value)*10)/10;if(v>25&&v<300){const l=L(k);if(!num(l.weight)||l._hkw){if(l.weight!==v)got.weight++;l.weight=v;l._hkw=1}}}}catch(e){console.warn('hk weight',e)}
@@ -1618,8 +1618,11 @@ async function hkSync(loud){
     hkLS('last',Date.now());
     await hkWater();
     autoHabits();commit();
-    const n=got.steps+got.sleep+got.weight+got.workouts+got.mind;
-    if(loud)toast(n?`Synced from ${HK_NAME}`:`Connected to ${HK_NAME}. Nothing new yet.`,'tick');
+    hkLS('seen',{...seen,at:Date.now()});
+    if(loud){
+      if(seen.steps||seen.sleep)toast(`${HK_NAME}: ${seen.steps.toLocaleString('en-IN')} steps today${seen.sleep?` · ${seen.sleep} h sleep`:''}`,'tick');
+      else toast(APP_OS==='ios'?'No steps found yet. Check iPhone Settings → Health → Data Access & Devices → Self Streak and turn everything on.':'No steps found yet. Check Health Connect → App permissions → Self Streak.','x');
+    }
   }catch(e){console.error('health sync',e);if(loud)toast('Couldn’t read from '+HK_NAME,'x')}
   finally{hkBusy=false;if(ui.page==='health')render()}
 }
@@ -1634,7 +1637,7 @@ function hkCard(){
   if(!HK)return '';const H={on:hkOn(),last:hkLS('last')};
   if(!H.on)return `<div class="card hkcard"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>Connect ${HK_NAME}</h3><div class="sub">Fill steps, sleep and weight automatically, and tick your workout habit from your phone and watch.</div></div></div><button class="btn lime" data-hk="on" style="width:100%;justify-content:center">${ic('heart')} Connect ${HK_NAME}</button></div>`;
   const ago=H.last?Math.round((Date.now()-H.last)/60e3):null;
-  return `<div class="card hkcard on"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>${HK_NAME} connected</h3><div class="sub">Steps, sleep, weight and workouts sync by themselves${ago===null?'':` · synced ${ago<1?'just now':ago<60?ago+' min ago':Math.round(ago/60)+' h ago'}`}</div></div><button class="btn" data-hk="sync">${hkBusy?'Syncing…':'Sync now'}</button></div><button class="tiny faint" data-hk="off" style="background:none;border:0;padding:0;margin-top:6px;cursor:pointer">Turn off sync</button></div>`;
+  return `<div class="card hkcard on"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>${HK_NAME} connected</h3><div class="sub">${(()=>{const z=hkLS('seen')||{};return z.at?`Today: <b>${num(z.steps).toLocaleString('en-IN')} steps</b>${z.sleep?` · <b>${z.sleep} h sleep</b>`:''} from ${HK_NAME}`:'Steps, sleep, weight and workouts sync by themselves'})()}${ago===null?'':` · synced ${ago<1?'just now':ago<60?ago+' min ago':Math.round(ago/60)+' h ago'}`}</div></div><button class="btn" data-hk="sync">${hkBusy?'Syncing…':'Sync now'}</button></div><button class="tiny faint" data-hk="off" style="background:none;border:0;padding:0;margin-top:6px;cursor:pointer">Turn off sync</button></div>`;
 }
 if(HK){
   window.Capacitor.Plugins.App?.addListener?.('appStateChange',s=>{if(s?.isActive)setTimeout(()=>hkSync(),400)});

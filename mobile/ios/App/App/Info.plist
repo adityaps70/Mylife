@@ -35,10 +35,16 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Self Streak uses the camera when you choose to scan a bill, a receipt or a meal.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Self Streak reads your steps, sleep, weight, workouts and mindful minutes from Apple Health so you don't have to type them in. Your health data is never used for ads.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Self Streak saves the glasses of water you log in the app to Apple Health, so your water intake stays in one place.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Self Streak uses the microphone when you tap the mic to speak a note, an expense or a habit. Recording only happens while you hold or tap the mic.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Self Streak opens your photos when you choose a bill, receipt or meal photo to scan.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
