@@ -4417,7 +4417,7 @@ function pStreak(){
   <div class="card"><div class="ch"><div><h3>Badges</h3><div class="sub">Swipe to see them all</div></div><span class="sp"></span><span class="pill nodot">${Object.keys(g.badges).length}/${G_BADGES.length}</span></div>
     <div class="gbadges">${[...G_BADGES].sort((x,y)=>(g.badges[y[0]]?1:0)-(g.badges[x[0]]?1:0)).map(([id,e,name,desc])=>`<div class="gbd ${g.badges[id]?'got':''}" title="${esc(desc)}"><span>${e}</span><b>${esc(name)}</b><small>${g.badges[id]?'Earned '+fmt(pd(g.badges[id]),{day:'numeric',month:'short'}):esc(desc)}</small></div>`).join('')}</div></div>
   <div class="card"><div class="ch"><h3>Settings</h3></div>
-    ${[['risk','Streak reminders','A push at 8 pm (and 10:30 pm) only if you haven’t logged anything that day'],['recap','Weekly recap email','Sunday evening summary of your week'],['board','Show me in leagues','Your first name and last initial appear in your weekly league'],['sound','Celebration sounds','Little sounds when you earn XP, hit goals and badges']].map(([k,l,d])=>`<div class="gset"><div class="nb"><b class="small">${l}</b><div class="tiny muted">${d}</div></div><button type="button" class="switch ${g[k]?'on':''}" role="switch" aria-checked="${!!g[k]}" aria-label="${l}" data-g="tog" data-k="${k}"></button></div>`).join('')}</div>
+    ${[['risk','Streak reminders','A push at 8 pm (and 10:30 pm) only if you haven’t logged anything that day'],['recap','Weekly recap','A Sunday-evening notification with your week in numbers'],['board','Show me in leagues','Your first name and last initial appear in your weekly league'],['sound','Celebration sounds','Little sounds when you earn XP, hit goals and badges']].map(([k,l,d])=>`<div class="gset"><div class="nb"><b class="small">${l}</b><div class="tiny muted">${d}</div></div><button type="button" class="switch ${g[k]?'on':''}" role="switch" aria-checked="${!!g[k]}" aria-label="${l}" data-g="tog" data-k="${k}"></button></div>`).join('')}</div>
   </div>`}
 
 /* ---- quest chest: tap 3 times to crack it open, coins fly into your XP ---- */
@@ -4547,7 +4547,7 @@ document.addEventListener('keydown',e=>{const el=e.target.closest?.('#gsl');if(!
 /* ---------- Free plan: after Plus/trial ends + 3 grace days, the app stays open; Plus features lock ---------- */
 const hasPlus=()=>!account||account.user.status!=='expired';
 const FREE_LIST=['Open the app and see all your data and history','Tick habits, add water and expenses by hand','Keep your streak 🔥, XP, quests and badges','See bills, EMIs and card due dates','Download all your data anytime'];
-const PLUS_LIST=[['ai','🤖','AI assistant: type or say it and it logs itself'],['scan','📷','Photo scans for meals, bills and receipts'],['import','🏦','Bank statement import'],['summary','✨','AI day summary'],['reminders','🔔','Push reminders, including streak reminders'],['leagues','🏆','Weekly leagues and the Sunday recap email'],['add','➕','Adding new bills, loans, cards and goals']];
+const PLUS_LIST=[['ai','🤖','AI assistant: type or say it and it logs itself'],['scan','📷','Photo scans for meals, bills and receipts'],['import','🏦','Bank statement import'],['summary','✨','AI day summary'],['reminders','🔔','Push reminders, including streak reminders'],['leagues','🏆','Weekly leagues and the Sunday recap'],['add','➕','Adding new bills, loans, cards and goals']];
 function upsell(key){
   const d=$('#dlg'),f=PLUS_LIST.find(x=>x[0]===key),price=account?.price||199,u=account?.user||{};
   const ended=u.plusEnds?fmt(new Date(u.plusEnds),{day:'numeric',month:'short'}):'';

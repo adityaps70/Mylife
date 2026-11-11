@@ -18,6 +18,8 @@
   "vars": {
     "DAILY_AI_LIMIT": "100",
     "AUTOPAY_LIVE": "1",
+    // Weekly recap + renewal reminder emails. "0" = push only (Resend free tier: 100/day). Set "1" once there are paying customers.
+    "EMAIL_UPDATES": "0",
     "AUTOPAY_TESTERS": "igforgamers@gmail.com",
     "TRIAL_DAYS": "7",
     "PRICE_INR": "199",

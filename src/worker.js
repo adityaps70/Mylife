@@ -692,8 +692,8 @@ export default {
     }
     return env.ASSETS.fetch(req);
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); ctx.waitUntil(gameCron(env, mailReady(env) ? sendMail : null).catch((e) => console.error('gameCron', e)));
+  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); ctx.waitUntil(gameCron(env, mailReady(env) && env.EMAIL_UPDATES === '1' ? sendMail : null).catch((e) => console.error('gameCron', e)));
     // Renewal reminders once a day around 10 am IST (deduped per user/step in the meta table).
     const hm = new Date(Date.now() + 5.5 * 3600e3); const mins = hm.getUTCHours() * 60 + hm.getUTCMinutes();
-    if (mins >= 600 && mins < 660) ctx.waitUntil(renewalReminders(env, mailReady(env) ? sendMail : null).catch((e) => console.error('renew', e))); },
+    if (mins >= 600 && mins < 660) ctx.waitUntil(renewalReminders(env, mailReady(env) && env.EMAIL_UPDATES === '1' ? sendMail : null).catch((e) => console.error('renew', e))); },
 };

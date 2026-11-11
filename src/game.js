@@ -169,8 +169,8 @@ function recapMail(name, s, streak, tier) {
   <p style="color:#a1a1aa;margin:0 0 18px">${escH(s.headline || 'Here’s what you did this week.')}</p>
   <table style="width:100%;border-collapse:collapse">${rows.map(([a, b]) => `<tr><td style="padding:10px 0;border-top:1px solid #26262c">${a}</td><td style="padding:10px 0;border-top:1px solid #26262c;text-align:right;font-weight:700">${escH(b)}</td></tr>`).join('')}</table>
   <a href="https://selfstreak.com/app#/streak" style="display:block;text-align:center;margin-top:22px;background:#d7f64a;color:#10120a;font-weight:800;padding:14px;border-radius:999px;text-decoration:none">Start next week strong →</a>
-  <p style="font-size:12px;color:#71717a;margin-top:18px">You get this every Sunday. Turn it off in Self Streak → Streak &amp; rewards → Weekly recap email.</p></div></div>`;
-  const text = `Your week on Self Streak\n\n${rows.map(([a, b]) => `${a}: ${b}`).join('\n')}\n\nhttps://selfstreak.com/app#/streak\nTurn off: Streak & rewards → Weekly recap email.`;
+  <p style="font-size:12px;color:#71717a;margin-top:18px">You get this every Sunday. Turn it off in Self Streak → Streak &amp; rewards → Weekly recap.</p></div></div>`;
+  const text = `Your week on Self Streak\n\n${rows.map(([a, b]) => `${a}: ${b}`).join('\n')}\n\nhttps://selfstreak.com/app#/streak\nTurn off: Streak & rewards → Weekly recap.`;
   return { html, text };
 }
 async function weeklyRecap(env, sendMail) {
@@ -179,7 +179,7 @@ async function weeklyRecap(env, sendMail) {
   for (const r of rows) {
     const s = parse(r.stats, null); if (!s || s.wk !== wk || !(s.active > 0)) continue;
     await env.DB.prepare('UPDATE game SET recap_sent = ? WHERE user_id = ?').bind(wk, r.user_id).run();
-    await pushTo(env, r.user_id, { title: 'Your week in Self Streak 📊', body: `${s.active}/7 active days · ${s.xp} XP · ${s.habits || 0} habits · ${s.water || 0} glasses of water. Tap to see it all.`, tag: 'recap', url: './#/streak' });
+    if (r.recap) await pushTo(env, r.user_id, { title: 'Your week in Self Streak 📊', body: `${s.active}/7 active days · ${s.xp} XP · ${s.habits || 0} habits · ${s.water || 0} glasses of water. Tap to see it all.`, tag: 'recap', url: './#/streak' });
     if (r.recap && sendMail) { try { const { html, text } = recapMail(shortName(r.name, r.user_id).split(' ')[0], s, r.streak, TIERS[r.tier] + ' league'); await sendMail(env, { to: r.email, subject: `Your week: ${s.active}/7 days, ${s.xp} XP 🔥`, html, text }); } catch (e) { console.error('recap mail', e); } }
   }
 }
