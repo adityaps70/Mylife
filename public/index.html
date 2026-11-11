@@ -2567,6 +2567,7 @@ function subscribe(){if(!account?.autopayReady)return payOnce();
   <p class="small muted" style="margin:4px 0 10px">Choose how you want to pay. Same Plus either way.</p>
   <div class="planopt rec"><div class="inline" style="justify-content:space-between"><b>Autopay · ₹${price}/month</b><span class="pill lime nodot">Recommended</span></div>
     <p class="small muted">Set it up once with UPI Autopay or a card. Renews every month so your streak never breaks. Cancel anytime in Settings.${later?` <b>Nothing is charged until ${fmt(new Date(left),{day:'numeric',month:'short'})}</b>, when your current access ends (your bank may hold ₹1–5 to verify, then return it).`:''}</p>
+    <div class="fld"><label for="apPhone">Mobile number</label><input id="apPhone" inputmode="numeric" autocomplete="tel" maxlength="14" placeholder="98XXXXXXXX" value="${esc((()=>{try{return localStorage.getItem('selfstreak-phone')||''}catch(e){return ''}})())}"><small>Razorpay needs it to set up the mandate.</small></div>
     <button class="btn lime" id="apGo" style="width:100%;justify-content:center;height:46px">Set up autopay</button></div>
   <div class="planopt"><b>Pay for one month · ₹${price}</b><p class="small muted">UPI, cards or netbanking. No auto-debit; we remind you before it ends.</p><button class="btn" id="onceGo" style="width:100%;justify-content:center">Pay once</button></div>
   <p class="tiny faint" id="apmsg"></p>
@@ -2576,10 +2577,13 @@ function subscribe(){if(!account?.autopayReady)return payOnce();
 }
 function loadRazorpay(){return window.Razorpay?Promise.resolve(window.Razorpay):new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://checkout.razorpay.com/v1/checkout.js';sc.onload=()=>res(window.Razorpay);sc.onerror=()=>rej(new Error('Couldn’t load the payment page. Check your internet and try again.'));document.head.appendChild(sc)})}
 async function startAutopay(){
-  const btn=$('#apGo'),msg=$('#apmsg');if(btn){btn.disabled=true;btn.textContent='Opening…'}if(msg)msg.textContent='';
+  const btn=$('#apGo'),msg=$('#apmsg'),phone=String($('#apPhone')?.value||'').replace(/\D/g,'').slice(-10);
+  if(!/^[6-9]\d{9}$/.test(phone)){if(msg)msg.textContent='Enter your 10-digit mobile number.';$('#apPhone')?.focus();return}
+  try{localStorage.setItem('selfstreak-phone',phone)}catch(e){}
+  if(btn){btn.disabled=true;btn.textContent='Opening…'}if(msg)msg.textContent='';
   try{const [o,RP]=await Promise.all([apiFetch('/api/billing/rzp/subscribe',{method:'POST',body:{}}),loadRazorpay()]);
     const rp=new RP({key:o.key,subscription_id:o.subscriptionId,name:'Self Streak',description:`Self Streak Plus · ₹${o.price}/month`,image:location.origin+'/icon-192.png',
-      prefill:{email:account?.user?.email||'',name:state.profile.name||''},theme:{color:'#09090b'},
+      prefill:{email:account?.user?.email||'',name:state.profile.name||'',contact:'+91'+phone},theme:{color:'#09090b'},
       handler:async r=>{workDialog('Turning on autopay','Confirming with your bank…');
         try{await apiFetch('/api/billing/rzp/verify',{method:'POST',body:r});const m=await apiFetch('/api/me');account={...account,...m};closeDlg($('#dlg'));checkPaywall();render();
           toast(account.autopay?.status==='active'?`Autopay is on. Plus until ${fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short'})} 🎉`:'Autopay is set up 🎉','tick');burst(innerWidth/2,innerHeight/2,40)}

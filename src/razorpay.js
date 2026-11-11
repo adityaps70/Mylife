@@ -71,11 +71,16 @@ export async function rzpRoutes(req, env, p, m, body, u, url) {
     if (u.plan === 'owner') return err(400, 'You’re the owner. No subscription needed.');
     const cur = await autopayOf(env, u.id);
     if (cur && ['active', 'authenticated'].includes(cur.status)) return err(409, 'Autopay is already on for your account.');
+    // Reuse an unfinished subscription from an earlier attempt instead of creating a new one each tap.
+    if (cur && cur.status === 'created' && Date.now() - (cur.updated || 0) < 6 * DAY) {
+      try { const old = await rzp(env, '/subscriptions/' + cur.id); if (old.status === 'created') return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: old.id, startAt: old.start_at ? old.start_at * 1000 : null, price: Number(env.PRICE_INR || 499) }); } catch {}
+    }
     // If this person still has trial/paid time, the first charge waits until it runs out.
     const left = Math.max(Number(u.paid_until) || 0, u.plan === 'active' ? 0 : Number(u.trial_ends) || 0);
     const startAt = left > Date.now() + 2 * 3600e3 ? Math.floor(left / 1000) : undefined;
     const s = await rzp(env, '/subscriptions', { method: 'POST', body: JSON.stringify({ plan_id: await ensurePlan(env), total_count: 120, quantity: 1, customer_notify: 1, ...(startAt ? { start_at: startAt } : {}), notes: { user_id: u.id, email: u.email } }) });
     await setMeta(env, 'rzpsub:' + s.id, u.id);
+    await setMeta(env, 'rzp:' + u.id, JSON.stringify({ id: s.id, status: 'created', currentEnd: null, chargeAt: null, updated: Date.now() }));
     return json({ key: env.RAZORPAY_KEY_ID, subscriptionId: s.id, startAt: startAt ? startAt * 1000 : null, price: Number(env.PRICE_INR || 499) });
   }
   if (p === '/api/billing/rzp/verify' && m === 'POST') {
