@@ -4,6 +4,9 @@
 import { sendPush } from './webpush.js';
 
 const DAY = 86400000;
+const GRACE = 3 * DAY;
+// SQL fragment: user `u` still has Plus (owner, paid, trial, or within the grace period). Bind (cut, cut).
+const PLUS_SQL = "(u.plan = 'owner' OR u.paid_until > ? OR u.trial_ends > ?)";
 const IST = 5.5 * 3600e3;
 export const TIERS = ['Bronze', 'Silver', 'Gold', 'Sapphire', 'Diamond'];
 const GROUP = 20;
@@ -77,7 +80,7 @@ function together(a, b) {
 async function leagueOf(env, g, wk) {
   const since = addDay(istDay(), -14);
   const rows = (await env.DB.prepare(`SELECT g.user_id, u.name, g.streak, CASE WHEN g.week_key = ? THEN g.week_xp ELSE 0 END AS xp
-      FROM game g JOIN users u ON u.id = g.user_id WHERE g.tier = ? AND g.board = 1 AND (g.last_active >= ? OR g.user_id = ?) ORDER BY g.user_id`).bind(wk, g.tier, since, g.user_id).all()).results;
+      FROM game g JOIN users u ON u.id = g.user_id WHERE g.tier = ? AND g.board = 1 AND (g.last_active >= ? OR g.user_id = ?) AND (${PLUS_SQL} OR g.user_id = ?) ORDER BY g.user_id`).bind(wk, g.tier, since, g.user_id, Date.now() - GRACE, Date.now() - GRACE, g.user_id).all()).results;
   const i = rows.findIndex((r) => r.user_id === g.user_id);
   if (i < 0) return { tier: g.tier, name: TIERS[g.tier], members: [], hidden: true };
   const grp = rows.slice(Math.floor(i / GROUP) * GROUP, Math.floor(i / GROUP) * GROUP + GROUP).sort((a, b) => b.xp - a.xp || a.user_id.localeCompare(b.user_id));
@@ -147,7 +150,8 @@ async function once(env, k) { const r = await env.DB.prepare('INSERT OR IGNORE I
 async function streakRisk(env, late) {
   const t = istDay(), y = addDay(t, -1);
   const rows = (await env.DB.prepare(`SELECT g.user_id, g.streak, g.freezes FROM game g WHERE g.risk = 1 AND g.streak >= ? AND g.last_active = ? AND (g.risk_sent IS NULL OR g.risk_sent <> ?)
-      AND EXISTS (SELECT 1 FROM push_subs p WHERE p.user_id = g.user_id)`).bind(late ? 3 : 1, y, t + (late ? 'L' : '')).all()).results;
+      AND EXISTS (SELECT 1 FROM push_subs p WHERE p.user_id = g.user_id)
+      AND EXISTS (SELECT 1 FROM users u WHERE u.id = g.user_id AND ${PLUS_SQL})`).bind(late ? 3 : 1, y, t + (late ? 'L' : ''), Date.now() - GRACE, Date.now() - GRACE).all()).results;
   for (const r of rows) {
     const msg = late
       ? { title: `⏰ 90 minutes left for your ${r.streak}-day streak`, body: r.freezes ? 'A streak freeze will cover you, but one glass of water keeps it for real.' : 'Log one thing (a glass of water counts) before midnight to keep it.', tag: 'streak-risk', url: './#/streak' }
@@ -171,7 +175,7 @@ function recapMail(name, s, streak, tier) {
 }
 async function weeklyRecap(env, sendMail) {
   const wk = weekKey();
-  const rows = (await env.DB.prepare(`SELECT g.user_id, g.stats, g.streak, g.tier, g.recap, u.email, u.name FROM game g JOIN users u ON u.id = g.user_id WHERE g.week_key = ? AND (g.recap_sent IS NULL OR g.recap_sent <> ?)`).bind(wk, wk).all()).results;
+  const rows = (await env.DB.prepare(`SELECT g.user_id, g.stats, g.streak, g.tier, g.recap, u.email, u.name FROM game g JOIN users u ON u.id = g.user_id WHERE g.week_key = ? AND (g.recap_sent IS NULL OR g.recap_sent <> ?) AND ${PLUS_SQL}`).bind(wk, wk, Date.now() - GRACE, Date.now() - GRACE).all()).results;
   for (const r of rows) {
     const s = parse(r.stats, null); if (!s || s.wk !== wk || !(s.active > 0)) continue;
     await env.DB.prepare('UPDATE game SET recap_sent = ? WHERE user_id = ?').bind(wk, r.user_id).run();
@@ -181,7 +185,7 @@ async function weeklyRecap(env, sendMail) {
 }
 async function leagueRollover(env) {
   const wk = weekKey(), pw = addDay(wk, -7), since = addDay(istDay(), -21), moves = [];
-  const all = (await env.DB.prepare(`SELECT user_id, tier, CASE WHEN week_key = ? THEN week_xp ELSE 0 END AS xp FROM game WHERE board = 1 AND last_active >= ? ORDER BY user_id`).bind(pw, since).all()).results;
+  const all = (await env.DB.prepare(`SELECT user_id, tier, CASE WHEN week_key = ? THEN week_xp ELSE 0 END AS xp FROM game g WHERE board = 1 AND last_active >= ? AND EXISTS (SELECT 1 FROM users u WHERE u.id = g.user_id AND ${PLUS_SQL}) ORDER BY user_id`).bind(pw, since, Date.now() - GRACE, Date.now() - GRACE).all()).results;
   for (let tier = 0; tier < TIERS.length; tier++) {
     const rows = all.filter((r) => r.tier === tier);
     for (let s = 0; s < rows.length; s += GROUP) {

@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { sendPush } from './webpush.js';
 import { gameRoutes, gameCron, applyReferral } from './game.js';
 import { rzpRoutes, rzpWebhook, rzpReady, autopayOf } from './razorpay.js';
+import { renewalReminders } from './renew.js';
 
 const DAY = 86400000;
 const MODEL = 'claude-haiku-5-5';
@@ -35,12 +36,14 @@ async function currentUser(env, req) {
   const row = await env.DB.prepare('SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = ? AND s.expires > ?').bind(await sha256(token), Date.now()).first();
   return row || null;
 }
+const GRACE = 3 * DAY; // everything keeps working for 3 days after Plus/trial ends
 function planStatus(u) {
   const now = Date.now();
   if (u.plan === 'owner') return 'owner';
   if (u.paid_until > now) return 'active';
   if (u.trial_ends > now) return 'trial';
-  return 'expired';
+  if (Math.max(u.paid_until || 0, u.trial_ends || 0) + GRACE > now) return 'grace';
+  return 'expired'; // Free plan: app + manual logging work; Plus features are locked
 }
 async function usageToday(env, uid) {
   const r = await env.DB.prepare('SELECT count FROM usage WHERE user_id = ? AND day = ?').bind(uid, istDay()).first();
@@ -48,7 +51,7 @@ async function usageToday(env, uid) {
 }
 async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
-  return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, created: u.created },
+  return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, plusEnds: Math.max(u.paid_until || 0, u.trial_ends || 0), graceDays: GRACE / DAY, created: u.created },
     usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 199), vapidPublicKey: env.VAPID_PUBLIC_KEY,
     autopayReady: rzpReady(env) && (env.AUTOPAY_LIVE === '1' || String(env.AUTOPAY_TESTERS || '').toLowerCase().split(',').map((x) => x.trim()).includes(u.email)), autopay: await autopayOf(env, u.id).catch(() => null) };
 }
@@ -642,7 +645,9 @@ async function api(req, env, url) {
 /* ---------------- scheduled: send due reminders as push notifications ---------------- */
 async function sendDuePushes(env) {
   const now = Date.now();
-  const rows = (await env.DB.prepare('SELECT s.user_id, s.items, s.last_sent FROM push_schedule s WHERE EXISTS (SELECT 1 FROM push_subs p WHERE p.user_id = s.user_id)').all()).results;
+  // Push reminders are a Plus feature: skip people on the Free plan (past trial/paid end + grace).
+  const rows = (await env.DB.prepare(`SELECT s.user_id, s.items, s.last_sent FROM push_schedule s WHERE EXISTS (SELECT 1 FROM push_subs p WHERE p.user_id = s.user_id)
+      AND EXISTS (SELECT 1 FROM users u WHERE u.id = s.user_id AND (u.plan = 'owner' OR u.paid_until > ? OR u.trial_ends > ?))`).bind(now - GRACE, now - GRACE).all()).results;
   for (const r of rows) {
     const since = Math.max(Number(r.last_sent) || 0, now - 20 * 60000);
     const due = JSON.parse(r.items).filter((i) => i.at > since && i.at <= now);
@@ -679,5 +684,8 @@ export default {
     }
     return env.ASSETS.fetch(req);
   },
-  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); ctx.waitUntil(gameCron(env, mailReady(env) ? sendMail : null).catch((e) => console.error('gameCron', e))); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(sendDuePushes(env)); ctx.waitUntil(gameCron(env, mailReady(env) ? sendMail : null).catch((e) => console.error('gameCron', e)));
+    // Renewal reminders once a day around 10 am IST (deduped per user/step in the meta table).
+    const hm = new Date(Date.now() + 5.5 * 3600e3); const mins = hm.getUTCHours() * 60 + hm.getUTCMinutes();
+    if (mins >= 600 && mins < 660) ctx.waitUntil(renewalReminders(env, mailReady(env) ? sendMail : null).catch((e) => console.error('renew', e))); },
 };

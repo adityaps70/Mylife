@@ -991,6 +991,12 @@ dialog h3{font-size:19px;font-weight:600;margin-bottom:16px}
 .gsl-scale{display:flex;justify-content:space-between;margin:4px 0 0;padding:0 2px}
 .planopt{border:1px solid var(--line2);border-radius:16px;padding:14px;margin-top:10px;display:grid;gap:8px}.planopt.rec{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 7%,transparent)}.planopt p{margin:0}
 .apline{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line2);background:var(--card2)}.apline svg{flex:none;margin-top:2px}.apline.on{border-color:color-mix(in srgb,var(--lime) 45%,transparent)}.apline.on svg{color:var(--lime)}.apline.warn{border-color:color-mix(in srgb,var(--red,#ff4f6e) 50%,transparent)}
+.plusban{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 18px;padding:14px 16px;border-radius:16px;border:1px solid color-mix(in srgb,var(--lime) 45%,transparent);background:color-mix(in srgb,var(--lime) 8%,var(--card))}
+.plusban .nb{flex:1;min-width:200px}.plusban .pb-i{font-size:22px}.plusban.warn{border-color:color-mix(in srgb,var(--orange,#ff8a4c) 55%,transparent);background:color-mix(in srgb,var(--orange,#ff8a4c) 9%,var(--card))}.plusban.free{border-color:var(--line2);background:var(--card)}
+.upcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 4px}.upcols>div{border:1px solid var(--line);border-radius:14px;padding:12px}.upcols .plus{border-color:color-mix(in srgb,var(--lime) 45%,transparent);background:color-mix(in srgb,var(--lime) 6%,transparent)}
+.upcols ul{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:7px;font-size:13px}.upcols li{display:flex;gap:8px;align-items:flex-start}.upcols li svg{color:var(--lime-text,var(--lime));flex:none;margin-top:2px}.upcols li span{flex:none}.upcols li.hl{font-weight:700;color:var(--text)}
+@media (max-width:560px){.upcols{grid-template-columns:1fr}}
+body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--faint)}
 </style>
 </head>
 <body>
@@ -2409,7 +2415,7 @@ async function aiTask(task,input){
   try{const d=await apiFetch('/api/ai',{method:'POST',body:{task,input}});usage={used:d.used,limit:d.limit};return d.result}
   catch(e){if(e.data&&e.data.limit!==undefined)usage={used:e.data.used??usage.used,limit:e.data.limit};if(e.status===402){account.user.status='expired';checkPaywall()}throw e}
 }
-const statusLabel=()=>{if(!account)return '';const u=account.user;if(u.status==='owner')return 'Owner';if(u.status==='active')return 'Plus';if(u.status==='trial'){const d=Math.max(0,Math.ceil((u.trialEnds-Date.now())/86400000));return `Trial · ${d} day${d===1?'':'s'} left`}return 'Trial ended'};
+const statusLabel=()=>{if(!account)return '';const u=account.user;if(u.status==='owner')return 'Owner';if(u.status==='active')return 'Plus';if(u.status==='trial'){const d=Math.max(0,Math.ceil((u.trialEnds-Date.now())/86400000));return `Trial · ${d} day${d===1?'':'s'} left`}if(u.status==='grace'){const d=Math.max(1,Math.ceil((u.plusEnds+(u.graceDays||3)*86400000-Date.now())/86400000));return `Ended · ${d} grace day${d===1?'':'s'}`}return 'Free plan'};
 
 /* ---------- auth screen ---------- */
 function showAuth(mode='login',msg=''){
@@ -2529,7 +2535,11 @@ async function boot(){
 
 /* ---------- paywall + Cashfree checkout ---------- */
 function checkPaywall(){
-  const P=$('#pay');if(!account||account.user.status!=='expired'){P.classList.remove('show');return}
+  // No more hard wall: people on the Free plan keep using the app. Show a one-time "what changed" sheet instead.
+  const P=$('#pay');P.classList.remove('show');
+  if(!account||account.user.status!=='expired')return;
+  const k='ss-free-seen-'+account.user.id+'-'+(account.user.plusEnds||0);let seen=false;try{seen=!!localStorage.getItem(k);localStorage.setItem(k,'1')}catch(e){}
+  if(!seen)setTimeout(()=>upsell(null),700);return;
   P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center">${logo(64)}</div>
   <h2 style="font-size:24px">Your free trial has ended</h2><p class="small muted">Keep your streaks, reminders and AI logging going.</p>
   <div class="price">₹${account.price||199}<small> / month</small></div>
@@ -2700,7 +2710,7 @@ async function fileToAI(file){
   const im=await shrinkImage(file);return {media:im.media,data:im.b64};
 }
 function workDialog(title,msg){const d=$('#dlg');imp=null;d.classList.remove('wide');d.innerHTML=`<div class="vbody"><h3 style="margin:0">${esc(title)}</h3><div class="scan"></div><div class="vstatus">${esc(msg)}</div></div>`;if(!d.open)d.showModal();return d}
-function needAI(){if(hasAI())return true;toast(!navigator.onLine?'You’re offline. AI features need internet.':account?.user?.status==='expired'?'Your trial has ended.':`You’ve used all ${usage.limit} AI actions for today. They reset at midnight.`,'x');return false}
+function needAI(){if(hasAI())return true;toast(!navigator.onLine?'You’re offline. AI features need internet.':account?.user?.status==='expired'?'AI features are part of Plus. Upgrade in Settings.':`You’ve used all ${usage.limit} AI actions for today. They reset at midnight.`,'x');return false}
 
 /* ---------- meals ---------- */
 function dayFood(date=ds(today())){const L=(state.meals||{})[date]||[];return {L,kcal:sum(L,x=>x.kcal),p:sum(L,x=>x.p),c:sum(L,x=>x.c),f:sum(L,x=>x.f)}}
@@ -4224,7 +4234,7 @@ function pStreak(){
   </div>
   <div class="r2">
     <div class="card"><div class="ch"><div><h3>${esc(T[0])} league</h3><div class="sub">${L&&L.endsAt?`Ends in ${gLeft(L.endsAt)} · top ${L.up||0} move up${L.down?`, bottom ${L.down} move down`:''}`:'Weekly XP ranking'}</div></div><span class="sp"></span><span class="gtier" style="--tc:${T[1]}">${['🥉','🥈','🥇','💠','💎'][S?.tier||0]}</span></div>
-      ${!account?'<div class="empty small">Sign in to join leagues.</div>':!S?'<div class="empty small">Loading…</div>':!g.board?'<div class="empty small">You’re hidden from leagues. Turn it on below to compete.</div>':
+      ${!account?'<div class="empty small">Sign in to join leagues.</div>':!hasPlus()?`<div class="empty small">🔒 Weekly leagues are part of Plus.<div style="margin-top:10px"><button class="btn sm lime" data-act="subscribe">Unlock leagues</button></div></div>`:!S?'<div class="empty small">Loading…</div>':!g.board?'<div class="empty small">You’re hidden from leagues. Turn it on below to compete.</div>':
       `<div class="glb">${L.members.map(m=>`<div class="glr ${m.me?'me':''} ${m.rank<=L.up?'up':m.rank>L.members.length-L.down?'dn':''}"><span class="rk">${m.rank}</span><span class="nm">${esc(m.name)}${m.me?' (you)':''}</span><span class="tiny muted">🔥${m.streak||0}</span><b>${m.xp} XP</b></div>`).join('')}</div>
       ${L.members.length<2?'<p class="tiny muted" style="margin-top:10px">You’re first in this league. Invite friends to race them on weekly XP.</p>':''}`}
       <div class="tiny faint" style="margin-top:10px">Leagues show first name and last initial only.</div></div>
@@ -4366,6 +4376,33 @@ document.addEventListener('keydown',e=>{const el=e.target.closest?.('#gsl');if(!
   let v=+el.getAttribute('aria-valuenow');v=e.key==='Home'?GS_MIN:e.key==='End'?GS_MAX:Math.max(GS_MIN,Math.min(GS_MAX,v+d));el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));gSlPreview(v);gSlTick(v);
   clearTimeout(gSlKT);gSlKT=setTimeout(()=>{gSlCommit(v);setTimeout(()=>$('#gsl')?.focus(),50)},700)});
 
+/* ---------- Free plan: after Plus/trial ends + 3 grace days, the app stays open; Plus features lock ---------- */
+const hasPlus=()=>!account||account.user.status!=='expired';
+const FREE_LIST=['Open the app and see all your data and history','Tick habits, add water and expenses by hand','Keep your streak 🔥, XP, quests and badges','See bills, EMIs and card due dates','Download all your data anytime'];
+const PLUS_LIST=[['ai','🤖','AI assistant: type or say it and it logs itself'],['scan','📷','Photo scans for meals, bills and receipts'],['import','🏦','Bank statement import'],['summary','✨','AI day summary'],['reminders','🔔','Push reminders, including streak reminders'],['leagues','🏆','Weekly leagues and the Sunday recap email'],['add','➕','Adding new bills, loans, cards and goals']];
+function upsell(key){
+  const d=$('#dlg'),f=PLUS_LIST.find(x=>x[0]===key),price=account?.price||199,u=account?.user||{};
+  const ended=u.plusEnds?fmt(new Date(u.plusEnds),{day:'numeric',month:'short'}):'';
+  d.innerHTML=`<div class="vbody upsell"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${f?`${f[1]} Unlock with Plus`:`You’re on the Free plan`}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
+  <p class="small muted" style="margin:4px 0 6px">${f?'This is part of Self Streak Plus. Your data and streak stay safe on the Free plan.':`Your ${u.paidUntil?'Plus plan':'free trial'} ended${ended?' on '+ended:''}. Your data and streak are safe, and the basics still work.`}</p>
+  <div class="upcols"><div><div class="glabel">Free</div><ul>${FREE_LIST.map(x=>`<li>${ic('tick')}${esc(x)}</li>`).join('')}</ul></div>
+  <div class="plus"><div class="glabel">Plus · ₹${price}/month</div><ul>${PLUS_LIST.map(x=>`<li class="${x[0]===key?'hl':''}"><span>${x[1]}</span>${esc(x[2])}</li>`).join('')}</ul></div></div>
+  <div class="dlg-actions"><button class="btn ghost" data-x>Not now</button><span style="flex:1"></span><button class="btn lime" id="upGo">Upgrade · ₹${price}/month</button></div></div>`;
+  if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));$('#upGo').onclick=()=>subscribe();
+}
+function plusBanner(){
+  if(!account)return'';const u=account.user,price=account.price||199,d=t=>fmt(new Date(t),{day:'numeric',month:'short'});
+  if(u.status==='expired')return `<div class="plusban free"><span class="pb-i">🔒</span><div class="nb"><b>You’re on the Free plan</b><div class="tiny muted">Habits, water, expenses and your streak still work. AI logging, scans, reminders and leagues need Plus.</div></div><button class="btn sm" data-act="freeinfo">What’s included</button><button class="btn sm lime" data-act="subscribe">Upgrade · ₹${price}/mo</button></div>`;
+  if(u.status==='grace'){const lock=u.plusEnds+(u.graceDays||3)*86400000;return `<div class="plusban warn"><span class="pb-i">⏳</span><div class="nb"><b>Your ${u.paidUntil?'Plus plan':'free trial'} ended on ${d(u.plusEnds)}</b><div class="tiny muted">Everything keeps working until ${d(lock)}, then AI features, reminders and leagues lock.</div></div><button class="btn sm lime" data-act="subscribe">Renew · ₹${price}/mo</button></div>`}
+  if((u.status==='trial'||u.status==='active')&&!AP_ON(account.autopay)){const left=Math.ceil((u.plusEnds-Date.now())/86400000);
+    if(left<=3&&left>=0)return `<div class="plusban"><span class="pb-i">⏰</span><div class="nb"><b>${u.status==='trial'?'Your free trial':'Plus'} ends ${left<=0?'today':left===1?'tomorrow':'in '+left+' days'} (${d(u.plusEnds)})</b><div class="tiny muted">Set up autopay once and your streak never breaks.</div></div><button class="btn sm lime" data-act="subscribe">${u.status==='trial'?'Subscribe':'Renew'} · ₹${price}/mo</button></div>`}
+  return''}
+// Lock Plus features at the function level, so buttons, menus and keyboard shortcuts are all covered.
+{const lock=(name,key)=>{const fn=window[name];if(typeof fn!=='function')return;window[name]=function(...a){if(!hasPlus()){upsell(key);return}return fn.apply(this,a)}};
+ [['openAssistant','ai'],['openVoice','ai'],['mealText','scan'],['mealPhoto','scan'],['scanBill','scan'],['openImport','import'],['makeDaySummary','summary']].forEach(([n,k])=>lock(n,k));
+ const of=window.openForm;window.openForm=function(coll,id,...rest){if(!hasPlus()&&!id&&['bills','loans','cards','goals'].includes(coll)){upsell('add');return}return of.call(this,coll,id,...rest)}}
+document.addEventListener('click',e=>{if(e.target.closest('[data-act="freeinfo"]')){e.preventDefault();upsell(null)}});
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
@@ -4420,7 +4457,8 @@ function render(){
   if(!PAGES[ui.page])ui.page='overview';
   renderShell();if(scryOpen)runSearch(scryQ);
   const main=$('#main');
-  main.innerHTML=PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved in this browser${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
+  document.body.classList.toggle('free',!hasPlus());
+  main.innerHTML=plusBanner()+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved in this browser${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
   const animate=pageChanged&&!RM();
   main.classList.toggle('anim',animate);$('#side').classList.toggle('anim-side',animate);
   if(animate){
@@ -4659,9 +4697,9 @@ $('#importFile').addEventListener('change',e=>{
 });
 matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>render());
 
-{const p=location.hash.replace('#/','');if(PAGES[p])ui.page=p}
+let pendingRenew=/renew/.test(location.hash);{const p=location.hash.replace('#/','').replace(/\?.*$/,'');if(PAGES[p])ui.page=p}
 {const q=new URLSearchParams(location.search);if(q.get('do')){pendingDo=q.get('do');history.replaceState(null,'',location.pathname+location.hash)}}
-function afterOpen(){if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
+function afterOpen(){if(pendingRenew){pendingRenew=false;setTimeout(()=>{if(account?.user?.status!=='owner')subscribe()},600)}if(pendingDo){const a=pendingDo;pendingDo=null;setTimeout(()=>runDo(a),400)}setTimeout(checkMissed,1500)}
 $('#dlg').addEventListener('close',()=>{if(imp){imp=null}$('#dlg').classList.remove('wide')});
 $('#voice').addEventListener('close',onNotesClose);
 $('#asst').addEventListener('close',()=>{clearTimeout(asSil);if(asMR&&asMR.state!=='inactive')asRecStop(false);releaseMic();AS.listening=false;try{asRec?.abort()}catch(e){}});
