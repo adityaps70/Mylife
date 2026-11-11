@@ -3850,7 +3850,7 @@ async function asMic(){
   asChunks=[];try{asMR=new MediaRecorder(asStream,mt?{mimeType:mt}:undefined)}catch(e){releaseMic();return asMicSR()}
   asMR.ondataavailable=e=>{if(e.data&&e.data.size)asChunks.push(e.data)};
   asMR.onstop=()=>{releaseMic();asTranscribe()};
-  AS.listening=true;AS.interim='';AS.heard=false;renderAsst();chime(true);
+  AS.listening=true;AS.interim='';AS.heard=false;AS.tapHint=false;renderAsst();chime(true);
   setTimeout(()=>{try{if(asMR&&asMR.state==='inactive')asMR.start(250);asT0=performance.now()}catch(e){}},220);
   let an=null,data=null;try{micSrc=micCtx.createMediaStreamSource(asStream);an=micCtx.createAnalyser();an.fftSize=1024;micSrc.connect(an);data=new Uint8Array(an.fftSize)}catch(e){an=null}
   const t0=performance.now();let loud=t0,live=false;
@@ -3860,7 +3860,8 @@ async function asMic(){
     if(rms>.025){loud=now;if(now-t0>350)AS.heard=true}
     // If the meter can't hear anything at all (some iPhones), don't guess: wait for a tap, up to 25 s.
     const meterDead=!live&&now-t0>1500;
-    if((AS.heard&&now-loud>1700)||(meterDead&&now-t0>25000)||(!meterDead&&!AS.heard&&now-t0>9000)||now-t0>55000){asRecStop(true);return}
+    if(meterDead&&!AS.tapHint){AS.tapHint=true;const f=$('#asIn');if(f)f.placeholder='Listening… tap ■ when you’re done'}
+    if((AS.heard&&now-loud>1200)||(meterDead&&now-t0>25000)||(!meterDead&&!AS.heard&&now-t0>9000)||now-t0>55000){asRecStop(true);return}
     asRaf=requestAnimationFrame(tick)};
   asRaf=requestAnimationFrame(tick);
 }

@@ -8,9 +8,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Play Self Streak's tap/chest/water sounds even when the ring/silent switch is on,
-        // mixed with whatever music is playing (the in-app Sound setting can still turn them off).
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        // Play Self Streak's sounds even when the ring/silent switch is on, mixed with music, and keep the
+        // microphone usable at the same time (so the voice level meter can detect when you stop talking).
+        try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetoothA2DP])
         try? AVAudioSession.sharedInstance().setActive(true)
         return true
     }
