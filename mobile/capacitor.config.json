@@ -10,7 +10,8 @@
       "www.selfstreak.com",
       "*.razorpay.com",
       "*.cashfree.com"
-    ]
+    ],
+    "errorPath": "index.html"
   },
   "appendUserAgent": "SelfStreakApp/1.0",
   "backgroundColor": "#09090b",
@@ -45,6 +46,9 @@
         "facebook": false,
         "twitter": false
       }
+    },
+    "LocalNotifications": {
+      "iconColor": "#d7f64a"
     }
   }
 }

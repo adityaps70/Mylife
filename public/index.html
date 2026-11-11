@@ -767,6 +767,14 @@ main{padding-bottom:110px!important}
 .water-big{display:flex;align-items:baseline;gap:8px}
 /* ================= notifications page ================= */
 .nhero{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.hkc{padding:16px 18px}.hkc-top{display:flex;align-items:center;gap:12px}.hkc-top .nb{flex:1;min-width:0}
+.hkc-ic{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;color:#ff5a7a;background:color-mix(in srgb,#ff5a7a 14%,transparent)}.hkc-ic svg{width:20px;height:20px}
+.hkc-t{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}.hkc-on{font-size:11px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:99px;color:var(--lime);background:color-mix(in srgb,var(--lime) 14%,transparent)}
+.hkc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.hkc-stats div{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.hkc-stats b{display:block;font-size:18px;letter-spacing:-.01em}.hkc-stats span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hkc-off{background:none;border:0;padding:0;margin-top:12px;color:var(--faint);font:inherit;font-size:12.5px;cursor:pointer}
+#offbar{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);white-space:nowrap;transform:translate(-50%,-140%);z-index:200;display:flex;gap:8px;align-items:center;max-width:calc(100vw - 32px);padding:9px 14px;border-radius:99px;background:#2a2410;color:#ffe089;border:1px solid #5a4a14;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .3s cubic-bezier(.2,.9,.3,1.2)}
+#offbar.show{transform:translate(-50%,0)}#offbar.ok{background:#16240f;color:var(--lime);border-color:#33501c}#offbar svg{width:16px;height:16px;flex:0 0 16px}
 .nhero .nb{flex:1;min-width:240px}
 .nbell{position:relative;width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--card2);color:var(--muted);flex:0 0 64px}
 .nhero.on .nbell{background:var(--lime);color:var(--lime-ink)}
@@ -775,7 +783,8 @@ main{padding-bottom:110px!important}
 @keyframes ring{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(14deg)}80%{transform:rotate(-12deg)}85%{transform:rotate(8deg)}90%{transform:rotate(-4deg)}}
 .nhero.on .pulse{position:absolute;inset:0;border-radius:20px;box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 50%,transparent);animation:ping 2.4s ease-out infinite}
 .nact{display:flex;flex-direction:column;gap:8px}
-.ntl{display:grid;gap:16px}
+@media(max-width:600px){.nhero{gap:14px}.nhero .nb{flex:1 1 calc(100% - 100px);min-width:0}.nhero .nact{flex:1 1 100%;flex-direction:row}.nhero .nact .btn{flex:1;justify-content:center}}
+.ntl{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}.ntl-i .nb{min-width:0}
 .ntl-h{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:4px}
 .ntl-i{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
 .ntl-i:last-child{border-bottom:0}
@@ -1554,10 +1563,46 @@ if(IN_APP){
     if(document.body.classList.contains('navopen')){document.body.classList.remove('navopen');return}
     if(document.querySelector('.askbar.open')){document.querySelector('.askbar').classList.remove('open');return}
     if(ui.page==='settings'&&ui.setSec&&innerWidth<=760){ui.setSec=null;render();return}
+    if(goBack())return;
     if(ui.page!=='overview'){go('overview');return}
     P.App.exitApp?.();
   });
 }
+
+/* ---------- App: reminders as phone notifications (web push isn't available inside apps) ---------- */
+const LN=IN_APP?window.Capacitor?.Plugins?.LocalNotifications:null;let lnPerm='unknown';
+async function lnCheck(){if(!LN)return;try{lnPerm=(await LN.checkPermissions()).display||'prompt'}catch(e){}}
+async function lnEnable(){if(!LN)return;try{lnPerm=(await LN.requestPermissions()).display||'prompt'}catch(e){}
+  if(lnPerm==='granted'){state.nudges.enabled=true;commit();toast('Reminders are on','bell')}else{toast(APP_OS==='ios'?'Notifications are off. Turn them on in iPhone Settings → Notifications → Self Streak.':'Notifications are off. Turn them on in Android Settings → Apps → Self Streak → Notifications.','x');render()}}
+const lnId=(k,at)=>{let h=0;for(const c of k+'|'+at)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)%2000000000+1};
+async function lnSchedule(items){if(!LN||lnPerm!=='granted')return;
+  try{const p=await LN.getPending();const mine=(p.notifications||[]).filter(n=>n.extra?.ss);if(mine.length)await LN.cancel({notifications:mine.map(n=>({id:n.id}))});
+    const list=items.slice(0,60).map(i=>({id:lnId(i.tag||i.title,i.at),title:i.title,body:String(i.body||''),schedule:{at:new Date(i.at),allowWhileIdle:true},extra:{ss:1,url:i.url||''}}));
+    if(list.length)await LN.schedule({notifications:list})}catch(e){console.warn('local notifications',e)}}
+async function lnTest(){if(!LN)return;if(lnPerm!=='granted')return lnEnable();try{await LN.schedule({notifications:[{id:7,title:'Test reminder 💧',body:'Water check: open Self Streak to log a glass.',schedule:{at:new Date(Date.now()+5000)},extra:{ss:0,url:'./#/health'}}]});toast('A test reminder arrives in 5 seconds. Lock your phone to see it.','bell')}catch(e){toast('Couldn’t send a test reminder','x')}}
+if(LN){lnCheck();LN.addListener?.('localNotificationActionPerformed',a=>{const u=String(a?.notification?.extra?.url||'');const pg=u.replace(/^.*#\//,'');if(pg&&PAGES[pg.split(':')[0]])go(pg)})}
+
+/* ---------- App: haptics on taps ---------- */
+const HP=IN_APP?window.Capacitor?.Plugins?.Haptics:null;
+if(HP)document.addEventListener('click',e=>{const t=e.target.closest('button,a,[role=switch],[data-habit],[data-check],[data-glass],[data-go],[data-act],summary');if(!t||t.disabled)return;
+  try{t.matches('[role=switch],.switch,[data-check],[data-habit]')?HP.selectionChanged?.()||HP.impact({style:'LIGHT'}):HP.impact({style:'LIGHT'})}catch(e){}},true);
+
+/* ---------- App: swipe from the left edge to go back (iPhone) ---------- */
+const navStack=[];let navBack=false;
+function goBack(){const p=navStack.pop();if(!p)return false;navBack=true;go(p);navBack=false;return true}
+if(IN_APP&&APP_OS==='ios'){let sx=0,sy=0,dx=0,on=false,lock=false;
+  document.addEventListener('touchstart',e=>{const t=e.touches[0];on=t.clientX<22&&navStack.length&&!document.querySelector('dialog[open]')&&!document.body.classList.contains('navopen');sx=t.clientX;sy=t.clientY;dx=0;lock=false},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!on)return;const t=e.touches[0];dx=t.clientX-sx;const dy=t.clientY-sy;if(!lock){if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>8){on=false;return}if(dx>8)lock=true}
+    if(lock){const m=$('#main');if(m){m.style.transition='none';m.style.transform=`translateX(${Math.max(0,dx)}px)`;m.style.boxShadow='-12px 0 30px rgba(0,0,0,.45)'}}},{passive:true});
+  document.addEventListener('touchend',()=>{if(!on||!lock){on=false;return}on=false;const m=$('#main');if(!m)return;const done=dx>innerWidth*.28;
+    m.style.transition='transform .22s cubic-bezier(.2,.8,.2,1)';m.style.transform=done?`translateX(${innerWidth}px)`:'translateX(0)';
+    setTimeout(()=>{if(done){try{HP?.impact({style:'LIGHT'})}catch(e){}goBack();m.style.transition='none';m.style.transform='translateX(-24px)';m.style.opacity='.6';requestAnimationFrame(()=>{m.style.transition='transform .2s ease,opacity .2s ease';m.style.transform='';m.style.opacity=''})}m.style.boxShadow='';setTimeout(()=>{m.style.transition=''},260)},done?200:230)},{passive:true})}
+
+/* ---------- Offline notice ---------- */
+function offBar(){let b=$('#offbar');if(!b){b=document.createElement('div');b.id='offbar';b.setAttribute('role','status');document.body.appendChild(b)}
+  if(!navigator.onLine){b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01M3 3l18 18"/></svg><span>Offline · your changes will sync later</span>`;b.className='show'}
+  else if(b.classList.contains('show')){b.innerHTML='<span>Back online ✓</span>';b.className='show ok';setTimeout(()=>{if(navigator.onLine)b.className=''},1800)}}
+addEventListener('offline',offBar);addEventListener('online',offBar);setTimeout(offBar,1500);
 
 /* ---------- Apple Health (iOS) / Health Connect (Android): steps, sleep, weight, workouts, mindful minutes in; water out ---------- */
 const HK=IN_APP?window.Capacitor?.Plugins?.Health:null;
@@ -1637,7 +1682,10 @@ function hkCard(){
   if(!HK)return '';const H={on:hkOn(),last:hkLS('last')};
   if(!H.on)return `<div class="card hkcard"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>Connect ${HK_NAME}</h3><div class="sub">Fill steps, sleep and weight automatically, and tick your workout habit from your phone and watch.</div></div></div><button class="btn lime" data-hk="on" style="width:100%;justify-content:center">${ic('heart')} Connect ${HK_NAME}</button></div>`;
   const ago=H.last?Math.round((Date.now()-H.last)/60e3):null;
-  return `<div class="card hkcard on"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>${HK_NAME} connected</h3><div class="sub">${(()=>{const z=hkLS('seen')||{};return z.at?`Today: <b>${num(z.steps).toLocaleString('en-IN')} steps</b>${z.sleep?` · <b>${z.sleep} h sleep</b>`:''} from ${HK_NAME}`:'Steps, sleep, weight and workouts sync by themselves'})()}${ago===null?'':` · synced ${ago<1?'just now':ago<60?ago+' min ago':Math.round(ago/60)+' h ago'}`}</div></div><button class="btn" data-hk="sync">${hkBusy?'Syncing…':'Sync now'}</button></div><button class="tiny faint" data-hk="off" style="background:none;border:0;padding:0;margin-top:6px;cursor:pointer">Turn off sync</button></div>`;
+  const z=hkLS('seen')||{},when=ago===null?'not synced yet':ago<1?'synced just now':ago<60?`synced ${ago} min ago`:`synced ${Math.round(ago/60)} h ago`;
+  return `<div class="card hkc"><div class="hkc-top"><span class="hkc-ic">${ic('heart')}</span><div class="nb"><div class="hkc-t">${HK_NAME}<span class="hkc-on">Connected</span></div><div class="tiny muted">${hkBusy?'Syncing…':when}</div></div><button class="btn sm" data-hk="sync" ${hkBusy?'disabled':''}>${hkBusy?'Syncing…':'Sync now'}</button></div>
+    <div class="hkc-stats"><div><b>${num(z.steps).toLocaleString('en-IN')}</b><span>steps today</span></div><div><b>${z.sleep?z.sleep+' h':'—'}</b><span>sleep</span></div><div><b>Auto</b><span>weight, gym</span></div></div>
+    <button class="hkc-off" data-hk="off">Turn off sync</button></div>`;
 }
 if(HK){
   window.Capacitor.Plugins.App?.addListener?.('appStateChange',s=>{if(s?.isActive)setTimeout(()=>hkSync(),400)});
@@ -3086,6 +3134,7 @@ function pushSchedule(){
   pushT=setTimeout(async()=>{try{const now=Date.now();
     const items=!state.nudges.enabled?[]:[...todayNudges(),...nudgeItems(addDays(today(),1)),...nudgeItems(addDays(today(),2))].filter(i=>+i.at>now&&+i.at<now+72*3600e3&&relevant(i))
       .map(i=>({at:+i.at,title:i.title,body:bodyOf(i),tag:i.key,url:i.url,actions:i.actions,acts:i.acts}));
+    if(LN)await lnSchedule(items);
     await apiFetch('/api/push/schedule',{method:'PUT',body:{items}})}catch(e){}},2500);
 }
 
@@ -3684,8 +3733,8 @@ function exportRoutineICS(){
   L.push('END:VCALENDAR');download('self-streak-routine.ics',L.map(fold).join('\r\n'),'text/calendar');toast(`Calendar file with ${n} repeating reminders downloaded`,'calendar');
 }
 function pNotify(){
-  const N=state.nudges,perm='Notification' in window?Notification.permission:'unsupported',ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const N=state.nudges,perm=LN?(lnPerm==='granted'?'granted':lnPerm==='denied'?'denied':'default'):'Notification' in window?Notification.permission:'unsupported',ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const standalone=IN_APP||matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   const items=todayNudges(),now=Date.now(),F=N.fired;
   const status=i=>{const f=F[i.key];if(f)return f.s;if(+i.at>now)return relevant(i)?'up':'willskip';return 'passed'};
   const on=perm==='granted'&&N.enabled,next=items.find(i=>+i.at>now&&relevant(i));
@@ -3701,8 +3750,8 @@ function pNotify(){
     <div class="nbell">${ic('bell')}<span class="pulse"></span></div>
     <div class="nb"><div class="tiny faint" style="letter-spacing:.08em;text-transform:uppercase;font-weight:700">${on?'Reminders are on':'Reminders are off'}</div>
       <h2 style="font-size:22px;margin:4px 0">${on?(next?`Next: ${esc(next.title)}`:'Nothing else today'):perm==='denied'?'Notifications are blocked':perm==='unsupported'?(ios&&!standalone?'Add Self Streak to your Home Screen first':'This browser can’t show notifications'):'Turn on reminders'}</h2>
-      <div class="small muted">${on?(next?`${next.time} · ${inTxt}. ${sent} sent today, ${skipped} skipped because you’d already done them.`:`${sent} sent today, ${skipped} skipped because you’d already done them.`):perm==='denied'?'Allow notifications for this site in your browser or phone settings, then reload.':perm==='unsupported'?(ios?'In Safari: Share ⬆ → Add to Home Screen, then open Self Streak from your home screen.':'Use Chrome, Edge or Safari.'):'Water, habits, bills and birthdays, at the right time. Anything you’ve already done is skipped.'}</div>
-      <div class="chips" style="margin-top:12px"><span class="pill ${perm==='granted'?'lime':''}">Notifications ${perm==='granted'?'on':'off'}</span><span class="pill ${pushOn?'lime':''}">Push when app is closed ${pushOn?'on':'off'}</span><span class="pill ${standalone?'lime':''}">${standalone?'Installed':'Not installed'}</span></div></div>
+      <div class="small muted">${on?(next?`${next.time} · ${inTxt}. ${sent} sent today, ${skipped} skipped because you’d already done them.`:`${sent} sent today, ${skipped} skipped because you’d already done them.`):perm==='denied'?(LN?(APP_OS==='ios'?'Turn them on in iPhone Settings → Notifications → Self Streak.':'Turn them on in Settings → Apps → Self Streak → Notifications.'):'Allow notifications for this site in your browser or phone settings, then reload.'):perm==='unsupported'?(ios?'In Safari: Share ⬆ → Add to Home Screen, then open Self Streak from your home screen.':'Use Chrome, Edge or Safari.'):'Water, habits, bills and birthdays, at the right time. Anything you’ve already done is skipped.'}</div>
+      ${LN?'':`<div class="chips" style="margin-top:12px"><span class="pill ${perm==='granted'?'lime':''}">Notifications ${perm==='granted'?'on':'off'}</span><span class="pill ${pushOn?'lime':''}">Push when app is closed ${pushOn?'on':'off'}</span><span class="pill ${standalone?'lime':''}">${standalone?'Installed':'Not installed'}</span></div>`}</div>
     <div class="nact">${perm==='default'?`<button class="btn lime" data-act="notifOn">${ic('bell')} Turn on</button>`:''}${perm==='granted'?`<button class="btn" data-act="${pushOn?'pushTest':'notifTest'}">${ic('bell')} Send a test</button>`:''}${!standalone&&deferredInstall?`<button class="btn" data-act="install">${ic('phone')} Install app</button>`:''}</div>
   </div>`;
  return `${phead('Life · Never forget anything','Notifications',`<button class="btn" data-act="routineIcs">${ic('calendar')} Calendar backup</button>`)}
@@ -4969,7 +5018,7 @@ function render(){
   document.title=(ui.page==='overview'?'':({admin:'Admin',streak:'Streak & rewards',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
-function go(p){const [pg,v]=String(p).split(':');if(pg==='settings'&&ui.page!=='settings'&&innerWidth<=760)ui.setSec=null;if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
+function go(p){const [pg,v]=String(p).split(':');if(!navBack&&pg!==ui.page&&ui.page){navStack.push(ui.page);if(navStack.length>30)navStack.shift()}if(pg==='settings'&&ui.page!=='settings'&&innerWidth<=760)ui.setSec=null;if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
 
 /* ================= search (Scry: icon slides open into a field, becomes a close button) ================= */
 let scryOpen=false,scryQ='',sHits=[];
@@ -5115,8 +5164,8 @@ document.addEventListener('click',e=>{
     case'newnote':openVoice(false);return;
     case'notes':go('notes');return;
     case'import':openImport();return;
-    case'notifOn':askNotif();return;
-    case'notifTest':if(window.Notification?.permission==='granted'){showNotif({title:'Test reminder 💧',body:'Water check: tap “+1 glass” to log it.',tag:'test',url:'./#/health',actions:[{action:'w1',title:'+1 glass'}],acts:{w1:'water:1'}});toast('Test sent. Check your notifications.')}else askNotif();return;
+    case'notifOn':LN?lnEnable():askNotif();return;
+    case'notifTest':if(LN){lnTest();return}if(window.Notification?.permission==='granted'){showNotif({title:'Test reminder 💧',body:'Water check: tap “+1 glass” to log it.',tag:'test',url:'./#/health',actions:[{action:'w1',title:'+1 glass'}],acts:{w1:'water:1'}});toast('Test sent. Check your notifications.')}else askNotif();return;
     case'install':if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;render()})}return;
     case'routineIcs':exportRoutineICS();return;
     case'scry':scryOpen?closeScry():openScry();return;
@@ -5136,7 +5185,7 @@ document.addEventListener('click',e=>{
     case'scanBill':scanBill();return;
     case'mealPhoto':mealPhoto();return;
     case'mealText':mealText();return;
-    case'pushTest':apiFetch('/api/push/test',{method:'POST',body:{}}).then(r=>toast(r.devices?`Push sent to ${r.sent} of ${r.devices} device${r.devices>1?'s':''}`:'Turn on notifications on this device first','bell')).catch(x=>toast(x.message,'x'));return;
+    case'pushTest':if(LN){lnTest();return}apiFetch('/api/push/test',{method:'POST',body:{}}).then(r=>toast(r.devices?`Push sent to ${r.sent} of ${r.devices} device${r.devices>1?'s':''}`:'Turn on notifications on this device first','bell')).catch(x=>toast(x.message,'x'));return;
     case'cutToday':state.grooming.lastCut=ds(today());logAct('scissors','Haircut');{const h=state.health.habits.find(x=>/^Haircut/.test(x.name));if(h)setDone(h,true)}commit();burst(...lastXY,16);toast('Fresh cut logged','scissors');return;
     case'bell':menu=null;go('notify');return;
     case'new':menu=menu==='new'?null:'new';renderShell();return;
