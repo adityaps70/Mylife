@@ -1041,6 +1041,13 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 .ri.clickable::before{content:"";position:absolute}
 .ri.clickable{position:relative}
 .ri.clickable .ri-pen{display:none}
+.setnav{display:grid;gap:8px;align-content:start}
+.setitem{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;border-radius:16px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s,background-color .15s}
+.setitem .nb{flex:1;min-width:0}.setitem b{font-size:14.5px}.setitem>svg.i:last-child{color:var(--faint);flex:none}
+.setitem:hover{border-color:var(--line2)}.setitem.on{border-color:color-mix(in srgb,var(--lime) 55%,transparent);background:color-mix(in srgb,var(--lime) 7%,var(--card))}
+.setwrap{display:grid;grid-template-columns:290px minmax(0,1fr);gap:20px;align-items:start;max-width:1100px}.setwrap .setnav{position:sticky;top:84px}
+.setback{display:inline-flex;align-items:center;gap:4px;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:0;cursor:pointer}.setback svg.i{transform:rotate(180deg);width:15px;height:15px}
+@media (max-width:860px){.setwrap{grid-template-columns:1fr}.setwrap .setnav{position:static}}
 </style>
 </head>
 <body>
@@ -2391,7 +2398,7 @@ function pGoals(){
     ${g.milestones?.length?`<div style="margin-top:10px">${g.milestones.map((m,i)=>`<button class="ms ${m.done?'done':''}" data-ms="${g.id}" data-i="${i}"><span class="tick ${m.done?'on':''} ${justId===g.id+':'+i?'bump':''}">${ic('tick')}</span><span>${esc(m.t)}</span></button>`).join('')}</div>`:''}</div>`}).join('')||'<div class="card empty">No goals here yet.</div>'}</div></div>`;
 }
 
-function pSettings(){
+function pSettingsAll(){
   const p=state.profile;
   return `${phead('Settings','Settings')}
   <div class="stack" style="max-width:780px">
@@ -4461,6 +4468,21 @@ document.addEventListener('click',e=>{const bar=document.querySelector('.askbar'
 /* phone: scroll the selected filter chip into view in swipeable chip rows */
 function chipsIntoView(){if(innerWidth>760)return;document.querySelectorAll('#main .chips').forEach(c=>{const on=c.querySelector('.chip.on');if(on&&c.scrollWidth>c.clientWidth)c.scrollLeft=Math.max(0,on.offsetLeft-c.offsetLeft-40)})}
 
+/* ---------- Settings: a list of sections; each opens on its own (phone) or beside the list (desktop) ---------- */
+const SET_SECS=[['profile','Profile & look','users','Name, city, theme, motion'],['account','Account & plan','card','Plan, autopay, password, log out'],['voice','Assistant voice','mic','The voice used for talk-back'],['sections','Menu & food targets','grid','What shows in the menu; protein and calorie goals'],['data','Your data','download','Backup, import, calendar file, payments CSV'],['shortcuts','Shortcuts','zap','Keyboard shortcuts'],['reset','Reset','x','Clear sample data or start over']];
+const SET_MAP={'Profile':'profile','Assistant voice':'voice','Your data':'data','Account':'account','Sections':'sections','Shortcuts':'shortcuts','Reset':'reset'};
+function pSettings(){
+  const t=document.createElement('template');t.innerHTML=pSettingsAll();const cards={};
+  t.content.querySelectorAll('.stack > .card').forEach(c=>{const k=SET_MAP[(c.querySelector('h3')?.textContent||'').trim()];if(k&&!cards[k])cards[k]=c.outerHTML});
+  const phone=innerWidth<=760;let sec=ui.setSec||null;if(sec&&!cards[sec])sec=null;if(!sec&&!phone)sec='profile';
+  const list=`<div class="setnav">${SET_SECS.filter(([k])=>cards[k]).map(([k,l,icn,sub])=>`<button class="setitem ${sec===k?'on':''}" data-setsec="${k}">${icoBox(icn,k==='reset'?'var(--red)':k==='account'?'var(--lime)':'var(--cyan)')}<div class="nb"><b>${l}</b><div class="tiny muted">${sub}</div></div>${ic('right')}</button>`).join('')}</div>`;
+  if(phone&&!sec)return `${phead('Self Streak','Settings')}${list}`;
+  const title=(SET_SECS.find(x=>x[0]===sec)||[])[1]||'Settings';
+  if(phone)return `${phead(`<button class="setback" data-setsec="">${ic('right')} Settings</button>`,esc(title))}<div class="stack">${cards[sec]}</div>`;
+  return `${phead('Self Streak','Settings')}<div class="setwrap">${list}<div class="stack">${cards[sec]}</div></div>`;
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-setsec]');if(!b)return;e.preventDefault();ui.setSec=b.dataset.setsec||null;saveUI();pageChanged=true;render();window.scrollTo(0,0)});
+
 function gLeft(t){const ms=t-Date.now();if(ms<=0)return 'a moment';const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5);return d?`${d}d ${h}h`:`${h}h ${Math.floor(ms%36e5/6e4)}m`}
 
 document.addEventListener('click',async e=>{
@@ -4480,7 +4502,7 @@ document.addEventListener('submit',async e=>{if(e.target.id!=='gaddf')return;e.p
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#gcel')?.classList.contains('show'))gClose()});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&state.game&&!document.body.classList.contains('locked')&&G().fchk!==ds(today())){gTick();save();render()}});
 
-const NAV=[['Life',[['overview','Overview','grid'],['today','Today','sun'],['notes','Notes & journal','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['notify','Notifications','bell'],['health','Health','heart'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
+const NAV=[['Life',[['overview','Overview','grid'],['today','Today','sun'],['health','Health','heart'],['notes','Notes & journal','journal'],['goals','Goals','target'],['reminders','Reminders','calendar'],['grooming','Grooming','scissors'],['checklist','Life checklist','check']]],
   ['Money',[['activity','Activity','activity'],['budget','Budget','pie'],['bills','Bills','receipt'],['debt','Debt','card'],['savings','Savings','trend'],['year','Year summary','bars']]],
   ['',[['settings','Settings','sliders']]]];
 const PAGES={admin:pAdmin,streak:pStreak,today:pToday,history:pHistory,notes:pNotes,notify:pNotify,overview:pOverview,goals:pGoals,reminders:pReminders,health:pHealth,grooming:pGrooming,checklist:pChecklist,activity:pActivity,budget:pBudget,bills:pBills,debt:pDebt,savings:pSavings,year:pYear,settings:pSettings};
@@ -4531,7 +4553,7 @@ function render(){
   document.title=(ui.page==='overview'?'':({admin:'Admin',streak:'Streak & rewards',today:'Today',history:'Day history',notes:'Notes',notify:'Notifications',goals:'Goals',reminders:'Reminders',health:'Health',grooming:'Grooming',checklist:'Checklist',activity:'Activity',budget:'Budget',bills:'Bills',debt:'Debt',savings:'Savings',year:'Year summary',settings:'Settings'}[ui.page]+' · '))+"Self Streak";
   saveUI();
 }
-function go(p){const [pg,v]=String(p).split(':');if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
+function go(p){const [pg,v]=String(p).split(':');if(pg==='settings'&&ui.page!=='settings'&&innerWidth<=760)ui.setSec=null;if(scryOpen)closeScry();pageChanged=pg!==ui.page||!!v||pageChanged;ui.page=pg;if(v)ui.remView=v;menu=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
 
 /* ================= search (Scry: icon slides open into a field, becomes a close button) ================= */
 let scryOpen=false,scryQ='',sHits=[];
