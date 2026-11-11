@@ -1000,6 +1000,7 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
 
 /* phone: assistant bar collapses to one round button; tap to open the full bar */
 .askbar .abtog{display:none}
+.act3{display:flex;gap:8px;flex-wrap:wrap}
 @media (max-width:760px){
   .askbar{left:auto;right:16px;transform:none;width:58px;padding:0 7px;transition:width .35s var(--spring),left .35s var(--spring)}
   .askbar .abtog{display:grid;background:var(--lime);color:var(--lime-ink);flex:0 0 44px;order:3}
@@ -1016,8 +1017,9 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
   .askbar.open .ask-text{animation:fadein .25s ease .1s backwards}
   body.navopen .askbar{transform:translateY(20px)}
   .ph-hide{display:none}
-  .phead .actions{flex-wrap:nowrap;width:100%}
-  .phead .actions .btn{flex:1 1 0;min-width:0;justify-content:center;padding:0 8px;gap:6px;font-size:13px}
+  .phead .actions:has(.act3){width:100%}
+  .act3{display:flex;gap:8px;width:100%}
+  .act3 .btn{flex:1 1 0;min-width:0;justify-content:center;padding:0 8px;gap:6px;font-size:13px}
   .scry-res,.pop.wide.scry-res{max-height:50dvh!important}
 }
 @keyframes fadein{from{opacity:0}}
@@ -1934,7 +1936,7 @@ function pOverview(){
   const recent=[...state.tx].sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,6);
   const S=SEASON[m];
   return `${phead(fmt(t,{weekday:'long',month:'long',day:'numeric'}),`${h<12?'Good morning':h<17?'Good afternoon':'Good evening'}, ${esc(state.profile.first||'there')}`,
-    `<button class="btn" data-act="import">${ic('bank')} <span>Import<span class="ph-hide"> statement</span></span></button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button>`)}
+    `<div class="act3"><button class="btn" data-act="import">${ic('bank')} <span>Import<span class="ph-hide"> statement</span></span></button><button class="btn" data-act="ask">${ic('sparkle')} Ask</button><button class="btn" data-add="tx">${ic('plus')} Log spend</button></div>`)}
   <div class="stack">${sampleBanner()}${prioStrip()}
   <div class="ov"><div class="stack">
     ${!moneySetup().ready?setupCard():`<div class="card hero"><div style="min-width:0">
