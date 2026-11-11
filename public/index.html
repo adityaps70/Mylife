@@ -3383,12 +3383,18 @@ function deviceSpeak(text){
     const pick=V.filter(v=>v.lang.replace('_','-')===lang).sort((a,b)=>good.test(b.name)-good.test(a.name))[0]||V.filter(v=>v.lang.startsWith('en')&&good.test(v.name))[0]||V.find(v=>v.lang.replace('_','-').startsWith(lang.slice(0,2)))||null;
     u.lang=pick?.lang||lang;u.voice=pick;u.rate=1;speechSynthesis.speak(u)}catch(e){}
 }
+// Voice timing report (owner account only): ms from 'stopped talking' to each step, logged on the server.
+const VT={t:{},start(){this.t={stop:performance.now()}},mark(k){if(this.t.stop&&!this.t[k])this.t[k]=Math.round(performance.now()-this.t.stop)},send(){try{if(account?.user?.status==='owner'&&this.t.stop){const b={...this.t,app:APP_OS};delete b.stop;fetch('/api/vt',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b),credentials:'same-origin'})}}catch(e){}this.t={}}};
 async function speak(t){
   if(ui.talk!==true||!t)return;
   const text=sayClean(t);if(!text)return;stopSpeak();const my=ttsSeq;
   if(account&&navigator.onLine&&(ui.voice||'luna')!=='device'&&account.user.status!=='expired'){
     try{const r=await fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,voice:ui.voice||'luna'}),credentials:'same-origin'});
-      if(r.ok&&my===ttsSeq){unlockAudio();const buf=await actx.decodeAudioData(await r.arrayBuffer());if(my!==ttsSeq)return;const src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start(0);ttsSrc=src;return}
+      if(r.ok&&my===ttsSeq){VT.mark('tts');
+        if(IN_APP){const url=URL.createObjectURL(await r.blob());if(my!==ttsSeq)return;const el=new Audio(url);el.onended=()=>URL.revokeObjectURL(url);
+          try{await el.play();VT.mark('play');VT.send();ttsSrc={stop(){try{el.pause()}catch(e){}}};return}catch(e){}}
+        unlockAudio();if(actx.state!=='running'){try{await Promise.race([actx.resume(),new Promise(z=>setTimeout(z,300))])}catch(e){}if(actx.state!=='running'){actx=null;unlockAudio()}}
+        const buf=await actx.decodeAudioData(await r.arrayBuffer());if(my!==ttsSeq)return;const src=actx.createBufferSource();src.buffer=buf;src.connect(actx.destination);src.start(0);ttsSrc=src;VT.mark('play');VT.send();return}
     }catch(e){}
   }
   if(my===ttsSeq)deviceSpeak(text);
@@ -3805,12 +3811,13 @@ function renderAsst(){
 async function asSend(){
   const text=(AS.draft||'').trim();if(!text||AS.busy)return;AS.draft='';
   asPush({who:'me',text});AS.busy=true;renderAsst();
-  const r=await fileText(text);AS.busy=false;
+  const r=await fileText(text);AS.busy=false;VT.mark('ai');
   if(r.res.length){asPush({who:'ai',text:r.reply||'Done.',chips:r.res,undo:r.snap});const a=$('#asLog .as-row:last-child .as-chips');if(a)burst(...center(a),16)}
   else asPush({who:'ai',text:r.reply||'I couldn’t match that to anything in your dashboard. Try “did gym”, “8000 steps”, “spent 200 on chai” or “remind me to pay rent on the 5th”. Want to keep it as a note instead?',btns:r.reply?[]:[{label:'Save as a note'}]});
   if(!r.res.length&&!r.reply){const m=asMsgs()[asMsgs().length-1];AS.cb[m.id+':0']=()=>{const n=newNote();n.text=text;n.pl=text.length;save();asPush({who:'ai',text:'Saved to Notes.'})}}
   if(r.note)toast(r.note,'x');
   speak(r.reply||(r.res.length?spokenSummary(r.res):''));
+  if(ui.talk!==true)VT.send();
 }
 async function asMicSR(){
   if(!SR){toast('Voice needs Chrome, Edge or Safari. On iPhone, use the keyboard’s 🎤 key.','x');$('#asIn')?.focus();return}
@@ -3867,7 +3874,7 @@ async function asMic(){
 }
 function asRecStop(send){
   cancelAnimationFrame(asRaf);clearTimeout(asSil);if(!AS.listening&&!(asMR&&asMR.state!=='inactive'))return;
-  AS.listening=false;asSend2=!!send;chime(false);
+  AS.listening=false;asSend2=!!send;VT.start();chime(false);
   try{if(asMR&&asMR.state!=='inactive')asMR.stop();else{releaseMic();asTranscribe()}}catch(e){releaseMic();asTranscribe()}
   if(send)AS.busy=true;renderAsst();
 }
@@ -3878,7 +3885,7 @@ async function asTranscribe(){
   if(!parts.length||size<1500||dur<500){AS.busy=false;renderAsst();asSay('I didn’t hear anything. Tap the mic and speak, then pause when you’re done.');return}
   try{const r=await fetch('/api/stt',{method:'POST',headers:{'content-type':type},body:new Blob(parts,{type}),credentials:'same-origin'});
     const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error&&!/^[a-z_]+$/.test(d.error)?d.error:'I couldn’t understand that recording.');
-    AS.busy=false;const text=String(d.text||'').trim();
+    AS.busy=false;VT.mark('stt');const text=String(d.text||'').trim();
     if(!text){renderAsst();asSay('I couldn’t make out any words. Try again a little closer to the phone.');return}
     AS.draft=((AS.draft||'')+' '+text).trim();renderAsst();asSend();
   }catch(e){AS.busy=false;renderAsst();asSay((e.message||'Voice didn’t work.')+' You can also type it.')}
