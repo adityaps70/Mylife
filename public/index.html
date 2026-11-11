@@ -1021,6 +1021,8 @@ body.free .askbar .ask-text span::after{content:"  · Plus 🔒";color:var(--fai
   .scry-res,.pop.wide.scry-res{max-height:50dvh!important}
 }
 @keyframes fadein{from{opacity:0}}
+.talktip{display:flex;align-items:center;gap:10px;margin:0 12px 8px;padding:10px 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--violet,#a78bfa) 40%,transparent);background:color-mix(in srgb,var(--violet,#a78bfa) 10%,var(--card));animation:fadein .3s ease}
+.talktip>svg.i{color:var(--violet,#a78bfa);flex:none;width:22px;height:22px}.talktip .nb{flex:1;min-width:0}.talktip .btn{flex:none}.talktip .ic.sm{width:30px;height:30px;flex:none}
 </style>
 </head>
 <body>
@@ -3546,6 +3548,7 @@ function renderAsst(){
     <div class="inline" style="gap:2px;flex-wrap:nowrap"><button class="ic" data-asact="talk" title="Talk back ${talk?'on':'off'}" aria-label="Talk back ${talk?'on':'off'}">${ic(talk?'speaker':'mute')}</button>${L.length?`<button class="btn sm ghost" data-asact="clear" title="Start a new chat. Your entries stay saved." aria-label="New chat">${ic('plus')} New chat</button>`:''}<button class="ic" data-asact="close" aria-label="Close">${ic('x')}</button></div></div>
   <div class="as-log" id="asLog">${msgs||`<div class="as-hello">${logo(56,'draw')}<h3>What did you do today?</h3><p class="small muted">Type it, say it, or snap a photo of a meal, bill or receipt. I’ll put it in the right place, and ask if I’m not sure.</p><div class="as-sugg">${ASUGG.map(s=>`<button class="chip" data-assugg="${esc(s)}">${esc(s)}</button>`).join('')}</div>${(state.chatPrev||[]).length?`<button class="btn sm" data-asact="restore" style="margin-top:14px">${ic('clock')} Show previous chat</button>`:''}<p class="tiny faint" style="margin-top:10px">Clearing the chat never deletes what was logged.</p></div>`}
     ${AS.busy?`<div class="as-row"><span class="as-av">${logo(26)}</span><div class="as-b ai"><span class="thinking"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i></span></div></div>`:''}</div>
+  ${!talk&&!ui.talkTipOff?`<div class="talktip">${ic('speaker')}<div class="nb"><b class="small">Want spoken replies?</b><div class="tiny muted">Turn on <b>Talk back</b> and I’ll read my answers aloud. Change it anytime with 🔈 at the top.</div></div><button class="btn sm lime" data-asact="talk">Turn on</button><button class="ic sm" data-asact="talktipx" aria-label="Hide this tip">${ic('x')}</button></div>`:''}
   <div class="as-bar ${AS.listening?'rec':''}">
     <button class="as-btn" data-asact="camera" aria-label="Camera: photo of a meal, bill or receipt" title="Camera">${ic('camera')}</button>
     <div class="as-field"><textarea id="asIn" rows="1" placeholder="${AS.listening?'Listening…':'Log anything…'}" aria-label="Message">${esc(AS.draft)}</textarea>${AS.listening&&AS.interim?`<div class="as-interim">${esc(AS.interim)}</div>`:''}</div>
@@ -3557,7 +3560,8 @@ function renderAsst(){
   ta.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();asSend()}};
   d.querySelectorAll('[data-asact]').forEach(b=>b.onclick=()=>{const a=b.dataset.asact;
     if(a==='close')closeDlg(d);else if(a==='send')asSend();else if(a==='mic')AS.listening?asStop(true):asMic();else if(a==='camera')asCamera();
-    else if(a==='talk'){ui.talk=ui.talk!==true;saveUI();renderAsst();if(ui.talk)speak('Talk back is on.');else stopSpeak()}else if(a==='clear'){if(!(state.chat||[]).length)return;state.chatPrev=state.chat;state.chat=[];save();renderAsst()}else if(a==='restore'){state.chat=[...(state.chatPrev||[]),...(state.chat||[])];state.chatPrev=null;save();renderAsst()}});
+    else if(a==='talktipx'){ui.talkTipOff=true;saveUI();renderAsst()}
+    else if(a==='talk'){ui.talk=ui.talk!==true;if(ui.talk)ui.talkTipOff=true;saveUI();renderAsst();if(ui.talk)speak('Talk back is on.');else stopSpeak()}else if(a==='clear'){if(!(state.chat||[]).length)return;state.chatPrev=state.chat;state.chat=[];save();renderAsst()}else if(a==='restore'){state.chat=[...(state.chatPrev||[]),...(state.chat||[])];state.chatPrev=null;save();renderAsst()}});
   d.querySelectorAll('[data-assugg]').forEach(b=>b.onclick=()=>{AS.draft=b.dataset.assugg;asSend()});
   d.querySelectorAll('[data-asb]').forEach(b=>b.onclick=()=>{const [id,k]=b.dataset.asb.split(':'),m=asMsgs().find(x=>x.id===id),fn=AS.cb[id+':'+k];if(m?.used)return;if(m){m.used=true;save()}Object.keys(AS.cb).forEach(c=>{if(c.startsWith(id+':'))delete AS.cb[c]});renderAsst();if(fn)fn()});
   d.querySelectorAll('[data-asundo]').forEach(b=>b.onclick=()=>{const m=asMsgs().find(x=>x.id===b.dataset.asundo);if(!m||!m.undo)return;const chat=asMsgs(),notes=state.notes;state={...JSON.parse(m.undo),notes,chat};m.undone=true;delete m.undo;commit();renderAsst();toast('Undone','x');speak('Undone.')});
