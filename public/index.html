@@ -1563,7 +1563,7 @@ const HK=IN_APP?window.Capacitor?.Plugins?.Health:null;
 const HK_NAME=APP_OS==='ios'?'Apple Health':'Health Connect';
 const HK_READ=['steps','sleep','weight','workouts','mindfulness'],HK_WRITE=['dietaryWater'];
 let hkBusy=false,hkLast=0;
-const hkOn=()=>!!(HK&&state?.profile?.health?.on);
+const hkOn=()=>!!(HK&&hkLS('on'));
 function hkLS(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem('ss_hk_'+k)||'null');localStorage.setItem('ss_hk_'+k,JSON.stringify(v))}catch(e){return null}}
 async function hkConnect(){
   if(!HK){toast('Open the Self Streak app on your phone to connect '+HK_NAME,'x');return}
@@ -1575,11 +1575,11 @@ async function hkConnect(){
       return;
     }
     await HK.requestAuthorization({read:HK_READ,write:HK_WRITE});
-    state.profile.health={on:true,since:Date.now()};hkLS('water',{d:ds(today()),n:num((state.health.logs[ds(today())]||{}).water)});
+    hkLS('on',1);hkLS('water',{d:ds(today()),n:num((state.health.logs[ds(today())]||{}).water)});
     save();await hkSync(true);
   }catch(e){console.error('health connect',e);toast('Couldn’t connect to '+HK_NAME,'x')}
 }
-function hkOff(){if(!state.profile.health)return;state.profile.health.on=false;commit();toast(HK_NAME+' sync turned off. You can remove access in '+(APP_OS==='ios'?'Settings → Health → Data Access':'Health Connect')+'.')}
+function hkOff(){hkLS('on',0);render();toast(HK_NAME+' sync turned off. You can remove access in '+(APP_OS==='ios'?'Settings → Health → Data Access':'Health Connect')+'.')}
 // Merge overlapping intervals (phone + watch both report sleep) and return total ms.
 function hkUnion(iv){iv=iv.filter(x=>x[1]>x[0]).sort((a,b)=>a[0]-b[0]);let t=0,s=null,e=null;for(const [a,b] of iv){if(s===null||a>e){if(s!==null)t+=e-s;s=a;e=b}else e=Math.max(e,b)}if(s!==null)t+=e-s;return t}
 async function hkSync(loud){
@@ -1614,7 +1614,7 @@ async function hkSync(loud){
     // Past days: 10k steps / 7 h sleep tick their auto habits too (today is handled by autoHabits)
     for(const h of state.health.habits){const A={steps:['steps',10000],sleep:['sleep',7]}[h.auto];if(!A||h.period!=='daily')continue;
       for(let i=1;i<7;i++){const d=addDays(t,-i),l=state.health.logs[ds(d)]||{};if(num(l[A[0]])>=A[1]&&!isDone(h,d))setDone(h,true,d)}}
-    state.profile.health.last=Date.now();
+    hkLS('last',Date.now());
     await hkWater();
     autoHabits();commit();
     const n=got.steps+got.sleep+got.weight+got.workouts+got.mind;
@@ -1626,11 +1626,11 @@ async function hkSync(loud){
 async function hkWater(){
   if(!hkOn())return;const k=ds(today()),n=num((state.health.logs[k]||{}).water);let p=hkLS('water');
   if(!p||p.d!==k)p={d:k,n:0};
-  if(n>p.n){try{await HK.saveSample({dataType:'dietaryWater',value:+((n-p.n)*.25).toFixed(2),unit:'liter'});p.n=n;hkLS('water',p)}catch(e){console.warn('hk water',e)}}
+  if(n>p.n){try{const e=new Date();await HK.saveSample({dataType:'dietaryWater',value:+((n-p.n)*.25).toFixed(2),unit:'liter',startDate:new Date(+e-60e3).toISOString(),endDate:e.toISOString()});p.n=n;hkLS('water',p)}catch(e){console.warn('hk water',e)}}
   else if(n<p.n){p.n=n;hkLS('water',p)}
 }
 function hkCard(){
-  if(!HK)return '';const H=state.profile.health||{};
+  if(!HK)return '';const H={on:hkOn(),last:hkLS('last')};
   if(!H.on)return `<div class="card hkcard"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>Connect ${HK_NAME}</h3><div class="sub">Fill steps, sleep and weight automatically, and tick your workout habit from your phone and watch.</div></div></div><button class="btn lime" data-hk="on" style="width:100%;justify-content:center">${ic('heart')} Connect ${HK_NAME}</button></div>`;
   const ago=H.last?Math.round((Date.now()-H.last)/60e3):null;
   return `<div class="card hkcard on"><div class="ch">${icoBox('heart','var(--red)')}<div style="flex:1;min-width:0"><h3>${HK_NAME} connected</h3><div class="sub">Steps, sleep, weight and workouts sync by themselves${ago===null?'':` · synced ${ago<1?'just now':ago<60?ago+' min ago':Math.round(ago/60)+' h ago'}`}</div></div><button class="btn" data-hk="sync">${hkBusy?'Syncing…':'Sync now'}</button></div><button class="tiny faint" data-hk="off" style="background:none;border:0;padding:0;margin-top:6px;cursor:pointer">Turn off sync</button></div>`;

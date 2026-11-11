@@ -5,14 +5,38 @@
   "server": {
     "url": "https://selfstreak.com/app",
     "cleartext": false,
-    "allowNavigation": ["selfstreak.com", "www.selfstreak.com", "*.razorpay.com", "*.cashfree.com"]
+    "allowNavigation": [
+      "selfstreak.com",
+      "www.selfstreak.com",
+      "*.razorpay.com",
+      "*.cashfree.com"
+    ]
   },
   "appendUserAgent": "SelfStreakApp/1.0",
   "backgroundColor": "#09090b",
-  "android": { "backgroundColor": "#09090b" },
-  "ios": { "backgroundColor": "#09090b", "contentInset": "never", "scheme": "Self Streak" },
+  "android": {
+    "backgroundColor": "#09090b"
+  },
+  "ios": {
+    "backgroundColor": "#09090b",
+    "contentInset": "never",
+    "scheme": "Self Streak"
+  },
   "plugins": {
-    "SplashScreen": { "launchShowDuration": 900, "launchAutoHide": true, "backgroundColor": "#09090b", "showSpinner": false, "androidScaleType": "CENTER_CROP" },
-    "StatusBar": { "style": "DARK", "backgroundColor": "#09090b", "overlaysWebView": false }
+    "SplashScreen": {
+      "launchShowDuration": 900,
+      "launchAutoHide": true,
+      "backgroundColor": "#09090b",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#09090b",
+      "overlaysWebView": false
+    },
+    "SystemBars": {
+      "style": "DARK"
+    }
   }
 }
