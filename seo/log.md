@@ -13,3 +13,4 @@
 - 2026-11-13: Added real app screenshots (WebP, alt, width/height, lazy) to the homepage, 7 tool pages and 5 loan pages. They come from a local demo account via scripts/app-screenshots.py.
 - 2026-11-13: /privacy and /contact titles are now 49 and 55 characters.
 - 2026-11-13: Wrote seo/backlinks.md (5-phase plan, 30/90-day targets), drafted 3 roundup inclusion pitches, expanded directories.md.
+- 2026-11-13: URL Inspection: /, /emi-calculator, /emi-calculator/home-loan, /habit-tracker, /expense-tracker and /credit-card-bill-reminder are indexed (the Pages report still said 0; it lags). Requested recrawls for the first 5; the 6th hit the daily quota.

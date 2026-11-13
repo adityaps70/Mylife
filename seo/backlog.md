@@ -1,9 +1,9 @@
 # SEO backlog
 
-Ordered by expected signups per hour of work. Context: on 2026-11-13, Google had crawled 8 pages and indexed 0 ("Crawled – currently not indexed"). On-page basics are fine. The site is about 3 months old and has no known backlinks, so Google doesn't trust it yet. Until pages are indexed, nothing else on this list can bring traffic.
+Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages report showed 0 indexed, but URL Inspection the same day showed the homepage and the main tool pages indexed. The report lags. On-page basics are fine. The site is about 3 months old and has no known backlinks, so Google doesn't trust it yet. Until pages are indexed, nothing else on this list can bring traffic.
 
 ## Now
-1. **Owner: request indexing** in Search Console (URL inspection → Request indexing) for `/`, `/emi-calculator`, `/emi-calculator/home-loan`, `/habit-tracker`, `/expense-tracker` and `/credit-card-bill-reminder`. Google allows about 10 requests a day.
+1. ~~Request indexing~~ Done 2026-11-13. URL Inspection showed `/`, `/emi-calculator`, `/emi-calculator/home-loan`, `/habit-tracker`, `/expense-tracker` and `/credit-card-bill-reminder` already **indexed**; the Pages report (0 indexed) was lagging. Recrawl requested for the first 5. The 6th hit the daily quota, but it's indexed anyway.
 2. **Owner: deploy** branch `live-site-sync` (www/http redirects, pricing FAQ fixes). After deploying, check that `curl -I http://selfstreak.com/habit-tracker` and `curl -I https://www.selfstreak.com/habit-tracker` both return 301.
 3. **First links (authority).** Follow `backlinks.md` (phases 1–3): owned profiles, Peerlist and AlternativeTo, then the 3 roundup pitches in `outreach/2026-11-13-roundups.md`. The owner sends; the copy is drafted.
 4. **Ping IndexNow on deploy.** The key file already exists, so add a step after `wrangler deploy` that POSTs the sitemap URLs to api.indexnow.org. This gets Bing, Yandex and the AI search engines that use Bing indexed within days.

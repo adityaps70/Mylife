@@ -3,7 +3,7 @@
 Written 2026-11-13. Re-check targets monthly (seo-autopilot Monthly step 5).
 
 ## Where we start
-- The domain is about 3 months old with no known referring domains. Google has crawled 8 pages and indexed 0 ("Crawled – currently not indexed").
+- The domain is about 3 months old with no known referring domains. The Pages report showed 0 indexed, but URL Inspection on 2026-11-13 showed the homepage and the main tool pages indexed (the report lags). The goal now is rankings, not just indexing.
 - For a site this young, the first 10–20 *real* links matter more than anything on-page: they tell Google the site is a real business worth indexing.
 - What we have that earns links: free **EMI calculators for 5 loan types** with ready tables, guides that cite **RBI directions** (statement vs due date, minimum due), **50/30/20 in rupees**, and an app with a clear angle: **habits plus money plus health, no SMS reading, no bank login, free plan, ₹199 Plus**.
 
@@ -71,7 +71,7 @@ Drafts: `outreach/2026-11-13-roundups.md`.
 Track in `seo/reports/`. Search Console → Links shows referring domains as Google sees them (it lags 1–2 weeks).
 
 ## First 7 days, in order
-1. Request indexing for the 6 pages in backlog item 1 (Search Console).
+1. ~~Request indexing~~ Done 2026-11-13 (5 recrawls requested; all 6 main pages already indexed).
 2. Add the website link to Instagram, Play Store and App Store listings, LinkedIn.
 3. Peerlist project + AlternativeTo listing (alternative to CRED, Walnut, Loop, Habitify).
 4. Send the 3 roundup pitches marked "send first" in `outreach/2026-11-13-roundups.md`.
