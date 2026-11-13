@@ -5,7 +5,7 @@ Ordered by expected signups per hour of work. Context: on 2026-11-13, Google had
 ## Now
 1. **Owner: request indexing** in Search Console (URL inspection → Request indexing) for `/`, `/emi-calculator`, `/emi-calculator/home-loan`, `/habit-tracker`, `/expense-tracker` and `/credit-card-bill-reminder`. Google allows about 10 requests a day.
 2. **Owner: deploy** branch `live-site-sync` (www/http redirects, pricing FAQ fixes). After deploying, check that `curl -I http://selfstreak.com/habit-tracker` and `curl -I https://www.selfstreak.com/habit-tracker` both return 301.
-3. **First links (authority).** Submit to the free directories in `directories.md`. Each one is a crawlable link and a signal that the site is real. Owner sends; copy is drafted.
+3. **First links (authority).** Follow `backlinks.md` (phases 1–3): owned profiles, Peerlist and AlternativeTo, then the 3 roundup pitches in `outreach/2026-11-13-roundups.md`. The owner sends; the copy is drafted.
 4. **Ping IndexNow on deploy.** The key file already exists, so add a step after `wrangler deploy` that POSTs the sitemap URLs to api.indexnow.org. This gets Bing, Yandex and the AI search engines that use Bing indexed within days.
 
 ## Next

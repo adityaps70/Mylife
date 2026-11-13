@@ -12,3 +12,4 @@
 - 2026-11-13: Each tool page links to 2 related guides, and each guide has a "Related guides" block led by its tool page. Each EMI loan page links to 2 guides.
 - 2026-11-13: Added real app screenshots (WebP, alt, width/height, lazy) to the homepage, 7 tool pages and 5 loan pages. They come from a local demo account via scripts/app-screenshots.py.
 - 2026-11-13: /privacy and /contact titles are now 49 and 55 characters.
+- 2026-11-13: Wrote seo/backlinks.md (5-phase plan, 30/90-day targets), drafted 3 roundup inclusion pitches, expanded directories.md.

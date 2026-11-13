@@ -12,9 +12,16 @@ Status: none submitted yet (as of 2026-11-13). The owner submits each one. Use t
 
 | Directory | Why | Status |
 |---|---|---|
-| Product Hunt | High-authority launch page and backlink | not submitted |
-| AlternativeTo (list as an alternative to CRED, Walnut, Loop Habit Tracker, Habitify) | Ranks for "X alternative" queries | not submitted |
+| Peerlist (Project + Launchpad) | Indian maker community | not submitted |
+| AlternativeTo (alternative to CRED, Walnut, Loop Habit Tracker, Habitify) | Ranks for "X alternative" queries | not submitted |
+| Product Hunt | High-authority launch page; hunted.space mirrors it | plan a launch date |
 | SaaSHub | Free listing with alternatives pages | not submitted |
+| There's An AI For That | AI voice and photo logging | not submitted |
 | Indie Hackers (product page) | Founder community, dofollow profile | not submitted |
 | BetaList | Early-stage listing | not submitted |
-| Google Play / App Store listings (link to selfstreak.com) | Brand signal | check whether live |
+| Uneed / Microlaunch / Tiny Startups | Small launch sites | not submitted |
+| Awesome Tools | Free JSON-API listing (awesome-tools skill) | not submitted |
+| Crunchbase | Company profile, brand queries | not submitted |
+| Google Play / App Store listings (website field) | High-trust brand link | check whether live |
+
+See `backlinks.md` for order and timing.
