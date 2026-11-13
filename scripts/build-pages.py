@@ -76,7 +76,7 @@ page(slug='credit-card-bill-reminder', nav='Credit card bills',
   faq=[('Is my card number needed?','No. Self Streak never asks for card numbers, CVV or bank logins. You only enter the limit, statement day and due day.'),
        ('Does it work with pay-later and postpaid accounts?','Yes. Set the minimum due to 100% and it tracks them as “pay the full bill every month”.'),
        ('Will I get a notification on my phone?','Yes. Install Self Streak on your home screen and turn on notifications to get push reminders, even when the app is closed.'),
-       ('What does it cost?','7 days free, then ₹199 a month for everything in Self Streak, including habits, money, reminders and AI logging.')])
+       ('What does it cost?','Every feature is free for 7 days, no card needed. Bill reminders are part of Self Streak Plus at ₹199 a month. If you don’t upgrade, you move to the free plan: you keep your data, and habits, water, expenses and your streak keep working.')])
 
 page(slug='emi-calculator', nav='EMI calculator',
   title='EMI Calculator India: Loan EMI & Prepayment | Self Streak',
@@ -143,7 +143,7 @@ function wCalc(){const w=+wW.value||0,e=+wE.value||0,h=+wH.value||0,ml=w*33+e*12
 
 page(slug='habit-tracker', nav='Habit tracker',
   title='Habit Tracker App with Streaks & Reminders | Self Streak',
-  desc='Track daily, weekly and monthly habits with streaks, reminders at the time each habit happens, and goals that count themselves. 7 days free.', short='A habit tracker is an app where you tick off habits each day and see your streak grow. Research from University College London found new habits took a median of 66 days to become automatic. Self Streak reminds you at the time each habit happens and keeps your streak and goals counting.',
+  desc='Track daily, weekly and monthly habits with streaks, reminders on time, and goals that count themselves. Free plan, plus a 7-day free trial of everything.', short='A habit tracker is an app where you tick off habits each day and see your streak grow. Research from University College London found new habits took a median of 66 days to become automatic. Self Streak reminds you at the time each habit happens and keeps your streak and goals counting.',
   kick='Habits & streaks', h1='A habit tracker that keeps your streak going',
   lead='Track daily, weekly and monthly habits, get a reminder at the time each habit happens, and watch your streak grow. Goals like “10,000 steps on 300 days” count themselves every time you tick the habit.',
   body='''
@@ -157,7 +157,7 @@ page(slug='habit-tracker', nav='Habit tracker',
 <section><h2>Habits people track with Self Streak</h2><ul class="list">
 <li>10,000 steps, gym or a workout, morning sunlight</li><li>Water, protein target, fruits and vegetables</li>
 <li>Reading, journaling, no screens before bed</li><li>Skincare, sunscreen, haircut every 4 weeks</li><li>Weekly: meal prep, review spending, call family</li></ul></section>''',
-  faq=[('Is there a free habit tracker plan?','You get every feature free for 7 days. After that Self Streak is ₹199 a month, which includes money tracking, reminders and AI features too.'),
+  faq=[('Is there a free habit tracker plan?','Yes. Every feature is free for 7 days, no card needed. After that, habits, streaks, water and expenses stay free. Plus (₹199 a month) adds reminders at each habit’s time, voice and photo logging, the AI day summary and leagues.'),
        ('Can I track weekly and monthly habits?','Yes. Habits can be daily, weekly, monthly, quarterly or yearly, each with their own reminder.'),
        ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.')])
 
@@ -178,7 +178,8 @@ page(slug='expense-tracker', nav='Expense tracker',
 <li>Export to CSV any time.</li></ul></section>''',
   faq=[('Do I need to connect my bank account?','No. Self Streak never asks for bank logins. You can upload a statement PDF or photo instead, and it reads the payments.'),
        ('Does it work with UPI payments?','Yes. Log UPI spends by voice or text, or import them from your bank statement.'),
-       ('Is my financial data private?','Your data is stored in your own account, never sold or used for ads, and you can export or delete it any time.')])
+       ('Is my financial data private?','Your data is stored in your own account, never sold or used for ads, and you can export or delete it any time.'),
+       ('Is the expense tracker free?','Yes. Logging expenses, budgets and your streak are on the free plan. Every feature is free for 7 days, no card needed; voice and photo logging, statement import and bill reminders are part of Plus at ₹199 a month.')])
 
 page(slug='debt-payoff-planner', nav='Debt payoff planner',
   title='Debt Payoff Planner: Avalanche vs Snowball | Self Streak',
@@ -222,7 +223,7 @@ function pCalc(){const w=+pW.value||0,a=+pA.value||1,g=Math.round(w*a);pG.textCo
 <li>Eggs, chicken, fish</li><li>Peanuts, roasted chana, seeds</li></ul></section>''',
   faq=[('How accurate is the photo calorie estimate?','It’s an estimate based on the dish and a typical portion. You can edit the numbers before logging. Describing quantities (“2 rotis, 1 katori dal”) makes it more accurate.'),
        ('Does it track micronutrients?','The daily summary points out nutrients your meals were likely low in, such as fibre, calcium, iron or magnesium, based on what you ate. It’s guidance, not a lab test.'),
-       ('Is it free?','All features are free for 7 days, then ₹199 a month for the whole app.')])
+       ('Is it free?','Every feature is free for 7 days, no card needed. Photo calorie scans are part of Self Streak Plus at ₹199 a month. After the trial, the free plan keeps habits, water, expenses and your streak.')])
 
 ALL = [(p['slug'], p['nav']) for p in PAGES]
 UPDATED = '2026-11-13'

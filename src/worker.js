@@ -698,9 +698,17 @@ async function sendDuePushes(env) {
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
-    // Old address and www → the main domain (pages only; the API keeps working everywhere).
-    if ((url.hostname.endsWith('.workers.dev') || url.hostname === 'www.selfstreak.com') && !url.pathname.startsWith('/api/') && req.method === 'GET' && url.pathname !== '/sw.js') {
+    // One address per page for search engines: old workers.dev address, www and plain http → https://selfstreak.com
+    // (pages only; the API keeps working everywhere). Needs run_worker_first to cover pages, see wrangler.jsonc.
+    const page = (req.method === 'GET' || req.method === 'HEAD') && !url.pathname.startsWith('/api/') && url.pathname !== '/sw.js';
+    const offHost = url.hostname.endsWith('.workers.dev') || url.hostname === 'www.selfstreak.com';
+    const plainHttp = url.protocol === 'http:' && url.hostname.endsWith('selfstreak.com');
+    if (page && (offHost || plainHttp)) {
       return Response.redirect('https://selfstreak.com' + url.pathname + url.search, 301);
+    }
+    // /landing is the homepage's source file; send anyone (or any crawler) who finds it to /.
+    if (page && (url.pathname === '/landing' || url.pathname === '/landing.html')) {
+      return Response.redirect('https://selfstreak.com/' + url.search, 301);
     }
     // Google Search Console ownership file (served exactly, no redirects).
     if (url.pathname === '/googleed720d5bc99e0297.html') return new Response('google-site-verification: googleed720d5bc99e0297.html', { headers: { 'content-type': 'text/html; charset=utf-8' } });

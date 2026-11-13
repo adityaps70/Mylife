@@ -1,0 +1,29 @@
+query,intent,monthly volume,difficulty,target URL,status,current position,last checked
+self streak,navigational,unknown,unknown,/,live,not ranking (0 pages indexed),2026-11-13
+habit tracker app,commercial,unknown,unknown,/habit-tracker,live,not indexed,2026-11-13
+free habit tracker app,commercial,unknown,unknown,/habit-tracker,live,not indexed,2026-11-13
+expense tracker app india,commercial,unknown,unknown,/expense-tracker,live,not indexed,2026-11-13
+credit card bill reminder app,commercial,unknown,unknown,/credit-card-bill-reminder,live,not indexed,2026-11-13
+emi calculator,transactional,unknown,unknown,/emi-calculator,live,not indexed,2026-11-13
+home loan emi calculator,transactional,unknown,unknown,/emi-calculator/home-loan,live,not indexed,2026-11-13
+car loan emi calculator,transactional,unknown,unknown,/emi-calculator/car-loan,live,not indexed,2026-11-13
+personal loan emi calculator,transactional,unknown,unknown,/emi-calculator/personal-loan,live,not indexed,2026-11-13
+education loan emi calculator,transactional,unknown,unknown,/emi-calculator/education-loan,live,not indexed,2026-11-13
+two wheeler loan emi calculator,transactional,unknown,unknown,/emi-calculator/two-wheeler-loan,live,not indexed,2026-11-13
+debt payoff planner,commercial,unknown,unknown,/debt-payoff-planner,live,not indexed,2026-11-13
+debt avalanche vs snowball,informational,unknown,unknown,/blog/debt-avalanche-vs-snowball,live,not indexed,2026-11-13
+calorie and protein tracker indian food,commercial,unknown,unknown,/calorie-protein-tracker,live,not indexed,2026-11-13
+water reminder app,commercial,unknown,unknown,/water-reminder,live,not indexed,2026-11-13
+how much water should i drink a day,informational,unknown,unknown,/blog/how-much-water-should-i-drink-a-day,live,not indexed,2026-11-13
+credit card statement date vs due date,informational,unknown,unknown,/blog/credit-card-statement-date-vs-due-date,live,not indexed,2026-11-13
+50 30 20 budget rule india,informational,unknown,unknown,/blog/50-30-20-budget-rule-india,live,not indexed,2026-11-13
+how long does it take to form a habit,informational,unknown,unknown,/blog/how-long-does-it-take-to-form-a-habit,live,not indexed,2026-11-13
+protein intake indian diet,informational,unknown,unknown,/blog/protein-intake-indian-diet,live,not indexed,2026-11-13
+cred alternative,commercial,unknown,unknown,/cred-alternative,gap,,2026-11-13
+walnut app alternative,commercial,unknown,unknown,/walnut-alternative,gap,,2026-11-13
+expense tracker without sms permission,commercial,unknown,unknown,/expense-tracker,gap (no section yet),,2026-11-13
+loop habit tracker alternative,commercial,unknown,unknown,/loop-habit-tracker-alternative,gap,,2026-11-13
+credit card interest calculator india,transactional,unknown,unknown,/credit-card-interest-calculator,gap,,2026-11-13
+minimum due credit card interest,informational,unknown,unknown,/blog/credit-card-minimum-due-interest,gap,,2026-11-13
+budget calculator india 50 30 20,transactional,unknown,unknown,/blog/50-30-20-budget-rule-india,gap (no calculator on page),,2026-11-13
+emi prepayment calculator,transactional,unknown,unknown,/emi-calculator,live (prepayment in tool),not indexed,2026-11-13
