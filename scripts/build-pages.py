@@ -226,12 +226,15 @@ function pCalc(){const w=+pW.value||0,a=+pA.value||1,g=Math.round(w*a);pG.textCo
        ('Is it free?','Every feature is free for 7 days, no card needed. Photo calorie scans are part of Self Streak Plus at ₹199 a month. After the trial, the free plan keeps habits, water, expenses and your streak.')])
 
 ALL = [(p['slug'], p['nav']) for p in PAGES]
-UPDATED = '2026-11-13'
+UPDATED = '@@MODIFIED@@'   # replaced per page in write() with the date its content last changed (see page-dates.json)
+TODAY = __import__('datetime').date.today().isoformat()
 ORG = {"@type": "Organization", "@id": B + "/#org", "name": "Self Streak", "url": B + "/",
        "logo": {"@type": "ImageObject", "url": B + "/icon-512.png", "width": 512, "height": 512},
        "email": "adityaps700@gmail.com", "areaServed": "IN",
        "address": {"@type": "PostalAddress", "addressLocality": "Lucknow", "addressRegion": "Uttar Pradesh", "addressCountry": "IN"},
        "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": "adityaps700@gmail.com", "url": B + "/contact", "availableLanguage": ["en", "hi"]},
+       "sameAs": ["https://instagram.com/selfstreak"],
+       "founder": {"@id": B + "/about#aditya"},
        "knowsAbout": ["habit tracking", "personal budgeting", "expense tracking", "EMI and loan management", "credit card bill management", "debt repayment", "water intake", "protein intake for Indian diets"]}
 SITE = {"@type": "WebSite", "@id": B + "/#website", "name": "Self Streak", "url": B + "/", "inLanguage": "en-IN", "publisher": {"@id": B + "/#org"}}
 EXTRA_CSS = """
@@ -246,14 +249,20 @@ article p,article li{font-size:17px}article h2{margin-top:8px}article section{pa
 .brand,nav .lg,nav .btn{white-space:nowrap}nav .wrap{gap:12px}
 @media (max-width:440px){nav .lg.gd{display:none}nav .btn.sm{padding:0 13px}}
 """
-FOOT = '<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/blog">Guides</a><a href="/emi-calculator">EMI calculator</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/shipping">Shipping</a></div></footer>'
+FOOT = '<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/blog">Guides</a><a href="/emi-calculator">EMI calculator</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/shipping">Shipping</a></div></footer>'
 BEACON = "<script>try{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({p:location.pathname,r:document.referrer})],{type:'application/json'}))}catch(e){}</script>"
 
 def crumbs_ld(items):
     return {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": B + u} for i, (n, u) in enumerate(items)]}
 
-def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', head_extra=''):
+def og_for(path):
+    """Per-page share image if scripts/build-og.py made one, else the site default."""
+    name = path.strip('/').replace('/', '-') or 'home'
+    return f'{B}/og/{name}.jpg' if os.path.exists(os.path.join(OUT, 'og', name + '.jpg')) else f'{B}/og-image.png'
+
+def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', head_extra='', robots='index, follow, max-image-preview:large, max-snippet:-1'):
     url = B + path
+    og = og_for(path)
     assert len(title) <= 60, (path, len(title), title)
     assert 110 <= len(desc) <= 160, (path, len(desc), desc)
     ld = {"@context": "https://schema.org", "@graph": [ORG, SITE, crumbs_ld(crumbs)] + graph}
@@ -264,23 +273,54 @@ def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', 
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
 <link rel="canonical" href="{url}">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="robots" content="{robots}">
 <meta name="theme-color" content="#09090b">
 <link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="{og_type}"><meta property="og:site_name" content="Self Streak"><meta property="og:url" content="{url}">
 <meta property="og:title" content="{html.escape(og_title)}"><meta property="og:description" content="{html.escape(desc)}">
-<meta property="og:image" content="{B}/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_IN">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{html.escape(og_title[:70])}"><meta name="twitter:description" content="{html.escape(desc)}"><meta name="twitter:image" content="{B}/og-image.png">
+<meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{html.escape(og_title[:70])}"><meta name="twitter:description" content="{html.escape(desc)}"><meta name="twitter:image" content="{og}">
 {head_extra}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
-<style>{CSS}{EXTRA_CSS}</style></head><body>
+<style>{CSS}{EXTRA_CSS}{SHOT_CSS}</style></head><body>
 <nav><div class="wrap"><a class="brand" href="/">{LOGO}Self Streak</a><span class="sp"></span><a class="lg gd" href="/blog">Guides</a><a class="lg" href="/app">Log in</a><a class="btn lime sm" href="/app#signup">Start free trial</a></div></nav>
 <div class="wrap" style="padding-top:18px"><div class="crumb">{crumb_html}</div></div>
 {inner}
 {FOOT}
 {BEACON}
 </body></html>"""
+
+# Real app screenshots (made by scripts/app-screenshots.py from a local demo account). 780x1688 files shown at 390x844.
+SHOT_ALT = {
+    'overview': 'Self Streak overview screen: net worth of ₹1,78,000, income ₹65,000 and spending ₹42,079 this month, with a 6-month chart',
+    'today': 'Self Streak Today screen: a 22-day streak, daily quests and counts of habits done, missed and up next',
+    'health': 'Self Streak Health screen: health score dial built from steps, sleep and daily habits, plus a water tracker with glasses',
+    'meals': 'Self Streak Food today card: protein 43 of 104 g and calories 1,020 of 2,000 kcal from photos of poha and dal, rice and paneer',
+    'activity': 'Self Streak Activity screen: money in and out for 30 days with UPI payments to Swiggy and Big Basket',
+    'budget': 'Self Streak Budget screen: 52% of a ₹24,000 monthly budget used, with how much is left per day',
+    'bills': 'Self Streak Bills screen: monthly and yearly bill totals and upcoming bills like electricity and broadband with Mark paid buttons',
+    'debt': 'Self Streak Debt screen: ₹2,27,000 outstanding, 42% repaid, ₹13,000 of EMIs a month and a debt-free date of Aug 2028',
+    'streak': 'Self Streak streak and rewards screen: a 22-day streak with this week’s days and the daily XP goal',
+}
+SHOTS_FOR = {
+    'habit-tracker': ['today', 'streak', 'health'], 'expense-tracker': ['activity', 'budget', 'overview'],
+    'credit-card-bill-reminder': ['bills', 'budget', 'debt'], 'debt-payoff-planner': ['debt', 'overview'],
+    'emi-calculator': ['debt', 'bills'], 'water-reminder': ['health', 'today'], 'calorie-protein-tracker': ['meals', 'health'],
+    'loan': ['debt', 'bills'],
+}
+SHOT_CSS = """
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;margin-top:16px}
+.shots figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:10px}
+.shots img{display:block;width:100%;height:auto;border-radius:14px}
+.shots figcaption{font-size:13px;color:var(--muted);padding:8px 4px 2px}
+"""
+def shots_html(key, heading='See it in the app'):
+    names = SHOTS_FOR.get(key, [])
+    if not names: return ''
+    figs = ''.join(f'<figure><img src="/img/app-{n}.webp" alt="{html.escape(SHOT_ALT[n])}" width="390" height="844" loading="lazy" decoding="async">'
+                   f'<figcaption>{html.escape(SHOT_ALT[n].split(": ", 1)[0].replace("Self Streak ", ""))}</figcaption></figure>' for n in names)
+    return f'<section><h2>{heading}</h2><p>Real screens from the Self Streak app, with sample data.</p><div class="shots">{figs}</div></section>'
 
 FINAL = '<div class="final"><h2>Start your streak today</h2><p>Habits, money, reminders and health in one app. Set up in two minutes, free for 7 days.</p><a class="btn lime" href="/app#signup">Start free trial</a></div>'
 GUIDES_FOR = {}   # slug -> [(path, title, blurb)] filled in by build-blog
@@ -293,23 +333,37 @@ def render(p):
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faq']]}]
     more = ''.join(f'<a href="/{s}">{html.escape(n)}</a>' for s, n in ALL if s != p['slug'])
     g = GUIDES_FOR.get(p['slug'], [])
-    guides = (f'<section><h2>Guides</h2><div class="guides">' + ''.join(f'<a href="{u}">{html.escape(t)}<span>{html.escape(b)}</span></a>' for u, t, b in g) + '</div></section>') if g else ''
+    guides = (f'<section><h2>Related guides</h2><div class="guides">' + ''.join(f'<a href="{u}">{html.escape(t)}<span>{html.escape(b)}</span></a>' for u, t, b in g) + '</div></section>') if g else ''
     inner = f"""<header style="padding-top:20px"><div class="wrap"><div class="kick">{html.escape(p['kick'])}</div>
 <h1>{html.escape(p['h1'])}</h1><p class="lead">{html.escape(p['lead'])}</p>
 <div class="cta"><a class="btn lime" href="/app#signup">Try it free for 7 days →</a><a class="btn" href="/#tour">See the app</a></div>
 {p.get('calc','')}<p class="short">{html.escape(p['short'])}</p><p class="upd">Updated {UPDATED}</p></div></header>
-<main class="wrap">{p['body']}{p.get('extra','')}
+<main class="wrap">{p['body']}{shots_html(p['slug'])}{p.get('extra','')}
 <section><h2>Questions</h2>{faq_html}</section>
 {guides}{FINAL}
 <section><h2 style="font-size:20px">More from Self Streak</h2><div class="more">{more}</div></section></main>"""
     return shell(path, p['title'], p['desc'], p['h1'] + ' · Self Streak', graph, [('Self Streak', '/'), (p['nav'], path)], inner)
 
 SITEMAP = []   # (path, lastmod)
-def write(path, content, lastmod=UPDATED):
+DATES_FILE = os.path.join(os.path.dirname(__file__), 'page-dates.json')
+DATES = json.load(open(DATES_FILE)) if os.path.exists(DATES_FILE) else {}
+def modified(path, content):
+    """Date this URL's content last changed: kept from page-dates.json unless the content hash differs."""
+    import hashlib
+    h = hashlib.sha256(content.encode()).hexdigest()[:16]
+    rec = DATES.get(path)
+    if not rec or rec['hash'] != h:
+        rec = DATES[path] = {'hash': h, 'modified': TODAY}
+    return rec['modified']
+def write(path, content, sitemap=True):
+    d = modified(path, content)
     fp = os.path.join(OUT, path.strip('/') + '.html')
     os.makedirs(os.path.dirname(fp), exist_ok=True)
-    with open(fp, 'w') as f: f.write(content)
-    SITEMAP.append((path, lastmod))
+    with open(fp, 'w') as f: f.write(content.replace(UPDATED, d))
+    if sitemap: SITEMAP.append((path, d))
+def static_lastmod(path, file):
+    """Hand-written pages (landing, legal): date from their file's content hash."""
+    return modified(path, open(os.path.join(OUT, file), encoding='utf8').read())
 
 if __name__ == '__main__':
     import importlib.util, sys
@@ -320,8 +374,10 @@ if __name__ == '__main__':
     for p in PAGES:
         write('/' + p['slug'], render(p))
     print('built', len(SITEMAP), 'pages')
-    legal = [('/terms', '2026-11-10'), ('/privacy', '2026-11-10'), ('/refunds', '2026-11-10'), ('/shipping', '2026-11-10'), ('/contact', '2026-11-10')]
-    urls = [('/', UPDATED)] + sorted(SITEMAP) + legal
+    seo.extra_pages()   # /about and the 404 page
+    legal = [(u, static_lastmod(u, u.strip('/') + '.html')) for u in ('/terms', '/privacy', '/refunds', '/shipping', '/contact')]
+    urls = [('/', static_lastmod('/', 'landing.html'))] + sorted(SITEMAP) + legal
+    with open(DATES_FILE, 'w') as f: json.dump(DATES, f, indent=1, sort_keys=True)
     with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>{d}</lastmod></url>\n' for u, d in urls) + '</urlset>\n')
     seo.llms(urls)

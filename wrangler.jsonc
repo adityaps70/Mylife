@@ -4,7 +4,7 @@
   "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/*", "!/*.png", "!/*.svg", "!/*.ico", "!/*.webmanifest", "!/*.js", "!/*.css", "!/*.txt", "!/*.xml", "!/*.json"] },
+  "assets": { "directory": "./public", "binding": "ASSETS", "not_found_handling": "404-page", "run_worker_first": ["/*", "!/*.png", "!/*.svg", "!/*.ico", "!/*.webmanifest", "!/*.js", "!/*.css", "!/*.txt", "!/*.xml", "!/*.json"] },
   // Pages (and the API) go through the worker so www/http/workers.dev copies redirect to https://selfstreak.com.
   // Static files skip the worker.
   "ai": { "binding": "AI" },

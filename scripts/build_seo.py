@@ -133,10 +133,12 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${{n-m}} months sooner`:'–';oNote.
 <section><h2>What a small prepayment does</h2><p>Paying {inr(x)} extra every month on {lakh(P)} at {rate:g}% closes the loan in {m2} months instead of {n}, and total interest falls from {inr(TI)} to {inr(I2)}: a saving of about {inr(TI - I2)}.</p>
 <p>{html.escape(L["prepay"])}</p></section>
 <section><h2>Tax on a {html.escape(name.lower())}</h2><p>{html.escape(L["tax"])}</p></section>
+{bp.shots_html('loan', 'Track this loan in Self Streak')}
 <section><h2>Tips before you borrow</h2><ul class="list">{"".join(f"<li>{html.escape(t)}</li>" for t in L["tips"])}</ul></section>
 <section><h2>How EMI is calculated</h2><p>EMI = P × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1), where P is the loan amount, r is the monthly rate (yearly rate ÷ 12 ÷ 100) and n is the number of months. All tables on this page use this reducing-balance formula.</p>
 <p>Once you have the loan, <a href="/emi-calculator">Self Streak tracks every EMI</a> with a reminder before each due date and shows your <a href="/debt-payoff-planner">debt-free date</a>.</p></section>
 <section><h2>Questions</h2>{"".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in faq)}</section>
+<section><h2>Related guides</h2><div class="guides">{"".join(f'<a href="/blog/{q["slug"]}">{html.escape(q["h1"])}<span>{html.escape(q["desc"])}</span></a>' for q in POSTS if q["slug"] in LOAN_GUIDES)}</div></section>
 {bp.FINAL}
 <section><h2 style="font-size:20px">Other EMI calculators</h2><div class="more"><a href="/emi-calculator">All loans</a>{others}</div></section></main>'''
     graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": f"{name} EMI calculator", "description": desc,
@@ -146,29 +148,41 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${{n-m}} months sooner`:'–';oNote.
                           [('Self Streak', '/'), ('EMI calculator', '/emi-calculator'), (f'{name} EMI', path)], inner)
 
 # ---------------- blog ----------------
-AUTHOR = {"@type": "Organization", "@id": B + "/#org", "name": "Self Streak"}
+AUTHOR_NAME = 'Aditya Pratap Singh'
+AUTHOR = {"@type": "Person", "@id": B + "/about#aditya", "name": AUTHOR_NAME, "url": B + "/about",
+          "jobTitle": "Founder", "worksFor": {"@id": B + "/#org"},
+          "description": "Founder of Self Streak, based in Lucknow. Writes the Self Streak guides on budgeting, credit cards, EMIs, habits, water and protein."}
+
+# Each tool page's own guides come from POSTS[*]['hubs']; loan pages share these two.
+LOAN_GUIDES = ['debt-avalanche-vs-snowball', '50-30-20-budget-rule-india']
+TOOL_NAMES = {'credit-card-bill-reminder': 'Credit card bill reminder', 'expense-tracker': 'Expense tracker', 'debt-payoff-planner': 'Debt payoff planner',
+              'habit-tracker': 'Habit tracker', 'water-reminder': 'Water reminder and calculator', 'calorie-protein-tracker': 'Calorie and protein tracker',
+              'emi-calculator': 'EMI calculator'}
 
 def post_page(p):
     path = '/blog/' + p['slug']
     words = len(re.sub('<[^>]+>', ' ', p['body']).split())
     toc = ''.join(f'<li><a href="#{a}">{t}</a></li>' for a, t in re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', p['body']))
     src = ''.join((f'<li><a href="{u}" rel="noopener" target="_blank">{html.escape(t)}</a></li>' if u else f'<li>{html.escape(t)}</li>') for t, u in p['sources'])
-    rel = ''.join(f'<a href="{u}">{html.escape(t)}</a>' for t, u in p['related'])
+    tool = p['hubs'][0]
+    others = [q for q in POSTS if q is not p and set(q['hubs']) & set(p['hubs'])] or [q for q in POSTS if q is not p]
+    rel = (f'<a href="/{tool}">{html.escape(TOOL_NAMES[tool])}<span>Try it: the Self Streak tool this guide is about.</span></a>'
+           + ''.join(f'<a href="/blog/{q["slug"]}">{html.escape(q["h1"])}<span>{html.escape(q["desc"])}</span></a>' for q in others[:2]))
     inner = f'''<article><header style="padding-top:20px"><div class="wrap"><div class="kick">{html.escape(p["kicker"])}</div>
 <h1>{html.escape(p["h1"])}</h1><p class="lead">{html.escape(p["lead"])}</p>
-<p class="byline">By the Self Streak team · Published {p["date"]} · Updated {p["updated"]} · {max(1, round(words/220))} min read</p>
+<p class="byline">By <a href="/about">{AUTHOR_NAME}</a> · Published {p["date"]} · Updated {bp.UPDATED} · {max(1, round(words/220))} min read</p>
 <p class="short"><b>Short answer:</b> {p["short"]}</p></div></header>
 <main class="wrap">
 <section><h2 style="font-size:18px">In this guide</h2><ol class="list">{toc}</ol></section>
 {p["body"]}
 <section><h2>Sources</h2><ul class="list src">{src}</ul><p class="note">This guide is general information, not financial, tax or medical advice. Check with a qualified professional for your situation.</p></section>
 {bp.FINAL}
-<section><h2 style="font-size:20px">Related</h2><div class="more">{rel}<a href="/blog">All guides</a></div></section></main></article>'''
+<section><h2>Related guides</h2><div class="guides">{rel}</div><div class="more" style="margin-top:12px"><a href="/blog">All guides</a></div></section></main></article>'''
     graph = [{"@type": "BlogPosting", "@id": B + path + "#post", "headline": p['h1'], "description": p['desc'], "url": B + path,
-              "mainEntityOfPage": B + path, "datePublished": p['date'], "dateModified": p['updated'], "author": AUTHOR,
-              "publisher": {"@id": B + "/#org"}, "image": B + "/og-image.png", "inLanguage": "en-IN", "wordCount": words,
+              "mainEntityOfPage": B + path, "datePublished": p['date'], "dateModified": bp.UPDATED, "author": AUTHOR,
+              "publisher": {"@id": B + "/#org"}, "image": bp.og_for(path), "inLanguage": "en-IN", "wordCount": words,
               "isPartOf": {"@id": B + "/blog#blog"}, "about": p.get('about', [])}]
-    head = f'<meta property="article:published_time" content="{p["date"]}"><meta property="article:modified_time" content="{p["updated"]}">\n'
+    head = f'<meta property="article:published_time" content="{p["date"]}"><meta property="article:modified_time" content="{bp.UPDATED}"><meta name="author" content="{AUTHOR_NAME}">\n'
     return path, words, bp.shell(path, p['title'], p['desc'], p['h1'], graph,
                                  [('Self Streak', '/'), ('Guides', '/blog'), (p['nav'], path)], inner, og_type='article', head_extra=head)
 
@@ -189,13 +203,49 @@ def build():
     for L in LOANS:
         path, page = loan_page(L); bp.write(path, page)
     for p in POSTS:
-        path, words, page = post_page(p); bp.write(path, page, p['updated'])
+        path, words, page = post_page(p); bp.write(path, page)
         assert words >= 700, (p['slug'], words)
         print(f'  {path}: {words} words')
         for slug in p['hubs']:
             bp.GUIDES_FOR.setdefault(slug, []).append((path, p['h1'], p['desc']))
     bp.GUIDES_FOR.setdefault('emi-calculator', [])[0:0] = [(f'/emi-calculator/{L["slug"]}', f'{L["name"]} EMI calculator', 'Ready EMI tables, interest by year and prepayment savings.') for L in LOANS]
     bp.write('/blog', blog_index(POSTS))
+
+def extra_pages():
+    """/about (the author page blog posts link to) and the styled 404 page."""
+    path = '/about'
+    desc = 'Self Streak is built in Lucknow by Aditya Pratap Singh, who also writes its guides on budgeting, credit cards, EMIs, habits, water and protein.'
+    guides = ''.join(f'<a href="/blog/{p["slug"]}">{html.escape(p["h1"])}<span>{html.escape(p["desc"])}</span></a>' for p in POSTS)
+    inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">About</div><h1>About Self Streak</h1>
+<p class="lead">Self Streak is one app for the things people in India try to keep on track every day: habits and streaks, spending in rupees, credit card bills and EMIs, water and protein.</p></div></header>
+<main class="wrap">
+<section id="aditya"><h2>{AUTHOR_NAME}</h2>
+<p>{AUTHOR_NAME} is the founder of Self Streak and builds it from Lucknow, Uttar Pradesh. Aditya also writes the guides on this site. Each one works through real rupee examples and lists its sources, such as RBI directions for credit cards and loans and published research for habits, water and protein.</p>
+<p>Questions, corrections or feedback on a guide: <a href="/contact">contact us</a>, or find Self Streak on <a href="https://instagram.com/selfstreak" rel="noopener">Instagram</a>.</p></section>
+<section><h2>What Self Streak does</h2><ul class="list">
+<li>Habits and streaks with reminders at each habit’s own time.</li>
+<li>Expenses, budgets, bills, EMIs and credit cards, logged by voice, photo or bank statement, with no bank login.</li>
+<li>Water and protein tracking, made for Indian food.</li>
+<li>A free plan for habits, water, expenses and your streak. Plus is ₹199 a month, with every feature free for 7 days.</li></ul></section>
+<section><h2>Guides by {AUTHOR_NAME}</h2><div class="guides">{guides}</div></section>
+{bp.FINAL}</main>'''
+    graph = [{"@type": "AboutPage", "@id": B + path + "#page", "url": B + path, "name": "About Self Streak", "description": desc,
+              "isPartOf": {"@id": B + "/#website"}, "about": {"@id": B + "/#org"}, "mainEntity": AUTHOR, "dateModified": bp.UPDATED, "inLanguage": "en-IN"}]
+    bp.write(path, bp.shell(path, 'About Self Streak and Its Founder, Aditya Pratap Singh', desc, 'About Self Streak', graph,
+                            [('Self Streak', '/'), ('About', path)], inner))
+    # 404: Cloudflare serves public/404.html with a 404 status (assets.not_found_handling in wrangler.jsonc).
+    tools = ''.join(f'<a href="/{s}">{html.escape(n)}</a>' for s, n in bp.ALL)
+    loans = ''.join(f'<a href="/emi-calculator/{L["slug"]}">{html.escape(L["name"])} EMI</a>' for L in LOANS)
+    inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">Error 404</div><h1>This page doesn’t exist</h1>
+<p class="lead">The link may be old or mistyped. Here’s everything that does exist on Self Streak.</p>
+<div class="cta"><a class="btn lime" href="/">Go to the homepage</a><a class="btn" href="/blog">Read the guides</a></div></div></header>
+<main class="wrap"><section><h2>Tools</h2><div class="more">{tools}</div></section>
+<section><h2>EMI calculators</h2><div class="more"><a href="/emi-calculator">All loans</a>{loans}</div></section>
+<section><h2>Guides</h2><div class="guides">{guides}</div></section>{bp.FINAL}</main>'''
+    page = bp.shell('/404', 'Page Not Found · Self Streak Habit, Money & Health Tools', 'This page does not exist. Find the Self Streak habit tracker, expense tracker, EMI calculators and guides on budgeting, habits, water and protein.',
+                    'Page not found · Self Streak', [], [('Self Streak', '/'), ('Page not found', '/404')], inner, robots='noindex, follow')
+    page = re.sub(r'<link rel="canonical"[^>]*>\n?', '', page).replace(bp.UPDATED, bp.TODAY)
+    with open(os.path.join(bp.OUT, '404.html'), 'w') as f: f.write(page)
 
 def llms(urls):
     pages = {p['slug']: p for p in bp.PAGES}
@@ -212,6 +262,7 @@ def llms(urls):
               '- Privacy: no bank login, card number or CVV is ever needed. Data can be exported or deleted from Settings.',
               '- Languages: understands English, Hindi and Hinglish for voice and text logging.',
               '', '## Company',
+              f'- [About]({B}/about): who builds Self Streak and writes the guides.',
               f'- [Contact]({B}/contact): support email and how to reach us.',
               f'- [Privacy policy]({B}/privacy)', f'- [Terms]({B}/terms)', f'- [Refunds]({B}/refunds)', '']
     with open(os.path.join(bp.OUT, 'llms.txt'), 'w') as f:

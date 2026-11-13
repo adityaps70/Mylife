@@ -35,6 +35,7 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - Languages: understands English, Hindi and Hinglish for voice and text logging.
 
 ## Company
+- [About](https://selfstreak.com/about): who builds Self Streak and writes the guides.
 - [Contact](https://selfstreak.com/contact): support email and how to reach us.
 - [Privacy policy](https://selfstreak.com/privacy)
 - [Terms](https://selfstreak.com/terms)
