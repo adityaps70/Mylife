@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { sendPush } from './webpush.js';
 import { gameRoutes, gameCron, applyReferral } from './game.js';
 import { rzpRoutes, rzpWebhook, rzpReady, autopayOf } from './razorpay.js';
+import { storeRoutes, storeRefresh, storeCfg, storeSubOf } from './store.js';
 import { renewalReminders } from './renew.js';
 
 const DAY = 86400000;
@@ -53,7 +54,8 @@ async function me(env, u) {
   const limit = Number(env.DAILY_AI_LIMIT || 100);
   return { googleClientId: env.GOOGLE_CLIENT_ID || '', user: { id: u.id, email: u.email, name: u.name, plan: u.plan, status: planStatus(u), trialEnds: u.trial_ends, paidUntil: u.paid_until, plusEnds: Math.max(u.paid_until || 0, u.trial_ends || 0), graceDays: GRACE / DAY, created: u.created },
     usage: { used: await usageToday(env, u.id), limit }, price: Number(env.PRICE_INR || 199), vapidPublicKey: env.VAPID_PUBLIC_KEY,
-    autopayReady: rzpReady(env) && (env.AUTOPAY_LIVE === '1' || String(env.AUTOPAY_TESTERS || '').toLowerCase().split(',').map((x) => x.trim()).includes(u.email)), autopay: await autopayOf(env, u.id).catch(() => null) };
+    autopayReady: rzpReady(env) && (env.AUTOPAY_LIVE === '1' || String(env.AUTOPAY_TESTERS || '').toLowerCase().split(',').map((x) => x.trim()).includes(u.email)), autopay: await autopayOf(env, u.id).catch(() => null),
+    store: { ...storeCfg(env), sub: await storeSubOf(env, u.id).catch(() => null) } };
 }
 
 /* ---------------- AI tasks (prompts and schemas live on the server) ---------------- */
@@ -491,6 +493,7 @@ async function api(req, env, url) {
   if (!u) return err(401, 'not_signed_in');
   if (p.startsWith('/api/game')) { const r = await gameRoutes(req, env, p, m, body, u); if (r) return r; }
   if (p.startsWith('/api/billing/rzp/')) { const r = await rzpRoutes(req, env, p, m, body, u, url); if (r) return r; }
+  if (p.startsWith('/api/billing/store/')) { const r = await storeRoutes(req, env, p, m, body, u); if (r) return r; }
   if (Date.now() - (u.last_seen || 0) > 10 * 60e3) {
     await env.DB.prepare('UPDATE users SET last_seen = ? WHERE id = ?').bind(Date.now(), u.id).run();
     await env.DB.prepare('INSERT OR IGNORE INTO active_days (user_id, day) VALUES (?, ?)').bind(u.id, istDay()).run();
@@ -501,7 +504,7 @@ async function api(req, env, url) {
     return admin(req, env, url, p, m, body);
   }
 
-  if (p === '/api/me' && m === 'GET') return json(await me(env, u));
+  if (p === '/api/me' && m === 'GET') { await storeRefresh(env, u).catch(() => {}); return json(await me(env, u)); }
   if (p === '/api/profile' && m === 'POST') {
     const b = await body();
     await env.DB.prepare('UPDATE users SET name = ? WHERE id = ?').bind(String(b.name || '').slice(0, 60), u.id).run();

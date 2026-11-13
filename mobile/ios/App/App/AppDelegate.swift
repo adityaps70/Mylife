@@ -11,6 +11,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Play Self Streak's sounds even when the ring/silent switch is on, mixed with music, and keep the
         // microphone usable at the same time (so the voice level meter can detect when you stop talking).
         try? AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetoothA2DP])
+        // A record-capable audio session mutes every haptic in the app unless this is allowed explicitly.
+        try? AVAudioSession.sharedInstance().setAllowHapticsAndSystemSoundsDuringRecording(true)
         try? AVAudioSession.sharedInstance().setActive(true)
         return true
     }

@@ -13,6 +13,7 @@
     "@capacitor/app": "^8.0.0",
     "@capacitor/assets": "^4.0.0",
     "@capacitor/browser": "^8.0.5",
+    "@capacitor/camera": "^8.2.6",
     "@capacitor/cli": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/haptics": "^8.0.0",
@@ -23,6 +24,7 @@
     "@capawesome/capacitor-badge": "^8.0.4",
     "@capgo/capacitor-health": "^8.12.1",
     "@capgo/capacitor-native-biometric": "^8.9.2",
-    "@capgo/capacitor-social-login": "^8.7.7"
+    "@capgo/capacitor-social-login": "^8.7.7",
+    "@capgo/native-purchases": "8.9.6"
   }
 }

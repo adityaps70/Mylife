@@ -54,8 +54,8 @@ PAGES = []
 def page(**k): PAGES.append(k)
 
 page(slug='credit-card-bill-reminder', nav='Credit card bills',
-  title='Credit Card Bill Reminder App India · Never Miss a Due Date | Self Streak',
-  desc='Track every credit card and pay-later bill in one place. See this bill, next bill, minimum due and limit left, and get reminders 2 days before the due date. 7-day free trial.',
+  title='Credit Card Bill Reminder App India | Self Streak',
+  desc='Track every credit card bill: this bill, next bill, minimum due and limit left. Get a reminder 2 days before each due date. Free for 7 days.', short='A credit card bill reminder app tells you how much is due and when, before the due date. Self Streak tracks each card’s statement date, due date, minimum due and limit, splits spends into this bill and next bill like your bank does, and reminds you 2 days before payment is due.',
   kick='Credit cards & pay later', h1='A credit card bill reminder that understands billing cycles',
   lead='Self Streak tracks each card like your bank does: spends before the statement date go on this bill, spends after it roll to the next one. You see the amount due, the minimum due and your available limit, and you get a reminder before every due date.',
   body='''
@@ -79,8 +79,8 @@ page(slug='credit-card-bill-reminder', nav='Credit card bills',
        ('What does it cost?','7 days free, then ₹199 a month for everything in Self Streak, including habits, money, reminders and AI logging.')])
 
 page(slug='emi-calculator', nav='EMI calculator',
-  title='EMI Calculator & Loan Tracker India · See Interest and Prepayment Savings | Self Streak',
-  desc='Free EMI calculator for home, personal, car and education loans. See monthly EMI, total interest and how much a prepayment saves. Then track every EMI with reminders in Self Streak.',
+  title='EMI Calculator India: Loan EMI & Prepayment | Self Streak',
+  desc='Free EMI calculator for home, car, personal and education loans. See your EMI, total interest and how much a monthly prepayment saves.', short='An EMI calculator works out the fixed monthly instalment on a loan from three inputs: loan amount, yearly interest rate and tenure. For example, ₹5 lakh at 12% for 5 years is an EMI of about ₹11,122, with roughly ₹1.67 lakh paid as interest. Paying a little extra each month cuts both.',
   kick='Loans & EMIs', h1='EMI calculator and loan tracker',
   lead='Work out your monthly EMI, the total interest you’ll pay, and how much time and interest a small extra payment each month can save. Then track all your loans and EMIs in one place.',
   calc='''<div class="calc" id="emi"><div class="fields">
@@ -112,8 +112,8 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${n-m} months sooner`:'–';oNote.te
        ('Should I prepay my loan or invest?','A common rule: clear high-interest debt (credit cards, personal loans) first, and keep an emergency fund. Self Streak’s AI plan weighs this against your own numbers.')])
 
 page(slug='water-reminder', nav='Water reminder',
-  title='Water Reminder App · Daily Water Intake Calculator & Drink Water Alerts | Self Streak',
-  desc='Work out how much water you need a day and get gentle drink-water reminders that adapt to what you have already logged. Tap a glass to log water. Try Self Streak free for 7 days.',
+  title='Water Reminder App & Daily Intake Calculator | Self Streak',
+  desc='Work out how much water you need a day, then get drink-water reminders that adapt to what you have already logged. Tap a glass to log it.', short='Most adults need about 2 to 2.5 litres of water a day from drinks, more in hot weather or after exercise. A simple guide is around 33 ml per kg of body weight. Self Streak’s water reminder tracks the glasses you log and only nudges you when you are behind for the time of day.',
   kick='Health · Water', h1='A water reminder that knows how much you’ve had',
   lead='Most water reminders ping you on a timer, even when you’ve just had a glass. Self Streak tracks your glasses and only reminds you when you’re behind for the time of day.',
   calc='''<div class="calc" id="wc"><div class="fields">
@@ -142,8 +142,8 @@ function wCalc(){const w=+wW.value||0,e=+wE.value||0,h=+wH.value||0,ml=w*33+e*12
        ('Can I log water by voice?','Yes. Say or type “drank 2 glasses” or “1 litre of water” and it’s logged.')])
 
 page(slug='habit-tracker', nav='Habit tracker',
-  title='Habit Tracker App India · Daily Habits, Streaks & Smart Reminders | Self Streak',
-  desc='A habit tracker for daily, weekly and monthly habits with streaks, reminders at the right time and goals that count automatically, like 10,000 steps on 300 days. Free for 7 days.',
+  title='Habit Tracker App with Streaks & Reminders | Self Streak',
+  desc='Track daily, weekly and monthly habits with streaks, reminders at the time each habit happens, and goals that count themselves. 7 days free.', short='A habit tracker is an app where you tick off habits each day and see your streak grow. Research from University College London found new habits took a median of 66 days to become automatic. Self Streak reminds you at the time each habit happens and keeps your streak and goals counting.',
   kick='Habits & streaks', h1='A habit tracker that keeps your streak going',
   lead='Track daily, weekly and monthly habits, get a reminder at the time each habit happens, and watch your streak grow. Goals like “10,000 steps on 300 days” count themselves every time you tick the habit.',
   body='''
@@ -162,8 +162,8 @@ page(slug='habit-tracker', nav='Habit tracker',
        ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.')])
 
 page(slug='expense-tracker', nav='Expense tracker',
-  title='Expense Tracker India · Budget, Bank Statement Import & Bill Reminders | Self Streak',
-  desc='Track spending in rupees by voice, photo or bank statement. Set monthly budgets, see where money goes, and get reminders for bills and EMIs. No bank login needed. 7 days free.',
+  title='Expense Tracker App India: Budget & Bills | Self Streak',
+  desc='Track spending in rupees by voice, photo or bank statement. Set monthly budgets and get reminders for bills and EMIs. No bank login needed.', short='An expense tracker records where your money goes so you can stick to a budget. Self Streak logs spends in rupees three ways: say it (“450 on Swiggy”), snap a receipt, or import a bank statement PDF or Excel file. It never asks for your bank login.',
   kick='Money · Spending', h1='An expense tracker that fills itself in',
   lead='Say “spent 450 on Zomato”, snap a receipt, or upload your bank statement, and Self Streak sorts every payment into your budget. No bank login, no manual spreadsheets.',
   body='''
@@ -181,8 +181,8 @@ page(slug='expense-tracker', nav='Expense tracker',
        ('Is my financial data private?','Your data is stored in your own account, never sold or used for ads, and you can export or delete it any time.')])
 
 page(slug='debt-payoff-planner', nav='Debt payoff planner',
-  title='Debt Payoff Planner India · Get Debt-Free Faster with an AI Plan | Self Streak',
-  desc='Plan how to repay credit cards, personal loans and EMIs on your income. Compare avalanche vs snowball, see your debt-free date, and get a month-by-month AI repayment plan.',
+  title='Debt Payoff Planner: Avalanche vs Snowball | Self Streak',
+  desc='Plan how to repay credit cards, personal loans and EMIs on your income. Compare avalanche and snowball and see your debt-free date.', short='A debt payoff planner shows the order to repay your debts and the month you will be debt-free. The avalanche method pays extra on the highest-interest debt first and saves the most interest; the snowball method clears the smallest balance first for quick wins. Self Streak compares both on your real numbers.',
   kick='Get debt-free', h1='A debt payoff planner built on your real income',
   lead='Add your loans, cards and salary. Self Streak shows your debt-free date, compares avalanche and snowball, and makes a month-by-month plan that never skips an EMI or your essentials.',
   body='''
@@ -198,8 +198,8 @@ page(slug='debt-payoff-planner', nav='Debt payoff planner',
        ('What if my EMIs are more than my income?','The plan will tell you plainly and suggest options like restructuring, extending tenure or consolidating high-interest debt.')])
 
 page(slug='calorie-protein-tracker', nav='Calorie & protein tracker',
-  title='Calorie & Protein Tracker for Indian Food · Snap Your Meal with AI | Self Streak',
-  desc='Take a photo of dal chawal, roti sabzi or a dosa and get calories and protein in seconds. Track your daily protein target and get a daily AI food summary. 7 days free.',
+  title='Calorie & Protein Tracker for Indian Food | Self Streak',
+  desc='Snap a photo of dal chawal, roti sabzi or dosa and get calories and protein in seconds. Track your daily protein target. Free for 7 days.', short='A calorie and protein tracker estimates what you eat each day against a target. ICMR-NIN’s 2020 guidelines put the protein requirement for healthy Indian adults at about 0.83 g per kg of body weight a day. Self Streak estimates calories and protein from a photo or description of Indian meals.',
   kick='Food & protein', h1='Track calories and protein from a photo of your plate',
   lead='Snap your meal or just type “2 rotis, dal and paneer sabzi”. Self Streak estimates calories, protein, carbs and fat for Indian portions, tracks your daily protein target, and tells you what was missing at the end of the day.',
   calc='''<div class="calc" id="pc"><div class="fields">
@@ -225,55 +225,103 @@ function pCalc(){const w=+pW.value||0,a=+pA.value||1,g=Math.round(w*a);pG.textCo
        ('Is it free?','All features are free for 7 days, then ₹199 a month for the whole app.')])
 
 ALL = [(p['slug'], p['nav']) for p in PAGES]
+UPDATED = '2026-11-13'
+ORG = {"@type": "Organization", "@id": B + "/#org", "name": "Self Streak", "url": B + "/",
+       "logo": {"@type": "ImageObject", "url": B + "/icon-512.png", "width": 512, "height": 512},
+       "email": "adityaps700@gmail.com", "areaServed": "IN",
+       "address": {"@type": "PostalAddress", "addressLocality": "Lucknow", "addressRegion": "Uttar Pradesh", "addressCountry": "IN"},
+       "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": "adityaps700@gmail.com", "url": B + "/contact", "availableLanguage": ["en", "hi"]},
+       "knowsAbout": ["habit tracking", "personal budgeting", "expense tracking", "EMI and loan management", "credit card bill management", "debt repayment", "water intake", "protein intake for Indian diets"]}
+SITE = {"@type": "WebSite", "@id": B + "/#website", "name": "Self Streak", "url": B + "/", "inLanguage": "en-IN", "publisher": {"@id": B + "/#org"}}
+EXTRA_CSS = """
+.short{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--lime);border-radius:14px;padding:16px 18px;margin-top:22px;color:#e4e4e7;font-size:16.5px}
+.upd{font-size:13px;color:var(--faint);margin-top:14px}
+.guides{display:grid;gap:10px;margin-top:12px}.guides a{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-decoration:none;color:var(--text);font-weight:600}
+.guides a span{display:block;color:var(--muted);font-weight:400;font-size:14px;margin-top:2px}
+article p,article li{font-size:17px}article h2{margin-top:8px}article section{padding:26px 0}
+.byline{font-size:14px;color:var(--muted);margin-top:14px}
+.src{font-size:14px;color:var(--muted)}.src li{font-size:14px;color:var(--muted)}
+.tw{overflow-x:auto}
+.brand,nav .lg,nav .btn{white-space:nowrap}nav .wrap{gap:12px}
+@media (max-width:440px){nav .lg.gd{display:none}nav .btn.sm{padding:0 13px}}
+"""
+FOOT = '<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/blog">Guides</a><a href="/emi-calculator">EMI calculator</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/shipping">Shipping</a></div></footer>'
+BEACON = "<script>try{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({p:location.pathname,r:document.referrer})],{type:'application/json'}))}catch(e){}</script>"
 
-def render(p):
-    url = f"{B}/{p['slug']}"
-    faq_html = ''.join(f'<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>' for q, a in p['faq'])
-    ld = [
-        {"@context": "https://schema.org", "@type": "WebPage", "name": p['h1'], "url": url, "description": p['desc'], "isPartOf": {"@type": "WebSite", "name": "Self Streak", "url": B + "/"}},
-        {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Self Streak", "item": B + "/"},
-            {"@type": "ListItem", "position": 2, "name": p['nav'], "item": url}]},
-        {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faq']]},
-    ]
-    more = ''.join(f'<a href="/{s}">{html.escape(n)}</a>' for s, n in ALL if s != p['slug'])
-    return f'''<!doctype html>
+def crumbs_ld(items):
+    return {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": i + 1, "name": n, "item": B + u} for i, (n, u) in enumerate(items)]}
+
+def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', head_extra=''):
+    url = B + path
+    assert len(title) <= 60, (path, len(title), title)
+    assert 110 <= len(desc) <= 160, (path, len(desc), desc)
+    ld = {"@context": "https://schema.org", "@graph": [ORG, SITE, crumbs_ld(crumbs)] + graph}
+    crumb_html = ' › '.join([f'<a href="{u}">{html.escape(n)}</a>' for n, u in crumbs[:-1]] + [html.escape(crumbs[-1][0])])
+    return f"""<!doctype html>
 <html lang="en-IN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{html.escape(p['title'])}</title>
-<meta name="description" content="{html.escape(p['desc'])}">
+<title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(desc)}">
 <link rel="canonical" href="{url}">
-<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#09090b">
-<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Self Streak"><meta property="og:url" content="{url}">
-<meta property="og:title" content="{html.escape(p['h1'])} · Self Streak"><meta property="og:description" content="{html.escape(p['desc'])}">
-<meta property="og:image" content="{B}/og-image.png"><meta property="og:locale" content="en_IN"><meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta property="og:type" content="{og_type}"><meta property="og:site_name" content="Self Streak"><meta property="og:url" content="{url}">
+<meta property="og:title" content="{html.escape(og_title)}"><meta property="og:description" content="{html.escape(desc)}">
+<meta property="og:image" content="{B}/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{html.escape(og_title[:70])}"><meta name="twitter:description" content="{html.escape(desc)}"><meta name="twitter:image" content="{B}/og-image.png">
+{head_extra}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
-<style>{CSS}</style></head><body>
-<nav><div class="wrap"><a class="brand" href="/">{LOGO}Self Streak</a><span class="sp"></span><a class="lg" href="/app">Log in</a><a class="btn lime sm" href="/app#signup">Start free trial</a></div></nav>
-<header><div class="wrap"><div class="crumb"><a href="/">Self Streak</a> › {html.escape(p['nav'])}</div><div class="kick">{html.escape(p['kick'])}</div>
+<style>{CSS}{EXTRA_CSS}</style></head><body>
+<nav><div class="wrap"><a class="brand" href="/">{LOGO}Self Streak</a><span class="sp"></span><a class="lg gd" href="/blog">Guides</a><a class="lg" href="/app">Log in</a><a class="btn lime sm" href="/app#signup">Start free trial</a></div></nav>
+<div class="wrap" style="padding-top:18px"><div class="crumb">{crumb_html}</div></div>
+{inner}
+{FOOT}
+{BEACON}
+</body></html>"""
+
+FINAL = '<div class="final"><h2>Start your streak today</h2><p>Habits, money, reminders and health in one app. Set up in two minutes, free for 7 days.</p><a class="btn lime" href="/app#signup">Start free trial</a></div>'
+GUIDES_FOR = {}   # slug -> [(path, title, blurb)] filled in by build-blog
+
+def render(p):
+    path = '/' + p['slug']
+    faq_html = ''.join(f'<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>' for q, a in p['faq'])
+    graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": p['h1'], "description": p['desc'], "isPartOf": {"@id": B + "/#website"},
+              "about": {"@id": B + "/#app"}, "dateModified": UPDATED, "inLanguage": "en-IN"},
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in p['faq']]}]
+    more = ''.join(f'<a href="/{s}">{html.escape(n)}</a>' for s, n in ALL if s != p['slug'])
+    g = GUIDES_FOR.get(p['slug'], [])
+    guides = (f'<section><h2>Guides</h2><div class="guides">' + ''.join(f'<a href="{u}">{html.escape(t)}<span>{html.escape(b)}</span></a>' for u, t, b in g) + '</div></section>') if g else ''
+    inner = f"""<header style="padding-top:20px"><div class="wrap"><div class="kick">{html.escape(p['kick'])}</div>
 <h1>{html.escape(p['h1'])}</h1><p class="lead">{html.escape(p['lead'])}</p>
 <div class="cta"><a class="btn lime" href="/app#signup">Try it free for 7 days →</a><a class="btn" href="/#tour">See the app</a></div>
-{p.get('calc','')}</div></header>
-<main class="wrap">{p['body']}
+{p.get('calc','')}<p class="short">{html.escape(p['short'])}</p><p class="upd">Updated {UPDATED}</p></div></header>
+<main class="wrap">{p['body']}{p.get('extra','')}
 <section><h2>Questions</h2>{faq_html}</section>
-<div class="final"><h2>Start your streak today</h2><p>Habits, money, reminders and health in one app. Set up in two minutes, free for 7 days.</p><a class="btn lime" href="/app#signup">Start free trial</a></div>
-<section><h2 style="font-size:20px">More from Self Streak</h2><div class="more">{more}</div></section></main>
-<footer><div class="wrap"><span>© 2026 Self Streak</span><a href="/">Home</a><a href="/contact">Contact</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/shipping">Shipping</a></div></footer>
-<script>try{{if(!/bot|crawl|spider/i.test(navigator.userAgent))navigator.sendBeacon('/api/hit',new Blob([JSON.stringify({{p:location.pathname,r:document.referrer}})],{{type:'application/json'}}))}}catch(e){{}}</script>
-</body></html>'''
+{guides}{FINAL}
+<section><h2 style="font-size:20px">More from Self Streak</h2><div class="more">{more}</div></section></main>"""
+    return shell(path, p['title'], p['desc'], p['h1'] + ' · Self Streak', graph, [('Self Streak', '/'), (p['nav'], path)], inner)
 
-for p in PAGES:
-    with open(os.path.join(OUT, p['slug'] + '.html'), 'w') as f:
-        f.write(render(p))
-print('built', len(PAGES), 'pages')
+SITEMAP = []   # (path, lastmod)
+def write(path, content, lastmod=UPDATED):
+    fp = os.path.join(OUT, path.strip('/') + '.html')
+    os.makedirs(os.path.dirname(fp), exist_ok=True)
+    with open(fp, 'w') as f: f.write(content)
+    SITEMAP.append((path, lastmod))
 
-# sitemap
-core = [('/', '1.0', 'weekly')] + [('/' + s, '0.8', 'monthly') for s, _ in ALL] + [('/terms', '0.3', 'yearly'), ('/privacy', '0.3', 'yearly'), ('/refunds', '0.3', 'yearly'), ('/shipping', '0.3', 'yearly'), ('/contact', '0.4', 'yearly')]
-with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
-    f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>2026-11-10</lastmod><changefreq>{c}</changefreq><priority>{pr}</priority></url>\n' for u, pr, c in core) + '</urlset>\n')
-print('sitemap updated')
+if __name__ == '__main__':
+    import importlib.util, sys
+    sys.modules['build_pages'] = sys.modules[__name__]
+    spec = importlib.util.spec_from_file_location('build_seo', os.path.join(os.path.dirname(__file__), 'build_seo.py'))
+    seo = importlib.util.module_from_spec(spec); spec.loader.exec_module(seo)
+    seo.build()   # loan pages + blog; fills GUIDES_FOR
+    for p in PAGES:
+        write('/' + p['slug'], render(p))
+    print('built', len(SITEMAP), 'pages')
+    legal = [('/terms', '2026-11-10'), ('/privacy', '2026-11-10'), ('/refunds', '2026-11-10'), ('/shipping', '2026-11-10'), ('/contact', '2026-11-10')]
+    urls = [('/', UPDATED)] + sorted(SITEMAP) + legal
+    with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>{d}</lastmod></url>\n' for u, d in urls) + '</urlset>\n')
+    seo.llms(urls)
+    print('sitemap and llms.txt updated:', len(urls), 'urls')

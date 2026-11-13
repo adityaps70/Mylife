@@ -132,5 +132,10 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>selfstreak.com</string>
+		<string>www.selfstreak.com</string>
+	</array>
 </dict>
 </plist>

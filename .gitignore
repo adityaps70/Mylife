@@ -16,3 +16,6 @@ mobile/ios/DerivedData/
 *.apk
 *.aab
 mobile/ios/App/build-device/
+
+# Android release signing (never commit)
+mobile/android/keystore.properties

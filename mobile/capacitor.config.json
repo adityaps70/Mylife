@@ -21,7 +21,8 @@
   "ios": {
     "backgroundColor": "#09090b",
     "contentInset": "never",
-    "scheme": "Self Streak"
+    "scheme": "Self Streak",
+    "limitsNavigationsToAppBoundDomains": true
   },
   "plugins": {
     "SplashScreen": {

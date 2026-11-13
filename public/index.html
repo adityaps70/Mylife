@@ -461,7 +461,7 @@ svg.bars text{fill:var(--faint);font-size:11px;font-family:inherit}
 .hc.l1{background:color-mix(in srgb,var(--lime) 30%,var(--line))}.hc.l2{background:color-mix(in srgb,var(--lime) 62%,var(--line))}.hc.l3{background:var(--lime)}
 .hc.fut{background:transparent;box-shadow:inset 0 0 0 1px var(--line);cursor:default}
 .hc.today{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--text)}
-.hc.sel{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--cyan)}
+.hc.hsel{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--cyan)}
 .hc:not(.fut):hover{transform:scale(1.2)}
 .anim .hc{animation:bump .45s var(--spring) backwards;animation-delay:calc(var(--c)*32ms + .15s)}
 .heat .dl,.hm-months span{font-size:10.5px;color:var(--faint)}
@@ -1119,7 +1119,7 @@ html.nomotion .avsvg *{animation:none!important}
 .db-steps .gsl-fill{background:linear-gradient(90deg,var(--cyan),var(--lime))!important;background-size:auto!important}.db-sleep .gsl-fill{background:linear-gradient(90deg,#7c6cff,var(--violet,#a78bfa))!important;background-size:auto!important}.db-weight .gsl-fill{background:linear-gradient(90deg,var(--orange,#ff8a4c),#f5c84c)!important;background-size:auto!important}
 .logt .lb{min-width:0;flex:1}
 /* heatmap selection */
-.heat.has-sel .hc:not(.sel):not(.fut){opacity:.7}.hc.sel{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--lime),0 0 12px color-mix(in srgb,var(--lime) 50%,transparent)!important;opacity:1}
+.heat.has-sel .hc:not(.hsel):not(.fut){opacity:.7}.hc.hsel{transform:scale(1.15);box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--lime),0 0 12px color-mix(in srgb,var(--lime) 50%,transparent)!important;opacity:1}
 /* collapsible cards */
 .foldable>.ch{cursor:pointer;user-select:none}.foldable .foldbtn{margin-left:auto;flex:none;width:32px;height:32px}.foldable .foldbtn svg{transition:transform .25s var(--spring);transform:rotate(90deg)}
 .foldable.folded .foldbtn svg{transform:rotate(0)}.foldable.folded>:not(.ch){display:none!important}.foldable.folded>.ch{margin-bottom:0}
@@ -1139,6 +1139,144 @@ html.nomotion .avsvg *{animation:none!important}
 .dp-warn{margin-top:16px;border:1px solid color-mix(in srgb,var(--orange,#ff8a4c) 40%,transparent);background:color-mix(in srgb,var(--orange,#ff8a4c) 7%,transparent);border-radius:14px}.dp-warn>summary{display:flex;gap:10px;align-items:center;padding:12px 14px;cursor:pointer;list-style:none}.dp-warn>summary::-webkit-details-marker{display:none}.dp-warn>summary b{flex:1}.dp-warn>summary svg:last-child{transition:transform .25s;color:var(--faint)}.dp-warn[open]>summary svg:last-child{transform:rotate(90deg)}.dp-warn ul{padding:0 16px 12px 36px;margin:0}
 .dbrules>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none}.dbrules>summary::-webkit-details-marker{display:none}.dbrules[open]>summary svg{transform:rotate(90deg)}.dbrules>summary svg{transition:transform .25s}
 @media (max-width:760px){.dpstats{grid-template-columns:repeat(2,minmax(0,1fr))}.dps b{font-size:17px}.dp-head{font-size:18px}}
+/* ---------- in-app camera (bill / meal / anything) ---------- */
+#cam{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#000;color:#fff;overflow:hidden;z-index:200}
+#cam::backdrop{background:#000}
+#cam:not([open]){display:none!important}
+#cam[open]{display:block;animation:camIn .28s var(--spring,cubic-bezier(.2,.9,.3,1.2))}
+@keyframes camIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+.cm-view{position:absolute;inset:0;touch-action:none;background:#000}
+.cm-view video,.cm-view img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cm-view video{pointer-events:none;transform-origin:50% 50%}
+.cm-view video::-webkit-media-controls,.cm-view video::-webkit-media-controls-start-playback-button,.cm-view video::-webkit-media-controls-overlay-play-button,.cm-view video::-webkit-media-controls-panel{display:none!important;-webkit-appearance:none;opacity:0!important}
+.cm-guide{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);pointer-events:none;transition:width .3s ease,aspect-ratio .3s ease}
+.cm-guide.bill{width:min(74vw,420px);aspect-ratio:3/4.4}
+.cm-guide.meal{width:min(78vw,440px);aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,255,255,.55)}
+.cm-guide.auto{width:min(82vw,460px);aspect-ratio:3/4}
+.cm-guide.bill i,.cm-guide.auto i{position:absolute;width:34px;height:34px;border:3px solid var(--lime);border-radius:4px}
+.cm-guide.auto i{border-color:rgba(255,255,255,.8)}
+.cm-guide i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;border-top-left-radius:16px}
+.cm-guide i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0;border-top-right-radius:16px}
+.cm-guide i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0;border-bottom-left-radius:16px}
+.cm-guide i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0;border-bottom-right-radius:16px}
+.cm-guide.meal i{display:none}
+.cm-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;padding-top:calc(12px + env(safe-area-inset-top));background:linear-gradient(rgba(0,0,0,.55),transparent);z-index:2}
+.cm-hint{flex:1;text-align:center;font-size:14px;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+.cm-b{width:44px;height:44px;border-radius:50%;border:0;display:grid;place-items:center;background:rgba(0,0,0,.42);color:#fff;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.cm-b .i{width:22px;height:22px}
+.cm-b.on{background:var(--yellow);color:#111}
+.cm-b[hidden]{display:none}
+.cm-bot{position:absolute;left:0;right:0;bottom:0;padding:16px 18px;padding-bottom:calc(20px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.7) 40%);z-index:2;display:grid;gap:16px}
+.cm-zoom{position:relative;height:44px;display:flex;justify-content:center;align-items:flex-end;touch-action:none}
+.cm-zb{position:absolute;left:50%;bottom:6px;margin-left:-22px;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font:700 13px/1 inherit;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:opacity .2s,transform .2s;touch-action:none}
+.cm-zb.on{color:var(--yellow)}
+.cm-dial{position:absolute;left:-18px;right:-18px;bottom:-4px;height:118px;opacity:0;transform:translateY(16px) scale(.94);pointer-events:none;transition:opacity .22s,transform .3s cubic-bezier(.2,.9,.3,1.2);-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.cm-dial svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:96px;overflow:visible}
+.cm-dial .arc{fill:none;stroke:rgba(255,255,255,.12);stroke-width:44}
+.cm-dial text{fill:#fff;font:700 13px/1 Plus Jakarta Sans,system-ui,sans-serif}
+.cm-dv{position:absolute;left:0;right:0;top:0;width:max-content;margin:auto;padding:5px 11px;border-radius:13px;background:rgba(0,0,0,.55);font:800 15px/1 inherit;color:var(--yellow)}
+.cm-zoom.active .cm-dial{opacity:1;transform:none}.cm-zoom.active .cm-zb{opacity:0;transform:scale(.6)}.cm-zb.pop{animation:zbPop .28s cubic-bezier(.2,.9,.3,1.4)}@keyframes zbPop{40%{transform:scale(1.18)}}
+.cm-zoom{height:104px!important;cursor:ew-resize}
+.cm-modes{display:flex;justify-content:center;gap:6px}
+.cm-modes button{border:0;background:none;color:rgba(255,255,255,.65);font:700 13px/1 inherit;letter-spacing:.06em;text-transform:uppercase;padding:8px 12px;border-radius:16px;cursor:pointer}
+.cm-modes button.on{color:#111;background:var(--lime)}
+.cm-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+.cm-row>:first-child{justify-self:start}.cm-row>:last-child{justify-self:end}
+.cm-shut{width:80px;height:80px;border-radius:50%;border:5px solid #fff;background:transparent;padding:5px;cursor:pointer;transition:transform .15s}
+.cm-shut::after{content:"";display:block;width:100%;height:100%;border-radius:50%;background:#fff;transition:transform .12s,background .2s}
+.cm-shut:active::after{transform:scale(.86)}
+#cam.cm-bill .cm-shut::after,#cam.cm-meal .cm-shut::after{background:var(--lime)}
+.cm-shut:disabled{opacity:.4}
+.cm-gal{width:50px;height:50px;border-radius:14px}
+.cm-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3}
+.cm-flash.go{animation:camFlash .35s ease-out}
+@keyframes camFlash{0%{opacity:.9}100%{opacity:0}}
+.cm-use{display:flex;gap:12px;justify-content:center}
+.cm-use button{height:54px;padding:0 24px;border-radius:27px;border:0;font:700 16px/1 inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.cm-use .re{background:rgba(255,255,255,.16);color:#fff}
+.cm-use .ok{background:var(--lime);color:var(--lime-ink)}
+.cm-use .i{width:20px;height:20px}
+.cm-msg{position:absolute;left:24px;right:24px;top:40%;transform:translateY(-50%);text-align:center;display:grid;gap:14px;justify-items:center;z-index:1}
+.cm-msg p{margin:0;color:rgba(255,255,255,.8);line-height:1.5}
+@media (prefers-reduced-motion:reduce){#cam[open]{animation:none}.cm-flash.go{animation:none}}
+
+/* ---------- buddy: your avatar lives in the assistant button and cheers your wins ---------- */
+.askbar .abtog{position:relative;overflow:visible}
+.bav{display:none;grid-area:1/1;width:46px;height:46px;border-radius:50%;transition:transform .35s var(--spring),opacity .2s}
+.bav svg{display:block;width:100%;height:100%;overflow:visible}
+.bav,.bav2,.gbav{border-radius:50%}
+.avsvg.bare{overflow:visible}
+.askbar .abtog.hasav .bav{display:block}
+.askbar .abtog.hasav svg.so{display:none}
+.askbar.open .abtog .bav{opacity:0;transform:rotate(90deg) scale(.5)}
+@media (max-width:760px){.askbar:not(.open) .bsat{display:grid}.askbar:not(.open) .abtog.hasav{background:var(--lime)}}
+.bsat{display:none;position:absolute;width:24px;height:24px;border-radius:50%;background:var(--card);border:1.5px solid var(--line2);color:var(--text);place-items:center;box-shadow:0 4px 12px -3px rgba(0,0,0,.5);pointer-events:none;animation:bsatIn .5s var(--spring) backwards,bsatBob 2.6s ease-in-out infinite}
+.bsat svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bsat.cam{left:-15px;top:-6px;animation-delay:.15s,0s}
+.bsat.mic{left:-21px;top:24px;background:var(--lime);color:var(--lime-ink);border-color:transparent;animation-delay:.3s,-1.3s}
+@keyframes bsatIn{from{opacity:0;transform:translate(16px,8px) scale(.3)}}
+@keyframes bsatBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.bpoke svg{animation:bPoke 7s ease-in-out 2s infinite}
+@keyframes bPoke{0%,88%,100%{transform:none}90%{transform:translateY(-5px) rotate(-8deg)}92%{transform:translateY(0) rotate(6deg)}94%{transform:translateY(-3px) rotate(-4deg)}96%{transform:none}}
+.bbub{position:fixed;right:84px;bottom:calc(30px + env(safe-area-inset-bottom));z-index:61;max-width:200px;padding:9px 13px;border-radius:16px 16px 4px 16px;background:var(--text);color:var(--bg);font:700 13px/1.3 inherit;box-shadow:0 10px 30px -8px rgba(0,0,0,.5);pointer-events:none;animation:bbubIn .4s var(--spring) both}
+.bbub.out{animation:bbubOut .25s ease both}
+@keyframes bbubIn{from{opacity:0;transform:translateX(12px) scale(.6)}}
+@keyframes bbubOut{to{opacity:0;transform:translateY(6px) scale(.9)}}
+.bheart{position:fixed;z-index:61;font-size:18px;pointer-events:none;animation:bHeart 1.3s ease-out forwards}
+@keyframes bHeart{from{opacity:1;transform:translate(0,0) scale(.5)}to{opacity:0;transform:translate(var(--hx),-70px) scale(1.15)}}
+.askbar.cheer .bav svg,.askbar.cheer .bav2 svg{animation:bCheer 1.4s cubic-bezier(.3,1.4,.5,1)}
+.askbar.cheer.big .bav svg,.askbar.cheer.big .bav2 svg{animation:bCheerBig 1.8s cubic-bezier(.3,1.4,.5,1)}
+@keyframes bCheer{0%{transform:none}15%{transform:translateY(-16px) scale(1.08,.94)}30%{transform:translateY(0) scale(1.1,.9)}42%{transform:translateY(-10px) rotate(-10deg)}56%{transform:translateY(0) rotate(8deg)}70%{transform:translateY(-5px) rotate(-4deg)}100%{transform:none}}
+@keyframes bCheerBig{0%{transform:none}14%{transform:translateY(-22px) scale(1.12,.92)}36%{transform:translateY(-22px) rotate(360deg) scale(1.15)}48%{transform:translateY(0) rotate(360deg) scale(1.12,.88)}62%{transform:translateY(-12px) rotate(350deg)}78%{transform:translateY(0) rotate(368deg)}100%{transform:rotate(360deg)}}
+.bav2{display:inline-grid;width:26px;height:26px;flex:none}.bav2 svg{width:26px;height:26px}
+.gbud{position:relative;width:112px;height:112px;margin:0 auto 6px;font-size:inherit;animation:gpop .7s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.gbud .gbav{width:112px;height:112px;display:block}.gbud .gbav svg{width:112px;height:112px;display:block}
+.gbud.dance .gbav svg{animation:gDance 1.1s ease-in-out .5s infinite}
+.gbud.hug .gbav svg{animation:gHug 2.4s ease-in-out .5s infinite}
+.gbud .gbe{position:absolute;right:-8px;top:-6px;font-size:40px;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:gpop .6s .35s var(--spring,cubic-bezier(.3,1.5,.5,1)) both}
+.gbud .gbe .glv{width:44px;height:44px;border-radius:14px;font-size:24px;box-shadow:0 0 0 3px var(--card)}
+@keyframes gDance{0%,100%{transform:translateY(0) rotate(0)}20%{transform:translateY(-12px) rotate(-8deg)}40%{transform:translateY(0) rotate(0) scale(1.06,.94)}60%{transform:translateY(-12px) rotate(8deg)}80%{transform:translateY(0) scale(1.06,.94)}}
+@keyframes gHug{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(2px)}}
+@media (prefers-reduced-motion:reduce){.bsat,.bpoke svg,.askbar.cheer .bav svg,.askbar.cheer .bav2 svg,.gbud .gbav svg,.bheart{animation:none!important}}
+
+/* chart: tap or slide across a chart to read each month's exact numbers */
+.chartw{position:relative;touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:crosshair}
+svg.chart.cmp text{font-size:11.5px}
+svg.chart .chi{fill:var(--text);opacity:0;transition:opacity .15s,x .12s var(--ease)}
+.chartw.scrub svg.chart .chi{opacity:.07}
+.chartw.scrub svg.chart rect:not(.chi),.chartw.scrub svg.chart circle{transition:opacity .15s}
+.ctip{position:absolute;top:-6px;left:0;z-index:5;min-width:150px;padding:10px 12px;border-radius:14px;background:var(--card2);border:1px solid var(--line2);box-shadow:0 14px 34px -10px rgba(0,0,0,.6);font-size:13px;pointer-events:none;opacity:0;transform:translateY(-100%) translateY(6px) scale(.96);transform-origin:50% 100%;transition:opacity .15s,transform .18s var(--spring)}
+.chartw.scrub .ctip{opacity:1;transform:translateY(-100%)}
+.ctip b{display:block;font-size:13px;margin-bottom:6px}
+.ctip .r{display:flex;align-items:center;gap:8px;line-height:1.7;white-space:nowrap}
+.ctip .r i{width:9px;height:9px;border-radius:50%;flex:none}
+.ctip .r span{flex:1;color:var(--muted)}
+.ctip .r em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums}
+/* month-range picker: swipe up/down (or tap) to change */
+.rpick{position:relative;height:34px;min-width:132px;padding:0 30px 0 12px;border-radius:10px;background:var(--card);border:1px solid var(--line2);display:inline-flex;align-items:center;font-size:13px;font-weight:600;cursor:ns-resize;touch-action:none;-webkit-user-select:none;user-select:none;overflow:hidden}
+.rpick .rp-v{display:block;transition:transform .22s var(--spring),opacity .15s}
+.rpick .rp-c{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:grid;gap:1px;color:var(--muted)}
+.rpick .rp-c svg{width:10px;height:7px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rpick.up .rp-v{animation:rpUp .24s var(--spring)}.rpick.down .rp-v{animation:rpDown .24s var(--spring)}
+@keyframes rpUp{from{transform:translateY(70%);opacity:0}}@keyframes rpDown{from{transform:translateY(-70%);opacity:0}}
+.rpick:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.rwheel{position:fixed;z-index:80;width:180px;border-radius:18px;background:var(--card2);border:1px solid var(--line2);box-shadow:0 24px 60px -16px rgba(0,0,0,.7);overflow:hidden;pointer-events:none;animation:rwIn .18s var(--spring)}
+.rwheel .rw-t{position:relative;transition:transform .12s var(--ease)}
+.rwheel .rw-i{height:44px;display:grid;place-items:center;font-weight:600;font-size:15px;color:var(--faint);transition:color .12s,transform .12s}
+.rwheel .rw-i.on{color:var(--text);transform:scale(1.08)}
+.rwheel::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:44px;transform:translateY(-50%);border-radius:12px;background:color-mix(in srgb,var(--lime) 14%,transparent);border:1px solid color-mix(in srgb,var(--lime) 45%,transparent);pointer-events:none}
+@keyframes rwIn{from{opacity:0;transform:scale(.9)}}
+@media (prefers-reduced-motion:reduce){.rpick .rp-v,.rwheel,.ctip{animation:none!important;transition:none!important}}
+
+.impnotes{display:grid;gap:8px;font-size:13px;color:var(--muted)}
+.impnotes>div{display:flex;gap:9px;align-items:flex-start;line-height:1.45}
+.impnotes span{flex:none;display:grid;color:var(--lime-text);margin-top:1px}.impnotes .i{width:16px;height:16px}
+.impmore{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.impmore summary{cursor:pointer;font-weight:600;color:var(--text);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.impmore summary::-webkit-details-marker{display:none}
+.impmore summary::after{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+.impmore[open] summary::after{transform:rotate(-135deg)}
+.impmore ul{margin:8px 0 0;padding-left:18px;display:grid;gap:6px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -1203,6 +1341,8 @@ const checkPw=pw=>stretch(pw,lockCfg().salt)===lockCfg().hash;
 const IC={
  flame:'<path d="M12 21c-4 0-7-2.8-7-6.6 0-3.4 2.4-5.4 4-7.9.4 1.8 1.4 3 2.7 3.6C11.5 7 13 4.5 15 3c.2 2.7 1.3 4.4 2.6 6.1 1.4 1.8 2.4 3.3 2.4 5.3C20 18.2 16 21 12 21z"/>',
  journal:'<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M10 8h5M10 12h5"/>',
+ gallery:'<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 15.5l-5-5-9 9"/>',
+ flip:'<path d="M4 12a8 8 0 0 1 13.7-5.6L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15"/><path d="M4 20v-5h5"/>',
  camera:'<path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/>',
  send:'<path d="M12 19V5M6 11l6-6 6 6"/>',
  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>',
@@ -1620,7 +1760,7 @@ if(BRW)document.addEventListener('click',e=>{const a=e.target.closest('a[href]')
 /* ---------- App: pull down to refresh ---------- */
 if(IN_APP){let y0=0,dy=0,pulling2=false,busy=false;const el=()=>{let p=$('#ptr');if(!p){p=document.createElement('div');p.id='ptr';p.innerHTML='<i></i>';document.body.appendChild(p)}return p};
   document.addEventListener('touchstart',e=>{pulling2=!busy&&scrollY<=0&&!document.querySelector('dialog[open]')&&!document.body.classList.contains('navopen')&&e.touches[0].clientX>24;y0=e.touches[0].clientY;dy=0},{passive:true});
-  document.addEventListener('touchmove',e=>{if(!pulling2)return;dy=e.touches[0].clientY-y0;if(dy<=0||scrollY>0){el().style.transform='';return}const d=Math.min(110,dy*.5),p=el();p.style.transition='none';p.style.opacity=Math.min(1,d/60);p.style.transform=`translate(-50%,${d}px) rotate(${d*4}deg)`;p.classList.toggle('ready',d>=60)},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!pulling2)return;dy=e.touches[0].clientY-y0;if(dy<=0||scrollY>0){el().style.transform='';return}const d=Math.min(110,dy*.5),p=el();p.style.transition='none';p.style.opacity=Math.min(1,d/60);p.style.transform=`translate(-50%,${d}px) rotate(${d*4}deg)`;const rd=d>=60;if(rd!==p.classList.contains('ready')){p.classList.toggle('ready',rd);if(rd)hapTick()}},{passive:true});
   document.addEventListener('touchend',async()=>{if(!pulling2)return;pulling2=false;const p=el(),go2=dy*.5>=60;p.style.transition='transform .25s ease,opacity .25s ease';
     if(!go2){p.style.transform='';p.style.opacity=0;return}busy=true;p.classList.add('spin');p.style.transform='translate(-50%,64px)';try{HP?.impact({style:'MEDIUM'})}catch(e){}
     try{await Promise.all([pullCloud(),hkOn()?hkSync(true):null])}catch(e){}render();
@@ -1628,8 +1768,23 @@ if(IN_APP){let y0=0,dy=0,pulling2=false,busy=false;const el=()=>{let p=$('#ptr')
 
 /* ---------- App: haptics on taps ---------- */
 const HP=IN_APP?window.Capacitor?.Plugins?.Haptics:null;
+if(!HP&&/iPhone|iPad/.test(navigator.userAgent))document.addEventListener('click',e=>{if(!e.isTrusted)return;const t=e.target.closest('[role=switch],.switch,[data-check],[data-habit],[data-glass]');if(t&&!t.disabled)hapTick()},true);
+// One crisp "detent" tick for sliders, dials and switches. iOS ignores selectionChanged unless selectionStart ran first.
+let hpSelOn=false,hpSelT=0;
+function hapTick(big){
+  if(HP){try{if(big){HP.impact({style:'MEDIUM'});return}
+    if(!hpSelOn){HP.selectionStart?.();hpSelOn=true}HP.selectionChanged?.();clearTimeout(hpSelT);hpSelT=setTimeout(()=>{hpSelOn=false;try{HP.selectionEnd?.()}catch(e){}},900)}catch(e){}return}
+  if(typeof navigator.vibrate==='function'){try{navigator.vibrate(big?14:5)}catch(e){}return}
+  iosWebTick();if(big)setTimeout(iosWebTick,60);
+}
+// Safari on iPhone has no vibrate(); flipping a native switch control plays the system haptic (iOS 18+).
+let iosSw=null;
+function iosWebTick(){try{if(!/iPhone|iPad/.test(navigator.userAgent))return;
+  if(!iosSw){const l=document.createElement('label');l.setAttribute('aria-hidden','true');l.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+    const i=document.createElement('input');i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;l.appendChild(i);document.body.appendChild(l);iosSw=l}
+  iosSw.click()}catch(e){}}
 if(HP)document.addEventListener('click',e=>{const t=e.target.closest('button,a,[role=switch],[data-habit],[data-check],[data-glass],[data-go],[data-act],summary');if(!t||t.disabled)return;
-  try{t.matches('[role=switch],.switch,[data-check],[data-habit]')?HP.selectionChanged?.()||HP.impact({style:'LIGHT'}):HP.impact({style:'LIGHT'})}catch(e){}},true);
+  try{t.matches('[role=switch],.switch,[data-check],[data-habit]')?hapTick():HP.impact({style:'LIGHT'})}catch(e){}},true);
 
 /* ---------- App: swipe from the left edge to go back (iPhone) ---------- */
 const navStack=[];let navBack=false;
@@ -1784,6 +1939,7 @@ let pageChanged=true,justId=null,waterFrom=0,lastXY=[innerWidth/2,innerHeight/2]
 document.addEventListener('pointerdown',e=>{lastXY=[e.clientX,e.clientY]},true);
 function toast(msg,icn='tick'){const box=$('#toasts');const t=document.createElement('div');t.className='toast';t.innerHTML=`<span class="tic">${ic(icn)}</span>${esc(msg)}`;box.appendChild(t);while(box.children.length>3)box.firstChild.remove();setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300)},2400)}
 function burst(x,y,n=22,colors=['var(--lime)','var(--cyan)','var(--orange)','var(--violet)','var(--yellow)']){
+  if(!/red/.test(colors.join()))try{buddyCheer(n>=40?'big':'small')}catch(e){}
   if(RM())return;
   for(let i=0;i<n;i++){const p=document.createElement('i');p.className='particle';p.style.left=x+'px';p.style.top=y+'px';p.style.background=colors[i%colors.length];if(i%3===0)p.style.borderRadius='50%';document.body.appendChild(p);
     const a=Math.random()*Math.PI*2,d=36+Math.random()*95,dx=Math.cos(a)*d,dy=Math.sin(a)*d-35;
@@ -2111,8 +2267,10 @@ function timeLeft(dl){if(!dl)return '';const d=daysBetween(today(),pd(dl));if(d<
 
 /* ================= charts ================= */
 function nice(x){if(x<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(x)));const f=x/p;return (f<=1?1:f<=2?2:f<=5?5:10)*p}
-function chart(labels,series,mode,H=230){
-  const W=640,pl=46,pr=6,pt=8,pb=26,iw=W-pl-pr,ih=H-pt-pb;
+const CH={};let chSeq=0;
+function chart(labels,series,mode,H=230,full){
+  // On phones draw in a narrower canvas so the numbers on the axes stay readable instead of shrinking to ~5px.
+  const cmp=innerWidth<640,W=cmp?340:640,pl=cmp?38:46,pr=cmp?4:6,pt=8,pb=cmp?24:26;if(cmp)H=Math.round(H*.8);const iw=W-pl-pr,ih=H-pt-pb;
   const all=series.flatMap(s=>s.values);let mx=Math.max(1,...all),mn=Math.min(0,...all);
   const st=nice((mx-mn)/4);mx=Math.ceil(mx/st)*st;mn=Math.floor(mn/st)*st;if(mx===mn)mx=mn+st;
   const y=v=>pt+ih-(v-mn)/(mx-mn)*ih;
@@ -2122,12 +2280,14 @@ function chart(labels,series,mode,H=230){
     for(const s of series){const pts=s.values.map((v,i)=>[pl+bw*i+bw/2,y(v)]);
       body+=`<path class="ln" pathLength="1" d="${pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join('')}" style="fill:none;stroke:${s.color};stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round"/>`+pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" style="fill:var(--card);stroke:${s.color};stroke-width:2"><title>${labels[i]} · ${s.name}: ${inr(s.values[i])}</title></circle>`).join('');}
   }else{
-    const gw=Math.min(bw*.72,90),k=series.length,w=Math.max(3,gw/k-3);
+    const gw=Math.min(bw*(cmp?.8:.72),90),k=series.length,w=Math.max(2.5,gw/k-(cmp?1.5:3));
     labels.forEach((_,i)=>series.forEach((s,j)=>{const v=s.values[i],x=pl+bw*i+(bw-gw)/2+j*(gw/k)+1.5,y0=y(Math.max(v,0)),h=Math.max(Math.abs(y(v)-y(0)),v?2:0);
       body+=`<rect x="${x.toFixed(1)}" y="${y0.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="${Math.min(4,w/2)}" style="fill:${s.color}"><title>${labels[i]} · ${s.name}: ${inr(v)}</title></rect>`}));
   }
-  const lb=labels.map((l,i)=>`<text x="${pl+bw*i+bw/2}" y="${H-6}" text-anchor="middle">${l}</text>`).join('');
-  return `<svg class="chart" data-k="${series.length}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chart">${g}<line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" style="stroke:var(--line2)"/>${body}${lb}</svg>`;
+  const skip=cmp&&n>8?2:1;
+  const lb=labels.map((l,i)=>(n-1-i)%skip?'':`<text x="${pl+bw*i+bw/2}" y="${H-6}" text-anchor="middle">${l}</text>`).join('');
+  const id='c'+(++chSeq);CH[id]={labels,full:full||labels,series,pl,bw,W,n};
+  return `<div class="chartw" data-ch="${id}"><svg class="chart${cmp?' cmp':''}" data-k="${series.length}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Chart. Tap or slide across it to see each month's numbers.">${g}<rect class="chi" x="-999" y="${pt}" width="${bw}" height="${ih}" rx="6"/><line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" style="stroke:var(--line2)"/>${body}${lb}</svg><div class="ctip" role="status" aria-live="polite"></div></div>`;
 }
 function gauge(p){const v=Math.max(0,Math.min(1,p||0));return `<svg viewBox="0 0 200 112" style="width:100%;display:block"><path d="M18 100A82 82 0 0 1 182 100" pathLength="100" style="fill:none;stroke:var(--line);stroke-width:18;stroke-linecap:round"/><path d="M18 100A82 82 0 0 1 182 100" pathLength="100" stroke-dasharray="${v*100} 100" style="fill:none;stroke:url(#gH);stroke-width:18;stroke-linecap:round"/></svg>`}
 function donut(p,size,label,sub){const v=Math.max(0,Math.min(1,p||0));return `<div class="donutw" style="width:${size}px;height:${size}px"><svg viewBox="0 0 120 120" width="${size}" height="${size}"><circle cx="60" cy="60" r="50" style="fill:none;stroke:var(--line);stroke-width:11"/><circle cx="60" cy="60" r="50" pathLength="100" transform="rotate(-90 60 60)" stroke-dasharray="${v*100} 100" style="fill:none;stroke:${p>1?'var(--red)':'url(#gH)'};stroke-width:11;stroke-linecap:round"/></svg><div class="dv"><div><b>${label}</b><span>${sub}</span></div></div></div>`}
@@ -2203,8 +2363,8 @@ function insights(){
 function pOverview(){
   const t=today(),y=t.getFullYear(),m=t.getMonth(),f=fin();
   const cur=monthRow(y,m),pm=addMonths(t,-1),prev=monthRow(pm.getFullYear(),pm.getMonth());
-  const N=ui.ovRange,ms=[...Array(N)].map((_,i)=>addMonths(t,i-N+1)),rows=ms.map(d=>monthRow(d.getFullYear(),d.getMonth()));
-  const ch=chart(ms.map(d=>MONTHS[d.getMonth()]),[{name:'Set aside',color:'var(--cyan)',values:rows.map(r=>r.left)},{name:'Income',color:'var(--lime)',values:rows.map(r=>r.income)},{name:'Spending',color:'var(--line2)',values:rows.map(r=>r.out)}],ui.ovMode);
+  const N=[3,6,12].includes(ui.ovRange)?ui.ovRange:6,ms=[...Array(N)].map((_,i)=>addMonths(t,i-N+1)),rows=ms.map(d=>monthRow(d.getFullYear(),d.getMonth()));
+  const ch=chart(ms.map(d=>MONTHS[d.getMonth()]),[{name:'Set aside',color:'var(--cyan)',values:rows.map(r=>r.left)},{name:'Income',color:'var(--lime)',values:rows.map(r=>r.income)},{name:'Spending',color:'var(--line2)',values:rows.map(r=>r.out)}],ui.ovMode,230,ms.map(d=>fmt(d,{month:'long',year:'numeric'})));
   const h=new Date().getHours();
   // budget
   const cap=sum(state.expenses,e=>e.amount),spent=txOut(y,m),dayP=t.getDate()/dim(y,m),pace=cap*dayP,diff=pace-spent;
@@ -2238,7 +2398,7 @@ function pOverview(){
   <div class="ov"><div class="stack">
     ${!moneySetup().ready?setupCard():`<div class="card hero"><div style="min-width:0">
       <div class="ch"><div><div class="big">${inr(f.net)}</div><div class="small muted">Net worth · <span class="${cur.left>=0?'pos':'neg'}" style="font-weight:600">${cur.left>=0?'+':''}${inr(cur.left)}</span> set aside this month</div></div><span class="sp"></span>
-        <select class="sel" data-ui="ovRange"><option value="6" ${N==6?'selected':''}>Last 6 months</option><option value="12" ${N==12?'selected':''}>Last 12 months</option></select>
+        ${rangePicker('ovRange',N)}
         <div class="seg"><button class="${ui.ovMode==='bar'?'on':''}" data-set="ovMode:bar" title="Bars">${ic('bars')}</button><button class="${ui.ovMode==='line'?'on':''}" data-set="ovMode:line" title="Lines">${ic('trend')}</button></div></div>
       <div class="legend" style="justify-content:flex-end;margin-bottom:6px"><span><b style="background:var(--cyan)"></b>Set aside</span><span><b style="background:var(--lime)"></b>Income</span><span><b style="background:var(--line2)"></b>Spending</span></div>
       ${ch}</div>
@@ -2493,7 +2653,7 @@ function heatmap(){
   const t=today(),start=addDays(t,-((t.getDay()+6)%7)-15*7),L=['M','','W','','F','','S'];let cells='';
   for(let r=0;r<7;r++){cells+=`<span class="dl">${L[r]}</span>`;
     for(let c=0;c<16;c++){const d=addDays(start,c*7+r),fut=d>t,k=ds(d),v=fut?0:dayRatio(d),lv=fut?'fut':v>=.8?'l3':v>=.5?'l2':v>0?'l1':'';
-      cells+=`<button class="hc ${lv} ${k===ds(t)?'today':''} ${ui.hmDay===k?'sel':''}" style="--c:${c}" ${fut?'disabled aria-hidden="true"':`data-hm="${k}"`} title="${fmt(d,{weekday:'short',day:'numeric',month:'short'})}${fut?'':' · '+Math.round(v*100)+'%'}"></button>`}}
+      cells+=`<button class="hc ${lv} ${k===ds(t)?'today':''} ${ui.hmDay===k?'hsel':''}" style="--c:${c}" ${fut?'disabled aria-hidden="true"':`data-hm="${k}"`} title="${fmt(d,{weekday:'short',day:'numeric',month:'short'})}${fut?'':' · '+Math.round(v*100)+'%'}"></button>`}}
   let months='<span></span>',last=-1;for(let c=0;c<16;c++){const d=addDays(start,c*7);months+=`<span>${d.getMonth()!==last?MONTHS[d.getMonth()]:''}</span>`;last=d.getMonth()}
   return `<div class="heat ${ui.hmDay?'has-sel':''}">${cells}</div><div class="hm-months">${months}</div>`}
 let cairnFrom=0;
@@ -2693,7 +2853,7 @@ function pSettingsAll(){
     <p class="small muted" style="margin-top:14px">The calendar file has every reminder, bill and EMI with alerts. Open it on your phone or import it into Google Calendar (Settings → Import) to get real push notifications.</p></div>
   <div class="card"><div class="ch">${icoBox('users','var(--lime)')}<div><h3>Account</h3><div class="sub">${esc(account?.user?.email||'')}</div></div><span class="sp"></span><span class="pill lime">${esc(statusLabel())}</span></div>
     <div class="kpis"><div class="kpi"><div class="l">Plan</div><div class="v" style="font-size:18px">${account?.user?.status==='owner'?'Owner':account?.user?.status==='active'?'Plus':'Free trial'}</div><div class="h">${account?.user?.status==='trial'?'then ₹'+(account?.price||199)+'/month':account?.user?.status==='expired'?'ended':account?.user?.status==='active'?'until '+fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short',year:'numeric'}):'no limits on features'}</div></div><div class="kpi"><div class="l">AI actions today</div><div class="v" style="font-size:18px">${usage.used} / ${usage.limit}</div><div class="h">resets at midnight</div></div></div>
-    ${account?.user?.status==='owner'?'':autopayLine()}<div class="inline" style="margin-top:14px">${account?.user?.status==='owner'?'':AP_ON(account?.autopay)?`<button class="btn" data-act="cancelAutopay">Turn off autopay</button>`:account?.user?.status==='active'?`<button class="btn" data-act="subscribe">${account?.autopayReady?'Set up autopay or add a month':'Add a month · ₹'+(account?.price||199)}</button>`:`<button class="btn lime" data-act="subscribe">Subscribe · ₹${account?.price||199}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
+    ${account?.user?.status==='owner'?'':autopayLine()}<div class="inline" style="margin-top:14px">${account?.user?.status==='owner'?'':storeOn()&&storeSubOn()?`<button class="btn" data-act="storeManage">Manage subscription</button>`:storeOn()?`<button class="btn lime" data-act="subscribe">Subscribe · ${priceTxt()}/month</button>`:AP_ON(account?.autopay)?`<button class="btn" data-act="cancelAutopay">Turn off autopay</button>`:account?.user?.status==='active'?`<button class="btn" data-act="subscribe">${account?.autopayReady?'Set up autopay or add a month':'Add a month · ₹'+(account?.price||199)}</button>`:`<button class="btn lime" data-act="subscribe">Subscribe · ${priceTxt()}/month</button>`}<button class="btn" data-act="logout">Log out</button><button class="btn danger" data-act="delacct">Delete account</button></div>
     <form id="pwform" class="fields" style="margin-top:16px"><div class="fld"><label>Current password</label><input type="password" name="cur" autocomplete="current-password" required></div><div class="fld"><label>New password</label><input type="password" name="nw" autocomplete="new-password" minlength="8" required></div>
     <div class="inline wide" style="grid-column:1/-1"><button class="btn" type="submit">${ic('lock')} Change password</button><span id="pwmsg" class="small"></span></div></form></div>
   <div class="card"><h3 style="margin-bottom:6px">Sections</h3><p class="small muted" style="margin-bottom:12px">Choose what shows in the menu.</p><div class="chips">${FOCUS.filter(([k])=>FOCUS_PAGES[k]).map(([k,l])=>{const on=!(FOCUS_PAGES[k]||[]).every(pg=>(state.profile.hidden||[]).includes(pg));return `<button class="chip ${on?'on':''}" data-sect="${k}">${on?'✓ ':''}${l}</button>`}).join('')}</div>
@@ -2766,7 +2926,7 @@ function showAuth(mode='login',msg=''){
     <button class="btn lime" id="authBtn" type="submit">${S?'Create account':'Log in'}</button>
     <div class="gwrap" id="gwrap" hidden><div class="gor"><span>or</span></div><div id="gbtn"></div></div>
     <p id="lockerr" role="alert">${esc(msg)}</p>
-    <p class="tiny muted">${S?`7-day free trial, then ₹${account?.price||199}/month. Cancel anytime.`:'<button type="button" class="link" data-forgot>Forgot your password?</button>'}</p>
+    <p class="tiny muted">${S?`7-day free trial, then ${priceTxt()}/month. Cancel anytime.`:'<button type="button" class="link" data-forgot>Forgot your password?</button>'}</p>
     <div class="gyre" id="gyre" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="gok"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
   </form></div>`;
   box.querySelectorAll('[data-auth]').forEach(b=>b.onclick=()=>{const e=$('#aEmail').value;showAuth(b.dataset.auth);$('#aEmail').value=e;($('#aName')||$('#aEmail')).focus()});
@@ -2890,9 +3050,9 @@ function checkPaywall(){
   if(!seen)setTimeout(()=>upsell(null),700);return;
   P.innerHTML=`<div class="card paycard"><div style="display:grid;place-items:center">${logo(64)}</div>
   <h2 style="font-size:24px">Your free trial has ended</h2><p class="small muted">Keep your streaks, reminders and AI logging going.</p>
-  <div class="price">₹${account.price||199}<small> / month</small></div>
+  <div class="price">${priceTxt()}<small> / month</small></div>
   <ul>${['Unlimited habits, goals, bills and reminders','Push reminders on your phone','Voice and typed notes filed automatically','Bank statement, bill and meal-photo scanning (100 AI actions a day)','Your data synced across devices'].map(x=>`<li>${ic('tick')}${x}</li>`).join('')}</ul>
-  <button class="btn lime" style="height:48px;justify-content:center" data-act="subscribe">Subscribe for ₹${account.price||199}/month</button>
+  <button class="btn lime" style="height:48px;justify-content:center" data-act="subscribe">Subscribe for ${priceTxt()}/month</button>
   <button class="btn ghost" data-act="exportData">Download my data</button><button class="btn ghost" data-act="logout">Log out</button>
   <p class="tiny faint" id="paymsg"></p></div>`;
   P.classList.add('show');
@@ -2902,11 +3062,11 @@ function payOnce(){
   const d=$('#dlg');let saved='';try{saved=localStorage.getItem('selfstreak-phone')||''}catch(e){}
   const u=account?.user||{},renew=u.status==='active';
   d.innerHTML=`<form class="vbody" id="payf"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">${renew?'Add a month of Self Streak Plus':'Subscribe to Self Streak Plus'}</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
-  <div class="price" style="margin:6px 0">₹${account?.price||199}<small> for 1 month</small></div>
+  <div class="price" style="margin:6px 0">${priceTxt()}<small> for 1 month</small></div>
   <p class="small muted">${renew?`Your plan runs until ${fmt(new Date(u.paidUntil),{day:'numeric',month:'short',year:'numeric'})}. This adds 30 days after that.`:'Pay once for 30 days. No auto-debit: we’ll remind you before it ends.'} UPI, cards and netbanking via Cashfree.</p>
   <div class="fld"><label for="payPhone">Mobile number</label><input id="payPhone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="14" placeholder="98XXXXXXXX" value="${esc(saved)}" required><small>Cashfree needs it for the payment receipt.</small></div>
   <p class="tiny faint" id="paymsg2"></p>
-  <div class="dlg-actions"><span style="flex:1"></span><button type="button" class="btn" data-x>Cancel</button><button class="btn lime" id="payGo">Continue to pay ₹${account?.price||199}</button></div>
+  <div class="dlg-actions"><span style="flex:1"></span><button type="button" class="btn" data-x>Cancel</button><button class="btn lime" id="payGo">Continue to pay ${priceTxt()}</button></div>
   <p class="tiny faint">By paying you agree to the <a href="/terms" target="_blank">Terms</a> and <a href="/refunds" target="_blank">Refund policy</a>.</p></form>`;
   if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));
   $('#payf').onsubmit=async e=>{e.preventDefault();const btn=$('#payGo'),msg=$('#paymsg2'),phone=$('#payPhone').value;btn.disabled=true;btn.textContent='Opening payment…';msg.textContent='';
@@ -2914,12 +3074,51 @@ function payOnce(){
       const [o,CF]=await Promise.all([apiFetch('/api/billing/checkout',{method:'POST',body:{phone}}),loadCashfree()]);
       try{sessionStorage.setItem('selfstreak-order',o.orderId)}catch(x){}
       CF({mode:o.mode}).checkout({paymentSessionId:o.paymentSessionId,redirectTarget:'_self'});
-    }catch(err){msg.textContent=err.message;btn.disabled=false;btn.textContent=`Continue to pay ₹${account?.price||199}`;const m=$('#paymsg');if(m)m.textContent=err.message}};
+    }catch(err){msg.textContent=err.message;btn.disabled=false;btn.textContent=`Continue to pay ${priceTxt()}`;const m=$('#paymsg');if(m)m.textContent=err.message}};
 }
+
+/* ---------- App Store / Google Play: Plus inside the iPhone and Android apps (Apple and Google require their own billing there) ---------- */
+const NPUR=()=>IN_APP?window.Capacitor?.Plugins?.NativePurchases||null:null;
+const storePlat=()=>window.Capacitor?.getPlatform?.()||'';
+function storeOn(){const s=account?.store,pl=storePlat();return !!(NPUR()&&s&&((pl==='ios'&&s.apple)||(pl==='android'&&s.google)))}
+const storeName=()=>storePlat()==='ios'?'App Store':'Google Play';
+let storeProd=null,storeProdP=null;
+function storePrime(){if(!storeOn()||storeProdP)return storeProdP;const s=account.store;
+  storeProdP=NPUR().getProducts({productIdentifiers:[s.product],productType:'subs'}).then(r=>{const L=r?.products||[];storeProd=L.find(x=>!x.planIdentifier||x.planIdentifier===s.basePlan)||L[0]||null;if(storeProd)render();return storeProd}).catch(e=>{storeProdP=null;console.warn('store products',e?.message);return null});
+  return storeProdP}
+function priceTxt(){if(storeOn()){if(!storeProd)storePrime();if(storeProd?.priceString)return storeProd.priceString}return '₹'+(account?.price||199)}
+const storeSubOn=()=>{const s=account?.store?.sub;return !!(s&&s.state!=='ended'&&s.expires>Date.now())};
+async function storeVerify(tx){
+  const r=await apiFetch('/api/billing/store/verify',{method:'POST',body:{platform:storePlat(),transactionId:tx?.transactionId,purchaseToken:tx?.purchaseToken}});
+  const m=await apiFetch('/api/me').catch(()=>null);if(m){account={...account,...m};usage=m.usage||usage}return r}
+function storeSubscribe(){
+  const d=$('#dlg'),u=account?.user||{},ios=storePlat()==='ios';storePrime();
+  const draw=()=>{const pr=storeProd?.priceString||'';d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Self Streak Plus</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
+  <div style="margin:10px 0 2px;font-size:36px;font-weight:700;letter-spacing:-.03em">${pr?esc(pr):'…'}<small style="font-size:15px;color:var(--muted);font-weight:500"> / month</small></div>
+  <ul class="pluslist" style="list-style:none;padding:0;margin:10px 0;display:grid;gap:8px">${['AI logging: type, talk or snap anything','Bill, receipt, meal and statement scanning','Push reminders and weekly leagues','Your data synced across devices'].map(x=>`<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px"><span style="color:var(--lime-text);flex:none;display:grid">${ic('tick')}</span><span>${x}</span></li>`).join('')}</ul>
+  <button class="btn lime" id="stGo" style="width:100%;justify-content:center;height:50px" ${pr?'':'disabled'}>${pr?`Subscribe for ${esc(pr)}/month`:'Loading price…'}</button>
+  <button class="btn ghost" id="stRestore" style="width:100%;justify-content:center;margin-top:8px">Restore purchase</button>
+  <p class="tiny faint" id="stMsg" style="min-height:1em"></p>
+  <p class="tiny faint">Payment is charged to your ${ios?'Apple ID':'Google Play account'}. The subscription renews every month at the same price unless you cancel at least 24 hours before it renews, in your ${ios?'App Store account settings':'Google Play subscriptions'}. ${u.status==='trial'?'Any time left on your free trial is kept. ':''}<a href="/terms" target="_blank">Terms of use</a> · <a href="/privacy" target="_blank">Privacy policy</a></p></div>`;
+    d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));
+    const msg=t=>{const m=$('#stMsg');if(m)m.textContent=t||''};
+    const done=()=>{closeDlg(d);checkPaywall();render();toast(`You’re on Plus until ${fmt(new Date(account.user.paidUntil),{day:'numeric',month:'short'})} 🎉`,'tick');burst(innerWidth/2,innerHeight/2,40)};
+    $('#stGo').onclick=async()=>{const b=$('#stGo');b.disabled=true;b.textContent='Opening '+storeName()+'…';msg('');
+      try{const s=account.store,tx=await NPUR().purchaseProduct({productIdentifier:s.product,productType:'subs',planIdentifier:s.basePlan,offerToken:storeProd?.offerToken,appAccountToken:account.user.id,quantity:1});
+        b.textContent='Confirming…';await storeVerify(tx);done()}
+      catch(e){const t=String(e?.message||e||'');b.disabled=false;b.textContent=`Subscribe for ${esc(pr)}/month`;if(/cancel/i.test(t))return;msg(t||'The purchase didn’t go through. Try again.')}};
+    $('#stRestore').onclick=async()=>{const b=$('#stRestore');b.disabled=true;b.textContent='Looking for your purchase…';msg('');
+      try{await NPUR().restorePurchases().catch(()=>{});const r=await NPUR().getPurchases({productType:'subs'});const L=(r?.purchases||[]).filter(x=>!x.productIdentifier||x.productIdentifier===account.store.product);
+        let ok=false,last='';for(const tx of L){try{const v=await storeVerify(tx);if(v.active){ok=true;break}}catch(x){last=x.message}}
+        if(ok)return done();msg(last||`No active Plus subscription found on this ${ios?'Apple ID':'Google account'}.`)}
+      catch(e){msg(e?.message||'Couldn’t restore. Try again.')}b.disabled=false;b.textContent='Restore purchase'}};
+  draw();if(!d.open)d.showModal();if(!storeProd)storePrime()?.then(()=>{if(d.open&&$('#stGo'))draw()});
+}
+function storeManage(){try{NPUR()?.manageSubscriptions()}catch(e){toast('Open your '+storeName()+' subscriptions to manage Plus')}}
 
 /* ---------- plan chooser: Razorpay autopay (monthly) or Cashfree one-off month ---------- */
 const AP_ON=a=>a&&['active','authenticated'].includes(a.status)&&!a.cancelling;
-function subscribe(){if(!account?.autopayReady)return payOnce();
+function subscribe(){if(storeOn())return storeSubOn()?storeManage():storeSubscribe();if(!account?.autopayReady)return payOnce();
   const d=$('#dlg'),u=account?.user||{},price=account?.price||199,left=Math.max(u.paidUntil||0,u.status==='trial'?u.trialEnds||0:0),later=left>Date.now()+2*3600e3;
   d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Self Streak Plus</h3><button type="button" class="ic" data-x>${ic('x')}</button></div>
   <p class="small muted" style="margin:4px 0 10px">Choose how you want to pay. Same Plus either way.</p>
@@ -2958,7 +3157,7 @@ async function cancelAutopay(){
   catch(e){toast(e.message||'Couldn’t turn off autopay. Please try again.','x')}
 }
 function autopayLine(){const a=account?.autopay;if(!a||!account?.autopayReady)return'';const d=t=>fmt(new Date(t),{day:'numeric',month:'short',year:'numeric'});
-  if(AP_ON(a))return `<div class="apline on">${ic('tick')}<div><b>Autopay on · ₹${account?.price||199}/month</b><div class="tiny muted">${a.chargeAt?'Next charge '+d(a.chargeAt):a.currentEnd?'Renews '+d(a.currentEnd):'Set up, first charge when your current access ends'} · UPI Autopay / card via Razorpay</div></div></div>`;
+  if(AP_ON(a))return `<div class="apline on">${ic('tick')}<div><b>Autopay on · ${priceTxt()}/month</b><div class="tiny muted">${a.chargeAt?'Next charge '+d(a.chargeAt):a.currentEnd?'Renews '+d(a.currentEnd):'Set up, first charge when your current access ends'} · UPI Autopay / card via Razorpay</div></div></div>`;
   if(a.cancelling||a.status==='cancelled')return `<div class="apline">${ic('x')}<div><b>Autopay off</b><div class="tiny muted">${account.user.status==='active'?'Plus until '+d(account.user.paidUntil)+'. It won’t renew.':'No more charges.'}</div></div></div>`;
   if(['pending','halted'].includes(a.status))return `<div class="apline warn">${ic('x')}<div><b>Autopay payment failed</b><div class="tiny muted">Razorpay will retry. Check your UPI app or card, or pay once below.</div></div></div>`;
   return ''}
@@ -3018,7 +3217,7 @@ function renderOnb(){
   if(s==='notify'){const perm='Notification' in window?Notification.permission:'unsupported';body=`<div ${d(0)}>${icoBox('bell','var(--lime)').replace('class="ico"','class="ico" style="width:64px;height:64px;flex-basis:64px;border-radius:20px"')}</div><h1 ${d(1)}>Never miss a thing</h1><p class="lead" ${d(2)}>Water 5 times a day, your habits at their times, bills before they’re due, birthdays. Anything you’ve already done is skipped.</p>
     ${perm==='granted'?`<div class="banner" ${d(3)}>${ic('tick')} Reminders are on.</div>`:perm==='unsupported'?`<p class="hint" ${d(3)}>${/iPhone|iPad/.test(navigator.userAgent)?'On iPhone, first add Self Streak to your Home Screen (Share → Add to Home Screen), then turn reminders on from Notifications.':'This browser can’t show notifications. You can still use calendar reminders later.'}</p>`:`<button class="btn lime" style="height:52px;justify-content:center;font-size:15px" data-ob="perm" ${d(3)}>${ic('bell')} Turn on reminders</button>`}`;next=perm==='granted'?'Continue':'Maybe later'}
   if(s==='done'){const u=account?.user;body=`<div ${d(0)}><span class="hero-ico">✓</span></div><h1 ${d(1)}>You’re all set${ob.first?', '+esc(ob.first):''}!</h1>
-    <p class="lead" ${d(2)}>${u?.status==='owner'?'You’re the owner of this Self Streak, so there’s no trial limit.':`Your 7-day free trial has started. After that it’s ₹${account?.price||199}/month.`}</p>
+    <p class="lead" ${d(2)}>${u?.status==='owner'?'You’re the owner of this Self Streak, so there’s no trial limit.':`Your 7-day free trial has started. After that it’s ${priceTxt()}/month.`}</p>
     <div class="feat" ${d(3)}><div>${icoBox('mic','var(--lime)')}Tap the yellow mic any time and just talk.</div><div>${icoBox('sparkle','var(--cyan)')}You get ${usage.limit} AI actions a day: notes, scans and meals.</div></div>`;next='Open my dashboard'}
   box.innerHTML=`<div class="onb-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="onb">
     <div class="onb-top">${logo(36)}<div class="onb-dots">${OB_STEPS.map((_,k)=>`<i class="${k<=ob.i?'on':''}"></i>`).join('')}</div></div>
@@ -3086,7 +3285,7 @@ function mealReview(r,src){
   $('#mealf').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);addMeal({name:f.get('name'),kcal:f.get('kcal'),p:f.get('p'),c:f.get('c'),f:f.get('f'),src});closeDlg(d);commit();const F=dayFood();toast(`Logged · ${F.p} g protein today`,'food');burst(...lastXY,14)};
 }
 async function mealPhoto(){
-  if(!needAI())return;const file=await pickFile('image/*',true);if(!file)return;
+  if(!needAI())return;const shot=await snapCam({mode:'meal',modes:['meal']});const file=shot?.file;if(!file)return;
   workDialog('Looking at your meal','Estimating calories and protein…');
   try{const r=await aiTask('meal_photo',await fileToAI(file));mealReview(r,'photo')}catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
 }
@@ -3104,7 +3303,7 @@ function foodCard(){
 
 /* ---------- bill & receipt scan ---------- */
 async function scanBill(){
-  if(!needAI())return;const file=await pickFile('image/*,application/pdf');if(!file)return;
+  if(!needAI())return;const shot=await snapCam({mode:'bill',modes:['bill'],accept:'image/*,application/pdf'});const file=shot?.file;if(!file)return;
   workDialog('Reading your bill','Finding the amount, due date and who it’s from…');
   try{const r=await aiTask('receipt',{...(await fileToAI(file)),cats:impCats().filter(c=>!['Income','Salary (already counted)','Bill payment','EMI','Transfer / ignore'].includes(c)),bills:state.bills.map(b=>b.name)});billReview(r)}
   catch(e){closeDlg($('#dlg'));toast(aiErr(e),'x')}
@@ -3333,9 +3532,8 @@ function renderImport(){
     h=`<div class="vbody">${head('Import bank statement')}
     <label class="drop" id="drop">${icoBox('upload','var(--lime)')}<b>Drop your statement here, or tap to choose</b><span class="small muted">PDF, Excel (.xls / .xlsx), CSV, or a photo of the statement</span><input type="file" id="impFile" accept=".pdf,.csv,.txt,.xls,.xlsx,image/*" hidden></label>
     ${imp.error?`<div class="banner red">${esc(imp.error)}</div>`:''}
-    <div class="small muted" style="line-height:1.65">PDFs and photos are read by AI (uses 1 of your ${usage.limit} daily AI actions · ${aiLeft()} left today). Excel and CSV files are read on your device for free.<br>
-    Nothing is saved until you review and press Import. Salary, self-transfers and investments are skipped by default (salary is already counted from Budget → Income). Bill and EMI payments tick off the matching bill instead of being counted twice.<br>
-    <b>Password-protected PDF?</b> Open it, then Print → Save as PDF to make an unlocked copy, or download Excel/CSV from net banking.</div></div>`;
+    <div class="impnotes"><div><span>${ic('sparkle')}</span>PDF or photo: read by AI · ${aiLeft()} of ${usage.limit} left today</div><div><span>${ic('tick')}</span>Excel or CSV: read on your phone, free · nothing is saved until you review it</div></div>
+    <details class="impmore"><summary>How import works</summary><ul><li>Salary, self-transfers and investments are skipped (salary already comes from Budget → Income).</li><li>Bill and EMI payments tick off the matching bill instead of being counted twice.</li><li><b>Password-protected PDF?</b> Open it, Print → Save as PDF, then import that copy. Or download Excel/CSV from net banking.</li></ul></details></div>`;
   }else if(imp.step==='work'){
     h=`<div class="vbody">${head('Reading '+esc(imp.file?.name||'statement'))}<div class="scan"></div><div class="vstatus" id="impMsg">${esc(imp.msg||'Reading…')}</div></div>`;
   }else{
@@ -3732,10 +3930,11 @@ function syncSW(){clearTimeout(swT);swT=setTimeout(async()=>{
   }catch(e){}},1500)}
 let swReg=null,deferredInstall=null,pendingDo=null;
 async function initPWA(){
-  const ok='serviceWorker' in navigator&&(location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));if(!ok)return;
+  const ok='serviceWorker' in navigator&&(location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));if(!ok){if(IN_APP)console.warn('[offline] not available in this app build');return}
   try{
     const hadSW=!!navigator.serviceWorker.controller;let reloading=false;
     swReg=await navigator.serviceWorker.register('sw.js',{updateViaCache:'none'});
+    if(IN_APP)console.info('[offline] app saved for offline use');
     // A new version was deployed: the new service worker takes over, so reload once to run the new app.
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadSW||reloading)return;reloading=true;const go=()=>{if(document.querySelector('dialog[open]')&&document.visibilityState==='visible'){setTimeout(go,1500);return}try{save()}catch(e){}location.reload()};go()});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')swReg.update().catch(()=>{})});
@@ -3853,6 +4052,146 @@ function pickFile(accept,capture){
     i.click();
   });
 }
+/* ================= In-app camera: snap a bill, receipt or meal without leaving the app ================= */
+const CAM_MODES={bill:{label:'Bill',hint:'Fit the whole bill inside the frame'},auto:{label:'Snap',hint:'Snap a meal, bill or receipt'},meal:{label:'Meal',hint:'Get the whole plate in the circle'}};
+let CAM=null;
+function snapCam(opt={}){
+  const accept=opt.accept||'image/*',modes=opt.modes||['auto'];
+  if(!navigator.mediaDevices?.getUserMedia)return pickFile(accept,true).then(f=>f&&{file:f,mode:opt.mode||'auto'});
+  if(CAM)camClose(null);
+  return new Promise(res=>{
+    CAM={res,accept,modes,mode:modes.includes(opt.mode)?opt.mode:modes[0],face:'environment',stream:null,track:null,torch:false,zoom:1,zr:null,shot:null,shotUrl:'',busy:false};
+    let d=$('#cam');if(!d){d=document.createElement('dialog');d.id='cam';d.setAttribute('aria-label','Camera');document.body.appendChild(d)}
+    d.addEventListener('cancel',camCancel);
+    camRender();if(!d.open)d.showModal();camStart();
+  });
+}
+function camCancel(e){e?.preventDefault?.();if(CAM?.shot){CAM.shot=null;camRender();camStart()}else camClose(null)}
+function camRender(){
+  const d=$('#cam'),C=CAM;if(!d||!C)return;const M=CAM_MODES[C.mode];d.className='cm-'+C.mode;
+  if(C.shot){
+    d.innerHTML=`<div class="cm-view"><img alt="Your photo" src="${C.shotUrl}"></div>
+    <div class="cm-top"><button class="cm-b" data-cm="retake" aria-label="Retake">${ic('x')}</button><div class="cm-hint">Looks good?</div><span style="width:44px"></span></div>
+    <div class="cm-bot"><div class="cm-use"><button class="re" data-cm="retake">Retake</button><button class="ok" data-cm="use">${C.mode==='meal'?'Log this meal':C.mode==='bill'?'Read this bill':'Use photo'} ${ic('right')}</button></div></div>`;
+  }else{
+    d.innerHTML=`<div class="cm-view" id="cmView"><video id="cmVid" playsinline webkit-playsinline muted autoplay disablepictureinpicture disableremoteplayback poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>${C.err?`<div class="cm-msg">${icoBox('camera','var(--lime)')}<p>${esc(C.err)}</p><button class="btn lime" data-cm="gallery">${ic('gallery')} Choose a photo instead</button></div>`:`<div class="cm-guide ${C.mode}"><i></i><i></i><i></i><i></i></div>`}</div>
+    <div class="cm-flash" id="cmFlash"></div>
+    <div class="cm-top"><button class="cm-b" data-cm="close" aria-label="Close camera">${ic('x')}</button><div class="cm-hint" id="cmHint">${esc(M.hint)}</div><button class="cm-b ${C.torch?'on':''}" data-cm="torch" id="cmTorch" aria-label="Flash" aria-pressed="${C.torch}" hidden>${ic('zap')}</button></div>
+    <div class="cm-bot"><div class="cm-zoom" id="cmZoom"></div>
+      ${C.modes.length>1?`<div class="cm-modes" role="tablist">${C.modes.map(m=>`<button role="tab" aria-selected="${m===C.mode}" class="${m===C.mode?'on':''}" data-cmode="${m}">${CAM_MODES[m].label}</button>`).join('')}</div>`:''}
+      <div class="cm-row"><button class="cm-b cm-gal" data-cm="gallery" aria-label="Choose from photos">${ic('gallery')}</button><button class="cm-shut" data-cm="shoot" aria-label="Take photo" ${C.err?'disabled':''}></button><button class="cm-b" data-cm="flip" aria-label="Switch camera">${ic('flip')}</button></div></div>`;
+  }
+  d.onclick=camClick;camGestures();
+  if(!C.shot&&C.stream){$('#cmZoom')&&($('#cmZoom')._b=0);const v=$('#cmVid');v.srcObject=C.stream;v.controls=false;v.addEventListener('pause',()=>{if(CAM===C&&!C.shot&&!document.hidden)v.play().catch(()=>{})});v.play().catch(()=>{});camCaps();camDialBind();camDz();if(!C.dialShown){C.dialShown=1;camDialOpen(true,2000)}}
+}
+async function camStart(){
+  const C=CAM;if(!C)return;camStop();C.err='';
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:C.face},width:{ideal:1920},height:{ideal:1440}}});
+    if(CAM!==C||C.shot){s.getTracks().forEach(t=>t.stop());return}
+    C.stream=s;C.track=s.getVideoTracks()[0];C.torch=false;camRender();if(C.zoom!==1)camZoom(C.zoom,true);
+  }catch(e){
+    if(CAM!==C)return;
+    C.err=/NotAllowed|Permission|Security/i.test(e?.name||'')?(IN_APP?'Camera access is off for Self Streak. Turn it on in your phone’s Settings → Self Streak → Camera.':'Camera access was blocked. Allow the camera for this site in your browser settings.'):/NotFound|Overconstrained/i.test(e?.name||'')?'No camera found on this device.':'The camera couldn’t start.';
+    camRender();
+  }
+}
+function camStop(){if(CAM?.stream){CAM.stream.getTracks().forEach(t=>t.stop());CAM.stream=null;CAM.track=null}}
+function camCaps(){
+  const C=CAM,t=C?.track;if(!t)return;let cap={};try{cap=t.getCapabilities?.()||{}}catch(e){}
+  const tb=$('#cmTorch');if(tb)tb.hidden=!cap.torch;
+  C.zr=cap.zoom&&cap.zoom.max>cap.zoom.min?cap.zoom:null;
+  C.zmin=C.zr?Math.max(.5,Math.round(C.zr.min*10)/10):1;C.zmax=C.zr?Math.min(10,C.zr.max):CAM_DZ_MAX;C.zstep=Math.round(C.zoom*10);
+  camDialHTML();
+}
+/* iPhone-style zoom: the curved dial shows for 2s when the camera opens, then folds into a 1× button; tap it to step 1→2→3, drag it (or pinch) and the dial opens, ticking at every 0.1× */
+const DIAL={W:400,cx:200,cy:560,R:520,A:16};
+function camDialHTML(){
+  const C=CAM,z=$('#cmZoom');if(!z||!C)return;const {cx,cy,R,A}=DIAL;let ticks='';
+  for(let s=Math.round(C.zmin*10);s<=Math.round(C.zmax*10);s++){const v=s/10,big=s%10===0,half=s%5===0,ang=(v-C.zmin)*A;
+    ticks+=`<g transform="rotate(${ang.toFixed(2)} ${cx} ${cy})"><line x1="${cx}" y1="${cy-R}" x2="${cx}" y2="${cy-R+(big?16:half?11:7)}" stroke="${big?'#fff':'rgba(255,255,255,.55)'}" stroke-width="${big?2.6:1.6}" stroke-linecap="round"/>${big||(v===.5)?`<text x="${cx}" y="${cy-R+34}" text-anchor="middle">${v}×</text>`:''}</g>`}
+  z.innerHTML=`<div class="cm-dial" id="cmDial" aria-hidden="true"><div class="cm-dv" id="cmDv"></div><svg viewBox="0 0 ${DIAL.W} 96" preserveAspectRatio="xMidYMin meet"><path d="M${cx-R*Math.sin(.6)} ${cy-R*Math.cos(.6)} A${R} ${R} 0 0 1 ${cx+R*Math.sin(.6)} ${cy-R*Math.cos(.6)}" class="arc"/><g id="cmTicks">${ticks}</g><path d="M${cx-7} ${cy-R-14} L${cx+7} ${cy-R-14} L${cx} ${cy-R-4}Z" fill="var(--yellow)"/></svg></div>
+  <span class="cm-zb" id="cmZb" role="slider" aria-label="Zoom" aria-valuemin="${C.zmin}" aria-valuemax="${C.zmax}" aria-valuenow="${C.zoom}"></span>`;
+  camDialDraw();
+}
+function camDialDraw(){const C=CAM;if(!C)return;const g=$('#cmTicks'),b=$('#cmZb'),dv=$('#cmDv'),{cx,cy,A}=DIAL,t=fmtZ(C.zoom);
+  if(g)g.setAttribute('transform',`rotate(${(-(C.zoom-C.zmin)*A).toFixed(2)} ${cx} ${cy})`);
+  if(b){b.textContent=t;b.classList.toggle('on',Math.abs(C.zoom-1)>.04);b.setAttribute('aria-valuenow',C.zoom.toFixed(1))}if(dv)dv.textContent=t}
+const fmtZ=z=>(Math.abs(z-Math.round(z))<.05?Math.round(z):z.toFixed(1))+'×';
+function camDialOpen(on,ms=1200){const z=$('#cmZoom');if(!z)return;clearTimeout(CAM?.dialT);z.classList.toggle('active',on);if(!on||!CAM)return;CAM.dialT=setTimeout(()=>{if(!CAM?.dialDrag)camDialOpen(false)},ms)}
+let camZRaf=0;
+const CAM_DZ_MAX=4;
+function camDz(){const v=$('#cmVid');if(!v||!CAM)return;const dz=CAM.zr?1:CAM.zoom;v.style.transform=`scale(${dz})${CAM.face==='user'?' scaleX(-1)':''}`}
+function camZoom(x,quiet){const C=CAM;if(!C?.track)return;x=Math.max(C.zmin??1,Math.min(C.zmax??CAM_DZ_MAX,x));C.zoom=x;
+  if(C.zr){if(!camZRaf)camZRaf=requestAnimationFrame(()=>{camZRaf=0;CAM?.track?.applyConstraints({advanced:[{zoom:CAM.zoom}]}).catch(()=>{})})}else camDz();
+  const s=Math.round(x*10);if(s!==C.zstep){C.zstep=s;if(!quiet){hapTick(s%10===0);uiTick((x-C.zmin)/((C.zmax-C.zmin)||1),s%10===0,.7)}}
+  camDialDraw();
+}
+function camMode(m){const C=CAM;if(!C||m===C.mode||!C.modes.includes(m))return;C.mode=m;const d=$('#cam');d.className='cm-'+m;
+  const g=d.querySelector('.cm-guide');if(g)g.className='cm-guide '+m;const h=$('#cmHint');if(h)h.textContent=CAM_MODES[m].hint;
+  d.querySelectorAll('[data-cmode]').forEach(b=>{const on=b.dataset.cmode===m;b.classList.toggle('on',on);b.setAttribute('aria-selected',on)})}
+function camGestures(){
+  const v=$('#cmView');if(!v)return;let sx=0,sy=0,pd0=0,z0=1,pinch=false;
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  v.addEventListener('touchstart',e=>{if(e.touches.length===2){e.preventDefault();pinch=true;pd0=dist(e.touches)||1;z0=CAM?.zoom||1}else{pinch=false;sx=e.touches[0].clientX;sy=e.touches[0].clientY}},{passive:false});
+  v.addEventListener('touchmove',e=>{if(e.touches.length===2){e.preventDefault();if(pinch&&CAM){camZoom(z0*dist(e.touches)/pd0);camDialOpen(true)}}},{passive:false});
+  ['gesturestart','gesturechange'].forEach(n=>v.addEventListener(n,e=>e.preventDefault(),{passive:false}));
+  v.addEventListener('touchend',e=>{if(pinch){if(!e.touches.length)pinch=false;return}const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5&&CAM){const i=CAM.modes.indexOf(CAM.mode)+(dx<0?1:-1);if(CAM.modes[i])camMode(CAM.modes[i])}},{passive:true});
+}
+async function camShoot(){
+  const C=CAM,v=$('#cmVid');if(!C||C.busy||!v||!v.videoWidth)return;C.busy=true;
+  const fl=$('#cmFlash');if(fl&&!RM()){fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go')}
+  try{HP?.impact({style:'MEDIUM'})}catch(e){}
+  // keep exactly what the viewfinder shows (the video is object-fit:cover)
+  const W=v.videoWidth,H=v.videoHeight,r=v.getBoundingClientRect(),s=Math.max(r.width/W,r.height/H),dz=C.zr?1:C.zoom,sw=Math.min(W,r.width/s)/dz,sh=Math.min(H,r.height/s)/dz;
+  const k=Math.min(1,2400/Math.max(sw,sh)),c=document.createElement('canvas');c.width=Math.round(sw*k);c.height=Math.round(sh*k);
+  c.getContext('2d').drawImage(v,(W-sw)/2,(H-sh)/2,sw,sh,0,0,c.width,c.height);
+  const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));C.busy=false;if(!blob||CAM!==C)return;
+  C.shot=new File([blob],`${C.mode}-${Date.now()}.jpg`,{type:'image/jpeg'});C.shotUrl=URL.createObjectURL(blob);
+  camStop();camRender();
+}
+function camClose(result){
+  const C=CAM;if(!C)return;CAM=null;camStop();if(C.shotUrl)setTimeout(()=>URL.revokeObjectURL(C.shotUrl),3000);
+  const d=$('#cam');if(d){d.removeEventListener('cancel',camCancel);if(d.open)d.close();d.innerHTML='';d.className=''}
+  C.res(result);
+}
+function camDialBind(){
+  const z=$('#cmZoom');if(!z||z._b)return;z._b=1;let x0=0,z0=1,moved=false,onBtn=false;
+  const ppu=()=>{const r=z.querySelector('svg').getBoundingClientRect();return DIAL.R*DIAL.A*Math.PI/180*(r.width/DIAL.W)};
+  z.addEventListener('pointerdown',e=>{if(!CAM)return;e.preventDefault();onBtn=!!e.target.closest('.cm-zb')||z.classList.contains('active');try{z.setPointerCapture?.(e.pointerId)}catch(x){};x0=e.clientX;z0=CAM.zoom;moved=false;CAM.dialDrag=true;clearTimeout(CAM.dialT)});
+  z.addEventListener('pointermove',e=>{if(!CAM?.dialDrag)return;const dx=e.clientX-x0;if(!moved&&Math.abs(dx)<6)return;if(!moved){moved=true;camDialOpen(true)}camZoom(z0-dx/ppu())});
+  const end=e=>{if(!CAM?.dialDrag)return;CAM.dialDrag=false;
+    if(!moved&&e.type==='pointerup'&&onBtn){const C=CAM,stops=[C.zmin<1?C.zmin:null,1,2,3].filter(v=>v!=null&&v<=C.zmax);const i=stops.findIndex(v=>v>C.zoom+.05);camZoom(i<0?stops[0]:stops[i],true);hapTick(true);uiTick(.5,true,.7);const b=$('#cmZb');if(b){b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop')}}
+    else if(moved){const r=Math.round(CAM.zoom);if(Math.abs(CAM.zoom-r)<.12)camZoom(r,true);camDialOpen(true)}
+    else if($('#cmZoom')?.classList.contains('active'))camDialOpen(true)};
+  z.addEventListener('pointerup',end);z.addEventListener('pointercancel',end);
+}
+async function camClick(e){
+  const b=e.target.closest('[data-cm],[data-cmode],[data-czoom]');if(!b||!CAM)return;const C=CAM;
+  if(b.dataset.cmode)return camMode(b.dataset.cmode);
+  if(b.dataset.czoom)return camZoom(+b.dataset.czoom);
+  const a=b.dataset.cm;
+  if(a==='close')camClose(null);
+  else if(a==='shoot')camShoot();
+  else if(a==='retake'){if(C.shotUrl)URL.revokeObjectURL(C.shotUrl);C.shot=null;C.shotUrl='';camRender();camStart()}
+  else if(a==='use')camClose({file:C.shot,mode:C.mode});
+  else if(a==='flip'){C.face=C.face==='environment'?'user':'environment';C.zoom=1;camStart()}
+  else if(a==='torch'&&C.track){C.torch=!C.torch;C.track.applyConstraints({advanced:[{torch:C.torch}]}).catch(()=>{C.torch=false});b.classList.toggle('on',C.torch);b.setAttribute('aria-pressed',C.torch)}
+  else if(a==='gallery'){C.picking=true;const mode=C.mode;const f=await pickPhoto(C.accept);if(CAM!==C)return;C.picking=false;if(f)camClose({file:f,mode});else camResume()}
+}
+// Photo library only (no "Take Photo"): the app's native picker when it has one, else the browser's file picker.
+async function pickPhoto(accept){
+  const CP=IN_APP?window.Capacitor?.Plugins?.Camera:null;
+  if(CP?.getPhoto){try{
+    const r=await CP.getPhoto({source:'PHOTOS',resultType:'base64',quality:90,width:2400,correctOrientation:true,saveToGallery:false});
+    if(!r?.base64String)return null;const fmt=(r.format||'jpeg').toLowerCase(),bin=atob(r.base64String),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    return new File([u],`photo-${Date.now()}.${fmt==='jpeg'?'jpg':fmt}`,{type:'image/'+(fmt==='jpg'?'jpeg':fmt)});
+  }catch(e){if(/cancel/i.test(e?.message||''))return null;if(/denied|permission|access/i.test(e?.message||'')){toast('Allow Photos access for Self Streak in Settings','x');return null}}}
+  return pickFile(accept);
+}
+function camResume(){const C=CAM;if(!C||C.shot)return;if(!C.stream||C.track?.readyState==='ended')camStart();else $('#cmVid')?.play().catch(()=>{})}
+document.addEventListener('visibilitychange',()=>{if(!CAM||CAM.shot)return;if(document.hidden){if(!CAM.picking)camStop()}else camResume()});
 async function thumbOf(file){if(!/^image\//.test(file.type))return '';try{const bmp=await createImageBitmap(file),k=Math.min(1,360/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}catch(e){return ''}}
 
 /* ================= Text → dashboard entries (shared by the assistant and notes) ================= */
@@ -3990,12 +4329,13 @@ async function asTranscribe(){
   }catch(e){AS.busy=false;renderAsst();asSay((e.message||'Voice didn’t work.')+' You can also type it.')}
 }
 async function asCamera(){
-  const file=await pickFile('image/*,application/pdf');if(!file)return;
+  const shot=await snapCam({accept:'image/*,application/pdf'});const file=shot?.file;if(!file)return;
   const img=await thumbOf(file);asPush({who:'me',img,file:img?'':file.name});
   if(!hasAI()){asPush({who:'ai',text:navigator.onLine?`You’ve used all ${usage.limit} AI actions for today, so I can’t read photos until midnight.`:'Reading photos needs internet.'});return}
   AS.busy=true;AS.file=file;renderAsst();
   try{
     const data=await fileToAI(file);AS.fileData=data;
+    if(shot.mode==='meal'&&/^image\//.test(file.type)){const m=await aiTask('meal_photo',data);AS.busy=false;asRoute('meal',{kind:'meal',confident:true,meal:m});return}
     const r=await aiTask('snap',{...data,cats:spendCats(),bills:state.bills.map(b=>b.name)});AS.busy=false;
     asRoute(r.kind,r);
   }catch(e){AS.busy=false;asPush({who:'ai',text:aiErr(e)})}
@@ -4020,7 +4360,7 @@ function asRoute(kind,r){
   }
   if(kind==='statement'){asAsk('This looks like a bank statement. Import its transactions?',[['Import transactions',()=>{closeDlg($('#asst'));openImport();runImport(AS.file)}],['Ignore',()=>asPush({who:'ai',text:'Okay, nothing imported.'})]]);return}
   const doc=r.doc||{};doc.kind=kind;
-  const desc=kind==='bill'||doc.recurring?`a ${esc(doc.title||doc.merchant||'bill')} bill${doc.already_paid?' (already paid)':''} for ${inr(num(doc.amount))}${doc.due_date?`, due ${fmt(pd(doc.due_date),{day:'numeric',month:'short'})}`:''}`:`a receipt from ${esc(doc.merchant||doc.title||'a shop')} for ${inr(num(doc.amount))}`;
+  const desc=kind==='bill'||doc.recurring?`a ${doc.title||doc.merchant||'bill'} bill${doc.already_paid?' (already paid)':''} for ${inr(num(doc.amount))}${doc.due_date?`, due ${fmt(pd(doc.due_date),{day:'numeric',month:'short'})}`:''}`:`a receipt from ${doc.merchant||doc.title||'a shop'} for ${inr(num(doc.amount))}`;
   asAsk(`Looks like ${desc}.`,[[kind==='bill'||doc.recurring?'Review & save bill':'Review & log',()=>billReview(doc)],['Not right',()=>asRoute('other',{confident:false})]]);
 }
 
@@ -4542,7 +4882,8 @@ function gWeekStrip(){
   return `<div class="gweek">${out.join('')}</div>`}
 function gNext(){
   const c=gQ.shift();if(!c){gShow=false;return}gShow=true;const g=G();let h='',snd='badge',conf=false,auto=0,share=false;
-  const big=(e,cls='')=>`<div class="gbig ${cls}">${e}</div>`;
+  const sad=c.type==='lost'||c.type==='freeze'||(c.type==='league'&&c.to<=c.from);
+  const big=(e,cls='')=>hasAv()?`<div class="gbud ${sad?'hug':'dance'}"><span class="gbav" style="background:${avBg(state.profile.avatar)}">${avBare(state.profile.avatar,112)}</span><span class="gbe">${e}</span></div>`:`<div class="gbig ${cls}">${e}</div>`;
   if(c.type==='streak'){h=`${big('🔥','flame')}<div class="gnum" data-from="${Math.max(0,c.n-1)}" data-to="${c.n}">${c.n}</div><h2>day streak!</h2>${gWeekStrip()}<p class="muted">${c.n===1?'Day one. Come back tomorrow to make it two.':c.n<7?'You’re building something. See you tomorrow!':'Unstoppable. Keep the fire going.'}</p>`;snd='streak';auto=4200}
   else if(c.type==='goal'){h=`${big('🎯')}<h2>Daily goal done!</h2><p class="muted"><b class="lime-t">${c.xp} XP</b> today. Your goal is ${g.goal} XP.</p>`;snd='goal';conf=true;auto=4200}
   else if(c.type==='chest'){gChestShow(()=>setTimeout(gNext,250));return}
@@ -4735,6 +5076,9 @@ function gSlider(v){const p=(v-GS_MIN)/(GS_MAX-GS_MIN),[n,e]=gGoalName(v);
 function gSlTick(v,big){const a=gAud();if(!a)return;const t=a.currentTime+.002,f=420+(v-GS_MIN)/(GS_MAX-GS_MIN)*900;
   const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;gEnv(a,g,t,big?.07:.04,.002,big?.16:.07);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.2);
   const n=a.createBufferSource();n.buffer=gNoise(a);const hp=a.createBiquadFilter();hp.type='highpass';hp.frequency.value=2800;const g2=a.createGain();gEnv(a,g2,t,.035,.001,.02);n.connect(hp);hp.connect(g2);g2.connect(a.destination);n.start(t);n.stop(t+.04)}
+function uiTick(p=.5,big,vol=1){const a=gAud();if(!a)return;const t=a.currentTime+.002,f=420+Math.max(0,Math.min(1,p))*900;
+  const o=a.createOscillator(),g=a.createGain();o.type='triangle';o.frequency.value=f;gEnv(a,g,t,(big?.07:.035)*vol,.002,big?.14:.05);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.18);
+  const n=a.createBufferSource();n.buffer=gNoise(a);const hp=a.createBiquadFilter();hp.type='highpass';hp.frequency.value=3200;const g2=a.createGain();gEnv(a,g2,t,.03*vol,.001,.018);n.connect(hp);hp.connect(g2);g2.connect(a.destination);n.start(t);n.stop(t+.03)}
 function gSlSet(){const a=gAud();if(!a)return;const t=a.currentTime+.01;[659.25,987.77].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain(),st=t+i*.07;o.type='sine';o.frequency.value=f;gEnv(a,g,st,.06,.005,.35);o.connect(g);g.connect(a.destination);o.start(st);o.stop(st+.4)})}
 let gSl=null;
 function gSlPreview(v){const el=$('#gsl');if(!el)return;const [n,e]=gGoalName(v);el.setAttribute('aria-valuenow',v);el.setAttribute('aria-valuetext',`${v} XP, ${n}`);
@@ -4745,15 +5089,15 @@ function gSlPreview(v){const el=$('#gsl');if(!el)return;const [n,e]=gGoalName(v)
   const sm=document.querySelector('.ggoal .gring-wrap small');if(sm)sm.textContent=`/${v} XP`;
   const pill=$('#gGoalPill');if(pill)pill.textContent=x>=v?'Done ✓':`${v-x} XP to go`}
 function gSlFrom(e){const tr=$('#gsl .gsl-track').getBoundingClientRect();const p=Math.max(0,Math.min(1,(e.clientX-tr.left)/tr.width));return {p,v:Math.round((GS_MIN+p*(GS_MAX-GS_MIN))/GS_STEP)*GS_STEP}}
-function gSlCommit(v){const g=G();if(g.goal===v)return;g.goal=v;gSlSet();gBuzz(18);commit()}
-document.addEventListener('pointerdown',e=>{const el=e.target.closest('#gsl');if(!el)return;e.preventDefault();el.setPointerCapture?.(e.pointerId);
-  gSl={el,v:G().goal};el.classList.add('drag');const r=gSlFrom(e);el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);gBuzz(6)}});
-document.addEventListener('pointermove',e=>{if(!gSl)return;const r=gSlFrom(e);gSl.el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);gBuzz(5)}});
+function gSlCommit(v){const g=G();if(g.goal===v)return;g.goal=v;gSlSet();hapTick(true);commit()}
+document.addEventListener('pointerdown',e=>{const el=e.target.closest('#gsl');if(!el)return;e.preventDefault();try{el.setPointerCapture?.(e.pointerId)}catch(x){};
+  gSl={el,v:G().goal};el.classList.add('drag');const r=gSlFrom(e);el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);hapTick()}});
+document.addEventListener('pointermove',e=>{if(!gSl)return;const r=gSlFrom(e);gSl.el.style.setProperty('--gp',r.p);if(r.v!==gSl.v){gSl.v=r.v;gSlPreview(r.v);gSlTick(r.v);hapTick()}});
 const gSlEnd=()=>{if(!gSl)return;const {el,v}=gSl;gSl=null;el.classList.remove('drag');el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));setTimeout(()=>gSlCommit(v),260)};
 document.addEventListener('pointerup',gSlEnd);document.addEventListener('pointercancel',gSlEnd);
 let gSlKT=0;
 document.addEventListener('keydown',e=>{const el=e.target.closest?.('#gsl');if(!el)return;const d={ArrowRight:GS_STEP,ArrowUp:GS_STEP,ArrowLeft:-GS_STEP,ArrowDown:-GS_STEP,PageUp:50,PageDown:-50}[e.key];if(!d&&e.key!=='Home'&&e.key!=='End')return;e.preventDefault();
-  let v=+el.getAttribute('aria-valuenow');v=e.key==='Home'?GS_MIN:e.key==='End'?GS_MAX:Math.max(GS_MIN,Math.min(GS_MAX,v+d));el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));gSlPreview(v);gSlTick(v);
+  let v=+el.getAttribute('aria-valuenow');v=e.key==='Home'?GS_MIN:e.key==='End'?GS_MAX:Math.max(GS_MIN,Math.min(GS_MAX,v+d));el.style.setProperty('--gp',(v-GS_MIN)/(GS_MAX-GS_MIN));gSlPreview(v);gSlTick(v);hapTick();
   clearTimeout(gSlKT);gSlKT=setTimeout(()=>{gSlCommit(v);setTimeout(()=>$('#gsl')?.focus(),50)},700)});
 
 /* ---------- Free plan: after Plus/trial ends + 3 grace days, the app stays open; Plus features lock ---------- */
@@ -4767,15 +5111,15 @@ function upsell(key){
   <p class="small muted" style="margin:4px 0 6px">${f?'This is part of Self Streak Plus. Your data and streak stay safe on the Free plan.':`Your ${u.paidUntil?'Plus plan':'free trial'} ended${ended?' on '+ended:''}. Your data and streak are safe, and the basics still work.`}</p>
   <div class="upcols"><div><div class="glabel">Free</div><ul>${FREE_LIST.map(x=>`<li>${ic('tick')}${esc(x)}</li>`).join('')}</ul></div>
   <div class="plus"><div class="glabel">Plus · ₹${price}/month</div><ul>${PLUS_LIST.map(x=>`<li class="${x[0]===key?'hl':''}"><span>${x[1]}</span>${esc(x[2])}</li>`).join('')}</ul></div></div>
-  <div class="dlg-actions"><button class="btn ghost" data-x>Not now</button><span style="flex:1"></span><button class="btn lime" id="upGo">Upgrade · ₹${price}/month</button></div></div>`;
+  <div class="dlg-actions"><button class="btn ghost" data-x>Not now</button><span style="flex:1"></span><button class="btn lime" id="upGo">Upgrade · ${priceTxt()}/month</button></div></div>`;
   if(!d.open)d.showModal();d.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>closeDlg(d));$('#upGo').onclick=()=>subscribe();
 }
 function plusBanner(){
   if(!account)return'';const u=account.user,price=account.price||199,d=t=>fmt(new Date(t),{day:'numeric',month:'short'});
-  if(u.status==='expired')return `<div class="plusban free"><span class="pb-i">🔒</span><div class="nb"><b>You’re on the Free plan</b><div class="tiny muted">Habits, water, expenses and your streak still work. AI logging, scans, reminders and leagues need Plus.</div></div><button class="btn sm" data-act="freeinfo">What’s included</button><button class="btn sm lime" data-act="subscribe">Upgrade · ₹${price}/mo</button></div>`;
-  if(u.status==='grace'){const lock=u.plusEnds+(u.graceDays||3)*86400000;return `<div class="plusban warn"><span class="pb-i">⏳</span><div class="nb"><b>Your ${u.paidUntil?'Plus plan':'free trial'} ended on ${d(u.plusEnds)}</b><div class="tiny muted">Everything keeps working until ${d(lock)}, then AI features, reminders and leagues lock.</div></div><button class="btn sm lime" data-act="subscribe">Renew · ₹${price}/mo</button></div>`}
-  if((u.status==='trial'||u.status==='active')&&!AP_ON(account.autopay)){const left=Math.ceil((u.plusEnds-Date.now())/86400000);
-    if(left<=3&&left>=0)return `<div class="plusban"><span class="pb-i">⏰</span><div class="nb"><b>${u.status==='trial'?'Your free trial':'Plus'} ends ${left<=0?'today':left===1?'tomorrow':'in '+left+' days'} (${d(u.plusEnds)})</b><div class="tiny muted">Set up autopay once and your streak never breaks.</div></div><button class="btn sm lime" data-act="subscribe">${u.status==='trial'?'Subscribe':'Renew'} · ₹${price}/mo</button></div>`}
+  if(u.status==='expired')return `<div class="plusban free"><span class="pb-i">🔒</span><div class="nb"><b>You’re on the Free plan</b><div class="tiny muted">Habits, water, expenses and your streak still work. AI logging, scans, reminders and leagues need Plus.</div></div><button class="btn sm" data-act="freeinfo">What’s included</button><button class="btn sm lime" data-act="subscribe">Upgrade · ${priceTxt()}/mo</button></div>`;
+  if(u.status==='grace'){const lock=u.plusEnds+(u.graceDays||3)*86400000;return `<div class="plusban warn"><span class="pb-i">⏳</span><div class="nb"><b>Your ${u.paidUntil?'Plus plan':'free trial'} ended on ${d(u.plusEnds)}</b><div class="tiny muted">Everything keeps working until ${d(lock)}, then AI features, reminders and leagues lock.</div></div><button class="btn sm lime" data-act="subscribe">Renew · ${priceTxt()}/mo</button></div>`}
+  if((u.status==='trial'||u.status==='active')&&!AP_ON(account.autopay)&&!(storeOn()&&storeSubOn()&&account.store.sub.state==='active')){const left=Math.ceil((u.plusEnds-Date.now())/86400000);
+    if(left<=3&&left>=0)return `<div class="plusban"><span class="pb-i">⏰</span><div class="nb"><b>${u.status==='trial'?'Your free trial':'Plus'} ends ${left<=0?'today':left===1?'tomorrow':'in '+left+' days'} (${d(u.plusEnds)})</b><div class="tiny muted">${storeOn()?'Subscribe once and Plus renews by itself every month.':'Set up autopay once and your streak never breaks.'}</div></div><button class="btn sm lime" data-act="subscribe">${u.status==='trial'?'Subscribe':'Renew'} · ${priceTxt()}/mo</button></div>`}
   return''}
 // Lock Plus features at the function level, so buttons, menus and keyboard shortcuts are all covered.
 {const lock=(name,key)=>{const fn=window[name];if(typeof fn!=='function')return;window[name]=function(...a){if(!hasPlus()){upsell(key);return}return fn.apply(this,a)}};
@@ -4786,7 +5130,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-act="freeinfo"]
 /* phone: toggle the collapsed assistant button */
 document.addEventListener('click',e=>{const bar=document.querySelector('.askbar');if(!bar)return;
   const fab=e.target.closest('.askbar .abtog');
-  if(fab){const o=!bar.classList.contains('open');bar.classList.toggle('open',o);fab.setAttribute('aria-expanded',o);fab.setAttribute('aria-label',o?'Close assistant bar':'Open assistant');return}
+  if(fab){const o=!bar.classList.contains('open');bar.classList.toggle('open',o);fab.setAttribute('aria-expanded',o);fab.setAttribute('aria-label',o?'Close assistant bar':'Open assistant: snap a photo or speak');$('.bbub')?.remove();return}
   if(bar.classList.contains('open')&&(!e.target.closest('.askbar')||e.target.closest('.askbar [data-act]'))){bar.classList.remove('open');bar.querySelector('.abtog')?.setAttribute('aria-expanded','false')}
 });
 
@@ -4920,6 +5264,84 @@ function avatarSVG(i,size=40){
 const hasAv=()=>Number.isInteger(state.profile.avatar);
 function myAvatar(size=36){return hasAv()?avatarSVG(state.profile.avatar,size):''}
 function avGrid(sel,attr){return `<div class="avgrid">${[...Array(100)].map((_,i)=>`<button type="button" class="avpick ${sel===i?'on':''}" ${attr}="${i}" aria-label="Buddy ${i+1}" aria-pressed="${sel===i}">${avatarSVG(i,56)}</button>`).join('')}</div>`}
+
+
+/* ---------- charts: tap or slide across to read exact values (with a tick + haptic per month) ---------- */
+function chScrub(w,cx){const c=CH[w.dataset.ch];if(!c)return;const sv=w.querySelector('svg'),r=sv.getBoundingClientRect();if(!r.width)return;
+  const x=(cx-r.left)/r.width*c.W,i=Math.max(0,Math.min(c.n-1,Math.floor((x-c.pl)/c.bw)));
+  w.classList.add('scrub');if(w._i===i)return;const first=w._i==null;w._i=i;
+  const hi=sv.querySelector('.chi');hi.setAttribute('x',(c.pl+c.bw*i).toFixed(1));
+  const tip=w.querySelector('.ctip');tip.innerHTML=`<b>${esc(c.full[i])}</b>`+c.series.map(s=>`<div class="r"><i style="background:${s.color}"></i><span>${esc(s.name)}</span><em>${inr(s.values[i])}</em></div>`).join('');
+  const cw=w.clientWidth,tw=tip.offsetWidth,mid=(c.pl+c.bw*i+c.bw/2)/c.W*cw;tip.style.left=Math.max(0,Math.min(cw-tw,mid-tw/2))+'px';
+  try{hapTick(first);uiTick(.25+.6*i/Math.max(1,c.n-1),first,.8)}catch(e){}}
+function chEnd(w){if(!w)return;clearTimeout(w._t);w._t=setTimeout(()=>{w.classList.remove('scrub');w._i=null},2600)}
+document.addEventListener('pointerdown',e=>{const w=e.target.closest?.('.chartw');document.querySelectorAll('.chartw.scrub').forEach(o=>{if(o!==w){o.classList.remove('scrub');o._i=null}});if(!w)return;clearTimeout(w._t);w._drag=true;w._x0=e.clientX;w._y0=e.clientY;chScrub(w,e.clientX)},{passive:true});
+document.addEventListener('pointermove',e=>{const w=document.querySelector('.chartw.scrub');if(!w||!w._drag)return;if(e.pointerType==='mouse'&&!e.buttons){chScrub(w,e.clientX);return}chScrub(w,e.clientX)},{passive:true});
+['pointerup','pointercancel'].forEach(t=>document.addEventListener(t,()=>{document.querySelectorAll('.chartw.scrub').forEach(w=>{w._drag=false;chEnd(w)})},{passive:true}));
+document.addEventListener('mousemove',e=>{if(e.buttons)return;const w=e.target.closest?.('.chartw');if(w){clearTimeout(w._t);chScrub(w,e.clientX)}},{passive:true});
+document.addEventListener('mouseout',e=>{const w=e.target.closest?.('.chartw');if(w&&!w.contains(e.relatedTarget))chEnd(w)},{passive:true});
+
+/* ---------- month-range picker: swipe up / down to pick 3, 6 or 12 months (tick + haptic per step), tap to step ---------- */
+const RANGES=[3,6,12],rangeTxt=n=>`Last ${n} months`;
+const RP_CHEV='<span class="rp-c" aria-hidden="true"><svg viewBox="0 0 10 7"><path d="M1 6l4-4 4 4"/></svg><svg viewBox="0 0 10 7"><path d="M1 1l4 4 4-4"/></svg></span>';
+function rangePicker(k,val){return `<div class="rpick" data-rpick="${k}" role="spinbutton" tabindex="0" aria-label="Months shown. Swipe up or down to change." aria-valuenow="${val}" aria-valuetext="${rangeTxt(val)}"><span class="rp-v">${rangeTxt(val)}</span>${RP_CHEV}</div>`}
+function rpSet(el,v,dir){const k=el.dataset.rpick;if(ui[k]===v)return;ui[k]=v;try{saveUI()}catch(e){}render();const n=document.querySelector(`[data-rpick="${k}"]`);if(n){n.classList.add(dir>0?'up':'down');n.focus?.({preventScroll:true})}}
+let RP=null;
+document.addEventListener('pointerdown',e=>{const el=e.target.closest?.('[data-rpick]');if(!el)return;e.preventDefault();const k=el.dataset.rpick,i0=Math.max(0,RANGES.indexOf(ui[k]));
+  RP={el,k,i0,i:i0,y0:e.clientY,moved:false,wheel:null};try{el.setPointerCapture?.(e.pointerId)}catch(x){}});
+document.addEventListener('pointermove',e=>{if(!RP)return;const dy=e.clientY-RP.y0;
+  if(!RP.moved&&Math.abs(dy)<6)return;
+  if(!RP.moved){RP.moved=true;const r=RP.el.getBoundingClientRect(),wl=document.createElement('div');wl.className='rwheel';wl.setAttribute('aria-hidden','true');
+    wl.innerHTML=`<div class="rw-t">${RANGES.map(n=>`<div class="rw-i">${rangeTxt(n)}</div>`).join('')}</div>`;document.body.appendChild(wl);
+    wl.style.height=(44*3)+'px';wl.style.left=Math.max(8,Math.min(innerWidth-188,r.left+r.width/2-90))+'px';wl.style.top=(r.top+r.height/2-66)+'px';RP.wheel=wl}
+  // swipe up = more months, swipe down = fewer (like a wheel); 30px per step
+  const i=Math.max(0,Math.min(RANGES.length-1,RP.i0+Math.round(-dy/30)));
+  const t=RP.wheel.querySelector('.rw-t');t.style.transform=`translateY(${44-(RP.i0*44)+Math.max(-44*(RANGES.length-1-RP.i0)-14,Math.min(44*RP.i0+14,dy))}px)`;
+  if(i!==RP.i){RP.i=i;try{hapTick();uiTick(.3+.25*i,false,.9)}catch(x){}}
+  RP.wheel.querySelectorAll('.rw-i').forEach((n,j)=>n.classList.toggle('on',j===RP.i))},{passive:true});
+['pointerup','pointercancel'].forEach(tp=>document.addEventListener(tp,e=>{if(!RP)return;const R=RP;RP=null;R.wheel?.remove();
+  if(!R.moved){if(tp==='pointercancel')return;const i=(R.i0+1)%RANGES.length;try{hapTick();uiTick(.3+.25*i,false,.9)}catch(x){}rpSet(R.el,RANGES[i],i>R.i0?1:-1);return}
+  if(R.i!==R.i0){try{hapTick(true);uiTick(.3+.25*R.i,true,.9)}catch(x){}rpSet(R.el,RANGES[R.i],R.i>R.i0?1:-1)}}));
+document.addEventListener('keydown',e=>{const el=e.target.closest?.('[data-rpick]');if(!el)return;const k=el.dataset.rpick,i0=Math.max(0,RANGES.indexOf(ui[k]));let i=i0;
+  if(e.key==='ArrowUp'||e.key==='ArrowRight')i=Math.min(RANGES.length-1,i0+1);else if(e.key==='ArrowDown'||e.key==='ArrowLeft')i=Math.max(0,i0-1);else if(e.key==='Enter'||e.key===' ')i=(i0+1)%RANGES.length;else return;
+  e.preventDefault();if(i!==i0){try{hapTick();uiTick(.3+.25*i,false,.9)}catch(x){}rpSet(el,RANGES[i],i>i0?1:-1)}});
+
+/* ---------- buddy: avatar in the assistant button (with camera + mic peeking out) and little cheers for wins ---------- */
+const BSAT_CAM='<svg viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  BSAT_MIC='<svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>';
+// Buddy without its round backdrop, so the character can hop while the coloured circle stays put.
+function avBare(i,size){i=((+i%100)+100)%100;return avatarSVG(i,size).replace(/<rect width="100" height="100" rx="50" fill="[^"]+"\/>/,'').replace('<svg class="avsvg"','<svg class="avsvg bare"')}
+const avBg=i=>AV_BG[(((+i%100)+100)%100)%10];
+let buddyAvKey=null;
+function buddyFab(){
+  const t=$('.askbar .abtog'),tx=$('.askbar .ask-text');if(!t)return;const av=hasAv()?state.profile.avatar:-1;
+  if(!t.querySelector('.bsat'))t.insertAdjacentHTML('beforeend',`<span class="bsat cam" aria-hidden="true">${BSAT_CAM}</span><span class="bsat mic" aria-hidden="true">${BSAT_MIC}</span>`);
+  if(av===buddyAvKey)return;buddyAvKey=av;
+  let b=t.querySelector('.bav');if(!b){b=document.createElement('span');b.className='bav bpoke';b.setAttribute('aria-hidden','true');t.prepend(b)}
+  b.innerHTML=av>=0?avBare(av,46):'';b.style.background=av>=0?avBg(av):'';t.classList.toggle('hasav',av>=0);
+  t.setAttribute('aria-label',t.getAttribute('aria-expanded')==='true'?'Close assistant bar':'Open assistant: snap a photo or speak');
+  if(tx){const ic0=tx.querySelector('svg.i'),b2=tx.querySelector('.bav2');if(av>=0){if(ic0)ic0.style.display='none';const e2=b2||tx.insertAdjacentElement('afterbegin',Object.assign(document.createElement('span'),{className:'bav2'}));e2.innerHTML=avBare(av,26);e2.style.background=avBg(av)}else{if(ic0)ic0.style.display='';b2?.remove()}}
+}
+const BUD_SAY={small:['Yay!','Nice one!','Woohoo!','Love it!','So proud!','You did it!','Keep going!','High five! ✋'],big:['WOW, look at you!','You’re on fire! 🔥','Best day ever!','I’m so proud of you!','Unstoppable!']};
+let budT=0,budLast=0;
+function buddySay(txt,ms=2200){$('.bbub')?.remove();const s=document.createElement('div');s.className='bbub';s.textContent=txt;
+  const bar=$('.askbar');if(bar&&innerWidth>760){const r=bar.getBoundingClientRect();s.style.right=(innerWidth-r.right+8)+'px';s.style.bottom=(innerHeight-r.top+10)+'px';s.style.borderRadius='16px 16px 4px 16px'}
+  document.body.appendChild(s);clearTimeout(budT);budT=setTimeout(()=>{s.classList.add('out');setTimeout(()=>s.remove(),260)},ms)}
+function buddyCheer(size='small',say){
+  const bar=$('.askbar');if(!bar||document.body.classList.contains('locked')||$('#gcel')?.classList.contains('show'))return;
+  const now=Date.now();if(now-budLast<900&&size!=='big')return;budLast=now;
+  bar.classList.remove('cheer','big');void bar.offsetWidth;bar.classList.add('cheer');if(size==='big')bar.classList.add('big');
+  setTimeout(()=>bar.classList.remove('cheer','big'),size==='big'?1900:1500);
+  const L=BUD_SAY[size]||BUD_SAY.small;buddySay(say||L[Math.random()*L.length|0]);
+  if(!RM()){const a=(innerWidth<=760?bar.querySelector('.abtog'):bar.querySelector('.bav2')||bar).getBoundingClientRect();
+    ['💚','✨','💛',size==='big'?'🎉':'⭐'].forEach((e,k)=>{const s=document.createElement('span');s.className='bheart';s.textContent=e;s.style.left=(a.left+a.width/2-9+(k-1.5)*10)+'px';s.style.top=(a.top-4)+'px';s.style.setProperty('--hx',((k-1.5)*16)+'px');s.style.animationDelay=(k*.09)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),1600)})}
+}
+function buddyHello(tries=0){
+  // Once a day, the buddy says what it can do so people learn the button is tappable (waits until the app is unlocked and idle).
+  try{const k='ss-bhi',d=ds(today());if(localStorage.getItem(k)===d||tries>40)return;
+    setTimeout(()=>{if(innerWidth>760)return;if($('.askbar.open')||$('dialog[open]')||$('#gcel.show')||document.hidden||document.body.classList.contains('locked'))return buddyHello(tries+1);
+      localStorage.setItem(k,d);buddyCheer('small',hasAv()?'Tap me to snap a photo or talk 📸🎙️':'Tap to snap a photo or talk 📸🎙️')},tries?3000:2500)}catch(e){}
+}
 function openAvatarPicker(){
   const d=$('#dlg');d.classList.add('wide');
   d.innerHTML=`<div class="vbody"><div class="inline" style="justify-content:space-between"><h3 style="margin:0">Pick your buddy</h3><button type="button" class="ic" data-x>${ic('x')}</button></div><p class="small muted" style="margin:2px 0 10px">100 little buddies. Tap one to make it yours.</p>${avGrid(hasAv()?state.profile.avatar:-1,'data-avset')}</div>`;
@@ -4972,13 +5394,13 @@ function dbFrom(el,x){const tr=el.querySelector('.gsl-track').getBoundingClientR
 function dbShow(el,v){const k=el.dataset.db,mn=+el.dataset.min,mx=+el.dataset.max;v=+(+v).toFixed(2);el.dataset.v=v;el.setAttribute('aria-valuenow',v);el.querySelector('.gsl-tip').textContent=dbFmt(k,v);
   if(k==='mood'){el.classList.remove('unset');el.querySelector('.dbface').textContent=DB_MOODS[v-1][0];const ml=$('#moodLbl');if(ml)ml.textContent=DB_MOODS[v-1][1]+' day';el.closest('.card').dataset.mood=v}
   else{const inp=el.parentElement.querySelector(`input[data-log="${k}"]`);if(inp)inp.value=v}}
-function dbCommit(el){const k=el.dataset.db,v=+el.dataset.v;dbSound(k,(v-el.dataset.min)/(el.dataset.max-el.dataset.min),v,true);try{navigator.vibrate&&navigator.vibrate(14)}catch(e){}
+function dbCommit(el){const k=el.dataset.db,v=+el.dataset.v;dbSound(k,(v-el.dataset.min)/(el.dataset.max-el.dataset.min),v,true);hapTick(true)
   if(k==='mood')return;const inp=el.parentElement.querySelector(`input[data-log="${k}"]`);if(inp)setTimeout(()=>inp.dispatchEvent(new Event('change',{bubbles:true})),220)}
-document.addEventListener('pointerdown',e=>{const el=e.target.closest('.dbar');if(!el)return;e.preventDefault();el.setPointerCapture?.(e.pointerId);dbS={el,v:+el.dataset.v};el.classList.add('drag');const r=dbFrom(el,e.clientX);el.style.setProperty('--gp',r.p);if(r.v!==dbS.v){dbS.v=r.v;dbShow(el,r.v);dbSound(el.dataset.db,r.p,r.v)}});
-document.addEventListener('pointermove',e=>{if(!dbS)return;const r=dbFrom(dbS.el,e.clientX);dbS.el.style.setProperty('--gp',r.p);if(r.v!==dbS.v){dbS.v=r.v;dbShow(dbS.el,r.v);dbSound(dbS.el.dataset.db,r.p,r.v);try{navigator.vibrate&&navigator.vibrate(4)}catch(x){}}});
+document.addEventListener('pointerdown',e=>{const el=e.target.closest('.dbar');if(!el)return;e.preventDefault();try{el.setPointerCapture?.(e.pointerId)}catch(x){};dbS={el,v:+el.dataset.v};el.classList.add('drag');const r=dbFrom(el,e.clientX);el.style.setProperty('--gp',r.p);if(r.v!==dbS.v){dbS.v=r.v;dbShow(el,r.v);dbSound(el.dataset.db,r.p,r.v);hapTick()}});
+document.addEventListener('pointermove',e=>{if(!dbS)return;const r=dbFrom(dbS.el,e.clientX);dbS.el.style.setProperty('--gp',r.p);if(r.v!==dbS.v){dbS.v=r.v;dbShow(dbS.el,r.v);dbSound(dbS.el.dataset.db,r.p,r.v);hapTick()}});
 const dbEnd=()=>{if(!dbS)return;const {el}=dbS;dbS=null;el.classList.remove('drag');el.style.setProperty('--gp',(el.dataset.v-el.dataset.min)/(el.dataset.max-el.dataset.min));dbCommit(el)};
 document.addEventListener('pointerup',dbEnd);document.addEventListener('pointercancel',dbEnd);
-document.addEventListener('keydown',e=>{const el=e.target.closest?.('.dbar');if(!el)return;const st=+el.dataset.step,d={ArrowRight:st,ArrowUp:st,ArrowLeft:-st,ArrowDown:-st}[e.key];if(!d)return;e.preventDefault();const v=Math.max(+el.dataset.min,Math.min(+el.dataset.max,+el.dataset.v+d));el.style.setProperty('--gp',(v-el.dataset.min)/(el.dataset.max-el.dataset.min));dbShow(el,v);dbSound(el.dataset.db,0.5,v);clearTimeout(el._t);el._t=setTimeout(()=>dbCommit(el),600)});
+document.addEventListener('keydown',e=>{const el=e.target.closest?.('.dbar');if(!el)return;const st=+el.dataset.step,d={ArrowRight:st,ArrowUp:st,ArrowLeft:-st,ArrowDown:-st}[e.key];if(!d)return;e.preventDefault();const v=Math.max(+el.dataset.min,Math.min(+el.dataset.max,+el.dataset.v+d));el.style.setProperty('--gp',(v-el.dataset.min)/(el.dataset.max-el.dataset.min));dbShow(el,v);dbSound(el.dataset.db,0.5,v);hapTick();clearTimeout(el._t);el._t=setTimeout(()=>dbCommit(el),600)});
 
 /* ---------- collapsible sections (open by default; remembered per section) ---------- */
 const FOLD_PAGES={health:['Sixteen weeks of days','Today','This week','This month','This quarter','This year','Upcoming check-ups']};
@@ -5040,7 +5462,7 @@ function renderShell(){
     ${menu==='bell'?`<div class="pop wide"><h4>Needs attention <span class="faint">· ${al.length}</span></h4><div style="padding:0 10px;max-height:60vh;overflow-y:auto">${al.slice(0,12).map(e=>evRow(e)).join('')||'<div class="empty">You’re all caught up.</div>'}</div></div>`:''}</div>
   <button class="ibtn lumen" data-act="theme" title="Switch to ${dark?'light':'dark'} mode" aria-label="Switch to ${dark?'light':'dark'} mode">${ic(dark?'sun':'moon')}</button>
   <div class="menuwrap"><button class="btn lime ${menu==='new'?'open':''}" style="height:42px;border-radius:12px" data-act="new" aria-label="New">${ic('plus')}<span class="newlbl">New</span></button>
-    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="ask">${ic('sparkle')} Ask or log anything<small>V</small></button><button class="mi" data-act="askcam">${ic('camera')} Camera: meal, bill, receipt</button><button class="mi" data-act="newnote">${ic('journal')} New note</button><button class="mi" data-act="scanBill">${ic('receipt')} Scan a bill or receipt</button><button class="mi" data-act="mealPhoto">${ic('food')} Snap a meal</button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
+    ${menu==='new'?`<div class="pop">${[['tx','Payment / expense','rupee',{dir:'out'}],['tx','Extra income','trend',{dir:'in',category:'Income'}],['reminders','Reminder','bell',{repeat:'yearly'}],['bills','Bill','receipt',{}],['goals','Goal','target',{}],['loans','Loan','card',{}],['habits','Health habit','heart',{period:'daily'}],['products','Grooming product','scissors',{}],['checklist','Checklist item','check',{}]].map(([c,l,icn,pre])=>`<button class="mi" data-add="${c}" data-pre='${esc(JSON.stringify(pre))}'>${ic(icn)} ${l}${c==='tx'&&pre.dir==='out'?'<small>N</small>':''}</button>`).join('')}<button class="mi" data-act="ask">${ic('sparkle')} Ask or log anything<small>V</small></button><button class="mi" data-act="askcam">${ic('camera')} Snap a meal, bill or receipt</button><button class="mi" data-act="newnote">${ic('journal')} New note</button><button class="mi" data-act="import">${ic('bank')} Import bank statement</button></div>`:''}</div>`;
 }
 function applyTheme(){document.documentElement.dataset.theme=state.profile.theme||'dark';document.documentElement.classList.toggle('nomotion',state.profile.motion==='off')}
 function render(){
@@ -5048,7 +5470,7 @@ function render(){
   if(document.body.classList.contains('locked'))return;
   document.body.classList.toggle('collapsed',!!ui.collapsed);
   if(!PAGES[ui.page])ui.page='overview';
-  renderShell();if(scryOpen)runSearch(scryQ);
+  renderShell();buddyFab();if(scryOpen)runSearch(scryQ);
   const main=$('#main');
   document.body.classList.toggle('free',!hasPlus());
   main.innerHTML=plusBanner()+genderPrompt(ui.page)+PAGES[ui.page]()+`<p class="foot">${esc(state.profile.name)} · saved ${IN_APP?'on this phone':'in this browser'}${storageOK?'':' — <span class="neg">storage blocked, export a backup</span>'}</p>`;
@@ -5221,6 +5643,7 @@ document.addEventListener('click',e=>{
     case'jsave':{const card=el.closest('.card'),t=$('#jl').value.trim(),k=ds(today()),J=state.journal=state.journal||{},m=num(card.dataset.mood||J[k]?.m);if(!t&&!m){toast('Write a line first','journal');return}J[k]={t,m};commit();toast('Saved today’s line','journal');return}
     case'logout':logout();return;
     case'subscribe':subscribe();return;
+    case'storeManage':storeManage();return;
     case'cancelAutopay':cancelAutopay();return;
     case'jsave2':{const t=($('#jl2')?.value||'').trim(),k=ds(today()),J=state.journal=state.journal||{};if(!t){toast('Write a line first','x');return}J[k]={...(J[k]||{}),t:t.slice(0,500)};commit();toast('Saved to your journal','journal');return}
     case'admRefresh':admLoad(true);toast('Refreshing…','clock');return;
@@ -5303,7 +5726,7 @@ document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList
 $('#voice').addEventListener('click',e=>{if(e.target===$('#voice'))closeDlg($('#voice'))});
 document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'){await pullCloud();nzCache.t=0;notifTick();checkMissed()}});
 boot();
-initPWA();setInterval(notifTick,20000);setTimeout(notifTick,3000);
+initPWA();buddyHello();setInterval(notifTick,20000);setTimeout(notifTick,3000);
 </script>
 </body>
 </html>

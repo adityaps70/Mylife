@@ -1,0 +1,41 @@
+# Self Streak
+
+> Self Streak is an India-first app for habits and streaks, money (budget, expenses, bills, EMIs, credit cards, debt payoff) and health (water, meals, protein), with AI logging by voice, photo and bank statement. Free plan; Plus is ₹199/month.
+
+Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Android apps. It never asks for bank logins or card numbers. Prices are in Indian rupees.
+
+## Product
+- [A credit card bill reminder that understands billing cycles](https://selfstreak.com/credit-card-bill-reminder): Track every credit card bill: this bill, next bill, minimum due and limit left. Get a reminder 2 days before each due date. Free for 7 days.
+- [EMI calculator and loan tracker](https://selfstreak.com/emi-calculator): Free EMI calculator for home, car, personal and education loans. See your EMI, total interest and how much a monthly prepayment saves.
+- [A water reminder that knows how much you’ve had](https://selfstreak.com/water-reminder): Work out how much water you need a day, then get drink-water reminders that adapt to what you have already logged. Tap a glass to log it.
+- [A habit tracker that keeps your streak going](https://selfstreak.com/habit-tracker): Track daily, weekly and monthly habits with streaks, reminders at the time each habit happens, and goals that count themselves. 7 days free.
+- [An expense tracker that fills itself in](https://selfstreak.com/expense-tracker): Track spending in rupees by voice, photo or bank statement. Set monthly budgets and get reminders for bills and EMIs. No bank login needed.
+- [A debt payoff planner built on your real income](https://selfstreak.com/debt-payoff-planner): Plan how to repay credit cards, personal loans and EMIs on your income. Compare avalanche and snowball and see your debt-free date.
+- [Track calories and protein from a photo of your plate](https://selfstreak.com/calorie-protein-tracker): Snap a photo of dal chawal, roti sabzi or dosa and get calories and protein in seconds. Track your daily protein target. Free for 7 days.
+
+## Free calculators
+- [Home loan EMI calculator](https://selfstreak.com/emi-calculator/home-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 8.5% rate.
+- [Car loan EMI calculator](https://selfstreak.com/emi-calculator/car-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 9.5% rate.
+- [Personal loan EMI calculator](https://selfstreak.com/emi-calculator/personal-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 13% rate.
+- [Education loan EMI calculator](https://selfstreak.com/emi-calculator/education-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 10.5% rate.
+- [Two-wheeler loan EMI calculator](https://selfstreak.com/emi-calculator/two-wheeler-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 12% rate.
+
+## Guides
+- [Credit card statement date vs due date: what each one means](https://selfstreak.com/blog/credit-card-statement-date-vs-due-date): What the statement date and due date mean, how the interest-free period works, why paying only the minimum costs so much, and RBI rules that protect you.
+- [The 50/30/20 budget rule in India, with rupee examples](https://selfstreak.com/blog/50-30-20-budget-rule-india): How the 50/30/20 budget rule works on an Indian salary, with worked examples for ₹40,000, ₹75,000 and ₹1.5 lakh a month, and how to adjust it for rent and EMIs.
+- [Debt avalanche vs snowball: which pays off debt faster?](https://selfstreak.com/blog/debt-avalanche-vs-snowball): Avalanche vs snowball debt payoff, compared on a real Indian example with a credit card, personal loan and phone EMI: months to debt-free and interest paid.
+- [How long does it take to form a habit?](https://selfstreak.com/blog/how-long-does-it-take-to-form-a-habit): Research found new habits took a median of 66 days to become automatic, with a range of 18 to 254 days. What that means, and how to make a habit stick.
+- [How much water should you drink a day?](https://selfstreak.com/blog/how-much-water-should-i-drink-a-day): How much water adults need each day, a simple per-kg guide with a table from 50 to 100 kg, extra for heat and exercise in India, and signs you need more.
+- [How much protein do you need on an Indian diet?](https://selfstreak.com/blog/protein-intake-indian-diet): How much protein Indian adults need per kg, how to hit it on a vegetarian or non-vegetarian Indian diet, with a sample day and protein in common Indian foods.
+
+## Key facts
+- Price: free plan for habits, water, expenses and streaks. Plus (₹199 a month, 7-day free trial) adds AI logging, photo scans, reminders and more. Paid on the web via Razorpay or Cashfree.
+- Platforms: web app, iPhone, Android. Works offline for ticking habits and logging.
+- Privacy: no bank login, card number or CVV is ever needed. Data can be exported or deleted from Settings.
+- Languages: understands English, Hindi and Hinglish for voice and text logging.
+
+## Company
+- [Contact](https://selfstreak.com/contact): support email and how to reach us.
+- [Privacy policy](https://selfstreak.com/privacy)
+- [Terms](https://selfstreak.com/terms)
+- [Refunds](https://selfstreak.com/refunds)
