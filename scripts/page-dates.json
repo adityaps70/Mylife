@@ -4,83 +4,119 @@
   "modified": "2026-11-13"
  },
  "/about": {
-  "hash": "b77ffed1376f7025",
+  "hash": "7bf500d8ed0cc36f",
   "modified": "2026-11-13"
  },
  "/blog": {
-  "hash": "d191466368eb65c5",
+  "hash": "63a5687d2fc72c39",
   "modified": "2026-11-13"
  },
  "/blog/50-30-20-budget-rule-india": {
-  "hash": "9ce7a19491796950",
+  "hash": "5917c2f4544df10c",
   "modified": "2026-11-13"
  },
  "/blog/credit-card-statement-date-vs-due-date": {
-  "hash": "d2fd87f5687f3b09",
+  "hash": "68fcc69bceda3aa9",
   "modified": "2026-11-13"
  },
  "/blog/debt-avalanche-vs-snowball": {
-  "hash": "1ee194c9e047239b",
+  "hash": "fa9675c0268d3d79",
   "modified": "2026-11-13"
  },
  "/blog/how-long-does-it-take-to-form-a-habit": {
-  "hash": "4ca7e50b8811be54",
+  "hash": "e6e01f7696b2aadd",
   "modified": "2026-11-13"
  },
  "/blog/how-much-water-should-i-drink-a-day": {
-  "hash": "99aa8b3adbf8d27e",
+  "hash": "449bcecdc1505da3",
   "modified": "2026-11-13"
  },
  "/blog/protein-intake-indian-diet": {
-  "hash": "de145dd73d94a5a9",
+  "hash": "17c4fadb17ee7bf2",
   "modified": "2026-11-13"
  },
  "/calorie-protein-tracker": {
-  "hash": "870afda58b386e32",
+  "hash": "a89147e1bb0f3b59",
   "modified": "2026-11-13"
  },
  "/contact": {
   "hash": "55c2a19edc090758",
   "modified": "2026-11-13"
  },
+ "/cred-alternative": {
+  "hash": "982ecdcb23ee8380",
+  "modified": "2026-11-13"
+ },
  "/credit-card-bill-reminder": {
-  "hash": "27089186bc463bf0",
+  "hash": "05737d865bf22f51",
+  "modified": "2026-11-13"
+ },
+ "/credit-card-interest-calculator": {
+  "hash": "cf70f86b48436da5",
+  "modified": "2026-11-13"
+ },
+ "/credit-card-statement-date/axis-bank": {
+  "hash": "e8b10a6ee8b0f72f",
+  "modified": "2026-11-13"
+ },
+ "/credit-card-statement-date/hdfc-bank": {
+  "hash": "33ada586a177bdcf",
+  "modified": "2026-11-13"
+ },
+ "/credit-card-statement-date/icici-bank": {
+  "hash": "2620a2f794223ee7",
+  "modified": "2026-11-13"
+ },
+ "/credit-card-statement-date/sbi-card": {
+  "hash": "74f283d147cb507c",
   "modified": "2026-11-13"
  },
  "/debt-payoff-planner": {
-  "hash": "ea8fae9005539421",
+  "hash": "7a7375f862590990",
   "modified": "2026-11-13"
  },
  "/emi-calculator": {
-  "hash": "1249aeb217df7dc6",
+  "hash": "371b02516a28eab1",
   "modified": "2026-11-13"
  },
  "/emi-calculator/car-loan": {
-  "hash": "a0182ce615974e51",
+  "hash": "3624d342e32e508e",
   "modified": "2026-11-13"
  },
  "/emi-calculator/education-loan": {
-  "hash": "312ee4afdf3ed18e",
+  "hash": "e52e724153d0a2ff",
   "modified": "2026-11-13"
  },
  "/emi-calculator/home-loan": {
-  "hash": "498326e6d36277c1",
+  "hash": "8f8b16dc7bc71c35",
   "modified": "2026-11-13"
  },
  "/emi-calculator/personal-loan": {
-  "hash": "d0e9a4946ada31c7",
+  "hash": "60e8f0d2d9d7b27b",
   "modified": "2026-11-13"
  },
  "/emi-calculator/two-wheeler-loan": {
-  "hash": "af986bdf7fb2d1fa",
+  "hash": "b29cf02d64187558",
   "modified": "2026-11-13"
  },
  "/expense-tracker": {
-  "hash": "a5789f3c0fda4ed3",
+  "hash": "0d5b1f16967ef92d",
   "modified": "2026-11-13"
  },
  "/habit-tracker": {
-  "hash": "ffcf2e99c225269e",
+  "hash": "6146521bab047dc5",
+  "modified": "2026-11-13"
+ },
+ "/hi/blog/credit-card-statement-date-vs-due-date": {
+  "hash": "7bf1e59dc8fbed03",
+  "modified": "2026-11-13"
+ },
+ "/hi/emi-calculator": {
+  "hash": "9badae850448bbbe",
+  "modified": "2026-11-13"
+ },
+ "/loop-habit-tracker-alternative": {
+  "hash": "bda04f26ad0361ce",
   "modified": "2026-11-13"
  },
  "/privacy": {
@@ -99,8 +135,12 @@
   "hash": "c2b380eb79072884",
   "modified": "2026-11-13"
  },
+ "/walnut-alternative": {
+  "hash": "9e0de747b1c6f739",
+  "modified": "2026-11-13"
+ },
  "/water-reminder": {
-  "hash": "21f24604d37c28df",
+  "hash": "d5860305cc8b96f6",
   "modified": "2026-11-13"
  }
 }

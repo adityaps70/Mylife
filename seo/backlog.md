@@ -20,3 +20,11 @@ Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages r
 11. **Comparison: Loop Habit Tracker / Streaks alternative**, for Android plus iPhone with money and health in the same app.
 12. **`/index.html` returns 307 → /** (Cloudflare's default asset handling). It's harmless, but a 301 would be cleaner.
 13. **Add analytics** (for example Cloudflare Web Analytics) so signups can be attributed to landing pages.
+
+## Added 2026-11-13
+- [ ] Re-check comparison page facts (CRED, axio, Loop) every 3 months; update AS_OF in scripts/build_compare.py.
+- [ ] Re-read bank MITC PDFs every 6 months (scripts/build_compare.py BANKS).
+- [ ] Decide on referral reward (7 days now; proposal: 30 days of Plus for both) — seo/traction.md.
+- [ ] Publish the Play Store listing using seo/traction.md once the app is approved.
+- [ ] Record reels from the local demo account (scripts in seo/traction.md).
+- [ ] Run `npm run report` every Monday.

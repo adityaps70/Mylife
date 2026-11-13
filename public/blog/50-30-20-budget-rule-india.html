@@ -66,6 +66,7 @@ article p,article li{font-size:17px}article h2{margin-top:8px}article section{pa
 .byline{font-size:14px;color:var(--muted);margin-top:14px}
 .src{font-size:14px;color:var(--muted)}.src li{font-size:14px;color:var(--muted)}
 .tw{overflow-x:auto}
+.cmp td:first-child{font-weight:600;color:var(--text)}.cmp th:nth-child(3),.cmp td:nth-child(3){background:color-mix(in srgb,var(--lime) 6%,transparent)}
 .brand,nav .lg,nav .btn{white-space:nowrap}nav .wrap{gap:12px}
 @media (max-width:440px){nav .lg.gd{display:none}nav .btn.sm{padding:0 13px}}
 
@@ -79,7 +80,19 @@ article p,article li{font-size:17px}article h2{margin-top:8px}article section{pa
 <article><header style="padding-top:20px"><div class="wrap"><div class="kick">Budgeting</div>
 <h1>The 50/30/20 budget rule in India, with rupee examples</h1><p class="lead">The 50/30/20 rule splits your take-home pay into three buckets: needs, wants and savings. It is simple enough to follow without a spreadsheet, and it works on Indian salaries with a few adjustments.</p>
 <p class="byline">By <a href="/about">Aditya Pratap Singh</a> · Published 2026-11-13 · Updated 2026-11-13 · 4 min read</p>
-<p class="short"><b>Short answer:</b> The 50/30/20 rule puts <b>50% of take-home pay on needs</b> (rent, groceries, bills, EMIs), <b>30% on wants</b> (eating out, shopping, trips) and <b>20% on savings and extra debt repayment</b>. On a ₹75,000 salary that is ₹37,500 for needs, ₹22,500 for wants and ₹15,000 to save.</p></div></header>
+<p class="short"><b>Short answer:</b> The 50/30/20 rule puts <b>50% of take-home pay on needs</b> (rent, groceries, bills, EMIs), <b>30% on wants</b> (eating out, shopping, trips) and <b>20% on savings and extra debt repayment</b>. On a ₹75,000 salary that is ₹37,500 for needs, ₹22,500 for wants and ₹15,000 to save.</p><div class="calc" id="b532"><div class="fields">
+<label>Monthly take-home pay (₹)<input id="bS" type="number" inputmode="numeric" value="75000" min="0"></label>
+<label>Rent + EMIs you already pay (₹, optional)<input id="bF" type="number" inputmode="numeric" value="" min="0" placeholder="0"></label></div>
+<div class="out"><div><small>Needs (50%)</small><b id="bN">–</b></div><div><small>Wants (30%)</small><b id="bW">–</b></div><div><small>Savings (20%)</small><b id="bV">–</b></div><div><small>Savings a year</small><b id="bY">–</b></div></div>
+<p class="note" id="bNote"></p></div>
+<script>
+(()=>{const f=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+function run(){const S=+bS.value||0,F=+bF.value||0;bN.textContent=f(S*.5);bW.textContent=f(S*.3);bV.textContent=f(S*.2);bY.textContent=f(S*.2*12);
+if(!F){bNote.textContent='Add your rent and EMIs to see how much of the needs bucket is left for groceries, bills and transport.';return}
+const left=S*.5-F;bNote.textContent=left>=0?`Rent and EMIs take ${Math.round(F/S*100)}% of your pay, leaving ${f(left)} of the needs bucket for groceries, bills and transport.`
+:`Rent and EMIs alone are ${Math.round(F/S*100)}% of your pay, ${f(-left)} over the 50% needs bucket. Take the gap from wants first, not savings; see the adjustments below.`}
+['bS','bF'].forEach(id=>document.getElementById(id).addEventListener('input',run));run()})();
+</script></div></header>
 <main class="wrap">
 <section><h2 style="font-size:18px">In this guide</h2><ol class="list"><li><a href="#what-is-it">What is the 50/30/20 rule?</a></li><li><a href="#examples">50/30/20 on an Indian salary: three examples</a></li><li><a href="#worked-month">A real month on ₹60,000 take-home</a></li><li><a href="#needs-vs-wants">How to tell a need from a want</a></li><li><a href="#emergency-fund">Build an emergency fund first</a></li><li><a href="#adjust-india">Adjusting the rule for Indian cities</a></li><li><a href="#emis">Where do EMIs fit?</a></li><li><a href="#start">How to start in 15 minutes</a></li><li><a href="#mistakes">Common mistakes to avoid</a></li><li><a href="#faq">Common questions</a></li></ol></section>
 

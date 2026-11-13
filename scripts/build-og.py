@@ -23,6 +23,8 @@ def pages():
     out = [t for t in TOOLS] + ['blog', 'about']
     out += ['emi-calculator/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'emi-calculator'))) if f.endswith('.html')]
     out += ['blog/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'blog'))) if f.endswith('.html')]
+    out += ['cred-alternative', 'walnut-alternative', 'loop-habit-tracker-alternative', 'credit-card-interest-calculator', 'hi/emi-calculator', 'hi/blog/credit-card-statement-date-vs-due-date']
+    out += ['credit-card-statement-date/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'credit-card-statement-date'))) if f.endswith('.html')]
     return out
 
 def text(s):
@@ -39,9 +41,9 @@ LOGO = '<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="26" fill="
 def card_html(kick, h1):
     size = 76 if len(h1) <= 40 else 64 if len(h1) <= 62 else 54
     return f'''<!doctype html><html><head><meta charset="utf-8">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&family=Noto+Sans+Devanagari:wght@600;800&display=block" rel="stylesheet">
 <style>*{{margin:0;padding:0;box-sizing:border-box}}html,body{{width:1200px;height:630px;overflow:hidden}}
-body{{background:#09090b;color:#f4f4f5;font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding:72px 80px;display:flex;flex-direction:column;
+body{{background:#09090b;color:#f4f4f5;font-family:'Plus Jakarta Sans','Noto Sans Devanagari',system-ui,sans-serif;padding:72px 80px;display:flex;flex-direction:column;
 background-image:radial-gradient(700px 420px at 0% 0%,rgba(215,246,74,.20),transparent 70%),radial-gradient(600px 400px at 100% 100%,rgba(69,223,230,.10),transparent 70%)}}
 .k{{color:#d7f64a;font-weight:800;font-size:26px;letter-spacing:.12em;text-transform:uppercase}}
 h1{{font-weight:800;font-size:{size}px;line-height:1.08;letter-spacing:-.03em;margin-top:22px;max-width:1000px}}

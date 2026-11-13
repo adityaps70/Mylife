@@ -171,7 +171,7 @@ def post_page(p):
     inner = f'''<article><header style="padding-top:20px"><div class="wrap"><div class="kick">{html.escape(p["kicker"])}</div>
 <h1>{html.escape(p["h1"])}</h1><p class="lead">{html.escape(p["lead"])}</p>
 <p class="byline">By <a href="/about">{AUTHOR_NAME}</a> · Published {p["date"]} · Updated {bp.UPDATED} · {max(1, round(words/220))} min read</p>
-<p class="short"><b>Short answer:</b> {p["short"]}</p></div></header>
+<p class="short"><b>Short answer:</b> {p["short"]}</p>{p.get("calc", "")}</div></header>
 <main class="wrap">
 <section><h2 style="font-size:18px">In this guide</h2><ol class="list">{toc}</ol></section>
 {p["body"]}
@@ -247,7 +247,7 @@ def extra_pages():
     page = re.sub(r'<link rel="canonical"[^>]*>\n?', '', page).replace(bp.UPDATED, bp.TODAY)
     with open(os.path.join(bp.OUT, '404.html'), 'w') as f: f.write(page)
 
-def llms(urls):
+def llms(urls, extra=()):
     pages = {p['slug']: p for p in bp.PAGES}
     lines = ['# Self Streak', '',
              '> Self Streak is an India-first app for habits and streaks, money (budget, expenses, bills, EMIs, credit cards, debt payoff) and health (water, meals, protein), with AI logging by voice, photo and bank statement. Free plan; Plus is ₹199/month.', '',
@@ -256,6 +256,7 @@ def llms(urls):
     lines += [f'- [{pages[s]["h1"]}]({B}/{s}): {pages[s]["desc"]}' for s in pages]
     lines += ['', '## Free calculators'] + [f'- [{L["name"]} EMI calculator]({B}/emi-calculator/{L["slug"]}): EMI tables by amount and tenure, interest by year and prepayment savings at an example {L["rate"]:g}% rate.' for L in LOANS]
     lines += ['', '## Guides'] + [f'- [{p["h1"]}]({B}/blog/{p["slug"]}): {p["desc"]}' for p in POSTS]
+    lines += list(extra)
     lines += ['', '## Key facts',
               '- Price: free plan for habits, water, expenses and streaks. Plus (₹199 a month, 7-day free trial) adds AI logging, photo scans, reminders and more. Paid on the web via Razorpay or Cashfree.',
               '- Platforms: web app, iPhone, Android. Works offline for ticking habits and logging.',

@@ -27,6 +27,18 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [How long does it take to form a habit?](https://selfstreak.com/blog/how-long-does-it-take-to-form-a-habit): Research found new habits took a median of 66 days to become automatic, with a range of 18 to 254 days. What that means, and how to make a habit stick.
 - [How much water should you drink a day?](https://selfstreak.com/blog/how-much-water-should-i-drink-a-day): How much water adults need each day, a simple per-kg guide with a table from 50 to 100 kg, extra for heat and exercise in India, and signs you need more.
 - [How much protein do you need on an Indian diet?](https://selfstreak.com/blog/protein-intake-indian-diet): How much protein Indian adults need per kg, how to hit it on a vegetarian or non-vegetarian Indian diet, with a sample day and protein in common Indian foods.
+- [Credit card interest calculator](https://selfstreak.com/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.
+
+## Card billing cycles by bank
+- [HDFC Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/hdfc-bank): billing cycle, interest-free period and grace days from HDFC Bank’s own terms.
+- [SBI Card credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/sbi-card): billing cycle, interest-free period and grace days from SBI Card’s own terms.
+- [ICICI Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/icici-bank): billing cycle, interest-free period and grace days from ICICI Bank’s own terms.
+- [Axis Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/axis-bank): billing cycle, interest-free period and grace days from Axis Bank’s own terms.
+
+## Comparisons
+- [Self Streak vs CRED](https://selfstreak.com/cred-alternative): Self Streak vs CRED: CRED pays card bills and gives rewards; Self Streak tracks each card’s billing cycle, EMIs, budgets and habits. Which one fits you.
+- [Self Streak vs Walnut (now axio)](https://selfstreak.com/walnut-alternative): Walnut is now axio, which tracks spends by reading transactional SMS. Self Streak logs by voice, photo or bank statement instead, with no SMS access.
+- [Self Streak vs Loop Habit Tracker](https://selfstreak.com/loop-habit-tracker-alternative): Loop is free, open source and Android-only. Self Streak works on Android, iPhone and the web, syncs, and adds money and health tracking. Honest comparison.
 
 ## Key facts
 - Price: free plan for habits, water, expenses and streaks. Plus (₹199 a month, 7-day free trial) adds AI logging, photo scans, reminders and more. Paid on the web via Razorpay or Cashfree.

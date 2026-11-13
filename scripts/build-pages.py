@@ -246,6 +246,7 @@ article p,article li{font-size:17px}article h2{margin-top:8px}article section{pa
 .byline{font-size:14px;color:var(--muted);margin-top:14px}
 .src{font-size:14px;color:var(--muted)}.src li{font-size:14px;color:var(--muted)}
 .tw{overflow-x:auto}
+.cmp td:first-child{font-weight:600;color:var(--text)}.cmp th:nth-child(3),.cmp td:nth-child(3){background:color-mix(in srgb,var(--lime) 6%,transparent)}
 .brand,nav .lg,nav .btn{white-space:nowrap}nav .wrap{gap:12px}
 @media (max-width:440px){nav .lg.gd{display:none}nav .btn.sm{padding:0 13px}}
 """
@@ -260,15 +261,26 @@ def og_for(path):
     name = path.strip('/').replace('/', '-') or 'home'
     return f'{B}/og/{name}.jpg' if os.path.exists(os.path.join(OUT, 'og', name + '.jpg')) else f'{B}/og-image.png'
 
-def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', head_extra='', robots='index, follow, max-image-preview:large, max-snippet:-1'):
+# Pages that exist in more than one language: every version lists all of them (hreflang), English is x-default.
+ALTERNATES = {'/emi-calculator': {'en-IN': '/emi-calculator', 'hi-IN': '/hi/emi-calculator'},
+              '/blog/credit-card-statement-date-vs-due-date': {'en-IN': '/blog/credit-card-statement-date-vs-due-date', 'hi-IN': '/hi/blog/credit-card-statement-date-vs-due-date'}}
+ALTERNATES.update({v['hi-IN']: v for v in list(ALTERNATES.values())})
+NAV_TEXT = {'en-IN': ('Guides', 'Log in', 'Start free trial'), 'hi-IN': ('गाइड', 'लॉग इन', 'फ़्री ट्रायल शुरू करें')}
+
+def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', head_extra='', robots='index, follow, max-image-preview:large, max-snippet:-1', lang='en-IN'):
     url = B + path
+    alt = ALTERNATES.get(path)
+    if alt:
+        head_extra += ''.join(f'<link rel="alternate" hreflang="{l}" href="{B}{u}">' for l, u in alt.items()) + f'<link rel="alternate" hreflang="x-default" href="{B}{alt["en-IN"]}">\n'
+    g_txt, l_txt, s_txt = NAV_TEXT[lang]
+    hi_link = f' · <a href="{alt["hi-IN"]}" hreflang="hi-IN" lang="hi">हिंदी में पढ़ें</a>' if alt and lang == 'en-IN' else ''
     og = og_for(path)
     assert len(title) <= 60, (path, len(title), title)
     assert 110 <= len(desc) <= 160, (path, len(desc), desc)
     ld = {"@context": "https://schema.org", "@graph": [ORG, SITE, crumbs_ld(crumbs)] + graph}
     crumb_html = ' › '.join([f'<a href="{u}">{html.escape(n)}</a>' for n, u in crumbs[:-1]] + [html.escape(crumbs[-1][0])])
     return f"""<!doctype html>
-<html lang="en-IN"><head><meta charset="utf-8">
+<html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
@@ -278,14 +290,14 @@ def shell(path, title, desc, og_title, graph, crumbs, inner, og_type='website', 
 <link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="{og_type}"><meta property="og:site_name" content="Self Streak"><meta property="og:url" content="{url}">
 <meta property="og:title" content="{html.escape(og_title)}"><meta property="og:description" content="{html.escape(desc)}">
-<meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_IN">
+<meta property="og:image" content="{og}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="{lang.replace('-', '_')}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{html.escape(og_title[:70])}"><meta name="twitter:description" content="{html.escape(desc)}"><meta name="twitter:image" content="{og}">
 {head_extra}<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 <style>{CSS}{EXTRA_CSS}{SHOT_CSS}</style></head><body>
-<nav><div class="wrap"><a class="brand" href="/">{LOGO}Self Streak</a><span class="sp"></span><a class="lg gd" href="/blog">Guides</a><a class="lg" href="/app">Log in</a><a class="btn lime sm" href="/app#signup">Start free trial</a></div></nav>
-<div class="wrap" style="padding-top:18px"><div class="crumb">{crumb_html}</div></div>
+<nav><div class="wrap"><a class="brand" href="/">{LOGO}Self Streak</a><span class="sp"></span><a class="lg gd" href="/blog">{g_txt}</a><a class="lg" href="/app">{l_txt}</a><a class="btn lime sm" href="/app#signup">{s_txt}</a></div></nav>
+<div class="wrap" style="padding-top:18px"><div class="crumb">{crumb_html}{hi_link}</div></div>
 {inner}
 {FOOT}
 {BEACON}
@@ -371,6 +383,12 @@ if __name__ == '__main__':
     spec = importlib.util.spec_from_file_location('build_seo', os.path.join(os.path.dirname(__file__), 'build_seo.py'))
     seo = importlib.util.module_from_spec(spec); spec.loader.exec_module(seo)
     seo.build()   # loan pages + blog; fills GUIDES_FOR
+    spec = importlib.util.spec_from_file_location('build_compare', os.path.join(os.path.dirname(__file__), 'build_compare.py'))
+    cmp_ = importlib.util.module_from_spec(spec); spec.loader.exec_module(cmp_)
+    cmp_.link_from_tools(); cmp_.build()   # comparison pages + card interest calculator
+    spec = importlib.util.spec_from_file_location('build_hi', os.path.join(os.path.dirname(__file__), 'build_hi.py'))
+    hi = importlib.util.module_from_spec(spec); spec.loader.exec_module(hi)
+    hi.build()   # Hindi pages (/hi/...)
     for p in PAGES:
         write('/' + p['slug'], render(p))
     print('built', len(SITEMAP), 'pages')
@@ -380,5 +398,5 @@ if __name__ == '__main__':
     with open(DATES_FILE, 'w') as f: json.dump(DATES, f, indent=1, sort_keys=True)
     with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>{d}</lastmod></url>\n' for u, d in urls) + '</urlset>\n')
-    seo.llms(urls)
+    seo.llms(urls, cmp_.llms_lines())
     print('sitemap and llms.txt updated:', len(urls), 'urls')

@@ -14,3 +14,11 @@
 - 2026-11-13: /privacy and /contact titles are now 49 and 55 characters.
 - 2026-11-13: Wrote seo/backlinks.md (5-phase plan, 30/90-day targets), drafted 3 roundup inclusion pitches, expanded directories.md.
 - 2026-11-13: URL Inspection: /, /emi-calculator, /emi-calculator/home-loan, /habit-tracker, /expense-tracker and /credit-card-bill-reminder are indexed (the Pages report still said 0; it lags). Requested recrawls for the first 5; the 6th hit the daily quota.
+
+## 2026-11-13 (traction round)
+- Bing Webmaster Tools: site + sitemap already in place. IndexNow had never been used: added `scripts/indexnow.mjs` (runs after every `npm run deploy`, pings only URLs whose lastmod changed). First ping: 200 for 26 URLs.
+- New pages: /cred-alternative, /walnut-alternative, /loop-habit-tracker-alternative (sourced, "as of 13 Nov 2026", each says when the other app is better); /credit-card-interest-calculator (minimum due vs full, 18% GST on interest); /credit-card-statement-date/{hdfc-bank,sbi-card,icici-bank,axis-bank} (facts only from each bank's MITC/FAQ).
+- 50/30/20 calculator embedded in /blog/50-30-20-budget-rule-india.
+- Hindi: /hi/emi-calculator and /hi/blog/credit-card-statement-date-vs-due-date, hreflang en-IN/hi-IN/x-default on both language versions, "हिंदी में पढ़ें" link on the English pages.
+- `npm run report` (scripts/weekly-report.mjs): weekly views/visitors/sign-ups from D1. First week: 144 views, 82 visitors, 7 sign-ups, 0 paid; Google sent 3 views.
+- Play Store: com.selfstreak.app is not public yet (404). Listing copy, reel scripts and referral proposal drafted in seo/traction.md.
