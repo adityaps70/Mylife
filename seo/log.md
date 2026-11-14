@@ -30,3 +30,8 @@
 - Health check (live): the 25 sitemap URLs all return 200 in <0.65 s, canonicals correct, no noindex.
 - `npm run report` (7 days to 14 Nov): 166 views, 92 visitors, 8 sign-ups, 0 paid; google.com sent 3 views. Saved in reports/traffic-2026-11-14.md.
 - Search Console / Bing: skipped today; requesting indexing makes no sense while the new pages 404 and today's change isn't live.
+
+## 2026-11-14 (fix + indexing)
+- Live site restored: the out-of-date copy (Self Streak Main session folder) was merged with GitHub main and seo/auto-2026-11-14, then deployed. All 36 sitemap URLs return 200; www/http redirect again.
+- Search Console: indexing requested for all 10 new pages (credit-card-interest-calculator, hi/emi-calculator, cred-alternative, hi/blog/credit-card-statement-date-vs-due-date, walnut-alternative, loop-habit-tracker-alternative, credit-card-statement-date/{hdfc-bank,sbi-card,icici-bank,axis-bank}). Each showed "URL is unknown to Google" before the request.
+- Deploy guard added (scripts/predeploy-check.mjs): `npm run deploy` refuses to deploy a copy that is behind GitHub main or has uncommitted changes, and now pushes to main after deploying.

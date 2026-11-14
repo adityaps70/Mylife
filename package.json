@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "node scripts/bump-sw.mjs && wrangler deploy && node scripts/indexnow.mjs",
+    "deploy": "node scripts/predeploy-check.mjs && node scripts/bump-sw.mjs && wrangler deploy && node scripts/indexnow.mjs && node scripts/postdeploy-push.mjs",
     "db:init": "wrangler d1 execute self-streak --remote --file=schema.sql",
     "report": "node scripts/weekly-report.mjs"
   },
