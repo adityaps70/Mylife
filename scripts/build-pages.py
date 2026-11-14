@@ -156,7 +156,8 @@ page(slug='habit-tracker', nav='Habit tracker',
 <div class="card"><b>AI day summary</b><p>Each evening, see what went well, what you missed and a plan for tomorrow.</p></div></div></section>
 <section><h2>Habits people track with Self Streak</h2><ul class="list">
 <li>10,000 steps, gym or a workout, morning sunlight</li><li>Water, protein target, fruits and vegetables</li>
-<li>Reading, journaling, no screens before bed</li><li>Skincare, sunscreen, haircut every 4 weeks</li><li>Weekly: meal prep, review spending, call family</li></ul></section>''',
+<li>Reading, journaling, no screens before bed</li><li>Skincare, sunscreen, haircut every 4 weeks</li><li>Weekly: meal prep, review spending, call family</li></ul>
+<p>Self Streak also tracks your money, so habits like a no-spend day or a weekly budget review sit next to your actual spending. See the <a href="/habit-and-money-tracker">habit and money tracker</a>.</p></section>''',
   faq=[('Is there a free habit tracker plan?','Yes. Every feature is free for 7 days, no card needed. After that, habits, streaks, water and expenses stay free. Plus (₹199 a month) adds reminders at each habit’s time, voice and photo logging, the AI day summary and leagues.'),
        ('Can I track weekly and monthly habits?','Yes. Habits can be daily, weekly, monthly, quarterly or yearly, each with their own reminder.'),
        ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.')])
@@ -186,7 +187,8 @@ page(slug='expense-tracker', nav='Expense tracker',
 <p>If you would rather have spends appear with zero effort and don’t mind SMS access, an SMS-reading app suits you better; our <a href="/walnut-alternative">Walnut (axio) comparison</a> and <a href="/cred-alternative">CRED comparison</a> set out the trade-off honestly.</p></section>
 <section><h2>Example: one month of tracking</h2>
 <p>Say your take-home pay is ₹50,000. You set a food budget of ₹6,000 and shopping at ₹4,000. Through the month you say spends as they happen. Around the 18th, food is at ₹5,100 of ₹6,000, so you know to cook more for the rest of the month. On the 1st, rent and your EMI are already in as bills, so “saved this month” is what is really left, not just salary minus the spends you remembered.</p>
-<p>To split that salary into needs, wants and savings first, use the <a href="/blog/50-30-20-budget-rule-india">50/30/20 budget calculator</a>.</p></section>''',
+<p>To split that salary into needs, wants and savings first, use the <a href="/blog/50-30-20-budget-rule-india">50/30/20 budget calculator</a>.</p></section>
+<section><h2>Spending is a habit too</h2><p>The same app tracks your habits and streaks, so you can turn “log every spend” or “no-spend day” into a habit with its own reminder. More on the <a href="/habit-and-money-tracker">habit and money tracker</a>, or track water, meals and sleep alongside your budget with the <a href="/health-and-finance-tracker">health and finance tracker</a>.</p></section>''',
   faq=[('Does Self Streak read my SMS?','No. It never asks for SMS access. You log spends by voice, receipt photo or bank statement upload instead, which also covers cash payments.'),
        ('Do I need to connect my bank account?','No. Self Streak never asks for bank logins. You can upload a statement PDF or photo instead, and it reads the payments.'),
        ('Does it work with UPI payments?','Yes. Log UPI spends by voice or text, or import them from your bank statement.'),
@@ -232,10 +234,83 @@ function pCalc(){const w=+pW.value||0,a=+pA.value||1,g=Math.round(w*a);pG.textCo
 <div class="card"><b>Daily food check</b><p>The evening summary flags oily or sugary meals, low fibre, and nutrients you likely missed, with Indian foods to fix them.</p></div></div></section>
 <section><h2>Easy protein for Indian diets</h2><ul class="list">
 <li>Paneer (about 18 g per 100 g), curd and dahi, milk</li><li>Dal, rajma, chole, sprouts, soya chunks</li>
-<li>Eggs, chicken, fish</li><li>Peanuts, roasted chana, seeds</li></ul></section>''',
+<li>Eggs, chicken, fish</li><li>Peanuts, roasted chana, seeds</li></ul>
+<p>Self Streak also tracks your grocery and food-delivery spending, so you can see what you ate and what it cost on the same day. See the <a href="/health-and-finance-tracker">health and finance tracker</a>.</p></section>''',
   faq=[('How accurate is the photo calorie estimate?','It’s an estimate based on the dish and a typical portion. You can edit the numbers before logging. Describing quantities (“2 rotis, 1 katori dal”) makes it more accurate.'),
        ('Does it track micronutrients?','The daily summary points out nutrients your meals were likely low in, such as fibre, calcium, iron or magnesium, based on what you ate. It’s guidance, not a lab test.'),
        ('Is it free?','Every feature is free for 7 days, no card needed. Photo calorie scans are part of Self Streak Plus at ₹199 a month. After the trial, the free plan keeps habits, water, expenses and your streak.')])
+
+page(slug='habit-and-money-tracker', nav='Habit & money tracker',
+  title='Habit and Money Tracker App for India | Self Streak',
+  desc='One app for habits and money: track streaks, spends, budgets, bills and EMIs side by side, and build money habits like no-spend days. Free plan.', short='A habit and money tracker is one app where you tick off daily habits and log your spending, budget and bills in the same place, so money habits get the same streaks and reminders as the gym or reading. Self Streak does both in rupees, on Android and the web, with a free plan.',
+  kick='Habits + money', h1='A habit tracker and money tracker in one app',
+  lead='Most people keep one app for habits and another for expenses, and stop opening one of them within a month. Self Streak puts your streaks, spends, budget, bills and EMIs on the same screens, so saving money becomes a habit you can see.',
+  body='''
+<section><h2>Why track habits and money together</h2>
+<p>Spending is a set of habits: the daily coffee, the late-night order, the card bill paid in full or only the minimum. A habit tracker alone can’t see any of it, and an expense tracker alone never reminds you to change it. Putting both in one app means the same streak that keeps you going to the gym also keeps you logging spends and sticking to a budget.</p>
+<p>It also means one app to open each day instead of two, which is usually the difference between a tracker you keep using and one you forget.</p></section>
+<section><h2>What you track in one place</h2><div class="grid">
+<div class="card"><b>Habits and streaks</b><p>Daily, weekly, monthly, quarterly or yearly habits, each with its own reminder time and streak.</p></div>
+<div class="card"><b>Every spend, in rupees</b><p>Say “450 on Swiggy”, snap a receipt, or import a bank statement PDF. No bank login, no SMS access.</p></div>
+<div class="card"><b>Monthly budget</b><p>A budget by category, with how much is left per day and a warning when one is running over.</p></div>
+<div class="card"><b>Bills, EMIs and cards</b><p>Due dates, minimum due and outstanding loans, with a reminder 2 days before each payment.</p></div>
+<div class="card"><b>Daily quests that mix both</b><p>Each day’s quests include ticking habits, drinking water and logging an expense or income, so money tracking is part of your daily streak, not a chore on the side.</p></div>
+<div class="card"><b>One Today screen</b><p>What’s done, what’s missed and what’s next across habits, bills and reminders.</p></div></div></section>
+<section><h2>Money habits worth tracking</h2>
+<p>Any of these can be a habit in Self Streak, with its own reminder and streak:</p>
+<ul class="list">
+<li><b>No-spend day</b> (daily or a few days a week): tick it on days you buy nothing beyond essentials.</li>
+<li><b>Log every spend before bed</b> (daily): a 30-second habit that keeps the month’s numbers honest, including cash.</li>
+<li><b>Review the budget</b> (weekly, say Sunday evening): check which category is running over while there’s still time to fix it.</li>
+<li><b>Move savings on payday</b> (monthly): pay yourself first, before the month’s spending starts.</li>
+<li><b>Pay the card bill in full</b> (monthly): the bill reminder tells you the amount and the due date.</li>
+<li><b>Check subscriptions</b> (quarterly): cancel the OTT or app plans you no longer use.</li></ul>
+<p>Not sure how much to save? The <a href="/blog/50-30-20-budget-rule-india">50/30/20 budget calculator</a> splits your take-home pay into needs, wants and savings.</p></section>
+<section><h2>Two apps vs one</h2><div class="tw"><table class="cmp"><thead><tr><th></th><th>A habit app plus an expense app</th><th>Self Streak</th></tr></thead><tbody>
+<tr><td>Apps to open each day</td><td>2</td><td>1</td></tr>
+<tr><td>Money habits with streaks</td><td>In the habit app only, with no link to your spending</td><td>Habits and spends on the same screens</td></tr>
+<tr><td>Bills, EMIs and credit cards</td><td>Often a third app</td><td>Included, with due-date reminders</td></tr>
+<tr><td>Rupees, UPI and Indian banks</td><td>Depends on the app</td><td>Built for India: ₹, UPI spends, Indian bank statements</td></tr>
+<tr><td>Log by voice in Hinglish</td><td>Rare</td><td>Yes: “450 on Swiggy”, “did gym”</td></tr></tbody></table></div></section>
+<section><h2>How it works</h2><ol class="list">
+<li>Add the habits you want to build, including a money habit or two from the list above.</li>
+<li>Set a monthly budget and add your bills and EMIs once.</li>
+<li>Each day, tick habits and log spends by voice, photo or statement. Your streak counts both.</li></ol></section>''',
+  faq=[('Is there an app that tracks both habits and expenses?','Yes. Self Streak tracks habits and streaks, expenses, budgets, bills, EMIs and credit cards in one app, made for India and priced in rupees.'),
+       ('Is the habit and money tracker free?','Yes. Habits, streaks, water and expense logging are on the free plan. Every feature is free for 7 days, no card needed. Plus (₹199 a month) adds reminders at each habit’s time, voice and photo logging, statement import and bill reminders.'),
+       ('Does it read my SMS or need my bank login?','No. It never asks for SMS access, bank logins or card numbers. You log spends by voice, receipt photo or bank statement upload.'),
+       ('Can I track spending habits like no-spend days?','Yes. Add “No-spend day” or any money habit as a daily, weekly or monthly habit and it gets its own reminder and streak.'),
+       ('Does it work on Android and iPhone?','There is an Android app, and on iPhone you can use it in Safari and add it to your home screen. It also works in any browser at selfstreak.com/app.')])
+
+page(slug='health-and-finance-tracker', nav='Health & finance tracker',
+  title='Health and Finance Tracker App for India | Self Streak',
+  desc='Track water, meals, protein, steps and sleep next to your spending, budget, bills and net worth. One app for health and money, made for India.', short='A health and finance tracker keeps your physical health and your money in one app. Self Streak tracks water, meals and protein, steps and sleep, plus your spending, budget, bills, EMIs and net worth, so one daily check-in covers both. It is made for India, with a free plan.',
+  kick='Health + money', h1='Track your health and your money in one app',
+  lead='Water, protein, steps and sleep on one side; spending, budget, bills and net worth on the other. Self Streak keeps both in the same app, with one streak and one evening summary, so you look after your body and your bank balance in the same two minutes a day.',
+  body='''
+<section><h2>Your health, tracked</h2><div class="grid">
+<div class="card"><b>Water</b><p>Tap a glass to log it. Reminders adapt to what you’ve already had and stay quiet while you sleep.</p></div>
+<div class="card"><b>Meals and protein</b><p>Snap a photo of dal chawal or a dosa and get calories and protein estimated for Indian portions.</p></div>
+<div class="card"><b>Steps and sleep</b><p>In the Android app, steps and sleep can come in from Health Connect, or you log them yourself.</p></div>
+<div class="card"><b>Health score</b><p>Steps, sleep and daily habits add up to one score for the day.</p></div></div></section>
+<section><h2>Your finances, tracked</h2><div class="grid">
+<div class="card"><b>Spending</b><p>Log by voice, receipt photo or bank statement, sorted into categories in rupees.</p></div>
+<div class="card"><b>Budget</b><p>A monthly budget by category, with how much you can still spend each day.</p></div>
+<div class="card"><b>Bills, EMIs and cards</b><p>Reminders before each due date, with the amount and minimum due.</p></div>
+<div class="card"><b>Net worth and debt-free date</b><p>See income, spending and what you saved this month, and the month your loans will be paid off.</p></div></div></section>
+<section><h2>Why one app for both</h2>
+<p>Health and money goals fail the same way: you track hard for a week, then stop opening the app. Keeping both in one place means one habit to keep, opening Self Streak each day, instead of two. Each day’s quests mix them (drink water, log a meal, log an expense, tick your habits), and the evening summary looks at the whole day.</p>
+<p>They also affect each other. Cooking at home is both cheaper and usually better for your protein target, and a weekly grocery budget is easier to keep when meals are planned. Seeing food spending and what you ate on the same screen makes that link obvious.</p></section>
+<section><h2>A daily check-in that takes two minutes</h2><ol class="list">
+<li>Morning: tick your habits as you do them; water reminders run through the day.</li>
+<li>Meals: snap a photo, or type “2 rotis, dal and paneer sabzi”.</li>
+<li>Spends: say them as they happen, or import the bank statement once a month.</li>
+<li>Evening: read the day summary of what went well and what you missed.</li></ol></section>''',
+  faq=[('Is there one app for health and finance tracking?','Yes. Self Streak tracks water, meals and protein, steps, sleep and habits, along with expenses, budgets, bills, EMIs and net worth, in one app made for India.'),
+       ('Is it free?','The free plan keeps habits, water, expenses and your streak. Every feature is free for 7 days, no card needed. Plus (₹199 a month) adds photo calorie scans, voice logging, statement import, reminders and the AI day summary.'),
+       ('Does it connect to Health Connect or Apple Health?','The Android app can read steps, sleep, weight and exercise from Health Connect once you allow it. On the web you can log them yourself.'),
+       ('Is my financial data safe?','Self Streak never asks for bank logins, card numbers or SMS access. Your data is never sold or used for ads, and you can export or delete it any time.'),
+       ('Does it work in Hindi?','Yes. Voice and text logging understand English, Hindi and Hinglish.')])
 
 ALL = [(p['slug'], p['nav']) for p in PAGES]
 UPDATED = '@@MODIFIED@@'   # replaced per page in write() with the date its content last changed (see page-dates.json)
@@ -332,6 +407,7 @@ SHOTS_FOR = {
     'credit-card-bill-reminder': ['bills', 'budget', 'debt'], 'debt-payoff-planner': ['debt', 'overview'],
     'emi-calculator': ['debt', 'bills'], 'water-reminder': ['health', 'today'], 'calorie-protein-tracker': ['meals', 'health'],
     'loan': ['debt', 'bills'],
+    'habit-and-money-tracker': ['today', 'budget', 'streak'], 'health-and-finance-tracker': ['health', 'meals', 'overview'],
 }
 SHOT_CSS = """
 .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;margin-top:16px}

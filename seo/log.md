@@ -35,3 +35,10 @@
 - Live site restored: the out-of-date copy (Self Streak Main session folder) was merged with GitHub main and seo/auto-2026-11-14, then deployed. All 36 sitemap URLs return 200; www/http redirect again.
 - Search Console: indexing requested for all 10 new pages (credit-card-interest-calculator, hi/emi-calculator, cred-alternative, hi/blog/credit-card-statement-date-vs-due-date, walnut-alternative, loop-habit-tracker-alternative, credit-card-statement-date/{hdfc-bank,sbi-card,icici-bank,axis-bank}). Each showed "URL is unknown to Google" before the request.
 - Deploy guard added (scripts/predeploy-check.mjs): `npm run deploy` refuses to deploy a copy that is behind GitHub main or has uncommitted changes, and now pushes to main after deploying.
+
+## 2026-11-14 (habit + money keywords)
+- New page /habit-and-money-tracker: primary "habit and money tracker"; also habit and finance / budget / expense tracker, money and habit tracker, money habits tracker. Answers in the first paragraph, money-habit list, two-apps-vs-one table, FAQ schema, 3 app screenshots, share image.
+- New page /health-and-finance-tracker: primary "finance and health tracker" / "health and finance app". Health side (water, meals, protein, Health Connect steps and sleep) and money side (spending, budget, bills, net worth).
+- Homepage title: "Self Streak: Habit, Money & Health Tracker App India" (was "Habit Tracker, Expense & EMI App India"); expense and EMI queries are owned by their own pages.
+- Contextual links to the new pages from /habit-tracker, /expense-tracker, /calorie-protein-tracker and the homepage footer; every feature page lists them under "More".
+- Sitemap now 38 URLs (was 36). Keyword research: Google autocomplete (gl=in) and web search; SERPs for these queries are mostly iPhone App Store listings (Snowballer, HabitGenius, Wealthy, TRAKL) with few web pages.

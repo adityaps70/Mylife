@@ -12,6 +12,8 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [An expense tracker that fills itself in](https://selfstreak.com/expense-tracker): Track spending in rupees by voice, photo or bank statement. Set monthly budgets and get reminders for bills and EMIs. No bank login needed.
 - [A debt payoff planner built on your real income](https://selfstreak.com/debt-payoff-planner): Plan how to repay credit cards, personal loans and EMIs on your income. Compare avalanche and snowball and see your debt-free date.
 - [Track calories and protein from a photo of your plate](https://selfstreak.com/calorie-protein-tracker): Snap a photo of dal chawal, roti sabzi or dosa and get calories and protein in seconds. Track your daily protein target. Free for 7 days.
+- [A habit tracker and money tracker in one app](https://selfstreak.com/habit-and-money-tracker): One app for habits and money: track streaks, spends, budgets, bills and EMIs side by side, and build money habits like no-spend days. Free plan.
+- [Track your health and your money in one app](https://selfstreak.com/health-and-finance-tracker): Track water, meals, protein, steps and sleep next to your spending, budget, bills and net worth. One app for health and money, made for India.
 
 ## Free calculators
 - [Home loan EMI calculator](https://selfstreak.com/emi-calculator/home-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 8.5% rate.

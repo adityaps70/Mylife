@@ -19,6 +19,13 @@ Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages r
 9. **Thicken /debt-payoff-planner** (/expense-tracker got a no-SMS section and worked example on 2026-11-14; screenshots still wanted). Was: /expense-tracker (398 words) and /debt-payoff-planner (431 words)** with real product screenshots and one worked example each. The owner needs to supply screenshots.
 10. ~~Article: credit card minimum due interest~~ Dropped 2026-11-14: /credit-card-interest-calculator owns this query. Was: **Article: credit card minimum due interest in India.** Show the real cost of paying only the minimum, with RBI-sourced rules. Links to item 7.
 
+## Added 2026-11-14 (habit + money keywords)
+- [ ] Request indexing in Search Console for /habit-and-money-tracker and /health-and-finance-tracker after deploy.
+- [ ] /habit-tracker: add an Android app section (direct download from /download) and a "daily routine" section for "habit tracker app for android" and "daily routine habit tracker app".
+- [ ] Links for the new pages: list Self Streak on AlternativeTo and Product Hunt as a "habit and money tracker"; pitch roundups of "habit tracker + budget app" lists (see backlinks.md).
+- [ ] Article idea: "Money habits that actually stick (and how to track them)" targeting "money habits tracker" / "spending habits tracker", linking to /habit-and-money-tracker.
+- [ ] Check positions for the new keyword rows in 3–4 weeks.
+
 ## Later
 11. **Comparison: Loop Habit Tracker / Streaks alternative**, for Android plus iPhone with money and health in the same app.
 12. **`/index.html` returns 307 → /** (Cloudflare's default asset handling). It's harmless, but a 301 would be cleaner.
