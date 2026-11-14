@@ -747,7 +747,7 @@ input[type=time]{width:112px}
 .onb .tchip{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line2);background:var(--card);cursor:pointer;font-weight:600;font-size:14px;transition:transform .2s var(--spring),border-color .2s,background-color .2s}
 .onb .tchip.on{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 12%,var(--card));transform:scale(1.03)}
 .onb .tchip svg.i{width:18px;height:18px}
-.vo-pick{display:grid;gap:8px}.vo-go{height:54px;justify-content:center;font-size:16px}.vo-go small{font-weight:500;opacity:.7;margin-left:6px;font-size:12px}
+.vo-pick{display:grid;gap:8px}.vo-bud{display:flex;justify-content:center;margin:4px 0 10px}.vo-bud.sm{margin:0}.vo-me{display:inline-flex}.onb.vo .onb-nav.cf{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}.onb.vo .onb-nav.cf .btn{justify-content:center;white-space:nowrap}.vo-voices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}.vo-voices .tchip{width:100%;justify-content:flex-start;text-align:left;margin:0}.vo-voices .tchip span{display:grid;line-height:1.2}.vo-voices small{font-size:11px;opacity:.65;font-weight:500}.onb.vo .obav{max-height:220px;overflow:auto}.vo-row b .i{width:13px;height:13px;opacity:.5;vertical-align:-1px;margin-left:4px}.vo-go{height:54px;justify-content:center;font-size:16px}.vo-go small{font-weight:500;opacity:.7;margin-left:6px;font-size:12px}
 .onb.vo .onb-top{display:flex;align-items:center}.onb.vo .onb-top>.ic{margin-left:auto}.vo-step{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.02em}
 .vo-mid{display:grid;justify-items:center;gap:12px;text-align:center}.vo-mid .ql-orb{width:190px;height:190px}.vo-mid .orb-core{width:120px;height:120px}.vo-mid .orb-ring{width:120px;height:120px;margin:-60px 0 0 -60px}
 .ql-orb.idle .orb-ring{animation-duration:4s;opacity:.35}
@@ -3155,7 +3155,9 @@ async function nativeGoogleButton(S){
       const b=e.currentTarget,err=$('#lockerr');if(err)err.textContent='';b.disabled=true;
       try{
         await slInit(SL);
-        const r=await SL.login({provider:'google',options:{}});const t=r?.result?.idToken;
+        // Forget the last Google account first, so the phone always shows its account chooser (lets people pick a different Gmail).
+        await Promise.race([SL.logout({provider:'google'}).catch(()=>{}),new Promise(r=>setTimeout(r,1500))]);
+        const r=await SL.login({provider:'google',options:{forcePrompt:true,style:'standard',filterByAuthorizedAccounts:false,autoSelectEnabled:false,prompt:'select_account'}});const t=r?.result?.idToken;
         if(!t)throw new Error('Google sign-in was cancelled.');
         await googleCredential({credential:t});
       }catch(x){nglInit=null;const m=String(x?.message||x);if(err&&!/cancel/i.test(m))err.textContent='Google sign-in didn’t work. Please try again or use email.';console.warn('google native',m)}
@@ -3222,6 +3224,8 @@ async function logout(){
   let endpoint='';try{const reg=await navigator.serviceWorker?.ready,sub=reg&&await reg.pushManager?.getSubscription();if(sub){endpoint=sub.endpoint;await sub.unsubscribe()}}catch(e){}
   try{await caches.delete('nudges')}catch(e){}
   try{await apiFetch('/api/logout',{method:'POST',body:{endpoint}})}catch(e){}
+  try{window.google?.accounts?.id?.disableAutoSelect()}catch(e){}
+  try{const SL=window.Capacitor?.Plugins?.SocialLogin;if(IN_APP&&SL){await slInit(SL);await Promise.race([SL.logout({provider:'google'}),new Promise(r=>setTimeout(r,1500))])}}catch(e){}
   try{localStorage.removeItem(KEY);localStorage.removeItem('selfstreak-last')}catch(e){}
   location.href='/';
 }
@@ -3459,19 +3463,22 @@ const VO_Q=[
   {k:'money',say:'Roughly how much do you take home each month? You can say skip.',need:v=>ob.focus.includes('money')&&!v.got.income},
   {k:'habit',say:'Last one. What’s one habit you’d like to build?',need:v=>!v.got.habit}];
 let voEl=null,voStream=null,voMR=null,voCtx=null,voRaf=0;const voAudio=new Map();
-function voTTS(text){if(voAudio.has(text))return voAudio.get(text);
-  const p=fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,voice:ui.voice&&ui.voice!=='device'?ui.voice:'luna',shared:true}),credentials:'same-origin'}).then(r=>r.ok?r.blob():null).then(b=>b?URL.createObjectURL(b):null).catch(()=>null);
-  voAudio.set(text,p);return p}
+const voVoice=()=>ob?.vo?.voice||(ui.voice&&ui.voice!=='device'?ui.voice:'luna');
+function voTTS(text,voice=voVoice()){text=sayClean(text);const key=voice+'|'+text;if(voAudio.has(key))return voAudio.get(key);
+  const p=fetch('/api/tts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,voice,shared:true}),credentials:'same-origin'}).then(r=>r.ok?r.blob():null).then(b=>b?URL.createObjectURL(b):null).catch(()=>null);
+  voAudio.set(key,p);return p}
 async function voPlay(text){const url=await voTTS(text);if(!ob?.vo||!url||!voEl)return;
   return new Promise(res=>{let done=false;const fin=()=>{if(!done){done=true;res()}};voEl.onended=fin;voEl.onerror=fin;voEl.src=url;voEl.play().catch(fin);setTimeout(fin,20000)})}
 function voStart(){
   state.profile.aiOk=state.profile.aiOk||Date.now();save(); // consent given by choosing "Set up by talking" (shown on the same screen)
   try{voEl=new Audio();voEl.src='data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';voEl.play().catch(()=>{})}catch(e){}
-  ob.vo={qi:-1,phase:'ask',heard:'',reply:'',got:{},typing:!voCanRec(),err:'',lvl:0};
+  ob.vo={qi:-1,phase:'buddy',heard:'',reply:'',got:{},typing:!voCanRec(),err:'',lvl:0,voice:ui.voice&&ui.voice!=='device'?ui.voice:'luna'};
+  if(!Number.isInteger(ob.avatar))ob.avatar=Math.floor(Math.random()*100);
   if(ob.first)ob.vo.got.first=1;if(ob.city)ob.vo.got.city=1;if(ob.age)ob.vo.got.age=1;
   VO_Q[0].say=ob.first?`Hi ${ob.first}, I’m your buddy. Roughly when do you wake up and go to sleep?`:'Hi, I’m your buddy. What should I call you, and roughly when do you wake up and go to sleep?';
-  VO_Q.forEach(q=>voTTS(q.say));voNext();
+  renderVO();
 }
+function voBegin(){const v=ob.vo;ui.voice=v.voice;saveUI();VO_Q.forEach(q=>voTTS(q.say));voNext()}
 function voNext(){const v=ob?.vo;if(!v)return;
   let i=v.qi+1;while(i<VO_Q.length&&!VO_Q[i].need(v))i++;
   if(i>=VO_Q.length){voStop();v.phase='review';renderVO();return}
@@ -3505,10 +3512,29 @@ async function voAnswer(text,blob){const v=ob?.vo;if(!v)return;const q=VO_Q[v.qi
     if(!text){v.phase='ask';v.err='I couldn’t make out any words. Try again a little closer, or type it.';renderVO();return}
     v.heard=text;renderVO();
     let x=null;try{x=await aiTask('onb',{question:q.say,text})}catch(e){x=voLocal(q.k,text)}
-    voMerge(x||{},q.k);v.reply=x?.reply||'Got it.';
+    v.snap=voSnap();voMerge(x||{},q.k);v.reply=x?.reply||'Got it.';
   }catch(e){v.phase='ask';v.err=netFail(e)?OFFLINE_AI:'That didn’t work. Try again, or type it.';renderVO();return}
-  if(ob?.vo===v)voNext();
+  if(ob?.vo!==v)return;
+  // Read back what was understood and wait for a yes before moving on.
+  v.keys=voChanged(v.snap);const echo=voEcho(v.keys);if(!echo){voNext();return}
+  v.phase='confirm';v.echo=echo;renderVO();voPlay(echo);
 }
+const VO_KEYS=['first','city','age','gender','wake','sleep','gym','noGym','income','habit','habitTime'];
+function voSnap(){const o={};VO_KEYS.forEach(k=>o[k]=ob[k]);o.focus=[...ob.focus];return {ob:o,got:{...ob.vo.got}}}
+function voRestore(sn){if(!sn)return;Object.assign(ob,sn.ob);ob.focus=[...sn.ob.focus];ob.vo.got={...sn.got}}
+const voTime=t=>{const[h,m]=String(t||'').split(':').map(Number);if(!isFinite(h))return t;return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''} ${h<12?'AM':'PM'}`};
+// Everything this answer filled in or changed (an answer can cover more than the question asked).
+function voChanged(sn){const g=ob.vo.got,out=[];const val=k=>k==='focus'?ob.focus.join():k==='gym'?(ob.noGym?'no':ob.gym):k==='habit'?ob.habit+'|'+(ob.habitTime||''):ob[k];
+  const old=k=>k==='focus'?sn.ob.focus.join():k==='gym'?(sn.ob.noGym?'no':sn.ob.gym):k==='habit'?sn.ob.habit+'|'+(sn.ob.habitTime||''):sn.ob[k];
+  for(const k of ['first','wake','sleep','city','age','gym','focus','income','habit'])if(g[k]===1&&(sn.got[k]!==1||val(k)!==old(k)))out.push(k);return out}
+function voEcho(keys){const ok=f=>keys.includes(f),P=[];
+  if(ok('first'))P.push(`your name is ${ob.first}`);if(ok('wake'))P.push(`you wake up at ${voTime(ob.wake)}`);if(ok('sleep'))P.push(`you sleep at ${voTime(ob.sleep)}`);
+  if(ok('city'))P.push(`you live in ${ob.city}`);if(ok('age'))P.push(`you’re ${ob.age}`);
+  if(ok('gym'))P.push(ob.noGym?'you don’t work out yet':`you work out at ${voTime(ob.gym)}`);
+  if(ok('focus'))P.push(`you want help with ${ob.focus.map(f=>((FOCUS.find(x=>x[0]===f)||[])[1]||f).toLowerCase()).join(', ')}`);
+  if(ok('income'))P.push(`you take home about ${inr(num(ob.income))} a month`);
+  if(ok('habit'))P.push(`you want to build: ${ob.habit}${ob.habitTime?', at '+voTime(ob.habitTime):''}`);
+  if(!P.length)return '';const last=P.pop();return `So ${P.length?P.join(', ')+' and '+last:last}. Is that right?`}
 // Fallback when the AI can't be reached: the obvious bits only.
 function voLocal(k,t){const o={};const n=t.match(/(?:i am|i'm|my name is|call me|main|mera naam)\s+([a-z]+)/i);if(k==='name'&&n)o.first=n[1][0].toUpperCase()+n[1].slice(1).toLowerCase();
   const num=t.replace(/,/g,'').match(/(\d+(?:\.\d+)?)\s*(k|thousand|hazaar|lakh|lac)?/i);if(k==='money'&&num)o.income=Math.round(+num[1]*({k:1e3,thousand:1e3,hazaar:1e3,lakh:1e5,lac:1e5}[String(num[2]||'').toLowerCase()]||1));
@@ -3535,7 +3561,20 @@ function voAfterBtns(){const hk=IN_APP&&typeof HK!=='undefined'&&HK;const o=[['i
 function renderVO(){const v=ob?.vo,box=$('#onb');if(!v||!box)return;const q=VO_Q[v.qi]||{},orb=c=>`<div class="ql-orb ${c}" style="--lvl:${(v.lvl||0).toFixed(2)}"><div class="orb-core"><b></b><b></b><b></b></div><span class="orb-ring"></span><span class="orb-ring r2"></span></div>`;
   const total=VO_Q.filter(x=>x.k!=='money'||ob.focus.includes('money')).length,step=Math.min(total,VO_Q.slice(0,v.qi+1).filter(x=>x.k!=='money'||ob.focus.includes('money')).length);
   let body='';
-  if(v.phase==='review'){body=`<h1>Here’s what I got${ob.first?', '+esc(ob.first):''}</h1><p class="lead">Tap anything to fix it.</p>
+  if(v.phase==='buddy'){body=`<h1>Meet your buddy</h1><p class="lead">Pick how your buddy looks and sounds. They’ll ask you a few quick questions.</p>
+    <div class="vo-bud">${avatarSVG(ob.avatar,104)}</div>
+    <div class="glabel">Voice <span class="hint">· tap to hear it</span></div>
+    <div class="tchips vo-voices">${VOICES.filter(x=>x[0]!=='device').map(([k,l])=>`<button type="button" class="tchip ${v.voice===k?'on':''}" data-vovoice="${k}">${ic('speaker')}<span><b>${l.split(' · ')[0]}</b><small>${l.split(' · ')[1]||''}</small></span></button>`).join('')}</div>
+    <div class="glabel" style="margin-top:6px">Look</div><div class="obav">${avGrid(ob.avatar,'data-voav')}</div>`}
+  else if(v.phase==='confirm'){const q=VO_Q[v.qi]||{},rows=(v.keys||[]).filter(f=>f!=='focus');
+    body=`<div class="vo-step">Question ${step} of ${total}</div>
+    <div class="vo-mid"><div class="vo-bud sm">${avatarSVG(ob.avatar,72)}</div><h2 class="vo-q">Is this right?</h2>
+    ${v.heard?`<div class="ql-quote">${ic('sparkle')}<span>You said “${esc(v.heard)}”</span></div>`:''}</div>
+    ${rows.length?`<div class="vo-rev">${VO_ROWS.filter(([k])=>rows.includes(k)).map(([k,l,f])=>`<button type="button" class="vo-row" data-voedit="${k}"><span>${l}</span><b>${esc(f()||'Add')} ${ic('edit')}</b></button>`).join('')}</div>`:''}
+    ${(v.keys||[]).includes('focus')?`<div class="tchips">${FOCUS.map(([k,l,i])=>`<button type="button" class="tchip ${ob.focus.includes(k)?'on':''}" data-fk="${k}">${ic(i)} ${l}</button>`).join('')}</div>`:''}
+    <p class="hint" style="text-align:center;margin:0">Tap anything to fix it, or say it again.</p>
+    ${q.k==='money'?voAfterBtns():''}`}
+  else if(v.phase==='review'){body=`<h1>Here’s what I got${ob.first?', '+esc(ob.first):''}</h1><p class="lead">Tap anything to fix it.</p>
     <div class="vo-rev">${VO_ROWS.map(([k,l,f])=>`<button type="button" class="vo-row" data-voedit="${k}"><span>${l}</span><b>${esc(f()||'Add')}</b></button>`).join('')}
     <div class="vo-row"><span>Help with</span><div class="tchips">${FOCUS.map(([k,l,i])=>`<button type="button" class="tchip ${ob.focus.includes(k)?'on':''}" data-fk="${k}">${ic(i)} ${l}</button>`).join('')}</div></div></div>
     ${voAfterBtns()}`}
@@ -3547,10 +3586,14 @@ function renderVO(){const v=ob?.vo,box=$('#onb');if(!v||!box)return;const q=VO_Q
     <div class="vo-chips">${voChips()}</div></div>
     ${q.k==='money'?voAfterBtns():''}
     ${v.phase==='type'||v.typing?`<form class="vo-type" id="voForm"><input id="voIn" autocomplete="off" placeholder="Type your answer"><button class="btn lime" type="submit">${ic('right')}</button></form>`:''}`}
-  const nav=v.phase==='review'?`<button class="btn ghost" data-vo="form">Use the form</button><span class="sp"></span><button class="btn lime" data-vo="done">Looks right ${ic('right')}</button>`
+  const nav=v.phase==='buddy'?`<button class="btn ghost" data-vo="form">Use the form</button><span class="sp"></span><button class="btn lime" data-vo="begin">${ic('mic')} Start talking</button>`
+    :v.phase==='confirm'?`<button class="btn ghost" data-vo="again">${ic('mic')} Say it again</button><button class="btn lime" data-vo="yes">${ic('tick')} Yes, that’s right</button>`
+    :v.phase==='review'?`<button class="btn ghost" data-vo="form">Use the form</button><span class="sp"></span><button class="btn lime" data-vo="done">Looks right ${ic('right')}</button>`
     :`<button class="btn ghost" data-vo="form">Use the form</button><span class="sp"></span>${v.phase==='listen'?`<button class="btn" data-vo="stop">${ic('tick')} Done</button>`:v.phase==='think'?'':`${!v.typing&&voCanRec()?`<button class="btn ghost" data-vo="type">${ic('edit')} Type</button><button class="btn" data-vo="mic">${ic('mic')} Answer</button>`:''}`}<button class="btn ghost" data-vo="skip">Skip</button>`;
-  box.innerHTML=`<div class="onb-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="onb vo"><div class="onb-top">${logo(36)}<span class="sp"></span><button class="ic" data-vo="mute" title="Stop the voice" aria-label="Stop the voice">${ic('x')}</button></div><div class="onb-step">${body}</div><div class="onb-nav">${nav}</div></div>`;
+  box.innerHTML=`<div class="onb-bg" aria-hidden="true"><i></i><i></i><i></i></div><div class="onb vo"><div class="onb-top">${v.phase==='buddy'||v.phase==='confirm'?logo(36):`<span class="vo-me">${avatarSVG(ob.avatar,36)}</span>`}<span class="sp"></span><button class="ic" data-vo="mute" title="Stop the voice" aria-label="Stop the voice">${ic('x')}</button></div><div class="onb-step">${body}</div><div class="onb-nav ${v.phase==='confirm'?'cf':''}">${nav}</div></div>`;
   box.querySelectorAll('[data-vo]').forEach(b=>b.onclick=()=>voAct(b.dataset.vo));
+  box.querySelectorAll('[data-vovoice]').forEach(b=>b.onclick=()=>{v.voice=b.dataset.vovoice;box.querySelectorAll('[data-vovoice]').forEach(x=>x.classList.toggle('on',x===b));try{voEl?.pause()}catch(e){}voPlay(`Hi${ob.first?' '+ob.first:''}, I’m your buddy. Ready when you are.`)});
+  box.querySelectorAll('[data-voav]').forEach(b=>b.onclick=()=>{ob.avatar=+b.dataset.voav;box.querySelectorAll('[data-voav]').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)});const t=box.querySelector('.vo-bud');if(t)t.innerHTML=avatarSVG(ob.avatar,104)});
   box.querySelectorAll('[data-voafter]').forEach(b=>b.onclick=()=>{ob.after=ob.after===b.dataset.voafter?'':b.dataset.voafter;renderVO()});
   box.querySelectorAll('[data-fk]').forEach(b=>b.onclick=()=>{const k=b.dataset.fk;ob.focus=ob.focus.includes(k)?ob.focus.filter(x=>x!==k):[...ob.focus,k];b.classList.toggle('on')});
   box.querySelectorAll('[data-voedit]').forEach(b=>b.onclick=()=>voEdit(b.dataset.voedit,b));
@@ -3562,13 +3605,16 @@ function voEdit(k,b){const type={age:'number',wake:'time',sleep:'time',gym:'time
   i.onblur=save;i.onchange=save;i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();save()}};
 }
 function voAct(a){const v=ob?.vo;if(!v)return;
+  if(a==='begin'){voBegin();return}
+  if(a==='yes'){try{voEl?.pause()}catch(e){}v.snap=null;voNext();return}
+  if(a==='again'){try{voEl?.pause()}catch(e){}voRestore(v.snap);v.snap=null;v.heard='';if(v.typing){v.phase='type';renderVO()}else{v.phase='ask';voListen()}return}
   if(a==='mute'){try{voEl?.pause()}catch(e){}if(v.phase==='ask'){v.phase=v.typing?'type':'ask';renderVO()}return}
   if(a==='mic'){try{voEl?.pause()}catch(e){}v.typing=false;voListen();return}
   if(a==='stop'){try{voMR?.stop()}catch(e){}return}
   if(a==='type'){try{voEl?.pause()}catch(e){}if(voMR){const m=voMR;voMR=null;try{m.stop()}catch(e){}}v.typing=true;v.phase='type';renderVO();return}
   if(a==='skip'){if(voMR){const m=voMR;voMR=null;try{m.stop()}catch(e){}}voMerge({skip:true},VO_Q[v.qi]?.k);v.reply='';voNext();return}
   if(a==='form'){voStop();ob.vo=null;ob.i=OB_STEPS.indexOf('you');ob.dir=1;renderOnb();return}
-  if(a==='done'){if(!ob.first){toast('Add your name first','x');voEdit('first',$('#onb [data-voedit=first]'));return}voStop();ob.vo=null;ob.i=OB_STEPS.indexOf('notify');ob.dir=1;renderOnb();return}
+  if(a==='done'){if(!ob.first){toast('Add your name first','x');voEdit('first',$('#onb [data-voedit=first]'));return}voStop();if(v.voice){ui.voice=v.voice;saveUI()}ob.vo=null;ob.i=OB_STEPS.indexOf('notify');ob.dir=1;renderOnb();return}
 }
 function finishOnboarding(){
   const p=state.profile;Object.assign(p,{first:ob.first,name:ob.first,city:ob.city,age:num(ob.age)||'',wake:ob.wake,sleep:ob.sleep,gymTime:ob.noGym?'':ob.gym,focus:ob.focus,onboarded:true});
