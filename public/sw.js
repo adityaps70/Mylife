@@ -1,5 +1,5 @@
 /* Aditya OS service worker: offline app shell + reminder notifications */
-const CACHE='selfstreak-mwen04ur';
+const CACHE='selfstreak-mwgaf9kn';
 const SHELL=['./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all([c.addAll(SHELL).catch(()=>{}),fetch('./app').then(r=>r.ok&&c.put('./index.html',r)).catch(()=>{})])).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!=='nudges').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
@@ -28,7 +28,10 @@ self.addEventListener('notificationclick',e=>{
   if(act)url.searchParams.set('do',act);
   e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{
     const q=act||url.searchParams.get('do');
-    for(const c of cs){if('focus' in c){if(q)c.postMessage({type:'notif-action',act:q});else if(url.hash)c.navigate?.(url.href);return c.focus()}}
+    // Prefer an open Self Streak window: tell it which page to show (no reload, so the right page always wins).
+    const app=cs.find(c=>{try{const p=new URL(c.url).pathname;return p==='/'||p==='/app'||p==='/app/'||p==='/index.html'}catch(x){return false}});
+    if(app&&'focus' in app){if(url.hash)app.postMessage({type:'notif-open',url:url.href});if(q)app.postMessage({type:'notif-action',act:q});return app.focus()}
+    const c=cs.find(c=>'focus' in c);if(c&&c.navigate)return c.navigate(url.href).then(w=>(w||c).focus());
     return self.clients.openWindow(url.href);
   }));
 });

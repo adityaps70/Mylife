@@ -61,6 +61,7 @@ async function me(env, u) {
 /* ---------------- AI tasks (prompts and schemas live on the server) ---------------- */
 const BILL_CATS = ['Rent / Home', 'Utilities', 'Phone & Internet', 'Subscriptions', 'Insurance', 'Credit card', 'Tax', 'Fitness', 'Household help', 'Other'];
 const LOG_KINDS = ['habit_done', 'habit_undo', 'steps', 'water_add', 'water_set', 'sleep', 'weight', 'expense', 'income', 'bill_paid', 'emi_paid', 'haircut', 'product_bought', 'goal_progress', 'checklist_done', 'journal', 'reminder_add', 'meal', 'goal_add'];
+const APP_PAGES = ['overview', 'today', 'health', 'goals', 'reminders', 'budget', 'bills', 'debt', 'savings', 'activity', 'grooming', 'checklist', 'notes', 'streak', 'year', 'history', 'settings', 'notify'];
 const strList = (a, max = 60) => (Array.isArray(a) ? a : []).map((x) => String(x).slice(0, 80)).filter(Boolean).slice(0, max);
 const obj = (props) => ({ type: 'object', additionalProperties: false, required: Object.keys(props), properties: props });
 const S = { type: 'string' }, N = { type: 'number' };
@@ -95,9 +96,31 @@ function buildTask(task, input) {
 - A goal, plan or life priority ("I'll get married in 2 years and need ₹50 lakh before that", "buy a house by 2030", "save 6 months of expenses", "create a goal …") → goal_add: text = short title ("Get married", "Buy a house"), value = target in rupees (0 if no amount; "50 lakh" = 5000000, "1 crore" = 10000000; if digits look garbled from speech, use the amount they clearly mean), date = target date YYYY-MM-DD worked out from today ("in two years" → same day two years later), ref = one of marriage, house, emergency, car, education, travel, business, retire, custom. Never save a goal as a journal entry.
 - A goal to do something on a number of days ("10,000 steps on 300 days this year", "gym 200 days in 2027", "read every day for 100 days") → goal_add with ref = 'habit:' + the matching habit id from the habit lists (or 'habit:new' if none fits), value = number of days, text = short title ("10,000 steps on 300 days"), start = first day to count (YYYY-MM-DD; 'this year' = Jan 1 of this year, 'from today' = today, a named year = Jan 1 of it), date = last day (e.g. Dec 31 of that year). For other actions set start to empty.
 All money is Indian rupees (₹): treat '$', 'dollars', 'bucks', 'Rs' and 'rupees' as rupees and never convert currencies ("spent $150 on lunch" → expense value 150). People say "one fifty" for 150 and "two thirty" for 230, and paise are never logged, so an amount like 1.50 or 2.30 means 150 or 230.
-Never invent things the user didn't say. If nothing fits, return no actions. reply: one short friendly spoken sentence.`,
+Never invent things the user didn't say. If nothing fits, return no actions. reply: one short friendly spoken sentence.
+question: if they are clearly logging a spend or payment but left out something you can't guess (usually the amount, e.g. "bought groceries"), add no action for it and ask for it in one short spoken question ("How much was it?"). Don't ask about the payment method. Otherwise leave question empty.
+Questions: if they ask something about their own data ("how much did I spend this month?", "how many steps today?", "when is my rent due?", "how am I doing on my goals?"), add no actions and answer in reply in one or two short spoken sentences using only the numbers in the context; if the context doesn't have it, say so briefly. General advice questions get a short, practical answer.
+open: if they ask to open, show or go to a part of the app ("open my goals", "show my bills", "take me to settings"), set open to the closest page name; also set it when answering a question that is clearly about one page. Otherwise leave it empty.`,
         content: [{ type: 'text', text: String(input.context || '').slice(0, 20000) + '\n\nWHAT I SAID: ' + String(input.text || '').slice(0, 4000) }],
-        schema: obj({ reply: S, actions: { type: 'array', items: obj({ kind: { type: 'string', enum: LOG_KINDS }, ref: S, value: N, text: S, date: S, start: S, protein: N, carbs: N, fat: N }) } }),
+        schema: obj({ reply: S, question: S, open: { type: 'string', enum: ['', ...APP_PAGES] }, actions: { type: 'array', items: obj({ kind: { type: 'string', enum: LOG_KINDS }, ref: S, value: N, text: S, date: S, start: S, protein: N, carbs: N, fat: N }) } }),
+      };
+    }
+    case 'onb': {
+      // Voice onboarding: pull profile details out of one spoken answer. Only what was actually said.
+      const FOCUS_KEYS = ['health', 'money', 'grooming', 'goals', 'mind', 'home'];
+      return {
+        effort: 'low', maxTokens: 2000,
+        system: `You help a new user set up Self Streak, an Indian app for habits, health, money and reminders, by voice. They answered one question (English, Hindi or Hinglish; speech-to-text may have small errors). Pull out ONLY what they actually said; leave every other field empty ('' for text, 0 for numbers, [] for lists). They may answer more than was asked: capture all of it.
+- first: their first name only, properly capitalised ("main Aditya hoon" → "Aditya"). Never guess.
+- age: whole years. city: Indian city name, properly spelled.
+- gender: male / female / other only if they said it or used a clearly gendered self-reference; otherwise ''.
+- wake, sleep, gym: 24-hour HH:MM. "up by 7" → 07:00, "sleep at 11" or "11 baje sota hoon" → 23:00, "gym in the evening" → 18:30, "morning workout" → 07:00. works_out: "yes" / "no" if they said whether they exercise, else ''.
+- focus: which areas they want help with, from ${FOCUS_KEYS.join(', ')} (health = fitness/water/sleep/food, money = budget/bills/spending/saving, grooming = skincare/haircut, goals = targets/plans, mind = journal/mood/meditation, home = birthdays/house/dates). "everything" → all six.
+- income: monthly take-home in rupees ("50k" → 50000, "1.2 lakh" → 120000, "15 hazaar" → 15000). Yearly amounts → divide by 12.
+- habit: one habit they want to build, as a short title ("Drink 3 L water", "Read 20 minutes", "Meditate"). habit_time: HH:MM if they gave one.
+- skip: true if they said skip / don't want to say / later / pass.
+- reply: a warm acknowledgement of at most 8 words, no question, e.g. "Nice to meet you, Aditya." or "Got it."`,
+        content: [{ type: 'text', text: 'QUESTION: ' + String(input.question || '').slice(0, 300) + '\nANSWER: ' + String(input.text || '').slice(0, 1500) }],
+        schema: obj({ first: S, age: N, city: S, gender: { type: 'string', enum: ['', 'male', 'female', 'other'] }, wake: S, sleep: S, gym: S, works_out: { type: 'string', enum: ['', 'yes', 'no'] }, focus: { type: 'array', items: { type: 'string', enum: FOCUS_KEYS } }, income: N, habit: S, habit_time: S, skip: { type: 'boolean' }, reply: S }),
       };
     }
     case 'statement':
@@ -258,6 +281,26 @@ async function verifyGoogleToken(env, jwt) {
   return claims;
 }
 
+/* ---------------- Sign in with Apple (iPhone app) ---------------- */
+let appleKeys = { at: 0, keys: [] };
+async function verifyAppleToken(env, jwt) {
+  const [h, p, sig] = String(jwt).split('.');
+  if (!h || !p || !sig) throw new Error('bad_jwt');
+  const head = JSON.parse(new TextDecoder().decode(b64uBytes(h))), claims = JSON.parse(new TextDecoder().decode(b64uBytes(p)));
+  if (Date.now() - appleKeys.at > 3600e3 || !appleKeys.keys.some((k) => k.kid === head.kid)) {
+    const r = await fetch('https://appleid.apple.com/auth/keys'); appleKeys = { at: Date.now(), keys: (await r.json()).keys || [] };
+  }
+  const jwk = appleKeys.keys.find((k) => k.kid === head.kid); if (!jwk || head.alg !== 'RS256') throw new Error('unknown_key');
+  const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+  if (!(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64uBytes(sig), new TextEncoder().encode(h + '.' + p)))) throw new Error('bad_signature');
+  if (claims.iss !== 'https://appleid.apple.com') throw new Error('bad_issuer');
+  // Native iPhone sign-in tokens are issued to the app's bundle ID.
+  if (![env.APPLE_BUNDLE_ID || 'com.selfstreak.app', env.APPLE_SERVICE_ID].filter(Boolean).includes(claims.aud)) throw new Error('bad_audience');
+  if (!(claims.exp * 1000 > Date.now())) throw new Error('expired');
+  if (!claims.sub) throw new Error('no_subject');
+  return claims;
+}
+
 /* ---------------- Email (password resets) ---------------- */
 // Cloudflare Email Sending if the EMAIL binding exists, otherwise Resend if RESEND_API_KEY is set.
 const MAIL_FROM = (env) => env.MAIL_FROM || 'no-reply@selfstreak.com';
@@ -330,7 +373,7 @@ async function admin(req, env, url, p, m, body) {
     else if (b.action === 'revoke') await env.DB.prepare("UPDATE users SET paid_until = 0, trial_ends = ?, plan = 'trial' WHERE id = ?").bind(now, target.id).run();
     else if (b.action === 'reset_ai') await env.DB.prepare('DELETE FROM usage WHERE user_id = ? AND day = ?').bind(target.id, istDay()).run();
     else if (b.action === 'logout') await env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(target.id).run();
-    else if (b.action === 'delete') { for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets', 'game']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(target.id).run(); await env.DB.prepare('DELETE FROM friends WHERE a = ? OR b = ?').bind(target.id, target.id).run(); await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(target.id).run(); }
+    else if (b.action === 'delete') { try { await env.DB.prepare('DELETE FROM apple_ids WHERE user_id = ?').bind(target.id).run(); } catch (e) {} for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets', 'game']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(target.id).run(); await env.DB.prepare('DELETE FROM friends WHERE a = ? OR b = ?').bind(target.id, target.id).run(); await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(target.id).run(); }
     else return err(400, 'unknown_action');
     return json({ ok: true });
   }
@@ -365,7 +408,7 @@ async function settleOrder(env, orderId) {
 }
 
 /* ---------------- API router ---------------- */
-async function api(req, env, url) {
+async function api(req, env, url, ctx) {
   const p = url.pathname, m = req.method;
   if (m !== 'GET') {
     const origin = req.headers.get('origin');
@@ -439,6 +482,28 @@ async function api(req, env, url) {
       if (b.ref) { try { await applyReferral(env, id, b.ref); } catch (e) { console.error('ref', e); } }
       usr = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first(); isNew = true;
     }
+    return json({ ...(await me(env, usr)), isNew, name: usr.name }, 200, { 'set-cookie': await newSession(env, req, usr.id) });
+  }
+  if (p === '/api/apple' && m === 'POST') {
+    // "Continue with Apple": verify Apple's signed identity token, then log in, link or create the account.
+    // Apple only sends the email (often a private relay address) the first time, so we remember the Apple user ID.
+    const b = await body(); let a;
+    try { a = await verifyAppleToken(env, b.credential); } catch (e) { console.error('apple', e); return err(401, 'Apple sign-in failed. Please try again.'); }
+    await env.DB.prepare('CREATE TABLE IF NOT EXISTS apple_ids (sub TEXT PRIMARY KEY, user_id TEXT NOT NULL, created INTEGER NOT NULL)').run();
+    const link = await env.DB.prepare('SELECT user_id FROM apple_ids WHERE sub = ?').bind(a.sub).first();
+    const email = String(a.email || '').toLowerCase(), verified = a.email_verified === true || a.email_verified === 'true';
+    let usr = link ? await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(link.user_id).first() : null, isNew = false;
+    if (!usr && email && verified) usr = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
+    if (!usr) {
+      if (!email || !verified) return err(400, 'Apple didn’t share an email. In Settings → Apple ID → Sign in with Apple, remove Self Streak and try again.');
+      const first = !(await env.DB.prepare('SELECT 1 FROM users LIMIT 1').first());
+      const id = crypto.randomUUID(), salt = randHex(16), now = Date.now();
+      await env.DB.prepare('INSERT INTO users (id, email, name, pass_hash, salt, plan, trial_ends, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .bind(id, email, String(b.name || '').trim().slice(0, 60), await hashPassword(randHex(24), salt), salt, first ? 'owner' : 'trial', now + Number(env.TRIAL_DAYS || 7) * DAY, now).run();
+      if (b.ref) { try { await applyReferral(env, id, b.ref); } catch (e) { console.error('ref', e); } }
+      usr = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first(); isNew = true;
+    }
+    if (!link) await env.DB.prepare('INSERT OR REPLACE INTO apple_ids (sub, user_id, created) VALUES (?, ?, ?)').bind(a.sub, usr.id, Date.now()).run();
     return json({ ...(await me(env, usr)), isNew, name: usr.name }, 200, { 'set-cookie': await newSession(env, req, usr.id) });
   }
   if (p === '/api/config' && m === 'GET') return json({ googleClientId: env.GOOGLE_CLIENT_ID || '', googleIosClientId: env.GOOGLE_IOS_CLIENT_ID || '' });
@@ -521,6 +586,7 @@ async function api(req, env, url) {
   }
   if (p === '/api/account' && m === 'DELETE') {
     for (const t of ['sessions', 'user_data', 'usage', 'push_subs', 'push_schedule', 'active_days', 'password_resets', 'game']) await env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?`).bind(u.id).run(); await env.DB.prepare('DELETE FROM friends WHERE a = ? OR b = ?').bind(u.id, u.id).run();
+    try { await env.DB.prepare('DELETE FROM apple_ids WHERE user_id = ?').bind(u.id).run(); } catch (e) {}
     await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(u.id).run();
     return json({ ok: true }, 200, { 'set-cookie': sessionCookie(req, '', 0) });
   }
@@ -557,6 +623,7 @@ async function api(req, env, url) {
       return json({ result: out.result, used: row.count, limit });
     } catch (e) {
       // Refund only when the request never produced output (overloaded / network / auth); a bad reply still cost tokens.
+      console.error('ai', b.task, e?.status || '', String(e?.message || e).slice(0, 300));
       const status = e?.status || 0, upstream = status >= 400 || e?.name === 'APIConnectionError' || /connection|fetch/i.test(String(e?.message || ''));
       if (upstream) await env.DB.prepare('UPDATE usage SET count = MAX(count - 1, 0) WHERE user_id = ? AND day = ?').bind(u.id, day).run();
       return err(502, status === 429 || status === 529 ? 'The AI is busy right now. Try again in a minute.' : 'The AI couldn’t process that. Please try again.', { used: upstream ? row.count - 1 : row.count, limit });
@@ -607,12 +674,16 @@ async function api(req, env, url) {
     if (!text) return err(400, 'empty');
     const VOICES = ['luna', 'thalia', 'asteria', 'athena', 'aurora', 'orion', 'arcas', 'apollo', 'hermes', 'zeus'];
     const speaker = VOICES.includes(b.voice) ? b.voice : 'luna';
+    // Fixed app lines (onboarding questions) are generated once and then served to everyone from Cloudflare's cache.
+    const shared = b.shared === true && text.length <= 300, ck = shared ? new Request('https://tts-cache.selfstreak.com/' + speaker + '/' + (await sha256(text))) : null;
+    if (ck) { try { const hit = await caches.default.match(ck); if (hit) return new Response(hit.body, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=86400', 'x-tts-cache': 'hit' } }); } catch (e) {} }
     const day = 'tts-' + istDay(), cap = Number(env.DAILY_TTS_CHARS || 30000);
     const row = await env.DB.prepare('INSERT INTO usage (user_id, day, count) VALUES (?, ?, ?) ON CONFLICT(user_id, day) DO UPDATE SET count = count + ? WHERE count + ? <= ? RETURNING count').bind(u.id, day, text.length, text.length, text.length, cap).first();
     if (!row) return err(429, 'tts_limit');
     try {
       const r = await env.AI.run('@cf/deepgram/aura-2-en', { text, speaker, encoding: 'mp3' }, { returnRawResponse: true });
       const h = new Headers({ 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=3600' });
+      if (ck && r.ok) { const [a, c] = r.body.tee(); ctx?.waitUntil?.(caches.default.put(ck, new Response(c, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'public, max-age=2592000' } })).catch(() => {})); return new Response(a, { status: 200, headers: h }); }
       return new Response(r.body, { status: r.ok ? 200 : 502, headers: h });
     } catch (e) { console.error('tts', e); return err(502, 'tts_failed'); }
   }
@@ -696,7 +767,7 @@ async function sendDuePushes(env) {
 }
 
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
     // Old address and www → the main domain (pages only; the API keeps working everywhere).
     if ((url.hostname.endsWith('.workers.dev') || url.hostname === 'www.selfstreak.com') && !url.pathname.startsWith('/api/') && req.method === 'GET' && url.pathname !== '/sw.js') {
@@ -705,7 +776,7 @@ export default {
     // Google Search Console ownership file (served exactly, no redirects).
     if (url.pathname === '/googleed720d5bc99e0297.html') return new Response('google-site-verification: googleed720d5bc99e0297.html', { headers: { 'content-type': 'text/html; charset=utf-8' } });
     if (url.pathname.startsWith('/api/')) {
-      try { return await api(req, env, url); } catch (e) { console.error(e); return err(500, 'Something went wrong. Please try again.'); }
+      try { return await api(req, env, url, ctx); } catch (e) { console.error(e); return err(500, 'Something went wrong. Please try again.'); }
     }
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/app' || url.pathname === '/app/')) {
       const app = url.pathname !== '/' || !!cookie(req, 'ss_session');

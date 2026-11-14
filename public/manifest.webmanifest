@@ -14,6 +14,7 @@
     {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ],
   "shortcuts": [
+    {"name": "Speak a spend", "short_name": "Log a spend", "url": "./app?do=quicklog", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
     {"name": "Quick log", "short_name": "Quick log", "url": "./app?do=voice", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
     {"name": "Import bank statement", "short_name": "Import", "url": "./app?do=import", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]},
     {"name": "Notifications", "short_name": "Reminders", "url": "./app#/notify", "icons": [{"src": "icon-192.png", "sizes": "192x192"}]}

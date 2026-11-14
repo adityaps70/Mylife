@@ -77,3 +77,6 @@ CREATE INDEX IF NOT EXISTS game_tier ON game(tier, board);
 CREATE INDEX IF NOT EXISTS game_ref ON game(ref_by);
 CREATE TABLE IF NOT EXISTS friends (a TEXT NOT NULL, b TEXT NOT NULL, created INTEGER NOT NULL, PRIMARY KEY (a, b));
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
+
+-- Sign in with Apple: Apple user ID (sub) → account. Also created on first use by the worker.
+CREATE TABLE IF NOT EXISTS apple_ids (sub TEXT PRIMARY KEY, user_id TEXT NOT NULL, created INTEGER NOT NULL);
