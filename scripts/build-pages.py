@@ -175,8 +175,20 @@ page(slug='expense-tracker', nav='Expense tracker',
 <li>Monthly budget by category, with a warning when one is running over.</li>
 <li>Bills, EMIs and spending together, so “saved this month” is real.</li>
 <li>Year summary from the month you started tracking.</li>
-<li>Export to CSV any time.</li></ul></section>''',
-  faq=[('Do I need to connect my bank account?','No. Self Streak never asks for bank logins. You can upload a statement PDF or photo instead, and it reads the payments.'),
+<li>Export to CSV any time.</li></ul></section>
+<section><h2>An expense tracker without SMS permission</h2>
+<p>Self Streak never reads your SMS. The Android app asks for the microphone (to log by voice) and the camera (to snap a receipt), and nothing else that touches your messages or bank. Many Indian expense apps work the other way: they read every transactional SMS from your bank to log spends automatically. That saves typing, but it gives the app access to your inbox, and it misses cash spends anyway.</p>
+<p>Here is what you do instead, and how long each takes:</p>
+<ul class="list">
+<li><b>Paid by UPI or card:</b> say “450 on Swiggy” or “1,200 Amazon on HDFC card”. It is logged under the right category in a couple of seconds.</li>
+<li><b>Paid in cash:</b> the same, by voice. SMS-based apps never see these.</li>
+<li><b>Catching up on a month:</b> upload the bank statement (PDF, Excel, CSV or a photo) and every payment is read and categorised in one go.</li></ul>
+<p>If you would rather have spends appear with zero effort and don’t mind SMS access, an SMS-reading app suits you better; our <a href="/walnut-alternative">Walnut (axio) comparison</a> and <a href="/cred-alternative">CRED comparison</a> set out the trade-off honestly.</p></section>
+<section><h2>Example: one month of tracking</h2>
+<p>Say your take-home pay is ₹50,000. You set a food budget of ₹6,000 and shopping at ₹4,000. Through the month you say spends as they happen. Around the 18th, food is at ₹5,100 of ₹6,000, so you know to cook more for the rest of the month. On the 1st, rent and your EMI are already in as bills, so “saved this month” is what is really left, not just salary minus the spends you remembered.</p>
+<p>To split that salary into needs, wants and savings first, use the <a href="/blog/50-30-20-budget-rule-india">50/30/20 budget calculator</a>.</p></section>''',
+  faq=[('Does Self Streak read my SMS?','No. It never asks for SMS access. You log spends by voice, receipt photo or bank statement upload instead, which also covers cash payments.'),
+       ('Do I need to connect my bank account?','No. Self Streak never asks for bank logins. You can upload a statement PDF or photo instead, and it reads the payments.'),
        ('Does it work with UPI payments?','Yes. Log UPI spends by voice or text, or import them from your bank statement.'),
        ('Is my financial data private?','Your data is stored in your own account, never sold or used for ads, and you can export or delete it any time.'),
        ('Is the expense tracker free?','Yes. Logging expenses, budgets and your streak are on the free plan. Every feature is free for 7 days, no card needed; voice and photo logging, statement import and bill reminders are part of Plus at ₹199 a month.')])
