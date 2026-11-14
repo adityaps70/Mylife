@@ -12,3 +12,17 @@
   Content-Type: application/vnd.android.package-archive
   Content-Disposition: attachment; filename="SelfStreak.apk"
   Cache-Control: no-cache
+
+# Images, icons and fonts: cache for a year. Give a changed file a new name (or ?v=) so browsers fetch it.
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable

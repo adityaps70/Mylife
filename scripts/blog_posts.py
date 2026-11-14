@@ -1,5 +1,5 @@
 """Guides published at /blog/<slug>. Every number here is either worked out (see the comments) or
-taken from the linked source. Keep `updated` honest: change it only when the content really changes."""
+taken from the linked source. Dates: `date` is the fixed publish date; the modified date comes from scripts/page-dates.json (content hash)."""
 
 RBI_CC = ('RBI, Master Direction – Credit Card and Debit Card – Issuance and Conduct Directions, 2022 (updated March 2024)',
           'https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12300')
@@ -11,7 +11,7 @@ dict(slug='credit-card-statement-date-vs-due-date', nav='Statement date vs due d
   h1='Credit card statement date vs due date: what each one means',
   lead='Two dates decide what you pay on a credit card and when. Get them right and a card is an interest-free loan for up to about 50 days. Get them wrong and you pay 3–4% interest a month.',
   short='The <b>statement date</b> is the day your card closes the month’s bill; everything you spent since the last statement is on it. The <b>due date</b> is the last day to pay that bill, usually 15–20 days later. Pay the full amount due by the due date and you pay no interest.',
-  date='2026-11-13', updated='2026-11-13', hubs=['credit-card-bill-reminder'],
+  date='2026-11-13', hubs=['credit-card-bill-reminder', 'expense-tracker', 'debt-payoff-planner'],
   related=[('Credit card bill reminder', '/credit-card-bill-reminder'), ('Debt avalanche vs snowball', '/blog/debt-avalanche-vs-snowball'), ('50/30/20 budget in rupees', '/blog/50-30-20-budget-rule-india')],
   sources=[RBI_CC],
   body='''
@@ -65,7 +65,20 @@ dict(slug='50-30-20-budget-rule-india', nav='50/30/20 budget', kicker='Budgeting
   h1='The 50/30/20 budget rule in India, with rupee examples',
   lead='The 50/30/20 rule splits your take-home pay into three buckets: needs, wants and savings. It is simple enough to follow without a spreadsheet, and it works on Indian salaries with a few adjustments.',
   short='The 50/30/20 rule puts <b>50% of take-home pay on needs</b> (rent, groceries, bills, EMIs), <b>30% on wants</b> (eating out, shopping, trips) and <b>20% on savings and extra debt repayment</b>. On a ₹75,000 salary that is ₹37,500 for needs, ₹22,500 for wants and ₹15,000 to save.',
-  date='2026-11-13', updated='2026-11-13', hubs=['expense-tracker'],
+  calc='''<div class="calc" id="b532"><div class="fields">
+<label>Monthly take-home pay (₹)<input id="bS" type="number" inputmode="numeric" value="75000" min="0"></label>
+<label>Rent + EMIs you already pay (₹, optional)<input id="bF" type="number" inputmode="numeric" value="" min="0" placeholder="0"></label></div>
+<div class="out"><div><small>Needs (50%)</small><b id="bN">–</b></div><div><small>Wants (30%)</small><b id="bW">–</b></div><div><small>Savings (20%)</small><b id="bV">–</b></div><div><small>Savings a year</small><b id="bY">–</b></div></div>
+<p class="note" id="bNote"></p></div>
+<script>
+(()=>{const f=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+function run(){const S=+bS.value||0,F=+bF.value||0;bN.textContent=f(S*.5);bW.textContent=f(S*.3);bV.textContent=f(S*.2);bY.textContent=f(S*.2*12);
+if(!F){bNote.textContent='Add your rent and EMIs to see how much of the needs bucket is left for groceries, bills and transport.';return}
+const left=S*.5-F;bNote.textContent=left>=0?`Rent and EMIs take ${Math.round(F/S*100)}% of your pay, leaving ${f(left)} of the needs bucket for groceries, bills and transport.`
+:`Rent and EMIs alone are ${Math.round(F/S*100)}% of your pay, ${f(-left)} over the 50% needs bucket. Take the gap from wants first, not savings; see the adjustments below.`}
+['bS','bF'].forEach(id=>document.getElementById(id).addEventListener('input',run));run()})();
+</script>''',
+  date='2026-11-13', hubs=['expense-tracker', 'credit-card-bill-reminder', 'emi-calculator'],
   related=[('Expense tracker', '/expense-tracker'), ('Debt avalanche vs snowball', '/blog/debt-avalanche-vs-snowball'), ('Statement date vs due date', '/blog/credit-card-statement-date-vs-due-date')],
   sources=[('Elizabeth Warren and Amelia Warren Tyagi, All Your Worth: The Ultimate Lifetime Money Plan (2005), where the 50/30/20 split was popularised', '')],
   body='''
@@ -138,7 +151,7 @@ dict(slug='debt-avalanche-vs-snowball', nav='Avalanche vs snowball', kicker='Get
   h1='Debt avalanche vs snowball: which pays off debt faster?',
   lead='Both methods pay the minimum on every debt and put any extra money towards one debt at a time. They differ only in which debt gets the extra first, and that choice changes how much interest you pay and how motivated you stay.',
   short='The <b>avalanche</b> method puts extra money on the highest-interest debt first and costs the least interest. The <b>snowball</b> method clears the smallest balance first for quick wins. In our example below, avalanche saves about ₹1,645 more than snowball, while both are debt-free in 13 months.',
-  date='2026-11-13', updated='2026-11-13', hubs=['debt-payoff-planner'],
+  date='2026-11-13', hubs=['debt-payoff-planner', 'emi-calculator'],
   related=[('Debt payoff planner', '/debt-payoff-planner'), ('Personal loan EMI calculator', '/emi-calculator/personal-loan'), ('Statement date vs due date', '/blog/credit-card-statement-date-vs-due-date')],
   sources=[('Gal, D. and McShane, B. B. (2012), “Can Small Victories Help Win the War? Evidence from Consumer Debt Management”, Journal of Marketing Research', 'https://doi.org/10.1509/jmr.11.0272'), RBI_CC],
   body='''
@@ -201,7 +214,7 @@ dict(slug='how-long-does-it-take-to-form-a-habit', nav='How long to form a habit
   h1='How long does it take to form a habit?',
   lead='You have probably heard that it takes 21 days to form a habit. The best-known study on the question found something different, and the details are more encouraging than the myth.',
   short='In a 2010 study at University College London, new daily habits took a <b>median of 66 days</b> to become automatic, ranging from <b>18 to 254 days</b> depending on the person and the habit. Missing a single day did not meaningfully set people back.',
-  date='2026-11-13', updated='2026-11-13', hubs=['habit-tracker'],
+  date='2026-11-13', hubs=['habit-tracker', 'water-reminder'],
   related=[('Habit tracker', '/habit-tracker'), ('How much water to drink', '/blog/how-much-water-should-i-drink-a-day'), ('Protein on an Indian diet', '/blog/protein-intake-indian-diet')],
   sources=[('Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W. and Wardle, J. (2010), “How are habits formed: Modelling habit formation in the real world”, European Journal of Social Psychology, 40(6)', 'https://doi.org/10.1002/ejsp.674')],
   body='''
@@ -256,7 +269,7 @@ dict(slug='how-much-water-should-i-drink-a-day', nav='How much water a day', kic
   h1='How much water should you drink a day?',
   lead='There is no single number that fits everyone, but there are good reference values and a simple way to work out your own target, with extra for hot Indian summers and workouts.',
   short='European Food Safety Authority guidance puts adequate total water intake at about <b>2.0 litres a day for women and 2.5 litres for men</b>, from drinks and food together, with roughly 70–80% coming from drinks. A simple personal guide is about <b>30–35 ml per kg</b> of body weight, plus more in heat or after exercise.',
-  date='2026-11-13', updated='2026-11-13', hubs=['water-reminder'],
+  date='2026-11-13', hubs=['water-reminder', 'habit-tracker', 'calorie-protein-tracker'],
   related=[('Water reminder and calculator', '/water-reminder'), ('How long to form a habit', '/blog/how-long-does-it-take-to-form-a-habit'), ('Protein on an Indian diet', '/blog/protein-intake-indian-diet')],
   sources=[('EFSA Panel on Dietetic Products, Nutrition and Allergies (2010), “Scientific Opinion on Dietary Reference Values for water”, EFSA Journal 8(3):1459', 'https://doi.org/10.2903/j.efsa.2010.1459')],
   body='''
@@ -312,7 +325,7 @@ dict(slug='protein-intake-indian-diet', nav='Protein on an Indian diet', kicker=
   h1='How much protein do you need on an Indian diet?',
   lead='Protein is the nutrient many Indian diets fall short on, especially vegetarian ones built around rice and roti. Here is how much you need and how to get it from everyday Indian food.',
   short='ICMR-NIN’s 2020 nutrient requirements for Indians set the recommended protein intake for healthy adults at about <b>0.83 g per kg of body weight a day</b>, so about 58 g for a 70 kg adult. People who train regularly often aim higher, around 1.2–1.6 g per kg.',
-  date='2026-11-13', updated='2026-11-13', hubs=['calorie-protein-tracker'],
+  date='2026-11-13', hubs=['calorie-protein-tracker'],
   related=[('Calorie and protein tracker', '/calorie-protein-tracker'), ('How much water a day', '/blog/how-much-water-should-i-drink-a-day'), ('How long to form a habit', '/blog/how-long-does-it-take-to-form-a-habit')],
   sources=[('ICMR – National Institute of Nutrition (2020), Nutrient Requirements for Indians: Recommended Dietary Allowances and Estimated Average Requirements', 'https://www.nin.res.in/'),
            ('Indian Food Composition Tables (ICMR-NIN, 2017) for typical protein values of Indian foods', 'https://www.nin.res.in/')],
