@@ -1,5 +1,8 @@
 # SEO backlog
 
+## URGENT (2026-11-14): owner must merge before the next deploy
+The live site was deployed on 14 Nov from a local copy that is missing every 13 Nov SEO commit (11 pages now 404, www/http redirects gone). In the copy you deploy from: `git fetch origin && git merge origin/main` (and `origin/seo/auto-2026-11-14`), resolve any conflicts, then `npm run deploy`. Push your app changes to GitHub too, so the daily autopilot can deploy without overwriting them. Until then the autopilot will not deploy.
+
 Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages report showed 0 indexed, but URL Inspection the same day showed the homepage and the main tool pages indexed. The report lags. On-page basics are fine. The site is about 3 months old and has no known backlinks, so Google doesn't trust it yet. Until pages are indexed, nothing else on this list can bring traffic.
 
 ## Now
@@ -13,8 +16,8 @@ Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages r
 6. **Comparison page: /walnut-alternative.** The same no-SMS angle, plus habits and health in one app.
 7. **Free tool: credit card interest calculator** (minimum due vs full payment, for Indian card rates). Close to the credit-card page and blog post; works without signup.
 8. **Add a 50/30/20 calculator** to `/blog/50-30-20-budget-rule-india` (enter salary → see three rupee buckets).
-9. **Thicken /expense-tracker (398 words) and /debt-payoff-planner (431 words)** with real product screenshots and one worked example each. The owner needs to supply screenshots.
-10. **Article: credit card minimum due interest in India.** Show the real cost of paying only the minimum, with RBI-sourced rules. Links to item 7.
+9. **Thicken /debt-payoff-planner** (/expense-tracker got a no-SMS section and worked example on 2026-11-14; screenshots still wanted). Was: /expense-tracker (398 words) and /debt-payoff-planner (431 words)** with real product screenshots and one worked example each. The owner needs to supply screenshots.
+10. ~~Article: credit card minimum due interest~~ Dropped 2026-11-14: /credit-card-interest-calculator owns this query. Was: **Article: credit card minimum due interest in India.** Show the real cost of paying only the minimum, with RBI-sourced rules. Links to item 7.
 
 ## Later
 11. **Comparison: Loop Habit Tracker / Streaks alternative**, for Android plus iPhone with money and health in the same app.
