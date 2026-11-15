@@ -34,10 +34,12 @@ def habit_template():
         best = cur = 0
         for x in v: cur = cur + 1 if x else 0; best = max(best, cur)
         return best
-    grid = ''.join(f'<tr><td>{html.escape(n)}</td>' + ''.join(f'<td class="y">1</td>' if x else '<td></td>' for x in v) + f'<td>{sum(v)}</td><td>{streak(v)}</td></tr>' for n, v in rows)
+    grid = ''.join(f'<tr><td>{html.escape(n)}</td>' + ''.join(f'<td class="y">✓</td>' if x else '<td></td>' for x in v) + f'<td>{sum(v)}</td><td>{streak(v)}</td></tr>' for n, v in rows)
     body = f'''<section><h2>What’s in the free habit tracker</h2><ul class="list">
 <li><b>12 month sheets</b> for 2027 (change the year on the first sheet and every date updates).</li>
-<li><b>Up to 12 habits a month.</b> Type 1 on a day you did it and the box turns green.</li>
+<li><b>Tick, don’t type.</b> Click a day’s box and pick ✓ from the drop-down (or type x). The box turns green.</li>
+<li><b>Up to 12 habits a month</b>, with weekends shaded and weekday labels above each date.</li>
+<li><b>A day score row and a year Overview tab</b> show your best and worst days and months at a glance.</li>
 <li><b>Counts itself:</b> days done, completion % and your <b>best streak</b> for each habit.</li>
 <li>Short months handled: February stops at 28 or 29, so your % is right.</li>
 <li>No macros, so it opens safely anywhere.</li></ul></section>
@@ -52,7 +54,7 @@ def habit_template():
 <div class="tw"><table class="cmp"><thead><tr><th></th><th>Excel / Sheets template</th><th>Self Streak app</th></tr></thead><tbody>
 <tr><td>Price</td><td>Free</td><td>Free plan for habits and streaks; Plus ₹199/month for reminders and AI</td></tr>
 <tr><td>Reminders</td><td>None. You have to remember to open it</td><td>A notification at each habit’s own time, skipped once it’s done</td></tr>
-<tr><td>Ticking a habit</td><td>Open the file, find the row and the date, type 1</td><td>One tap, or say “did gym and read”</td></tr>
+<tr><td>Ticking a habit</td><td>Open the file, find the row and the date, pick ✓</td><td>One tap, or say “did gym and read”</td></tr>
 <tr><td>Streaks and stats</td><td>Best streak and % per month</td><td>Live streak, heatmap, weekly and monthly view</td></tr>
 <tr><td>Weekly or monthly habits</td><td>Daily only</td><td>Daily, weekly, monthly, quarterly or yearly</td></tr>
 <tr><td>Money and health</td><td>Separate sheets</td><td>Budget, bills, water and protein in the same app</td></tr>
@@ -60,7 +62,8 @@ def habit_template():
 <p>If you like planning on a laptop and reviewing once a week, the spreadsheet is enough. If you’ve tried trackers before and stopped after a week, it’s usually because nothing reminded you. That’s the gap an app fills. Read more in <a href="/blog/habit-tracker-app-vs-excel">habit tracker app vs Excel sheet vs paper</a> and <a href="/blog/how-long-does-it-take-to-form-a-habit">how long it takes to form a habit</a>.</p></section>'''
     faq = [('Is this habit tracker template really free?', 'Yes. Download it without signing up or giving an email. Use it, change it and share it for personal use.'),
            ('Does it work in Google Sheets?', 'Yes. In Google Sheets choose File, Import, Upload and pick the file. The formulas, colours and month sheets carry over.'),
-           ('How does it count my streak?', 'Each row counts the longest run of consecutive days marked 1 in that month. A blank day ends the run.'),
+           ('How does it count my streak?', 'Each row counts the longest run of consecutive ticked days in that month. An empty box ends the run.'),
+           ('Can I use real checkboxes in Google Sheets?', 'Yes. Import the file, select the day boxes and choose Insert → Checkbox. Ticked boxes count as done and unticked ones count as missed.'),
            ('Can I print it?', 'Yes. Each month fits on one landscape page. Tick boxes by hand and copy the totals in later if you want the counts.')]
     return page('/habit-tracker-template', 'Free Habit Tracker Excel Template 2027 | Self Streak',
                 'Download a free habit tracker for Excel and Google Sheets: 12 months, up to 12 habits, automatic streaks and completion %. No signup needed.',

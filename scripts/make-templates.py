@@ -29,64 +29,126 @@ MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Augus
 FOOT = 'Free template from selfstreak.com. Prefer reminders and automatic streaks on your phone? Try the Self Streak app, free for 7 days.'
 
 def habit_tracker():
+    """12 month sheets + a year overview. Tick a day by picking ✓ from the cell's drop-down (or typing x, 1 or ✓;
+    in Google Sheets you can also turn the grid into real checkboxes). Any mark counts as done; FALSE checkboxes don't."""
+    from openpyxl.formatting.rule import ColorScaleRule, DataBarRule
+    from openpyxl.styles import Alignment
     wb = Workbook()
-    st = wb.active; st.title = 'Start here'
-    st['A1'] = 'Habit tracker 2027'; st['A1'].font = Font(bold=True, size=18)
-    st['A3'] = 'Year'; st['B3'] = 2027; st['A3'].font = B; st['B3'].fill = DONE; st['B3'].font = B
-    rows = ['How to use it',
-            '1. Change the year in the lime cell above if you want a different year. Every month sheet updates its dates.',
-            '2. Open this month’s sheet and write your habits in column A (up to 12). Start with 2 or 3, not 12.',
-            '3. Each day you do a habit, type 1 in that day’s box. The box turns lime.',
-            '4. Columns AH to AJ count the days done, your completion rate and your longest streak this month.',
-            '5. Copy your habits to the next month’s sheet on the 1st.',
-            '',
-            'Tips that make it stick',
-            '• Tie each habit to something you already do: “after morning chai, read 10 pages”.',
-            '• Missing one day is fine. Never miss two in a row.',
-            '• A study at University College London found new habits took a median of 66 days to feel automatic (Lally et al., 2010).',
-            '',
-            FOOT]
-    for i, t in enumerate(rows, start=5):
-        st[f'A{i}'] = t
-        if t in ('How to use it', 'Tips that make it stick'): st[f'A{i}'].font = Font(bold=True, size=13)
-    st.column_dimensions['A'].width = 110
+    TICK = '✓'
+    MUTED, ROWA, WEEKEND, LINE = '71717A', 'FAFAFA', 'EEF2E3', 'E4E4E7'
+    line = Side(style='thin', color=LINE)
+    grid = Border(left=line, right=line, top=line, bottom=line)
+    YEAR = "'Start here'!$C$4"
+    # ---------- Start here ----------
+    st = wb.active; st.title = 'Start here'; st.sheet_view.showGridLines = False
+    st.column_dimensions['A'].width = 3; st.column_dimensions['B'].width = 4; st.column_dimensions['C'].width = 10; st.column_dimensions['D'].width = 92
+    st['B2'] = 'Habit tracker'; st['B2'].font = Font(bold=True, size=26, color=INK)
+    st['B4'] = 'Year'; st['B4'].font = Font(bold=True, color=MUTED)
+    st['C4'] = 2027; st['C4'].font = Font(bold=True, size=14); st['C4'].fill = DONE; st['C4'].alignment = CENTER
+    st['D4'] = '← change the year and every month updates'; st['D4'].font = Font(italic=True, color=MUTED)
+    steps = [('1', 'Open this month’s tab (Jan–Dec at the bottom) and write your habits in the “Habit” column. Start with 2 or 3.'),
+             ('2', f'On a day you did a habit, click its box and pick {TICK} from the little arrow. Typing x or 1 works too.'),
+             ('3', 'The box turns green. Done, % and streak update on their own. Leave a box empty on a day you missed.'),
+             ('4', 'The bottom row shows how much of each day you completed. The Overview tab shows your whole year.'),
+             ('5', 'Google Sheets: File → Import → Upload this file. For real tick boxes, select the grid and choose Insert → Checkbox.')]
+    for i, (n, t) in enumerate(steps, start=7):
+        st[f'B{i}'] = n; st[f'B{i}'].font = Font(bold=True, color=INK); st[f'B{i}'].fill = DONE; st[f'B{i}'].alignment = CENTER
+        st.merge_cells(f'C{i}:D{i}'); st[f'C{i}'] = t; st[f'C{i}'].alignment = Alignment(vertical='center', wrap_text=True); st.row_dimensions[i].height = 30
+    st['B13'] = 'Tips that make it stick'; st['B13'].font = Font(bold=True, size=13)
+    for i, t in enumerate(['Tie each habit to something you already do: “after morning chai, read 10 pages”.',
+                           'Missing one day is fine. Try never to miss two in a row.',
+                           'New habits took a median of 66 days to feel automatic in a University College London study (Lally et al., 2010).'], start=14):
+        st[f'C{i}'] = '• ' + t
+    st['C18'] = FOOT; st['C18'].font = Font(color=GREY, italic=True)
+    st['C4'].number_format = '0'
+    # ---------- Overview ----------
+    ov = wb.create_sheet('Overview'); ov.sheet_view.showGridLines = False
+    ov['B2'] = f'=CONCATENATE("Your year: ",{YEAR})'; ov['B2'].font = Font(bold=True, size=22, color=INK)
+    for c, h in zip('BCD', ('Month', 'Completion', 'Days ticked')):
+        ov[f'{c}4'] = h; ov[f'{c}4'].fill = HEAD; ov[f'{c}4'].font = HEADF; ov[f'{c}4'].alignment = CENTER
+    for i, name in enumerate(MONTHS, start=5):
+        tab = name[:3]
+        ov[f'B{i}'] = name; ov[f'C{i}'] = f"='{tab}'!$AJ$1"; ov[f'D{i}'] = f"='{tab}'!$AK$1"
+        ov[f'C{i}'].number_format = '0%'
+        for c in 'BCD': ov[f'{c}{i}'].border = grid; ov[f'{c}{i}'].alignment = CENTER
+        ov.row_dimensions[i].height = 22
+    ov.conditional_formatting.add('C5:C16', DataBarRule(start_type='num', start_value=0, end_type='num', end_value=1, color='A3C93A'))
+    ov.column_dimensions['A'].width = 3; ov.column_dimensions['B'].width = 16; ov.column_dimensions['C'].width = 30; ov.column_dimensions['D'].width = 14
+    ov['B18'] = FOOT; ov['B18'].font = Font(color=GREY, italic=True)
+    # ---------- Month sheets ----------
     examples = ['Drink 8 glasses of water', 'Walk 8,000 steps', 'Read 10 pages', 'No sugar after 8 pm', 'Sleep by 11 pm']
+    first, lastrow = 5, 16          # habit rows
+    daysrow, wdrow, totrow = 4, 3, 18
     for m, name in enumerate(MONTHS, start=1):
-        ws = wb.create_sheet(name[:3])
-        ws['A1'] = f'=TEXT(DATE(\'Start here\'!$B$3,{m},1),"mmmm yyyy")'; ws['A1'].font = Font(bold=True, size=16)
-        ws['A2'] = 'Type 1 on each day you did the habit.'; ws['A2'].font = Font(color=GREY, italic=True)
-        ws['A3'] = 'Habit'; ws['A3'].fill = HEAD; ws['A3'].font = HEADF
-        last = 32  # columns B..AF are days 1..31
+        ws = wb.create_sheet(name[:3]); ws.sheet_view.showGridLines = False
+        D = f'DATE({YEAR},{m},1)'
+        ndays = f'DAY(EOMONTH({D},0))'
+        ws['A1'] = f'=UPPER(TEXT({D},"mmmm yyyy"))'; ws['A1'].font = Font(bold=True, size=20, color=INK)
+        ws['A2'] = f'Click a box and pick {TICK} (or type x). Empty = missed.'; ws['A2'].font = Font(italic=True, color=MUTED)
+        # month score, top right
+        ws['AH1'] = 'Month score'; ws['AH1'].font = Font(bold=True, color=MUTED); ws['AH1'].alignment = Alignment(horizontal='right', vertical='center')
+        ws.merge_cells('AH1:AI1')
+        ws['AJ1'] = f'=IF(COUNTA($A${first}:$A${lastrow})=0,"",AK1/(COUNTA($A${first}:$A${lastrow})*{ndays}))'
+        ws['AJ1'].number_format = '0%'; ws['AJ1'].font = Font(bold=True, size=18, color=INK); ws['AJ1'].fill = DONE; ws['AJ1'].alignment = CENTER
+        ws['AK1'] = f'=SUM(AH{first}:AH{lastrow})'; ws['AK1'].font = Font(color=MUTED); ws['AK1'].alignment = CENTER
+        ws['AK2'] = 'ticks'; ws['AK2'].font = Font(color=MUTED, size=9); ws['AK2'].alignment = CENTER
+        ws.row_dimensions[1].height = 34
+        # header rows
+        ws[f'A{daysrow}'] = 'Habit'; ws[f'A{daysrow}'].fill = HEAD; ws[f'A{daysrow}'].font = HEADF
+        ws[f'A{daysrow}'].alignment = Alignment(vertical='center', indent=1)
         for d in range(1, 32):
             c = col(d + 1)
-            ws[f'{c}3'] = f'=IF({d}<=DAY(EOMONTH(DATE(\'Start here\'!$B$3,{m},1),0)),{d},"")'
-            ws[f'{c}3'].fill = HEAD; ws[f'{c}3'].font = HEADF; ws[f'{c}3'].alignment = CENTER
-            ws.column_dimensions[c].width = 3.6
-        for h, label in ((34, 'Done'), (35, '%'), (36, 'Best streak')):
-            c = col(h); ws[f'{c}3'] = label; ws[f'{c}3'].fill = HEAD; ws[f'{c}3'].font = HEADF; ws[f'{c}3'].alignment = CENTER
-        ws.column_dimensions['A'].width = 30
-        for h in (34, 35, 36): ws.column_dimensions[col(h)].width = 11
-        for r in range(4, 16):
-            ws[f'A{r}'] = examples[r - 4] if r - 4 < len(examples) else ''
-            ws[f'A{r}'].border = BOX
+            ws[f'{c}{daysrow}'] = f'=IF({d}<={ndays},{d},"")'
+            ws[f'{c}{wdrow}'] = f'=IF({c}${daysrow}="","",LEFT(TEXT(DATE({YEAR},{m},{c}${daysrow}),"ddd"),2))'
+            ws[f'{c}{daysrow}'].fill = HEAD; ws[f'{c}{daysrow}'].font = HEADF; ws[f'{c}{daysrow}'].alignment = CENTER
+            ws[f'{c}{wdrow}'].font = Font(size=9, color=MUTED); ws[f'{c}{wdrow}'].alignment = CENTER
+            ws.column_dimensions[c].width = 4.4
+        for c, label in (('AH', 'Done'), ('AI', 'Streak'), ('AJ', 'Progress')):
+            ws[f'{c}{daysrow}'] = label; ws[f'{c}{daysrow}'].fill = HEAD; ws[f'{c}{daysrow}'].font = HEADF; ws[f'{c}{daysrow}'].alignment = CENTER
+        ws.column_dimensions['A'].width = 30; ws.column_dimensions['AG'].width = 2
+        ws.column_dimensions['AH'].width = 8; ws.column_dimensions['AI'].width = 8; ws.column_dimensions['AJ'].width = 16; ws.column_dimensions['AK'].width = 8
+        ws.row_dimensions[daysrow].height = 24
+        # habit rows
+        for r in range(first, lastrow + 1):
+            ws.row_dimensions[r].height = 24
+            i = r - first
+            a = ws[f'A{r}']; a.value = examples[i] if i < len(examples) else None
+            a.border = grid; a.alignment = Alignment(vertical='center', indent=1)
+            if i % 2: a.fill = PatternFill('solid', fgColor=ROWA)
             for d in range(1, 32):
-                cell = ws[f'{col(d + 1)}{r}']; cell.border = BOX; cell.alignment = CENTER
+                cell = ws[f'{col(d + 1)}{r}']; cell.border = grid; cell.alignment = CENTER; cell.font = Font(bold=True, size=13, color=INK)
             rng = f'B{r}:AF{r}'
-            ws[f'AH{r}'] = f'=IF(A{r}="","",COUNTIF({rng},1))'
-            ws[f'AI{r}'] = f'=IF(A{r}="","",COUNTIF({rng},1)/DAY(EOMONTH(DATE(\'Start here\'!$B$3,{m},1),0)))'
-            ws[f'AI{r}'].number_format = '0%'
-            # Longest run of consecutive 1s in the row (array formula; works in Excel, Google Sheets and Numbers).
-            ws[f'AJ{r}'] = ArrayFormula(f'AJ{r}', f'=IF(A{r}="","",MAX(FREQUENCY(IF({rng}=1,COLUMN({rng})),IF({rng}<>1,COLUMN({rng})))))')
-            for c in ('AH', 'AI', 'AJ'): ws[f'{c}{r}'].alignment = CENTER; ws[f'{c}{r}'].border = BOX; ws[f'{c}{r}'].fill = SOFT
-        ws.conditional_formatting.add('B4:AF15', CellIsRule(operator='equal', formula=['1'], fill=DONE))
-        ws.conditional_formatting.add('B4:AF15', FormulaRule(formula=['B$3=""'], fill=PatternFill('solid', fgColor='E4E4E7')))
-        dv = DataValidation(type='whole', operator='between', formula1='0', formula2='1', allow_blank=True,
-                            error='Type 1 for done, or leave it empty.', errorTitle='Habit tracker', showErrorMessage=True)
-        ws.add_data_validation(dv); dv.add('B4:AF15')
-        ws['A17'] = FOOT; ws['A17'].font = Font(color=GREY, italic=True)
-        ws.freeze_panes = 'B4'
+            done = f'(LEN({rng})>0)*({rng}<>FALSE)'
+            ws[f'AH{r}'] = f'=IF(A{r}="","",SUMPRODUCT({done}))'
+            ws[f'AI{r}'] = ArrayFormula(f'AI{r}', f'=IF(A{r}="","",MAX(FREQUENCY(IF({done},COLUMN({rng})),IF({done}=0,COLUMN({rng})))))')
+            ws[f'AJ{r}'] = f'=IF(A{r}="","",AH{r}/{ndays})'; ws[f'AJ{r}'].number_format = '0%'
+            for c in ('AH', 'AI', 'AJ'):
+                ws[f'{c}{r}'].alignment = CENTER; ws[f'{c}{r}'].border = grid; ws[f'{c}{r}'].font = Font(bold=True, color=INK)
+        g = f'B{first}:AF{lastrow}'
+        # Order matters: done (green) wins over weekend shading and days outside the month.
+        ws.conditional_formatting.add(g, FormulaRule(formula=[f'AND(LEN(B{first})>0,B{first}<>FALSE)'], fill=DONE, stopIfTrue=True))
+        ws.conditional_formatting.add(g, FormulaRule(formula=[f'B${daysrow}=""'], fill=PatternFill('solid', fgColor='D4D4D8'), stopIfTrue=True))
+        ws.conditional_formatting.add(g, FormulaRule(formula=[f'WEEKDAY(DATE({YEAR},{m},B${daysrow}),2)>5'], fill=PatternFill('solid', fgColor=WEEKEND)))
+        ws.conditional_formatting.add(f'AJ{first}:AJ{lastrow}', DataBarRule(start_type='num', start_value=0, end_type='num', end_value=1, color='A3C93A'))
+        dv = DataValidation(type='list', formula1=f'"{TICK}"', allow_blank=True, showErrorMessage=False,
+                            showInputMessage=True, promptTitle='Did it today?', prompt=f'Pick {TICK} from the arrow, or type x. Leave empty if missed.')
+        ws.add_data_validation(dv); dv.add(g)
+        # daily score row
+        ws[f'A{totrow}'] = 'Day score'; ws[f'A{totrow}'].font = Font(bold=True, color=MUTED); ws[f'A{totrow}'].alignment = Alignment(vertical='center', indent=1)
+        for d in range(1, 32):
+            c = col(d + 1); rr = f'{c}{first}:{c}{lastrow}'
+            ws[f'{c}{totrow}'] = f'=IF(OR({c}${daysrow}="",COUNTA($A${first}:$A${lastrow})=0),"",SUMPRODUCT((LEN({rr})>0)*({rr}<>FALSE)*(LEN($A${first}:$A${lastrow})>0))/COUNTA($A${first}:$A${lastrow}))'
+            ws[f'{c}{totrow}'].number_format = '0%'; ws[f'{c}{totrow}'].font = Font(size=8, color=INK); ws[f'{c}{totrow}'].alignment = CENTER
+        ws.conditional_formatting.add(f'B{totrow}:AF{totrow}', ColorScaleRule(start_type='num', start_value=0, start_color='FFFFFF', end_type='num', end_value=1, end_color=LIME))
+        ws.row_dimensions[totrow].height = 22
+        ws[f'A{totrow + 2}'] = FOOT; ws[f'A{totrow + 2}'].font = Font(color=GREY, italic=True, size=9)
+        ws.freeze_panes = f'B{first}'
         ws.page_setup.orientation = 'landscape'; ws.page_setup.fitToWidth = 1; ws.page_setup.fitToHeight = 1; ws.sheet_properties.pageSetUpPr.fitToPage = True
-        ws.sheet_view.showGridLines = False
+        ws.print_area = f'A1:AK{totrow}'
+        ws.sheet_properties.tabColor = LIME if m % 2 else 'A3C93A'
+    wb.active = 1
+    from openpyxl.workbook.properties import CalcProperties
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
     return wb
 
 NEEDS = ['Rent / home loan EMI', 'Groceries & household', 'Electricity, water, gas', 'Mobile & internet', 'Other EMIs', 'Transport & fuel', 'Insurance', 'School / college fees', 'Medicines & doctor']
