@@ -42,3 +42,8 @@
 - Homepage title: "Self Streak: Habit, Money & Health Tracker App India" (was "Habit Tracker, Expense & EMI App India"); expense and EMI queries are owned by their own pages.
 - Contextual links to the new pages from /habit-tracker, /expense-tracker, /calorie-protein-tracker and the homepage footer; every feature page lists them under "More".
 - Sitemap now 38 URLs (was 36). Keyword research: Google autocomplete (gl=in) and web search; SERPs for these queries are mostly iPhone App Store listings (Snowballer, HabitGenius, Wealthy, TRAKL) with few web pages.
+
+## 2026-11-15 (templates + competitor pages)
+- Shipped and deployed: /habit-tracker-template (free 12-month habit tracker .xlsx with automatic streaks), /budget-template-india (free rupee budget .xlsx with expenses log and 50/30/20 check), /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative. Linked from /habit-tracker and /expense-tracker. Sitemap 44 URLs; IndexNow 200 for 15 URLs.
+- Template formulas checked with the `formulas` library (days done, %, best streak, February length, budget totals).
+- Search Console: indexing requested for /habit-tracker-template. Daily quota hit on the next request.

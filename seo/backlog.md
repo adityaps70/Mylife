@@ -40,6 +40,7 @@ The out-of-date copy was merged with main and deployed; `npm run deploy` now ref
 ## Added 2026-11-15 (templates and competitor pages)
 Shipped: /habit-tracker-template and /budget-template-india (free .xlsx), /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative. Search volumes are "unknown" because no keyword tool is connected; Search Console impressions will show which of these to push.
 Next, one per autopilot run, highest value first:
+- [ ] FIRST: request indexing in Search Console for /budget-template-india, /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative (quota ran out on 15 Nov).
 - [ ] Printable PDF version of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf").
 - [ ] EMI tracker Excel template (all loans, outstanding, debt-free month) on /emi-calculator or its own page ("emi tracker excel", "loan tracker excel").
 - [ ] Credit card tracker Excel (statement day, due day, this bill / next bill) on /credit-card-bill-reminder ("credit card tracker excel").
