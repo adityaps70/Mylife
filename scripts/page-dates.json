@@ -4,12 +4,12 @@
   "modified": "2026-11-14"
  },
  "/about": {
-  "hash": "7bf500d8ed0cc36f",
-  "modified": "2026-11-13"
+  "hash": "c14b99eb3b3423e5",
+  "modified": "2026-11-15"
  },
  "/blog": {
-  "hash": "63a5687d2fc72c39",
-  "modified": "2026-11-13"
+  "hash": "28feaa459674533e",
+  "modified": "2026-11-15"
  },
  "/blog/50-30-20-budget-rule-india": {
   "hash": "5917c2f4544df10c",
@@ -23,9 +23,13 @@
   "hash": "fa9675c0268d3d79",
   "modified": "2026-11-13"
  },
+ "/blog/habit-tracker-app-vs-excel": {
+  "hash": "7cf2a07a04212ac6",
+  "modified": "2026-11-15"
+ },
  "/blog/how-long-does-it-take-to-form-a-habit": {
-  "hash": "e6e01f7696b2aadd",
-  "modified": "2026-11-13"
+  "hash": "3d8af584bc3dad24",
+  "modified": "2026-11-15"
  },
  "/blog/how-much-water-should-i-drink-a-day": {
   "hash": "449bcecdc1505da3",
@@ -34,6 +38,10 @@
  "/blog/protein-intake-indian-diet": {
   "hash": "17c4fadb17ee7bf2",
   "modified": "2026-11-13"
+ },
+ "/budget-template-india": {
+  "hash": "e995c70a69e4fcba",
+  "modified": "2026-11-15"
  },
  "/calorie-protein-tracker": {
   "hash": "d835c56cb1052a6a",
@@ -44,8 +52,8 @@
   "modified": "2026-11-13"
  },
  "/cred-alternative": {
-  "hash": "982ecdcb23ee8380",
-  "modified": "2026-11-13"
+  "hash": "1d67b722527cd8c4",
+  "modified": "2026-11-15"
  },
  "/credit-card-bill-reminder": {
   "hash": "f56499152e41e549",
@@ -104,15 +112,23 @@
   "modified": "2026-11-13"
  },
  "/expense-tracker": {
-  "hash": "6176ab481f089039",
-  "modified": "2026-11-14"
+  "hash": "fd9518c7b465ee63",
+  "modified": "2026-11-15"
  },
  "/habit-and-money-tracker": {
   "hash": "b6609c234d351c4b",
   "modified": "2026-11-14"
  },
  "/habit-tracker": {
-  "hash": "d0718ef57416fa5d",
+  "hash": "6e1abfa368daec71",
+  "modified": "2026-11-15"
+ },
+ "/habit-tracker-template": {
+  "hash": "c109b5b1b88416cb",
+  "modified": "2026-11-15"
+ },
+ "/habitify-alternative": {
+  "hash": "674352411348b593",
   "modified": "2026-11-15"
  },
  "/health-and-finance-tracker": {
@@ -128,8 +144,8 @@
   "modified": "2026-11-13"
  },
  "/loop-habit-tracker-alternative": {
-  "hash": "bda04f26ad0361ce",
-  "modified": "2026-11-13"
+  "hash": "659d9b0c8a6681dd",
+  "modified": "2026-11-15"
  },
  "/privacy": {
   "hash": "529f443d7096edef",
@@ -143,16 +159,20 @@
   "hash": "2a3179c2f7b12ceb",
   "modified": "2026-11-13"
  },
+ "/streaks-app-alternative": {
+  "hash": "68fb4b4cded91af4",
+  "modified": "2026-11-15"
+ },
  "/terms": {
   "hash": "c2b380eb79072884",
   "modified": "2026-11-13"
  },
  "/walnut-alternative": {
-  "hash": "9e0de747b1c6f739",
-  "modified": "2026-11-13"
+  "hash": "e15d8db7a9815cbb",
+  "modified": "2026-11-15"
  },
  "/water-reminder": {
-  "hash": "1205e61c703cb421",
-  "modified": "2026-11-14"
+  "hash": "6b4b4a4f3d55e424",
+  "modified": "2026-11-15"
  }
 }

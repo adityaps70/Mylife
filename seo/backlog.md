@@ -1,9 +1,7 @@
 # SEO backlog
 
-## URGENT (2026-11-14): owner must merge before the next deploy
-The live site was deployed on 14 Nov from a local copy that is missing every 13 Nov SEO commit (11 pages now 404, www/http redirects gone). In the copy you deploy from: `git fetch origin && git merge origin/main` (and `origin/seo/auto-2026-11-14`), resolve any conflicts, then `npm run deploy`. Push your app changes to GitHub too, so the daily autopilot can deploy without overwriting them. Until then the autopilot will not deploy.
-
-Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages report showed 0 indexed, but URL Inspection the same day showed the homepage and the main tool pages indexed. The report lags. On-page basics are fine. The site is about 3 months old and has no known backlinks, so Google doesn't trust it yet. Until pages are indexed, nothing else on this list can bring traffic.
+## Resolved 2026-11-14
+The out-of-date copy was merged with main and deployed; `npm run deploy` now refuses copies that are behind GitHub or have uncommitted changes.
 
 ## Now
 1. ~~Request indexing~~ Done 2026-11-13. URL Inspection showed `/`, `/emi-calculator`, `/emi-calculator/home-loan`, `/habit-tracker`, `/expense-tracker` and `/credit-card-bill-reminder` already **indexed**; the Pages report (0 indexed) was lagging. Recrawl requested for the first 5. The 6th hit the daily quota, but it's indexed anyway.
@@ -38,3 +36,17 @@ Ordered by expected signups per hour of work. Context: on 2026-11-13 the Pages r
 - [ ] Publish the Play Store listing using seo/traction.md once the app is approved.
 - [ ] Record reels from the local demo account (scripts in seo/traction.md).
 - [ ] Run `npm run report` every Monday.
+
+## Added 2026-11-15 (templates and competitor pages)
+Shipped: /habit-tracker-template and /budget-template-india (free .xlsx), /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative. Search volumes are "unknown" because no keyword tool is connected; Search Console impressions will show which of these to push.
+Next, one per autopilot run, highest value first:
+- [ ] Printable PDF version of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf").
+- [ ] EMI tracker Excel template (all loans, outstanding, debt-free month) on /emi-calculator or its own page ("emi tracker excel", "loan tracker excel").
+- [ ] Credit card tracker Excel (statement day, due day, this bill / next bill) on /credit-card-bill-reminder ("credit card tracker excel").
+- [ ] Debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
+- [ ] "Notion habit tracker vs app" guide, honest about when Notion is enough ("notion habit tracker template").
+- [ ] 30-day challenge tracker template + guide ("30 day challenge tracker", "75 day challenge tracker").
+- [ ] Study habit tracker for students guide ("study habit tracker").
+- [ ] Hindi versions of the two template pages (/hi/habit-tracker-template, /hi/budget-template-india) with hreflang.
+- [ ] Competitor pages only with sourced facts and an "as of" date: HealthifyMe (calories/protein), Money Manager (expenses), Fabulous (habits). Each must say where the competitor is better.
+- [ ] Get links to the templates: submit to template roundups and Reddit threads answering "habit tracker excel" questions (draft only, owner posts).

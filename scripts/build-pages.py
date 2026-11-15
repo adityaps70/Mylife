@@ -489,6 +489,9 @@ if __name__ == '__main__':
     spec = importlib.util.spec_from_file_location('build_hi', os.path.join(os.path.dirname(__file__), 'build_hi.py'))
     hi = importlib.util.module_from_spec(spec); spec.loader.exec_module(hi)
     hi.build()   # Hindi pages (/hi/...)
+    spec = importlib.util.spec_from_file_location('build_templates', os.path.join(os.path.dirname(__file__), 'build_templates.py'))
+    tpl = importlib.util.module_from_spec(spec); spec.loader.exec_module(tpl)
+    tpl.link_from_tools(); tpl.build()   # free Excel template pages
     for p in PAGES:
         write('/' + p['slug'], render(p))
     print('built', len(SITEMAP), 'pages')
@@ -498,5 +501,5 @@ if __name__ == '__main__':
     with open(DATES_FILE, 'w') as f: json.dump(DATES, f, indent=1, sort_keys=True)
     with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'  <url><loc>{B}{u}</loc><lastmod>{d}</lastmod></url>\n' for u, d in urls) + '</urlset>\n')
-    seo.llms(urls, cmp_.llms_lines())
+    seo.llms(urls, cmp_.llms_lines() + tpl.llms_lines())
     print('sitemap and llms.txt updated:', len(urls), 'urls')

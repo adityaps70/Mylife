@@ -24,7 +24,7 @@ def pages():
     out += ['emi-calculator/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'emi-calculator'))) if f.endswith('.html')]
     out += ['blog/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'blog'))) if f.endswith('.html')]
     out += ['habit-and-money-tracker', 'health-and-finance-tracker']
-    out += ['cred-alternative', 'walnut-alternative', 'loop-habit-tracker-alternative', 'credit-card-interest-calculator', 'hi/emi-calculator', 'hi/blog/credit-card-statement-date-vs-due-date']
+    out += ['cred-alternative', 'walnut-alternative', 'loop-habit-tracker-alternative', 'habitify-alternative', 'streaks-app-alternative', 'habit-tracker-template', 'budget-template-india', 'credit-card-interest-calculator', 'hi/emi-calculator', 'hi/blog/credit-card-statement-date-vs-due-date']
     out += ['credit-card-statement-date/' + f[:-5] for f in sorted(os.listdir(os.path.join(PUB, 'credit-card-statement-date'))) if f.endswith('.html')]
     return out
 

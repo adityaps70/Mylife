@@ -384,4 +384,55 @@ dict(slug='protein-intake-indian-diet', nav='Protein on an Indian diet', kicker=
 <h3>Do I need protein powder?</h3><p>Not usually. Most people can meet their target from food. Powder is a convenience if you train hard and struggle to eat enough.</p>
 <h3>Is too much protein harmful?</h3><p>For healthy adults, intakes up to about 1.6–2 g per kg are commonly used by athletes. People with kidney disease should not raise protein without medical advice.</p></section>
 '''),
+dict(slug='habit-tracker-app-vs-excel', nav='Habit app vs Excel vs paper', kicker='Habits',
+  title='Habit Tracker App vs Excel Sheet vs Paper | Self Streak',
+  desc='Should you track habits in an app, an Excel or Google Sheets template, or a paper journal? What each does well, where each fails, and how to choose.',
+  h1='Habit tracker app vs Excel sheet vs paper: which actually works?',
+  lead='A habit tracker only helps if you keep using it. The three common choices, an app, a spreadsheet and a paper journal, fail in different ways, so the right one depends on how you tend to drop off.',
+  short='Use a <b>paper journal</b> if you like a daily pen-and-paper ritual and track a few habits. Use an <b>Excel or Google Sheets template</b> if you want free, flexible tracking and review on a laptop. Use an <b>app</b> if you have quit trackers before because you forgot: reminders at the right time and one-tap logging are what keep most people going.',
+  date='2026-11-15', hubs=['habit-tracker', 'water-reminder'],
+  related=[('Free habit tracker template', '/habit-tracker-template'), ('Habit tracker app', '/habit-tracker'), ('How long to form a habit', '/blog/how-long-does-it-take-to-form-a-habit')],
+  sources=[('Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W. and Wardle, J. (2010), “How are habits formed: Modelling habit formation in the real world”, European Journal of Social Psychology, 40(6)', 'https://doi.org/10.1002/ejsp.674'),
+           ('Gollwitzer, P. M. and Sheeran, P. (2006), “Implementation intentions and goal achievement: A meta-analysis of effects and processes”, Advances in Experimental Social Psychology, 38', 'https://doi.org/10.1016/S0065-2601(06)38002-1')],
+  body='''
+<section><h2 id="why-trackers-fail">Why most habit trackers get abandoned</h2>
+<p>People rarely stop tracking because the tracker was badly designed. They stop because, on a busy day, nothing put the habit in front of them, then one missed day became three, and the sheet or app started to feel like a record of failure.</p>
+<p>Two findings from habit research explain what a good tracker has to do. In a 2010 University College London study, new daily habits took a median of 66 days to feel automatic, with a range of 18 to 254 days, and missing a single day did not meaningfully set people back. So a tracker has to survive about two months of use, including a few missed days. And a meta-analysis of 94 independent tests found that deciding exactly when and where you will act (“after morning chai, I’ll read 10 pages”) has a medium-to-large effect on actually doing it. A tracker that ties each habit to a time helps with that.</p></section>
+<section><h2 id="paper">Paper habit journal</h2>
+<p>A printed grid or a bullet-journal page: one row per habit, one box per day.</p>
+<ul class="list"><li><b>Good at:</b> it’s always visible on your desk, ticking a box with a pen feels satisfying, and there’s no screen involved.</li>
+<li><b>Weak at:</b> no reminders, no totals or streaks unless you count them yourself, and it stays at home when you travel.</li>
+<li><b>Best for:</b> two or three daily habits, done at home, by someone who already journals.</li></ul></section>
+<section><h2 id="excel">Excel or Google Sheets template</h2>
+<p>A spreadsheet with a tab per month and a cell per day. A good template counts your days done, completion rate and best streak with formulas. You can download <a href="/habit-tracker-template">our free habit tracker template</a> to try it.</p>
+<ul class="list"><li><b>Good at:</b> free, completely flexible, your data stays in a file you own, and it’s great for a weekly review on a laptop.</li>
+<li><b>Weak at:</b> no reminders, and logging on a phone means opening a file and tapping a tiny cell. Most people who drop spreadsheets do it because daily entry on mobile is fiddly.</li>
+<li><b>Best for:</b> people who like data, plan on a laptop, and are disciplined about opening the sheet every day.</li></ul></section>
+<section><h2 id="app">Habit tracker app</h2>
+<p>An app on your phone that knows each habit’s schedule.</p>
+<ul class="list"><li><b>Good at:</b> a notification at the time you planned, one-tap logging, streaks and charts that update themselves, and habits that aren’t daily (three times a week, monthly).</li>
+<li><b>Weak at:</b> notifications become noise if you add too many habits, some apps lock basic features behind a subscription, and your data lives in the app.</li>
+<li><b>Best for:</b> anyone who has started a tracker before and stopped after a week or two.</li></ul></section>
+<section><h2 id="compare">Side by side</h2>
+<div class="tw"><table><thead><tr><th></th><th>Paper</th><th>Excel / Sheets</th><th>App</th></tr></thead><tbody>
+<tr><td>Cost</td><td>A notebook</td><td>Free</td><td>Free to ₹ subscription</td></tr>
+<tr><td>Reminders</td><td>No</td><td>No</td><td>Yes, at each habit’s time</td></tr>
+<tr><td>Logging a habit</td><td>Tick a box</td><td>Open file, find cell, type</td><td>One tap or by voice</td></tr>
+<tr><td>Streaks and %</td><td>Count by hand</td><td>Formulas</td><td>Automatic</td></tr>
+<tr><td>Non-daily habits</td><td>Awkward</td><td>Awkward</td><td>Built in</td></tr>
+<tr><td>Works away from home</td><td>Only if you carry it</td><td>Yes, but fiddly on a phone</td><td>Yes</td></tr>
+<tr><td>Who owns the data</td><td>You</td><td>You</td><td>The app, with export</td></tr></tbody></table></div></section>
+<section><h2 id="choose">How to choose in one minute</h2>
+<ol class="list"><li>Have you used a tracker before and stopped? If yes, the problem was remembering. Pick an app with reminders.</li>
+<li>Will you log on your phone most days? If yes, an app; if you’re on a laptop daily anyway, a spreadsheet is fine.</li>
+<li>Tracking only two or three habits at home? Paper is enough and has no setup.</li>
+<li>Want money, water or protein next to your habits? A spreadsheet can do it with extra tabs; an app like Self Streak does it in one place.</li></ol>
+<p>Whatever you choose, start with two or three habits, tie each one to something you already do every day, and don’t let one missed day turn into two.</p></section>
+<section><h2 id="self-streak">Where Self Streak fits</h2>
+<p>Self Streak is a <a href="/habit-tracker">habit tracker app</a> built for daily life in India. Each habit gets a reminder at its own time that is skipped once it’s done, you tick it in one tap or by saying “did gym and read” in English, Hindi or Hinglish, and it keeps your streak, heatmap and weekly view up to date. Habits, water and your streak are on the free plan. If you prefer a spreadsheet, the free template is yours to keep, and you can switch any time.</p></section>
+<section><h2 id="faq">Common questions</h2>
+<h3>Is a habit tracker app better than Excel?</h3><p>For most people, yes, because of reminders and one-tap logging on the phone. Excel is better if you want a free file you control and you review on a laptop.</p>
+<h3>Can I use Google Sheets as a habit tracker?</h3><p>Yes. Import an Excel template into Google Sheets (File, Import, Upload) and it keeps the formulas. Mark each day with a 1 and the sheet counts your streak.</p>
+<h3>How many habits should I track?</h3><p>Start with two or three. Add one more only after the first ones happen without effort, which for many people takes around two months.</p></section>
+'''),
 ]
