@@ -157,10 +157,22 @@ page(slug='habit-tracker', nav='Habit tracker',
 <section><h2>Habits people track with Self Streak</h2><ul class="list">
 <li>10,000 steps, gym or a workout, morning sunlight</li><li>Water, protein target, fruits and vegetables</li>
 <li>Reading, journaling, no screens before bed</li><li>Skincare, sunscreen, haircut every 4 weeks</li><li>Weekly: meal prep, review spending, call family</li></ul>
-<p>Self Streak also tracks your money, so habits like a no-spend day or a weekly budget review sit next to your actual spending. See the <a href="/habit-and-money-tracker">habit and money tracker</a>.</p></section>''',
+<p>Self Streak also tracks your money, so habits like a no-spend day or a weekly budget review sit next to your actual spending. See the <a href="/habit-and-money-tracker">habit and money tracker</a>.</p></section>
+<section><h2>A daily routine tracker, hour by hour</h2>
+<p>A daily routine habit tracker works best when each habit reminds you at the time you actually do it, not with one alarm for the whole list. In Self Streak every habit has its own time, so a routine reads like your day:</p>
+<ul class="list">
+<li><b>7:00 am</b> Drink a glass of water, 10 minutes of morning sunlight</li>
+<li><b>7:30 am</b> Sunscreen and skincare</li>
+<li><b>1:30 pm</b> Hit the protein target at lunch</li>
+<li><b>6:30 pm</b> Gym or a 30-minute walk</li>
+<li><b>9:45 pm</b> Read 20 minutes, no screens after 10</li></ul>
+<p>The Today view shows what you missed, what is next and what is done, and a reminder skips itself if you already ticked the habit. Weekly habits (meal prep on Sunday, a budget review on Saturday) sit in the same list on their day.</p></section>
+<section><h2>Habit tracker app for Android</h2>
+<p>Self Streak has an Android app (Android 8 or newer, about 10 MB) that you can <a href="/download">download directly from selfstreak.com</a>; it is not on the Play Store yet. Sign in with Google or email and your habits, streaks and history are the same as on the web app. Updates arrive on their own each time the app opens. On iPhone, open selfstreak.com/app in Safari and add it to your Home Screen.</p></section>''',
   faq=[('Is there a free habit tracker plan?','Yes. Every feature is free for 7 days, no card needed. After that, habits, streaks, water and expenses stay free. Plus (₹199 a month) adds reminders at each habit’s time, voice and photo logging, the AI day summary and leagues.'),
        ('Can I track weekly and monthly habits?','Yes. Habits can be daily, weekly, monthly, quarterly or yearly, each with their own reminder.'),
-       ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.')])
+       ('Does it work offline?','Yes. Ticking habits works offline and syncs when you’re back online.'),
+       ('Is there a Self Streak habit tracker app for Android?','Yes. Download the Android app (Android 8 or newer, about 10 MB) from selfstreak.com/download. It is not on the Play Store yet. Your account and streaks are the same as on the web app.')])
 
 page(slug='expense-tracker', nav='Expense tracker',
   title='Expense Tracker App India: Budget & Bills | Self Streak',
@@ -481,7 +493,7 @@ if __name__ == '__main__':
         write('/' + p['slug'], render(p))
     print('built', len(SITEMAP), 'pages')
     seo.extra_pages()   # /about and the 404 page
-    legal = [(u, static_lastmod(u, u.strip('/') + '.html')) for u in ('/terms', '/privacy', '/refunds', '/shipping', '/contact')]
+    legal = [(u, static_lastmod(u, u.strip('/') + '.html')) for u in ('/download', '/terms', '/privacy', '/refunds', '/shipping', '/contact')]
     urls = [('/', static_lastmod('/', 'landing.html'))] + sorted(SITEMAP) + legal
     with open(DATES_FILE, 'w') as f: json.dump(DATES, f, indent=1, sort_keys=True)
     with open(os.path.join(OUT, 'sitemap.xml'), 'w') as f:
