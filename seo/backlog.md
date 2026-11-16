@@ -40,9 +40,9 @@ The out-of-date copy was merged with main and deployed; `npm run deploy` now ref
 ## Added 2026-11-15 (templates and competitor pages)
 Shipped: /habit-tracker-template and /budget-template-india (free .xlsx), /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative. Search volumes are "unknown" because no keyword tool is connected; Search Console impressions will show which of these to push.
 Next, one per autopilot run, highest value first:
-- [ ] FIRST: request indexing in Search Console for /budget-template-india, /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative (quota ran out on 15 Nov).
+- [x] ~~Request indexing for /budget-template-india, /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative~~ Done 2026-11-16.
 - [ ] Printable PDF version of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf").
-- [ ] EMI tracker Excel template (all loans, outstanding, debt-free month) on /emi-calculator or its own page ("emi tracker excel", "loan tracker excel").
+- [x] ~~EMI tracker Excel template~~ Shipped 2026-11-16 as /emi-tracker-template.
 - [ ] Credit card tracker Excel (statement day, due day, this bill / next bill) on /credit-card-bill-reminder ("credit card tracker excel").
 - [ ] Debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
 - [ ] "Notion habit tracker vs app" guide, honest about when Notion is enough ("notion habit tracker template").
@@ -51,3 +51,9 @@ Next, one per autopilot run, highest value first:
 - [ ] Hindi versions of the two template pages (/hi/habit-tracker-template, /hi/budget-template-india) with hreflang.
 - [ ] Competitor pages only with sourced facts and an "as of" date: HealthifyMe (calories/protein), Money Manager (expenses), Fabulous (habits). Each must say where the competitor is better.
 - [ ] Get links to the templates: submit to template roundups and Reddit threads answering "habit tracker excel" questions (draft only, owner posts).
+
+## Added 2026-11-16
+- [ ] Weekly run (due 2026-11-20, as the last report is from 13 Nov): /streaks-app-alternative is "Crawled – currently not indexed". Check whether it's thin next to /habitify-alternative and /loop-habit-tracker-alternative, and add unique content or more internal links.
+- [ ] Link /emi-tracker-template from the 5 /emi-calculator/* loan pages (body sentence near "Once you have the loan"), so it gets more than 3 internal links.
+- [ ] Hindi version /hi/emi-tracker-template ("emi tracker excel hindi"), next to /hi/emi-calculator.
+- [ ] Next template in the queue: credit card tracker Excel on /credit-card-bill-reminder.

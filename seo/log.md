@@ -47,3 +47,11 @@
 - Shipped and deployed: /habit-tracker-template (free 12-month habit tracker .xlsx with automatic streaks), /budget-template-india (free rupee budget .xlsx with expenses log and 50/30/20 check), /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative. Linked from /habit-tracker and /expense-tracker. Sitemap 44 URLs; IndexNow 200 for 15 URLs.
 - Template formulas checked with the `formulas` library (days done, %, best streak, February length, budget totals).
 - Search Console: indexing requested for /habit-tracker-template. Daily quota hit on the next request.
+
+## 2026-11-16 (daily autopilot, deployed)
+- Shipped and deployed: /emi-tracker-template, a free EMI tracker .xlsx (self-streak-emi-tracker.xlsx). Every loan in one sheet (EMI, EMIs paid, outstanding today, interest paid and left, last EMI, debt-free month, EMIs as % of salary), plus a Schedule tab per loan with a prepayment column. Targets "emi tracker excel", "loan tracker excel", "multiple loan emi tracker". Formulas checked with the `formulas` library against a Python reference (EMI ₹34,713 and outstanding ₹37,79,707 for the ₹40 lakh example; a ₹2 lakh prepayment at EMI 12 → 214 EMIs, ₹7,13,106 less interest).
+- Links to it from /emi-calculator and /debt-payoff-planner (Related guides) and /budget-template-india (body). Sitemap 45 URLs; IndexNow 200 for 18 URLs.
+- Search Console: indexing requested for /budget-template-india, /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative (all were "Discovered/Crawled – currently not indexed") and /emi-tracker-template ("unknown to Google"). /streaks-app-alternative is "Crawled – currently not indexed", so Google has seen it and passed. Review its content and links at the weekly run.
+- Health check: all 44 live sitemap URLs returned 200 with correct canonicals and no noindex before the deploy; http:// and www. still 301.
+- No facts changed in commits since the last run (only the habit template's ✓ redesign).
+- `npm run report` (9–16 Nov): 186 views, 102 visitors, 8 sign-ups, 0 paid; google.com sent 3 views. Saved in reports/traffic-2026-11-16.md.
