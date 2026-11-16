@@ -40,8 +40,8 @@
   "modified": "2026-11-13"
  },
  "/budget-template-india": {
-  "hash": "e995c70a69e4fcba",
-  "modified": "2026-11-15"
+  "hash": "b8dbf7e873c06d76",
+  "modified": "2026-11-16"
  },
  "/calorie-protein-tracker": {
   "hash": "d835c56cb1052a6a",
@@ -80,16 +80,16 @@
   "modified": "2026-11-13"
  },
  "/debt-payoff-planner": {
-  "hash": "50949fe44d4ffd75",
-  "modified": "2026-11-14"
+  "hash": "674c29c3e5621757",
+  "modified": "2026-11-16"
  },
  "/download": {
   "hash": "880733e17d88a557",
   "modified": "2026-11-15"
  },
  "/emi-calculator": {
-  "hash": "722f351a9f71ace1",
-  "modified": "2026-11-14"
+  "hash": "ad2d24c2b73d48f0",
+  "modified": "2026-11-16"
  },
  "/emi-calculator/car-loan": {
   "hash": "3624d342e32e508e",
@@ -110,6 +110,10 @@
  "/emi-calculator/two-wheeler-loan": {
   "hash": "b29cf02d64187558",
   "modified": "2026-11-13"
+ },
+ "/emi-tracker-template": {
+  "hash": "08c5d82e216ff08c",
+  "modified": "2026-11-16"
  },
  "/expense-tracker": {
   "hash": "fd9518c7b465ee63",

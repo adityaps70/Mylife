@@ -223,7 +223,116 @@ def budget_india():
     ex.freeze_panes = 'A2'
     return wb
 
+LOAN_TYPES = ['Home loan', 'Car loan', 'Personal loan', 'Education loan', 'Two-wheeler loan', 'Gold loan', 'Consumer durable / no-cost EMI', 'Credit card EMI', 'Other']
+
+def emi_tracker():
+    """Every loan on one sheet: EMI, EMIs paid, outstanding today, interest paid, last EMI date, and a debt-free month.
+    A Schedule sheet shows month-by-month interest and principal for one loan, with a column for prepayments."""
+    wb = Workbook()
+    ws = wb.active; ws.title = 'Loans'
+    MONEY = '₹#,##,##0'
+    ws['A1'] = 'EMI tracker: all your loans'; ws['A1'].font = Font(bold=True, size=18)
+    ws['A2'] = 'Fill the lime columns for each loan (the 3 rows below are examples; overwrite them). Everything else works itself out as of today.'
+    ws['A2'].font = Font(color=GREY, italic=True)
+    # summary block
+    labels = [('A4', 'Take-home salary (monthly)'), ('A5', 'Total monthly EMIs (loans not yet closed)'), ('A6', 'EMIs as % of salary'),
+              ('A7', 'Total outstanding today'), ('A8', 'Interest still to pay'), ('A9', 'Debt-free after (last EMI)')]
+    for ref, t in labels: ws[ref] = t; ws[ref].font = B
+    H0, H1 = 12, 41   # loan rows 12..41 (30 loans)
+    rng = lambda c: f'{c}{H0}:{c}{H1}'
+    ws['C4'] = 150000; ws['C4'].fill = DONE
+    ws['C5'] = f'=SUMIFS({rng("H")},{rng("M")},">0")'
+    ws['C6'] = '=IF(C4>0,C5/C4,"")'; ws['C6'].number_format = '0%'
+    ws['C7'] = f'=SUM({rng("J")})'
+    ws['C8'] = f'=SUM({rng("N")})'
+    ws['C9'] = f'=IF(COUNT({rng("L")})=0,"",MAX({rng("L")}))'; ws['C9'].number_format = 'mmm yyyy'
+    for r in (4, 5, 7, 8): ws[f'C{r}'].number_format = MONEY
+    for r in range(4, 10):
+        for c in 'ABC': ws[f'{c}{r}'].border = BOX
+    ws['E5'] = 'Lenders look at your EMIs as a share of income (FOIR) before a new loan. Lower is safer.'
+    ws['E5'].font = Font(color=GREY, italic=True)
+    heads = [('A', 'Loan', 22), ('B', 'Lender', 16), ('C', 'Type', 20), ('D', 'Loan amount', 13), ('E', 'Rate % (yearly)', 10),
+             ('F', 'Tenure (months)', 10), ('G', 'First EMI date', 13), ('H', 'EMI', 11), ('I', 'EMIs paid', 9),
+             ('J', 'Outstanding today', 14), ('K', 'Interest paid so far', 14), ('L', 'Last EMI', 11), ('M', 'EMIs left', 9), ('N', 'Interest still to pay', 14)]
+    hr = H0 - 1
+    for c, h, w in heads:
+        ws[f'{c}{hr}'] = h; ws[f'{c}{hr}'].fill = HEAD; ws[f'{c}{hr}'].font = HEADF
+        ws[f'{c}{hr}'].alignment = Alignment(wrap_text=True, vertical='center'); ws.column_dimensions[c].width = w
+    ws.row_dimensions[hr].height = 32
+    for r in range(H0, H1 + 1):
+        ws[f'H{r}'] = f'=IF(OR(D{r}="",F{r}=""),"",ROUND(PMT(N(E{r})/1200,F{r},-D{r}),0))'
+        ws[f'I{r}'] = (f'=IF(OR(G{r}="",F{r}=""),"",MIN(F{r},MAX(0,(YEAR(TODAY())-YEAR(G{r}))*12+MONTH(TODAY())-MONTH(G{r})'
+                       f'+IF(DAY(TODAY())>=DAY(G{r}),1,0))))')
+        ws[f'J{r}'] = f'=IF(I{r}="","",IF(I{r}>=F{r},0,ROUND(PV(N(E{r})/1200,F{r}-I{r},-PMT(N(E{r})/1200,F{r},-D{r})),0)))'
+        ws[f'K{r}'] = f'=IF(J{r}="","",MAX(0,H{r}*I{r}-(D{r}-J{r})))'
+        ws[f'L{r}'] = f'=IF(OR(G{r}="",F{r}=""),"",EDATE(G{r},F{r}-1))'
+        ws[f'M{r}'] = f'=IF(I{r}="","",F{r}-I{r})'
+        ws[f'N{r}'] = f'=IF(M{r}="","",MAX(0,H{r}*M{r}-J{r}))'
+        for c in 'ABCDEFG': ws[f'{c}{r}'].fill = DONE if r < H0 + 3 else PatternFill('solid', fgColor='F7FBDF')
+        for c in 'DHJKN': ws[f'{c}{r}'].number_format = MONEY
+        ws[f'G{r}'].number_format = 'dd mmm yyyy'; ws[f'L{r}'].number_format = 'mmm yyyy'
+        for c in 'ABCDEFGHIJKLMN': ws[f'{c}{r}'].border = BOX
+    sample = [('Home loan', 'Example Bank', 'Home loan', 4000000, 8.5, 240, (2024, 5, 5)),
+              ('Car loan', 'Example Bank', 'Car loan', 600000, 9.5, 60, (2025, 1, 10)),
+              ('Phone on no-cost EMI', 'Card EMI', 'Consumer durable / no-cost EMI', 60000, 0, 6, (2026, 9, 15))]
+    import datetime
+    for i, (a, b, c, d, e, f, g) in enumerate(sample):
+        r = H0 + i
+        ws[f'A{r}'], ws[f'B{r}'], ws[f'C{r}'], ws[f'D{r}'], ws[f'E{r}'], ws[f'F{r}'] = a, b, c, d, e, f
+        ws[f'G{r}'] = datetime.date(*g)
+    lists = wb.create_sheet('Lists'); lists.sheet_state = 'hidden'
+    for i, t in enumerate(LOAN_TYPES, start=1): lists[f'A{i}'] = t
+    dv = DataValidation(type='list', formula1=f'=Lists!$A$1:$A${len(LOAN_TYPES)}', allow_blank=True); ws.add_data_validation(dv); dv.add(rng('C'))
+    ws.conditional_formatting.add(rng('M'), CellIsRule(operator='equal', formula=['0'], font=Font(color=GREY)))
+    ws.conditional_formatting.add('C6', CellIsRule(operator='greaterThan', formula=['0.5'], font=Font(color='DC2626', bold=True)))
+    ws[f'A{H1 + 2}'] = ('EMI uses the standard reducing-balance formula. Your bank\'s figure can differ by a few rupees (rounding, '
+                        'broken-period interest) or more if a floating rate changed. If so, type the bank\'s numbers into a new row as a fresh loan from today.')
+    ws[f'A{H1 + 2}'].font = Font(color=GREY, italic=True)
+    ws[f'A{H1 + 3}'] = FOOT; ws[f'A{H1 + 3}'].font = Font(color=GREY, italic=True)
+    ws.freeze_panes = f'B{H0}'; ws.sheet_view.showGridLines = False
+    # schedule for one loan, with prepayments
+    sc = wb.create_sheet('Schedule')
+    sc['A1'] = 'Repayment schedule for one loan'; sc['A1'].font = Font(bold=True, size=18)
+    sc['A3'] = 'Pick a loan'; sc['A3'].font = B; sc['C3'] = 'Home loan'; sc['C3'].fill = DONE
+    dv2 = DataValidation(type='list', formula1=f'=Loans!$A${H0}:$A${H1}', allow_blank=False); sc.add_data_validation(dv2); dv2.add('C3')
+    row = f'MATCH($C$3,Loans!$A${H0}:$A${H1},0)'
+    pick = lambda c: f'INDEX(Loans!${c}${H0}:${c}${H1},{row})'
+    info = [('A4', 'Loan amount', 'C4', f'=IFERROR({pick("D")},0)', MONEY), ('A5', 'Rate % (yearly)', 'C5', f'=IFERROR(N({pick("E")}),0)', '0.00'),
+            ('A6', 'EMI', 'C6', f'=IFERROR({pick("H")},0)', MONEY), ('A7', 'First EMI date', 'C7', f'=IFERROR({pick("G")},"")', 'dd mmm yyyy'),
+            ('A8', 'Total interest', 'C8', '=SUM(E13:E372)', MONEY), ('A9', 'EMIs needed', 'C9', '=COUNTIF(D13:D372,">0")', '0'),
+            ('A10', 'Loan closes', 'C10', '=IF(C9=0,"",EDATE(C7,C9-1))', 'mmm yyyy')]
+    for a, t, c, f, fmt in info:
+        sc[a] = t; sc[c] = f; sc[c].number_format = fmt
+        for x in (a, c): sc[x].border = BOX
+    sc['E4'] = 'Type any extra payment (prepayment) in the lime column for that month. The EMI stays the same, so the loan closes earlier; see "EMIs needed" and "Total interest" change.'
+    sc['E4'].font = Font(color=GREY, italic=True)
+    for c, h, w in zip('ABCDEFGH', ('No.', 'Month', 'Opening balance', 'EMI paid', 'Interest', 'Principal', 'Extra payment', 'Closing balance'), (6, 12, 16, 12, 12, 12, 14, 16)):
+        sc[f'{c}12'] = h; sc[f'{c}12'].fill = HEAD; sc[f'{c}12'].font = HEADF; sc.column_dimensions[c].width = w
+    for r in range(13, 373):
+        n = r - 12
+        prev = '$C$4' if r == 13 else f'H{r - 1}'
+        sc[f'A{r}'] = n
+        sc[f'B{r}'] = f'=IF(OR($C$7="",C{r}<=0),"",EDATE($C$7,{n - 1}))'
+        sc[f'C{r}'] = f'=IF({prev}="",0,N({prev}))' if r > 13 else '=$C$4'
+        sc[f'E{r}'] = f'=IF(C{r}<=0,0,ROUND(C{r}*$C$5/1200,0))'
+        sc[f'D{r}'] = f'=IF(C{r}<=0,0,MIN($C$6,C{r}+E{r}))'
+        sc[f'F{r}'] = f'=D{r}-E{r}'
+        sc[f'G{r}'].fill = DONE
+        sc[f'H{r}'] = f'=IF(C{r}<=0,0,MAX(0,C{r}-F{r}-MIN(N(G{r}),C{r}-F{r})))'
+        for c in 'CDEFGH': sc[f'{c}{r}'].number_format = MONEY
+        sc[f'B{r}'].number_format = 'mmm yyyy'
+    sc.conditional_formatting.add('A13:H372', FormulaRule(formula=['$C13<=0'], font=Font(color='D4D4D8')))
+    sc.freeze_panes = 'A13'; sc.sheet_view.showGridLines = False
+    from openpyxl.workbook.properties import CalcProperties
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
+    return wb
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
-    for name, fn in (('self-streak-habit-tracker-2027.xlsx', habit_tracker), ('self-streak-monthly-budget-india.xlsx', budget_india)):
+    import sys
+    files = (('self-streak-habit-tracker-2027.xlsx', habit_tracker), ('self-streak-monthly-budget-india.xlsx', budget_india),
+             ('self-streak-emi-tracker.xlsx', emi_tracker))
+    only = sys.argv[1:]   # e.g. `make-templates.py self-streak-emi-tracker.xlsx` rebuilds just that file
+    for name, fn in files:
+        if only and name not in only: continue
         p = os.path.join(OUT, name); fn().save(p); print(f'templates/{name}  {os.path.getsize(p):,} bytes')
