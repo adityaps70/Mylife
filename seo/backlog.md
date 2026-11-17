@@ -43,7 +43,7 @@ Next, one per autopilot run, highest value first:
 - [x] ~~Request indexing for /budget-template-india, /blog/habit-tracker-app-vs-excel, /habitify-alternative, /streaks-app-alternative~~ Done 2026-11-16.
 - [ ] Printable PDF version of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf").
 - [x] ~~EMI tracker Excel template~~ Shipped 2026-11-16 as /emi-tracker-template.
-- [ ] Credit card tracker Excel (statement day, due day, this bill / next bill) on /credit-card-bill-reminder ("credit card tracker excel").
+- [x] ~~Credit card tracker Excel~~ Shipped 2026-11-17 as /credit-card-tracker-template.
 - [ ] Debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
 - [ ] "Notion habit tracker vs app" guide, honest about when Notion is enough ("notion habit tracker template").
 - [ ] 30-day challenge tracker template + guide ("30 day challenge tracker", "75 day challenge tracker").
@@ -56,4 +56,11 @@ Next, one per autopilot run, highest value first:
 - [ ] Weekly run (due 2026-11-20, as the last report is from 13 Nov): /streaks-app-alternative is "Crawled – currently not indexed". Check whether it's thin next to /habitify-alternative and /loop-habit-tracker-alternative, and add unique content or more internal links.
 - [ ] Link /emi-tracker-template from the 5 /emi-calculator/* loan pages (body sentence near "Once you have the loan"), so it gets more than 3 internal links.
 - [ ] Hindi version /hi/emi-tracker-template ("emi tracker excel hindi"), next to /hi/emi-calculator.
-- [ ] Next template in the queue: credit card tracker Excel on /credit-card-bill-reminder.
+- [x] ~~Next template: credit card tracker Excel~~ Shipped 2026-11-17.
+
+## Added 2026-11-17
+- [ ] Request indexing in Search Console for /credit-card-tracker-template and /emi-tracker-template (Chrome could not open Search Console on authuser=0 today; check the owner's Google sign-in in Chrome).
+- [ ] Weekly run is due 2026-11-20: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md not checked yet), competitor sitemap diffs, report.
+- [ ] Next template: debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
+- [ ] Link /emi-tracker-template and /credit-card-tracker-template from /blog/credit-card-statement-date-vs-due-date and the 5 /emi-calculator/* loan pages.
+- [ ] Sign-ups per 100 visitors fell to 3.7 (10–17 Nov) from 23.8 the week before, on a much bigger visitor count (82 vs 21). Most views are the homepage; check where the new visitors come from before reading anything into it.

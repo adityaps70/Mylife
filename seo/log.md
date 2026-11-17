@@ -55,3 +55,13 @@
 - Health check: all 44 live sitemap URLs returned 200 with correct canonicals and no noindex before the deploy; http:// and www. still 301.
 - No facts changed in commits since the last run (only the habit template's ✓ redesign).
 - `npm run report` (9–16 Nov): 186 views, 102 visitors, 8 sign-ups, 0 paid; google.com sent 3 views. Saved in reports/traffic-2026-11-16.md.
+
+## 2026-11-17 (daily autopilot, deployed)
+- Shipped and deployed: /credit-card-tracker-template, a free credit card tracker .xlsx (self-streak-credit-card-tracker.xlsx). Up to 10 cards: last statement, last bill (from logged spends) and its due date, next statement, what's on the next bill so far, next payment due, interest-free days if you buy today, best day to buy next, limit used and utilisation (warning level set by the user). A Spends tab puts each purchase on the right statement. Targets "credit card tracker excel", "credit card due date tracker", "multiple credit card tracker". The top Google results are generic US/blog templates that list cards and dates; none works out this bill vs next bill or interest-free days.
+- Formulas checked with the `formulas` library against hand calculations as of 17 Nov 2026 (e.g. SBI example: statement 15th, due 5th → last bill ₹8,750 due 5 Dec, 49 interest-free days if bought today). Statement days 29–31 clamp to month end.
+- RBI "at least a fortnight to pay" rule cited to the Master Direction (rbi.org.in id=12300). The HDFC 4th/24th example comes from HDFC's MITC, already sourced on /credit-card-statement-date/hdfc-bank.
+- Links to it from /credit-card-bill-reminder (Related guides), the 4 /credit-card-statement-date/* pages and /budget-template-india. Sitemap 46 URLs; IndexNow 200 for 10 URLs.
+- Health check (before deploy): all 45 live sitemap URLs returned 200 with correct canonicals and no noindex; http:// and www. still 301.
+- No product facts changed in commits since the last run.
+- Search Console: **not done.** authuser=0 (the account that owns the property per earlier runs) sent the Chrome tab back to a new-tab page 3 times; authuser=1 has no properties, and 2 and 3 say "you don't have access". No indexing requested. Bing Webmaster: 0 clicks and 0 impressions (14–15 Nov).
+- `npm run report` (10–17 Nov): 161 views, 82 visitors, 3 sign-ups, 0 paid; google.com sent 4 views. Saved in reports/traffic-2026-11-17.md.
