@@ -257,6 +257,7 @@ def bank_page(k):
 <section><h2>What this means for you</h2><ul class="list"><li>Make big planned purchases just after your statement date to get the longest time to pay.</li>
 <li>Pay a few working days before the due date, so the money reaches the card account in time.</li>
 <li>Paying only the minimum keeps the account in good standing but costs a lot of interest; see the <a href="/credit-card-interest-calculator">credit card interest calculator</a>.</li>
+<li>Have more than one card? The free <a href="/credit-card-tracker-template">credit card tracker Excel sheet</a> shows every card’s due date and how many interest-free days a purchase today gets.</li>
 <li>For how the dates work on any card, read <a href="/blog/credit-card-statement-date-vs-due-date">statement date vs due date</a> (<a href="/hi/blog/credit-card-statement-date-vs-due-date" lang="hi" hreflang="hi-IN">हिंदी में</a>).</li></ul></section>
 {bp.shots_html('credit-card-bill-reminder', 'Track every card in Self Streak')}
 <section><h2>Questions</h2>{"".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in faq)}</section>

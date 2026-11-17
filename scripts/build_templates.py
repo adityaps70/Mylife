@@ -1,4 +1,4 @@
-"""Free template pages: /habit-tracker-template, /budget-template-india and /emi-tracker-template.
+"""Free template pages: /habit-tracker-template, /budget-template-india, /emi-tracker-template and /credit-card-tracker-template.
 
 People searching "habit tracker excel" or "monthly budget excel sheet India" want a file, so these pages give
 a real, free one (made by scripts/make-templates.py, no signup), explain how to use it, and say honestly when
@@ -92,7 +92,7 @@ def budget_template():
 <tr><td>Credit cards</td><td>One row per spend</td><td>Shows what’s on this bill and the next one as you spend</td></tr>
 <tr><td>Bank login or SMS access</td><td>Not needed</td><td>Not needed either</td></tr>
 <tr><td>Your data</td><td>A file you own completely</td><td>Synced to your account; export or delete any time</td></tr></tbody></table></div>
-<p>A spreadsheet works well if you enjoy a monthly money session on your laptop. Most people stop updating it in the second week because typing every UPI payment is tedious. If that’s you, try logging by voice in the <a href="/expense-tracker">expense tracker</a>. Paying more than one loan? The free <a href="/emi-tracker-template">EMI tracker sheet</a> shows what you still owe on each.</p></section>'''
+<p>A spreadsheet works well if you enjoy a monthly money session on your laptop. Most people stop updating it in the second week because typing every UPI payment is tedious. If that’s you, try logging by voice in the <a href="/expense-tracker">expense tracker</a>. Paying more than one loan? The free <a href="/emi-tracker-template">EMI tracker sheet</a> shows what you still owe on each, and the <a href="/credit-card-tracker-template">credit card tracker sheet</a> shows when every card bill is due.</p></section>'''
     faq = [('Is this budget template free?', 'Yes, free to download and use, with no signup or email.'),
            ('Does it work in Google Sheets?', 'Yes. In Google Sheets choose File, Import, Upload and pick the file. The drop-downs and totals keep working.'),
            ('Which categories does it use?', 'Needs (rent or home loan, groceries, utilities, mobile, EMIs, transport, insurance, fees, medicines), wants (eating out, shopping, outings, subscriptions, travel, festivals) and savings (SIPs, emergency fund, PPF or EPF top-up, extra loan payments). Rename any of them.'),
@@ -149,9 +149,56 @@ def emi_template():
                 '<b>Download the free EMI tracker</b> above: enter each loan’s amount, rate, tenure and first EMI date, and it shows the EMI, EMIs paid, outstanding balance as of today, interest paid and left, and your debt-free month across all loans. A Schedule tab shows any loan month by month and how much a prepayment saves. It opens in Excel, Google Sheets and Numbers.',
                 'self-streak-emi-tracker.xlsx', 'EMI tracker for Excel', body, faq, 'emi-calculator')
 
+def cc_template():
+    # Example values are what the file shows as of 17 Nov 2026 (checked with the `formulas` library).
+    rows = [('HDFC card', '4th', '24th', '₹4,200 (paid)', '₹18,999', '24 Dec', '37'),
+            ('SBI card', '15th', '5th', '₹8,750', '₹1,200', '5 Dec', '49'),
+            ('Axis card', '22nd', '11th', '₹2,100 (paid)', '₹9,799', '11 Dec', '24')]
+    grid = ''.join('<tr>' + ''.join(f'<td>{html.escape(c)}</td>' for c in r) + '</tr>' for r in rows)
+    body = f'''<section><h2>What’s in the free credit card tracker</h2><ul class="list">
+<li><b>One row per card, up to 10.</b> You type 5 things: card name, bank, credit limit, <b>statement day</b> and <b>due day</b>. No card number, CVV or login.</li>
+<li><b>Dates that work themselves out:</b> last statement, when that bill is due, next statement and next payment due, all as of today.</li>
+<li><b>This bill and next bill.</b> Log purchases on the Spends tab and each one lands on the right statement, the way your bank bills it: on or before the statement day goes on that bill, after it rolls to the next.</li>
+<li><b>Interest-free days if you buy today</b> on every card, and which card gives you the most. It also shows the best day to buy next (the day after each statement).</li>
+<li><b>Limit used and utilisation</b> per card and in total, in red above a level you choose (30% to start with).</li>
+<li><b>Red warnings</b> when a payment is 3 days away or late. No macros, so it opens safely anywhere.</li></ul></section>
+<section><h2>What it looks like</h2><p>The three example cards in the file, as of 17 Nov 2026:</p>
+<div class="tw"><table class="cmp"><thead><tr><th>Card</th><th>Statement day</th><th>Due day</th><th>Last bill</th><th>On next bill so far</th><th>Next payment due</th><th>Interest-free days if bought today</th></tr></thead><tbody>{grid}</tbody></table></div>
+<p>The summary at the top says the next payment is ₹8,750 on the SBI card by 5 Dec, and that a purchase today gets the longest time to pay on the SBI card (49 days). Limit used is ₹38,748 of ₹4,50,000 (9%).</p></section>
+<section><h2>Why the statement day matters more than the due day</h2>
+<p>Take a card with a statement on the 4th and payment due on the 24th (the example HDFC Bank uses in its own terms). Buy something on 4 December and it goes on that day’s bill, due 24 December: 20 days to pay. Buy it on 5 December and it goes on the January bill, due 24 January: <b>50 days</b>. Same card, same amount, one day apart. The tracker shows this number for every card each day, so you can pick the card that gives you the most time before a big purchase.</p>
+<p>The interest-free period only applies if you paid the previous bill in full. Pay less and interest is charged from the date of each purchase; see the <a href="/credit-card-interest-calculator">credit card interest calculator</a> for what paying only the minimum costs. RBI rules require card issuers to give you at least a fortnight to pay after the bill is sent (<a href="https://www.rbi.org.in/Scripts/BS_ViewMasDirections.aspx?id=12300" rel="noopener" target="_blank">RBI Master Direction on credit cards, 2022</a>). Your bank’s own dates: <a href="/credit-card-statement-date/hdfc-bank">HDFC Bank</a>, <a href="/credit-card-statement-date/sbi-card">SBI Card</a>, <a href="/credit-card-statement-date/icici-bank">ICICI Bank</a>, <a href="/credit-card-statement-date/axis-bank">Axis Bank</a>.</p></section>
+<section><h2>How to use it</h2><ol class="list">
+<li>Overwrite the three example cards. The statement date and payment due date are printed at the top of every card statement; type just the day of the month.</li>
+<li>Add purchases to the Spends tab as you go, or once a week from your card app. Pick the card from the drop-down.</li>
+<li>When you pay a bill in full, set “Last bill paid?” to Yes. When the next statement arrives, set it back to No.</li>
+<li>Check the “Last bill” column against your statement. If it differs, a spend was posted a day late or you missed one; your statement is always right.</li>
+<li><b>Google Sheets:</b> File → Import → Upload. The formulas, drop-downs and colours carry over.</li></ol></section>
+<section><h2>Spreadsheet or app?</h2>
+<div class="tw"><table class="cmp"><thead><tr><th></th><th>Credit card tracker sheet</th><th>Self Streak app</th></tr></thead><tbody>
+<tr><td>Price</td><td>Free</td><td>Free for 7 days; bill reminders are part of Plus at ₹199/month</td></tr>
+<tr><td>This bill and next bill</td><td>Yes, from the spends you type in</td><td>Yes, as you log each spend</td></tr>
+<tr><td>Reminder before the due date</td><td>No. You have to open the file</td><td>A notification 2 days before and on the due date, which stops once you mark it paid</td></tr>
+<tr><td>Adding a spend</td><td>Type a row</td><td>Say “1,200 on Amazon on my HDFC card”, or snap the statement</td></tr>
+<tr><td>Minimum due</td><td>Not tracked</td><td>Yes, with full, minimum or any amount</td></tr>
+<tr><td>Card number, SMS or bank login</td><td>Not needed</td><td>Not needed either</td></tr></tbody></table></div>
+<p>If you check your cards once a week on a laptop, the sheet does the job. If two cards are due in the same week and you’ve paid a late fee before, that’s what a <a href="/credit-card-bill-reminder">credit card bill reminder</a> is for. Paying card EMIs or loans too? The free <a href="/emi-tracker-template">EMI tracker sheet</a> covers those.</p></section>'''
+    faq = [('Is this credit card tracker Excel sheet free?', 'Yes. Download it without signing up or giving an email, and use it for up to 10 cards and 500 purchases.'),
+           ('Do I need to enter my card number?', 'No. The sheet only needs a name for each card, the bank, the credit limit, the statement day and the due day. Never type a full card number or CVV into any spreadsheet.'),
+           ('How does it know which bill a purchase goes on?', 'A purchase made on or before the statement day goes on that statement; anything after it rolls to the next one. Banks sometimes post a spend a day or two late, so a purchase on the statement day itself can land on either bill. Your statement is the final word.'),
+           ('What if my statement date is the 30th or 31st?', 'Type 30 or 31. In shorter months the sheet uses the last day of the month, which is what most banks do. Check your statement for February.'),
+           ('Does it work in Google Sheets?', 'Yes. In Google Sheets choose File, Import, Upload and pick the file. The formulas, drop-downs and colours keep working.')]
+    return page('/credit-card-tracker-template', 'Free Credit Card Tracker Excel Sheet (India) | Self Streak',
+                'Free credit card tracker for Excel and Google Sheets: statement and due dates, this bill and next bill, interest-free days and limit used. No signup.',
+                'Credit card tracker template', 'Free template', 'Free credit card tracker Excel sheet',
+                'Track every credit card in one spreadsheet: when each bill is due, what’s on the next one, and which card gives you the most interest-free days if you buy today.',
+                '<b>Download the free credit card tracker</b> above: add each card’s limit, statement day and due day, log your spends, and it shows every card’s last bill and due date, what’s on the next bill so far, interest-free days if you buy today, and how much of your limit you’ve used. It opens in Excel, Google Sheets and Numbers, and never asks for a card number.',
+                'self-streak-credit-card-tracker.xlsx', 'credit card tracker for Excel', body, faq, 'credit-card-bill-reminder')
+
 LINKS = {'habit-tracker': ('/habit-tracker-template', 'Free habit tracker template (Excel & Google Sheets)', 'Download a 12-month habit tracking sheet with automatic streaks.'),
          'emi-calculator': ('/emi-tracker-template', 'Free EMI tracker Excel sheet for all your loans', 'Outstanding balance today, interest paid and your debt-free month.'),
          'debt-payoff-planner': ('/emi-tracker-template', 'Free EMI tracker Excel sheet', 'Every loan in one sheet, with a prepayment column to test what-ifs.'),
+         'credit-card-bill-reminder': ('/credit-card-tracker-template', 'Free credit card tracker Excel sheet', 'Statement and due dates, this bill and next bill, and interest-free days for every card.'),
          'expense-tracker': ('/budget-template-india', 'Free monthly budget Excel sheet for India', 'Rupee categories, an expenses log and a 50/30/20 check.')}
 
 def link_from_tools():
@@ -161,8 +208,9 @@ def link_from_tools():
 def llms_lines():
     return ['', '## Free templates', f'- [Habit tracker template for Excel and Google Sheets]({B}/habit-tracker-template): 12 months, up to 12 habits, automatic streaks and completion %.',
             f'- [Monthly budget Excel sheet for India]({B}/budget-template-india): rupee categories, an expenses log and a 50/30/20 check.',
-            f'- [EMI tracker Excel sheet]({B}/emi-tracker-template): every loan in one sheet, outstanding balance today, interest paid, debt-free month and a prepayment schedule.']
+            f'- [EMI tracker Excel sheet]({B}/emi-tracker-template): every loan in one sheet, outstanding balance today, interest paid, debt-free month and a prepayment schedule.',
+            f'- [Credit card tracker Excel sheet]({B}/credit-card-tracker-template): every card in one sheet, statement and due dates, this bill and next bill, interest-free days if you buy today, and limit used.']
 
 def build():
-    for fn in (habit_template, budget_template, emi_template):
+    for fn in (habit_template, budget_template, emi_template, cc_template):
         path, pg = fn(); bp.write(path, pg)

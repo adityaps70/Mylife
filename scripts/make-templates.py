@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Free downloadable spreadsheets for /habit-tracker-template and /budget-template-india.
+"""Free downloadable spreadsheets for the /*-template pages (habit, budget, EMI and credit card trackers).
 
     python3 -m venv /tmp/ss-venv && /tmp/ss-venv/bin/pip install openpyxl
     /tmp/ss-venv/bin/python scripts/make-templates.py
@@ -327,11 +327,127 @@ def emi_tracker():
     wb.calculation = CalcProperties(fullCalcOnLoad=True)
     return wb
 
+def stmt_on_or_after(d, S):
+    """Excel formula: the first statement date on or after date d, for a card whose statement day is S (29-31 clamp to month end)."""
+    a = f'EOMONTH({d},-1)+MIN({S},DAY(EOMONTH({d},0)))'
+    return f'IF({d}<={a},{a},EOMONTH({d},0)+MIN({S},DAY(EOMONTH({d},1))))'
+
+def due_after(s, D):
+    """Excel formula: the first date after statement s that falls on due day D."""
+    a = f'EOMONTH({s},-1)+MIN({D},DAY(EOMONTH({s},0)))'
+    return f'IF({a}>{s},{a},EOMONTH({s},0)+MIN({D},DAY(EOMONTH({s},1))))'
+
+def credit_card_tracker():
+    """Every credit card on one sheet: last bill and its due date, what's on the next bill so far, days of interest-free
+    credit if you buy today, limit used. A Spends sheet puts each purchase on the right statement, like the bank does."""
+    import datetime
+    from openpyxl.workbook.properties import CalcProperties
+    wb = Workbook()
+    ws = wb.active; ws.title = 'Cards'
+    MONEY = '₹#,##,##0'; DATE = 'dd mmm yyyy'
+    C0, C1 = 12, 21            # card rows (10 cards)
+    S0, S1 = 5, 504            # spend rows (500 spends)
+    rng = lambda c: f'${c}${C0}:${c}${C1}'
+    ws['A1'] = 'Credit card tracker: every card, every bill'; ws['A1'].font = Font(bold=True, size=18)
+    ws['A2'] = ('Fill the lime columns for each card (the 3 rows below are examples; overwrite them), then log purchases on the Spends tab. '
+                'Dates work themselves out as of today. No card numbers needed.')
+    ws['A2'].font = Font(color=GREY, italic=True)
+    summary = [('A4', 'Total credit limit', 'C4', f'=SUM({rng("C")})', MONEY),
+               ('A5', 'Limit used (unpaid bills + new spends)', 'C5', f'=SUM({rng("P")})', MONEY),
+               ('A6', 'Overall utilisation', 'C6', '=IF(C4>0,C5/C4,"")', '0%'),
+               ('A7', 'Next payment due', 'C7', f'=IF(COUNT({rng("L")})=0,"",MIN({rng("L")}))', DATE),
+               ('A8', 'Card with the most interest-free days today', 'C8', f'=IF(COUNT({rng("N")})=0,"",INDEX({rng("A")},MATCH(MAX({rng("N")}),{rng("N")},0)))', '@'),
+               ('A9', 'Warn me when utilisation is above', 'C9', 0.3, '0%')]
+    for a, t, c, f, fmt in summary:
+        ws[a] = t; ws[a].font = B; ws[c] = f; ws[c].number_format = fmt
+        for x in ('A', 'B', 'C'): ws[f'{x}{a[1:]}'].border = BOX
+    ws['C9'].fill = DONE
+    ws['D7'] = f'=IF(C7="","",INDEX({rng("A")},MATCH(C7,{rng("L")},0)))'
+    ws['E7'] = '=IF(C7="","",C7-TODAY()&" days left")'
+    ws['D8'] = f'=IF(C8="","",MAX({rng("N")})&" days to pay if you buy today")'
+    for r in (7, 8): ws[f'E{r}'].font = Font(color=GREY, italic=True); ws[f'D{r}'].font = Font(color=GREY, italic=True)
+    heads = [('A', 'Card', 18), ('B', 'Bank', 14), ('C', 'Credit limit', 12), ('D', 'Statement day (1-31)', 10), ('E', 'Due day (1-31)', 9),
+             ('F', 'Last bill paid?', 9), ('G', 'Last statement', 12), ('H', 'Last bill (from your spends)', 13), ('I', 'Last bill due', 12),
+             ('J', 'Next statement', 12), ('K', 'On next bill so far', 13), ('L', 'Next payment due', 12), ('M', 'Days left to pay', 9),
+             ('N', 'Interest-free days if you buy today', 12), ('O', 'Best day to buy next', 12), ('P', 'Limit used', 12), ('Q', 'Utilisation', 10)]
+    hr = C0 - 1
+    for c, h, w in heads:
+        ws[f'{c}{hr}'] = h; ws[f'{c}{hr}'].fill = HEAD; ws[f'{c}{hr}'].font = HEADF
+        ws[f'{c}{hr}'].alignment = Alignment(wrap_text=True, vertical='center'); ws.column_dimensions[c].width = w
+    ws.row_dimensions[hr].height = 46
+    SP = lambda c: f'Spends!${c}${S0}:${c}${S1}'
+    for r in range(C0, C1 + 1):
+        ok = f'OR(A{r}="",D{r}="",E{r}="")'
+        ws[f'J{r}'] = f'=IF({ok},"",{stmt_on_or_after("TODAY()", f"D{r}")})'
+        ws[f'G{r}'] = f'=IF(J{r}="","",EOMONTH(J{r},-2)+MIN(D{r},DAY(EOMONTH(J{r},-1))))'
+        ws[f'I{r}'] = f'=IF(G{r}="","",{due_after(f"G{r}", f"E{r}")})'
+        ws[f'H{r}'] = f'=IF(G{r}="","",SUMIFS({SP("C")},{SP("B")},A{r},{SP("E")},G{r}))'
+        ws[f'K{r}'] = f'=IF(J{r}="","",SUMIFS({SP("C")},{SP("B")},A{r},{SP("E")},J{r}))'
+        ws[f'L{r}'] = f'=IF(J{r}="","",IF(AND(F{r}<>"Yes",H{r}>0),I{r},{due_after(f"J{r}", f"E{r}")}))'
+        ws[f'M{r}'] = f'=IF(L{r}="","",L{r}-TODAY())'
+        ws[f'N{r}'] = f'=IF(J{r}="","",{due_after(f"J{r}", f"E{r}")}-TODAY())'
+        ws[f'O{r}'] = f'=IF(J{r}="","",IF(TODAY()=G{r}+1,TODAY(),J{r}+1))'
+        ws[f'P{r}'] = f'=IF(J{r}="","",K{r}+IF(F{r}="Yes",0,H{r}))'
+        ws[f'Q{r}'] = f'=IF(OR(P{r}="",N(C{r})=0),"",P{r}/C{r})'
+        for c in 'ABCDEF': ws[f'{c}{r}'].fill = DONE if r < C0 + 3 else PatternFill('solid', fgColor='F7FBDF')
+        for c in 'CHKP': ws[f'{c}{r}'].number_format = MONEY
+        for c in 'GIJLO': ws[f'{c}{r}'].number_format = DATE
+        ws[f'Q{r}'].number_format = '0%'
+        for c in 'ABCDEFGHIJKLMNOPQ': ws[f'{c}{r}'].border = BOX
+    cards = [('HDFC card', 'HDFC Bank', 200000, 4, 24, 'Yes'), ('SBI card', 'SBI Card', 150000, 15, 5, 'No'), ('Axis card', 'Axis Bank', 100000, 22, 11, 'Yes')]
+    for i, row in enumerate(cards):
+        for c, v in zip('ABCDEF', row): ws[f'{c}{C0 + i}'] = v
+    lists = wb.create_sheet('Lists'); lists.sheet_state = 'hidden'
+    lists['A1'], lists['A2'] = 'Yes', 'No'
+    dv = DataValidation(type='list', formula1='=Lists!$A$1:$A$2', allow_blank=True); ws.add_data_validation(dv); dv.add(f'F{C0}:F{C1}')
+    dvd = DataValidation(type='whole', operator='between', formula1='1', formula2='31', allow_blank=True,
+                         error='Type a day of the month, 1 to 31.', showErrorMessage=True)
+    ws.add_data_validation(dvd); dvd.add(f'D{C0}:E{C1}')
+    ws.conditional_formatting.add(f'Q{C0}:Q{C1}', FormulaRule(formula=[f'AND(ISNUMBER(Q{C0}),Q{C0}>$C$9)'], font=Font(color='DC2626', bold=True)))
+    ws.conditional_formatting.add('C6', FormulaRule(formula=['AND(ISNUMBER(C6),C6>$C$9)'], font=Font(color='DC2626', bold=True)))
+    ws.conditional_formatting.add(f'L{C0}:M{C1}', FormulaRule(formula=[f'AND(ISNUMBER($M{C0}),$M{C0}<=3)'], font=Font(color='DC2626', bold=True)))
+    notes = ['How the dates work: a purchase made on or before the statement day goes on that statement; anything after rolls to the next one. '
+             'The bill is due on the next due day after the statement.',
+             'Statement day 29, 30 or 31 counts as the last day of shorter months. Banks post some spends a day or two late, so a purchase on the statement day itself can land on either bill.',
+             '"Last bill paid?": set it to Yes once you pay the full bill, and back to No when the next statement arrives. An unpaid bill stays as "Next payment due" (in red once it is 3 days away or late). Your bank statement is the final word on what you owe.',
+             FOOT]
+    for i, t in enumerate(notes):
+        ws[f'A{C1 + 2 + i}'] = t; ws[f'A{C1 + 2 + i}'].font = Font(color=GREY, italic=True)
+    ws.freeze_panes = f'B{C0}'; ws.sheet_view.showGridLines = False
+    # spends
+    sp = wb.create_sheet('Spends')
+    sp['A1'] = 'Card spends'; sp['A1'].font = Font(bold=True, size=18)
+    sp['A2'] = 'One row per purchase. Pick the card from the list; the sheet puts it on the right statement and shows when it is due.'
+    sp['A2'].font = Font(color=GREY, italic=True)
+    for c, h, w in zip('ABCDEFG', ('Date', 'Card', 'Amount', 'What for', 'Lands on statement', 'Pay by', 'Which bill'), (13, 18, 12, 26, 14, 13, 18)):
+        sp[f'{c}4'] = h; sp[f'{c}4'].fill = HEAD; sp[f'{c}4'].font = HEADF; sp.column_dimensions[c].width = w
+    look = lambda c, r: f'INDEX(Cards!{rng(c)},MATCH(B{r},Cards!{rng("A")},0))'
+    for r in range(S0, S1 + 1):
+        sp[f'E{r}'] = f'=IF(OR(A{r}="",B{r}=""),"",IFERROR({stmt_on_or_after(f"A{r}", look("D", r))},""))'
+        sp[f'F{r}'] = f'=IF(E{r}="","",{due_after(f"E{r}", look("E", r))})'
+        sp[f'G{r}'] = f'=IF(E{r}="","",IF(E{r}>=TODAY(),"Next bill (not billed yet)",IF(F{r}>=TODAY(),"Current bill","Older bill")))'
+        for c in 'ABCD': sp[f'{c}{r}'].fill = DONE if r < S0 + 9 else PatternFill('solid', fgColor='F7FBDF')
+        sp[f'A{r}'].number_format = DATE; sp[f'E{r}'].number_format = DATE; sp[f'F{r}'].number_format = DATE
+        sp[f'C{r}'].number_format = MONEY
+        for c in 'ABCDEFG': sp[f'{c}{r}'].border = BOX
+    spends = [((2026, 11, 2), 'HDFC card', 4200, 'Groceries'), ((2026, 11, 6), 'HDFC card', 18999, 'Phone (bought just after statement)'),
+              ((2026, 10, 18), 'SBI card', 2450, 'Swiggy and Zomato'), ((2026, 11, 9), 'SBI card', 6300, 'Flight tickets'),
+              ((2026, 11, 16), 'SBI card', 1200, 'Fuel'), ((2026, 10, 20), 'Axis card', 2100, 'Train tickets'), ((2026, 10, 25), 'Axis card', 3500, 'Electricity bill'),
+              ((2026, 11, 12), 'Axis card', 899, 'OTT subscription'), ((2026, 11, 14), 'Axis card', 5400, 'Shopping')]
+    for i, (d, c, a, w) in enumerate(spends):
+        r = S0 + i; sp[f'A{r}'] = datetime.date(*d); sp[f'B{r}'], sp[f'C{r}'], sp[f'D{r}'] = c, a, w
+    dv2 = DataValidation(type='list', formula1=f'=Cards!$A${C0}:$A${C1}', allow_blank=True); sp.add_data_validation(dv2); dv2.add(f'B{S0}:B{S1}')
+    sp.conditional_formatting.add(f'G{S0}:G{S1}', FormulaRule(formula=[f'G{S0}="Current bill"'], font=Font(bold=True, color='DC2626')))
+    sp.conditional_formatting.add(f'A{S0}:G{S1}', FormulaRule(formula=[f'$G{S0}="Older bill"'], font=Font(color=GREY)))
+    sp.freeze_panes = f'A{S0}'; sp.sheet_view.showGridLines = False
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
+    return wb
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys
     files = (('self-streak-habit-tracker-2027.xlsx', habit_tracker), ('self-streak-monthly-budget-india.xlsx', budget_india),
-             ('self-streak-emi-tracker.xlsx', emi_tracker))
+             ('self-streak-emi-tracker.xlsx', emi_tracker), ('self-streak-credit-card-tracker.xlsx', credit_card_tracker))
     only = sys.argv[1:]   # e.g. `make-templates.py self-streak-emi-tracker.xlsx` rebuilds just that file
     for name, fn in files:
         if only and name not in only: continue
