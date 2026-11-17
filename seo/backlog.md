@@ -18,7 +18,7 @@ The out-of-date copy was merged with main and deployed; `npm run deploy` now ref
 10. ~~Article: credit card minimum due interest~~ Dropped 2026-11-14: /credit-card-interest-calculator owns this query. Was: **Article: credit card minimum due interest in India.** Show the real cost of paying only the minimum, with RBI-sourced rules. Links to item 7.
 
 ## Added 2026-11-14 (habit + money keywords)
-- [ ] Request indexing in Search Console for /habit-and-money-tracker and /health-and-finance-tracker after deploy.
+- [x] ~~Request indexing for /habit-and-money-tracker and /health-and-finance-tracker~~ Already indexed (URL Inspection, 2026-11-17).
 - [ ] /habit-tracker: add an Android app section (direct download from /download) and a "daily routine" section for "habit tracker app for android" and "daily routine habit tracker app".
 - [ ] Links for the new pages: list Self Streak on AlternativeTo and Product Hunt as a "habit and money tracker"; pitch roundups of "habit tracker + budget app" lists (see backlinks.md).
 - [ ] Article idea: "Money habits that actually stick (and how to track them)" targeting "money habits tracker" / "spending habits tracker", linking to /habit-and-money-tracker.
@@ -59,7 +59,7 @@ Next, one per autopilot run, highest value first:
 - [x] ~~Next template: credit card tracker Excel~~ Shipped 2026-11-17.
 
 ## Added 2026-11-17
-- [ ] Request indexing in Search Console for /credit-card-tracker-template and /emi-tracker-template (Chrome could not open Search Console on authuser=0 today; check the owner's Google sign-in in Chrome).
+- [x] ~~Request indexing for /credit-card-tracker-template and /emi-tracker-template~~ 2026-11-17: requested for /credit-card-tracker-template ("URL is unknown to Google"); /emi-tracker-template was already indexed. Search Console works on authuser=0: open https://search.google.com/search-console?resource_id=https%3A%2F%2Fselfstreak.com%2F&authuser=0 and use the top search bar (the direct /inspect?id= URL returns a Google 404).
 - [ ] Weekly run is due 2026-11-20: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md not checked yet), competitor sitemap diffs, report.
 - [ ] Next template: debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
 - [ ] Link /emi-tracker-template and /credit-card-tracker-template from /blog/credit-card-statement-date-vs-due-date and the 5 /emi-calculator/* loan pages.

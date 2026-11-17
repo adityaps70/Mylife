@@ -65,3 +65,6 @@
 - No product facts changed in commits since the last run.
 - Search Console: **not done.** authuser=0 (the account that owns the property per earlier runs) sent the Chrome tab back to a new-tab page 3 times; authuser=1 has no properties, and 2 and 3 say "you don't have access". No indexing requested. Bing Webmaster: 0 clicks and 0 impressions (14–15 Nov).
 - `npm run report` (10–17 Nov): 161 views, 82 visitors, 3 sign-ups, 0 paid; google.com sent 4 views. Saved in reports/traffic-2026-11-17.md.
+
+## 2026-11-17 (manual, owner request)
+- Search Console URL Inspection: requested indexing for /credit-card-tracker-template (was unknown to Google) and a recrawl of /habit-tracker-template (✓ tick redesign). Already indexed: /emi-tracker-template, /habit-and-money-tracker, /health-and-finance-tracker. Overview showed 22 indexed, 13 not indexed.
