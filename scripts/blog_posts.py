@@ -171,7 +171,8 @@ dict(slug='debt-avalanche-vs-snowball', nav='Avalanche vs snowball', kicker='Get
 <tr><td>Avalanche</td><td>13 months</td><td>₹23,584</td><td>Card and phone (month 6), loan (month 13)</td></tr>
 <tr><td>Snowball</td><td>13 months</td><td>₹25,229</td><td>Phone (month 2), card (month 6), loan (month 13)</td></tr>
 <tr><td>Minimums only</td><td>30 months</td><td>₹66,935</td><td>Phone (11), card (23), loan (30)</td></tr></tbody></table></div>
-<p>Two lessons stand out. First, avalanche saves money (₹1,645 here), but the gap is small when balances are modest. Second, the big win is paying extra at all: either plan saves over ₹41,000 and 17 months compared with paying only the minimums.</p></section>
+<p>Two lessons stand out. First, avalanche saves money (₹1,645 here), but the gap is small when balances are modest. Second, the big win is paying extra at all: either plan saves over ₹41,000 and 17 months compared with paying only the minimums.</p>
+<p>To run the same comparison on your own debts, download the free <a href="/debt-snowball-spreadsheet">debt snowball and avalanche spreadsheet</a>. It starts with this example, so you can check it gives the numbers above before typing yours.</p></section>
 <section><h2 id="research">What the research says about motivation</h2>
 <p>A 2012 study in the <i>Journal of Marketing Research</i> by David Gal and Blakeley McShane looked at people in a debt settlement programme. People who closed off individual debt accounts were more likely to clear all their debt, independent of the amount they had repaid. Small victories seem to help people keep going.</p>
 <p>That is the case for snowball: if seeing a debt disappear in month 2 keeps you on the plan, the extra interest can be worth it.</p></section>

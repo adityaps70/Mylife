@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Free downloadable spreadsheets for the /*-template pages (habit, budget, EMI and credit card trackers).
+"""Free downloadable spreadsheets for the /*-template pages (habit, budget, EMI and credit card trackers, debt payoff plan).
 
     python3 -m venv /tmp/ss-venv && /tmp/ss-venv/bin/pip install openpyxl
     /tmp/ss-venv/bin/python scripts/make-templates.py
@@ -443,11 +443,167 @@ def credit_card_tracker():
     wb.calculation = CalcProperties(fullCalcOnLoad=True)
     return wb
 
+DEBT_TYPES = ['Credit card', 'Personal loan', 'Car loan', 'Two-wheeler loan', 'Home loan', 'Education loan', 'Gold loan',
+              'Consumer durable / no-cost EMI', 'Pay later / BNPL', 'Loan from family or friends', 'Other']
+
+def debt_payoff():
+    """Debt snowball and avalanche in one file. You list your debts and what you can pay towards them each month; three
+    plan sheets simulate it month by month (avalanche, snowball, and minimums only), and the Debts sheet compares them.
+    Each month: interest is added, every debt gets its minimum, and the rest goes to the first debt in the plan's order.
+    A cleared debt's minimum rolls on to the next one."""
+    from openpyxl.workbook.properties import CalcProperties
+    wb = Workbook()
+    ws = wb.active; ws.title = 'Debts'
+    MONEY = '₹#,##,##0'; MDATE = 'mmm yyyy'
+    R0, R1 = 13, 22            # debt rows (10 debts)
+    N = R1 - R0 + 1
+    M0, M1 = 13, 372           # plan rows (360 months)
+    rng = lambda c: f'${c}${R0}:${c}${R1}'
+    ws['A1'] = 'Debt payoff plan: snowball vs avalanche'; ws['A1'].font = Font(bold=True, size=18)
+    ws['A2'] = ('Fill the lime cells: what you can pay towards debts each month, then each debt below (the 3 rows are examples; overwrite them). '
+                'The sheet compares both methods and shows the month each debt is cleared.')
+    ws['A2'].font = Font(color=GREY, italic=True)
+    inputs = [('A4', 'Total you can pay towards debts each month', 'C4', 20000, MONEY),
+              ('A5', 'Minimums and EMIs add up to', 'C5', f'=SUMPRODUCT({rng("O")},{rng("E")})', MONEY),
+              ('A6', 'Extra each month (goes to one debt at a time)', 'C6', '=C4-C5', MONEY),
+              ('A7', 'First payment month', 'C7', '=EOMONTH(TODAY(),0)+1', MDATE),
+              ('A8', 'Total you owe today', 'C8', f'=SUMPRODUCT({rng("O")},{rng("C")})', MONEY),
+              ('A9', 'Interest added this month (at today\'s balances)', 'C9', f'=SUM({rng("F")})', MONEY)]
+    for a, t, c, f, fmt in inputs:
+        ws[a] = t; ws[a].font = B; ws[c] = f; ws[c].number_format = fmt
+        for x in 'ABC': ws[f'{x}{a[1:]}'].border = BOX
+    ws['C4'].fill = DONE; ws['C7'].fill = DONE
+    ws['D6'] = '=IF(C6<0,"Less than your minimums: the plans pay the minimums anyway, so find "&TEXT(-C6,"#,##0")&" more or talk to your lender","")'
+    ws['D6'].font = Font(color='DC2626', bold=True)
+    ws['D7'] = '← works itself out (next month); type a date to change it'; ws['D7'].font = Font(color=GREY, italic=True)
+    # comparison table
+    ws['F3'] = 'Plan'; ws['G3'] = 'Debt-free in (months)'; ws['H3'] = 'Debt-free month'; ws['I3'] = 'Total interest'; ws['J3'] = 'Saves vs minimums only'
+    for c in 'FGHIJ':
+        ws[f'{c}3'].fill = HEAD; ws[f'{c}3'].font = HEADF; ws[f'{c}3'].alignment = Alignment(wrap_text=True, vertical='center')
+    ws.row_dimensions[3].height = 30
+    plans = [('Avalanche', 'Avalanche (highest rate first)'), ('Snowball', 'Snowball (smallest balance first)'), ('Minimums', 'Minimums only')]
+    for i, (sh, label) in enumerate(plans):
+        r = 4 + i
+        ws[f'F{r}'] = label; ws[f'F{r}'].font = B
+        ws[f'G{r}'] = f"=IF({sh}!$C$6,\"over 30 years\",{sh}!$C$4)"
+        ws[f'H{r}'] = f"=IF(OR({sh}!$C$6,{sh}!$C$4=0),\"\",EDATE($C$7,{sh}!$C$4-1))"; ws[f'H{r}'].number_format = MDATE
+        ws[f'I{r}'] = f"=IF({sh}!$C$6,\"\",{sh}!$C$5)"; ws[f'I{r}'].number_format = MONEY
+        ws[f'J{r}'] = f'=IF(OR(I{r}="",$I$6=""),"",$I$6-I{r})'; ws[f'J{r}'].number_format = MONEY
+        for c in 'FGHIJ': ws[f'{c}{r}'].border = BOX
+    ws['J6'] = '—'
+    ws['F8'] = '=IF(OR(I4="",I5=""),"",IF(ROUND(I5,0)-ROUND(I4,0)>=1,"Avalanche saves "&TEXT(ROUND(I5,0)-ROUND(I4,0),"#,##0")&" in interest over snowball.","Both methods cost the same here: pick the one you will stick with."))'
+    ws['F8'].font = Font(bold=True)
+    ws['F9'] = '="Minimums only means paying today\'s minimums total ("&TEXT($C$5,"#,##0")&" a month) with nothing extra."'
+    ws['F9'].font = Font(color=GREY, italic=True)
+    heads = [('A', 'Debt', 22), ('B', 'Type', 20), ('C', 'Balance today', 13), ('D', 'Rate % (yearly)', 10), ('E', 'Minimum or EMI a month', 12),
+             ('F', 'Interest this month', 12), ('G', 'Order (avalanche)', 10), ('H', 'Cleared (avalanche)', 12), ('I', 'Order (snowball)', 10), ('J', 'Cleared (snowball)', 12),
+             ('K', 'Cleared (minimums only)', 12)]
+    hr = R0 - 1
+    for c, h, w in heads:
+        ws[f'{c}{hr}'] = h; ws[f'{c}{hr}'].fill = HEAD; ws[f'{c}{hr}'].font = HEADF
+        ws[f'{c}{hr}'].alignment = Alignment(wrap_text=True, vertical='center'); ws.column_dimensions[c].width = w
+    ws.row_dimensions[hr].height = 46
+    for c in 'LMN': ws.column_dimensions[c].hidden = True
+    ws.column_dimensions['O'].hidden = True
+    def cleared(sh, rank_col, r):
+        return (f'=IF({rank_col}{r}="","",IF(INDEX({sh}!$C$11:$AF$11,1,({rank_col}{r}-1)*3+1)=0,"",'
+                f'IF(INDEX({sh}!$C$11:$AF$11,1,({rank_col}{r}-1)*3+1)>={M1 - M0 + 1},"over 30 years",EDATE($C$7,INDEX({sh}!$C$11:$AF$11,1,({rank_col}{r}-1)*3+1)-1))))')
+    for r in range(R0, R1 + 1):
+        ws[f'O{r}'] = f'=IF(AND(A{r}<>"",ISNUMBER(C{r}),N(C{r})>0,ISNUMBER(D{r})),1,0)'   # counts as a debt
+        ws[f'N{r}'] = r                                                                   # tie-break
+        ws[f'F{r}'] = f'=IF(O{r}=1,ROUND(C{r}*D{r}/1200,0),"")'
+        ws[f'G{r}'] = (f'=IF(O{r}=1,1+COUNTIFS({rng("O")},1,{rng("D")},">"&D{r})+COUNTIFS({rng("O")},1,{rng("D")},D{r},{rng("C")},"<"&C{r})'
+                       f'+COUNTIFS({rng("O")},1,{rng("D")},D{r},{rng("C")},C{r},{rng("N")},"<"&N{r}),"")')
+        ws[f'I{r}'] = (f'=IF(O{r}=1,1+COUNTIFS({rng("O")},1,{rng("C")},"<"&C{r})+COUNTIFS({rng("O")},1,{rng("C")},C{r},{rng("D")},">"&D{r})'
+                       f'+COUNTIFS({rng("O")},1,{rng("C")},C{r},{rng("D")},D{r},{rng("N")},"<"&N{r}),"")')
+        ws[f'H{r}'] = cleared('Avalanche', 'G', r); ws[f'J{r}'] = cleared('Snowball', 'I', r); ws[f'K{r}'] = cleared('Minimums', 'G', r)
+        for c in 'ABCDE': ws[f'{c}{r}'].fill = DONE if r < R0 + 3 else PatternFill('solid', fgColor='F7FBDF')
+        for c in 'CEF': ws[f'{c}{r}'].number_format = MONEY
+        for c in 'HJK': ws[f'{c}{r}'].number_format = MDATE
+        for c in 'ABCDEFGHIJK': ws[f'{c}{r}'].border = BOX
+    sample = [('Credit card', 'Credit card', 60000, 42, 3000), ('Personal loan', 'Personal loan', 150000, 14, 5000), ('Phone EMI', 'Consumer durable / no-cost EMI', 20000, 16, 2000)]
+    for i, row in enumerate(sample):
+        for c, v in zip('ABCDE', row): ws[f'{c}{R0 + i}'] = v
+    lists = wb.create_sheet('Lists'); lists.sheet_state = 'hidden'
+    for i, t in enumerate(DEBT_TYPES, start=1): lists[f'A{i}'] = t
+    dv = DataValidation(type='list', formula1=f'=Lists!$A$1:$A${len(DEBT_TYPES)}', allow_blank=True); ws.add_data_validation(dv); dv.add(f'B{R0}:B{R1}')
+    ws.conditional_formatting.add('C6', CellIsRule(operator='lessThan', formula=['0'], font=Font(color='DC2626', bold=True)))
+    notes = ['How it works: each month interest is added to every debt, every debt gets its minimum or EMI, and the extra goes to the first debt in the order. '
+             'When a debt is cleared, its minimum moves to the next one, so the amount you pay each month stays the same.',
+             'Avalanche orders debts by rate (highest first). Snowball orders them by balance (smallest first). Change a rate or balance and the order updates.',
+             'Interest is worked out monthly at the yearly rate ÷ 12. Card issuers charge daily interest, add 18% GST on it, and the minimum due shrinks as the balance falls, '
+             'so treat card figures as estimates. Your lender\'s statement is the final word.',
+             'For a loan, the minimum is its EMI and the balance is the outstanding principal from your loan statement. Check prepayment charges before paying a fixed-rate loan early.',
+             FOOT]
+    for i, t in enumerate(notes):
+        ws[f'A{R1 + 2 + i}'] = t; ws[f'A{R1 + 2 + i}'].font = Font(color=GREY, italic=True)
+    ws.freeze_panes = f'B{R0}'; ws.sheet_view.showGridLines = False
+    # plan sheets
+    ranks = {'Avalanche': 'G', 'Snowball': 'I', 'Minimums': 'G'}
+    titles = {'Avalanche': 'Avalanche plan: highest interest rate first', 'Snowball': 'Snowball plan: smallest balance first',
+              'Minimums': 'Minimums only: today\'s minimums total, nothing extra'}
+    for sh, rk in ranks.items():
+        p = wb.create_sheet(sh)
+        p['A1'] = titles[sh]; p['A1'].font = Font(bold=True, size=16)
+        p['A2'] = 'Works itself out from the Debts tab. Nothing to type here.'; p['A2'].font = Font(color=GREY, italic=True)
+        p['A3'] = 'Paying each month'; p['C3'] = '=MAX(Debts!$C$4,Debts!$C$5)' if sh != 'Minimums' else '=Debts!$C$5'
+        p['A4'] = 'Debt-free in (months)'; p['C4'] = f'=COUNTIF(AH{M0}:AH{M1},">0")'
+        p['A5'] = 'Total interest'; p['C5'] = f'=SUM(AI{M0}:AI{M1})-Debts!$C$8'
+        p['A6'] = 'Not cleared in 30 years?'; p['C6'] = f'=AH{M1}-AI{M1}>0.5'
+        for r in (3, 5): p[f'C{r}'].number_format = MONEY
+        for r in range(3, 7):
+            p[f'A{r}'].font = B
+            for c in 'ABC': p[f'{c}{r}'].border = BOX
+        p['A13'].value = None
+        p['A12'] = 'No.'; p['B12'] = 'Month'
+        p.column_dimensions['A'].width = 6; p.column_dimensions['B'].width = 10
+        pool = 'AG'
+        mins = []
+        for k in range(1, N + 1):
+            o, y, x = col(3 + (k - 1) * 3), col(4 + (k - 1) * 3), col(5 + (k - 1) * 3)
+            match = f'MATCH({k},Debts!{rng(rk)},0)'
+            p[f'{o}11'] = f'=IF({o}$7="",0,COUNTIF({o}{M0}:{o}{M1},">0"))'
+            p[f'{y}11'] = f'=IF({o}11=0,"",IF({o}11>={M1 - M0 + 1},"not in 30 yrs","cleared in month "&{o}11))'
+            p[f'{o}7'] = f'=IFERROR(INDEX(Debts!{rng("A")},{match}),"")'
+            p[f'{o}8'] = f'=IFERROR(INDEX(Debts!{rng("D")},{match}),0)'
+            p[f'{o}9'] = f'=IFERROR(N(INDEX(Debts!{rng("E")},{match})),0)'
+            p[f'{o}10'] = f'=IFERROR(INDEX(Debts!{rng("C")},{match}),0)'
+            for rr, lab in ((8, 'rate %'), (9, 'minimum'), (10, 'balance today')): p[f'{y}{rr}'] = lab; p[f'{y}{rr}'].font = Font(color=GREY, italic=True)
+            p[f'{o}7'].font = B; p[f'{o}10'].number_format = MONEY; p[f'{o}9'].number_format = MONEY
+            for c, h in ((o, 'Owed'), (y, 'Paid'), (x, 'Extra left')):
+                p[f'{c}12'] = h; p.column_dimensions[c].width = 11
+            p[f'{x}12'].font = Font(color=GREY); p.column_dimensions[x].width = 9
+            for c in (o, y): p[f'{c}12'].fill = HEAD; p[f'{c}12'].font = HEADF
+            prev_x = pool if k == 1 else col(5 + (k - 2) * 3)
+            for r in range(M0, M1 + 1):
+                if r == M0: p[f'{o}{r}'] = f'=IF({o}$7="",0,ROUND({o}$10*(1+{o}$8/1200),2))'
+                else: p[f'{o}{r}'] = f'=ROUND(({o}{r - 1}-{y}{r - 1})*(1+{o}$8/1200),2)'
+                p[f'{y}{r}'] = f'=MIN({o}{r},MIN({o}$9,{o}{r})+{prev_x}{r})'
+                p[f'{x}{r}'] = f'={prev_x}{r}-({y}{r}-MIN({o}$9,{o}{r}))'
+                for c in (o, y): p[f'{c}{r}'].number_format = MONEY
+                p[f'{x}{r}'].number_format = MONEY; p[f'{x}{r}'].font = Font(color=GREY)
+            mins.append(f'MIN({o}$9,{o}{{r}})')
+        p[f'{pool}12'] = 'Extra to share'; p['AH12'] = 'Total owed'; p['AI12'] = 'Total paid'
+        for c in (pool, 'AH', 'AI'): p[f'{c}12'].fill = HEAD; p[f'{c}12'].font = HEADF; p.column_dimensions[c].width = 12
+        owed_cols = [col(3 + (k - 1) * 3) for k in range(1, N + 1)]; paid_cols = [col(4 + (k - 1) * 3) for k in range(1, N + 1)]
+        for r in range(M0, M1 + 1):
+            p[f'A{r}'] = r - M0 + 1
+            p[f'B{r}'] = f'=EDATE(Debts!$C$7,{r - M0})'; p[f'B{r}'].number_format = MDATE
+            p[f'{pool}{r}'] = f'=MAX(0,$C$3-(' + '+'.join(m.format(r=r) for m in mins) + '))'
+            p[f'AH{r}'] = '=' + '+'.join(f'{c}{r}' for c in owed_cols)
+            p[f'AI{r}'] = '=' + '+'.join(f'{c}{r}' for c in paid_cols)
+            for c in (pool, 'AH', 'AI'): p[f'{c}{r}'].number_format = MONEY
+        p.conditional_formatting.add(f'A{M0}:AI{M1}', FormulaRule(formula=[f'$AH{M0}<=0'], font=Font(color='D4D4D8')))
+        p.freeze_panes = f'C{M0}'; p.sheet_view.showGridLines = False
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
+    return wb
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     import sys
     files = (('self-streak-habit-tracker-2027.xlsx', habit_tracker), ('self-streak-monthly-budget-india.xlsx', budget_india),
-             ('self-streak-emi-tracker.xlsx', emi_tracker), ('self-streak-credit-card-tracker.xlsx', credit_card_tracker))
+             ('self-streak-emi-tracker.xlsx', emi_tracker), ('self-streak-credit-card-tracker.xlsx', credit_card_tracker),
+             ('self-streak-debt-payoff-planner.xlsx', debt_payoff))
     only = sys.argv[1:]   # e.g. `make-templates.py self-streak-emi-tracker.xlsx` rebuilds just that file
     for name, fn in files:
         if only and name not in only: continue

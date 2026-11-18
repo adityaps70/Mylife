@@ -20,8 +20,8 @@
   "modified": "2026-11-13"
  },
  "/blog/debt-avalanche-vs-snowball": {
-  "hash": "fa9675c0268d3d79",
-  "modified": "2026-11-13"
+  "hash": "0fa820450625195a",
+  "modified": "2026-11-18"
  },
  "/blog/habit-tracker-app-vs-excel": {
   "hash": "7cf2a07a04212ac6",
@@ -80,12 +80,16 @@
   "modified": "2026-11-17"
  },
  "/credit-card-tracker-template": {
-  "hash": "ede923603dbe7d09",
-  "modified": "2026-11-17"
+  "hash": "f62fca8f010bd374",
+  "modified": "2026-11-18"
  },
  "/debt-payoff-planner": {
-  "hash": "674c29c3e5621757",
-  "modified": "2026-11-16"
+  "hash": "6ac40d50e430af46",
+  "modified": "2026-11-18"
+ },
+ "/debt-snowball-spreadsheet": {
+  "hash": "b23ce2678e3c98e0",
+  "modified": "2026-11-18"
  },
  "/download": {
   "hash": "880733e17d88a557",
@@ -116,8 +120,8 @@
   "modified": "2026-11-13"
  },
  "/emi-tracker-template": {
-  "hash": "08c5d82e216ff08c",
-  "modified": "2026-11-16"
+  "hash": "946ed1a2b4e7aaf5",
+  "modified": "2026-11-18"
  },
  "/expense-tracker": {
   "hash": "fd9518c7b465ee63",

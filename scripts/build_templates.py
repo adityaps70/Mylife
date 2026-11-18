@@ -1,4 +1,4 @@
-"""Free template pages: /habit-tracker-template, /budget-template-india, /emi-tracker-template and /credit-card-tracker-template.
+"""Free template pages: /habit-tracker-template, /budget-template-india, /emi-tracker-template, /credit-card-tracker-template and /debt-snowball-spreadsheet.
 
 People searching "habit tracker excel" or "monthly budget excel sheet India" want a file, so these pages give
 a real, free one (made by scripts/make-templates.py, no signup), explain how to use it, and say honestly when
@@ -136,7 +136,7 @@ def emi_template():
 <tr><td>Prepayment what-ifs</td><td>Yes, on the Schedule tab</td><td>Yes, in the <a href="/debt-payoff-planner">debt payoff planner</a> (avalanche or snowball)</td></tr>
 <tr><td>Bank login or SMS access</td><td>Not needed</td><td>Not needed either</td></tr>
 <tr><td>Your data</td><td>A file you own completely</td><td>Synced to your account; export or delete any time</td></tr></tbody></table></div>
-<p>If you review your loans once a month on a laptop, the sheet is enough. If you have several EMIs on different dates and want a nudge before each one, that’s what the app adds. Planning the whole month’s money? Pair it with the <a href="/budget-template-india">monthly budget sheet</a>.</p></section>'''
+<p>If you review your loans once a month on a laptop, the sheet is enough. If you have several EMIs on different dates and want a nudge before each one, that’s what the app adds. Planning the whole month’s money? Pair it with the <a href="/budget-template-india">monthly budget sheet</a>. Deciding which debt to clear first? The <a href="/debt-snowball-spreadsheet">debt snowball and avalanche spreadsheet</a> compares both orders on your numbers.</p></section>'''
     faq = [('Is this EMI tracker Excel sheet free?', 'Yes. Download it without signing up or giving an email, and use it for as many loans as you have (up to 30 rows).'),
            ('How does it calculate the outstanding loan balance?', 'It counts the EMIs due between your first EMI date and today, then works out the balance left on a reducing-balance loan after that many EMIs. That is the same method banks use, so it should be within a few rupees of your statement unless the rate changed.'),
            ('Does it work for no-cost EMI and credit card EMI?', 'Yes. Enter 0% as the rate for a no-cost EMI and the card’s EMI rate for a credit card EMI. Note that banks may still charge a processing fee and GST on the interest of a card EMI, which the sheet does not add.'),
@@ -182,7 +182,7 @@ def cc_template():
 <tr><td>Adding a spend</td><td>Type a row</td><td>Say “1,200 on Amazon on my HDFC card”, or snap the statement</td></tr>
 <tr><td>Minimum due</td><td>Not tracked</td><td>Yes, with full, minimum or any amount</td></tr>
 <tr><td>Card number, SMS or bank login</td><td>Not needed</td><td>Not needed either</td></tr></tbody></table></div>
-<p>If you check your cards once a week on a laptop, the sheet does the job. If two cards are due in the same week and you’ve paid a late fee before, that’s what a <a href="/credit-card-bill-reminder">credit card bill reminder</a> is for. Paying card EMIs or loans too? The free <a href="/emi-tracker-template">EMI tracker sheet</a> covers those.</p></section>'''
+<p>If you check your cards once a week on a laptop, the sheet does the job. If two cards are due in the same week and you’ve paid a late fee before, that’s what a <a href="/credit-card-bill-reminder">credit card bill reminder</a> is for. Paying card EMIs or loans too? The free <a href="/emi-tracker-template">EMI tracker sheet</a> covers those, and the <a href="/debt-snowball-spreadsheet">debt payoff spreadsheet</a> shows which to clear first.</p></section>'''
     faq = [('Is this credit card tracker Excel sheet free?', 'Yes. Download it without signing up or giving an email, and use it for up to 10 cards and 500 purchases.'),
            ('Do I need to enter my card number?', 'No. The sheet only needs a name for each card, the bank, the credit limit, the statement day and the due day. Never type a full card number or CVV into any spreadsheet.'),
            ('How does it know which bill a purchase goes on?', 'A purchase made on or before the statement day goes on that statement; anything after it rolls to the next one. Banks sometimes post a spend a day or two late, so a purchase on the statement day itself can land on either bill. Your statement is the final word.'),
@@ -195,22 +195,73 @@ def cc_template():
                 '<b>Download the free credit card tracker</b> above: add each card’s limit, statement day and due day, log your spends, and it shows every card’s last bill and due date, what’s on the next bill so far, interest-free days if you buy today, and how much of your limit you’ve used. It opens in Excel, Google Sheets and Numbers, and never asks for a card number.',
                 'self-streak-credit-card-tracker.xlsx', 'credit card tracker for Excel', body, faq, 'credit-card-bill-reminder')
 
+def debt_template():
+    # Example values: the same three debts as /blog/debt-avalanche-vs-snowball, first payment Dec 2026.
+    # Checked with the `formulas` library against a Python month-by-month simulation (18 Nov 2026).
+    debts = [('Credit card', '₹60,000', '42%', '₹3,000', '₹2,100'), ('Personal loan', '₹1,50,000', '14%', '₹5,000', '₹1,750'), ('Phone EMI', '₹20,000', '16%', '₹2,000', '₹267')]
+    plans = [('Avalanche (highest rate first)', '13 months (Dec 2027)', '₹23,584', 'Card and phone in May 2027, loan in Dec 2027'),
+             ('Snowball (smallest balance first)', '13 months (Dec 2027)', '₹25,229', 'Phone in Jan 2027, card in May 2027, loan in Dec 2027'),
+             ('Minimums only (₹10,000 a month)', '30 months (May 2029)', '₹66,935', 'Phone in Oct 2027, card in Oct 2028, loan in May 2029')]
+    row = lambda r: '<tr>' + ''.join(f'<td>{html.escape(c)}</td>' for c in r) + '</tr>'
+    body = f'''<section><h2>What’s in the free debt payoff spreadsheet</h2><ul class="list">
+<li><b>One row per debt, up to 10:</b> credit cards, personal loans, car, two-wheeler, education and gold loans, no-cost EMIs, pay-later and money you owe family.</li>
+<li><b>You type 4 things per debt</b> (balance today, yearly rate, minimum or EMI a month, and a name) <b>and one number for the month:</b> the total you can put towards debts.</li>
+<li><b>Snowball and avalanche side by side.</b> Debt-free month, total interest and interest saved for each, plus a third plan that pays only the minimums, so you see what paying extra is worth.</li>
+<li><b>The month each debt is cleared</b> under each plan, and the order the sheet pays them in. Change a balance or rate and the order updates.</li>
+<li><b>Three month-by-month plan tabs</b> (360 months): what you owe and pay on every debt each month, and where the extra goes.</li>
+<li>A red warning if your monthly amount is less than your minimums. No macros, so it opens safely anywhere.</li></ul></section>
+<section><h2>What it shows for a real example</h2><p>The example in the file: three debts and ₹20,000 a month to put towards them. Minimums add up to ₹10,000, so ₹10,000 a month is extra.</p>
+<div class="tw"><table class="cmp"><thead><tr><th>Debt</th><th>Balance</th><th>Rate (a year)</th><th>Minimum a month</th><th>Interest this month</th></tr></thead><tbody>{"".join(row(r) for r in debts)}</tbody></table></div>
+<div class="tw" style="margin-top:12px"><table class="cmp"><thead><tr><th>Plan</th><th>Debt-free in</th><th>Total interest</th><th>When each debt is cleared</th></tr></thead><tbody>{"".join(row(r) for r in plans)}</tbody></table></div>
+<p>Avalanche costs ₹1,645 less than snowball here, and both finish in the same month. The bigger number is the one at the bottom: paying ₹10,000 extra a month instead of only the minimums saves over ₹41,000 and 17 months. Look at the “Interest this month” column too: the credit card is less than a third of what you owe but adds more interest each month than the other two together. The full reasoning is in <a href="/blog/debt-avalanche-vs-snowball">debt avalanche vs snowball</a>.</p></section>
+<section><h2>Snowball or avalanche: which should you pick?</h2>
+<p><b>Avalanche</b> always costs the least interest, because the most expensive debt shrinks first. <b>Snowball</b> clears small debts early, and in a study of real debt-repayment accounts, people who closed out small balances first were more likely to clear all their debt (<a href="https://doi.org/10.1509/jmr.11.0272" rel="noopener" target="_blank">Gal and McShane, Journal of Marketing Research, 2012</a>). The sheet shows the rupee cost of each, so you can decide whether quick wins are worth it for you. In India the two often agree, because a credit card is frequently both the smallest balance and the highest rate.</p></section>
+<section><h2>How to use it</h2><ol class="list">
+<li>Type what you can put towards debts each month in the first lime cell. Work it out after rent, food, bills and savings for emergencies; the <a href="/budget-template-india">monthly budget sheet</a> helps.</li>
+<li>Overwrite the three example debts. For a loan, use the outstanding principal and the EMI from your latest loan statement (or the free <a href="/emi-tracker-template">EMI tracker sheet</a>, which works it out). For a card, use the total outstanding and the minimum due on your statement.</li>
+<li>Read the comparison table at the top, then open the Avalanche or Snowball tab to see the month-by-month plan.</li>
+<li>Each month, update the balances from your statements. The plan resets from today’s numbers.</li>
+<li><b>Google Sheets:</b> File → Import → Upload. The formulas and drop-downs carry over.</li></ol>
+<p>The sheet adds interest monthly at the yearly rate ÷ 12. Card issuers charge interest daily, add 18% GST on it, and lower the minimum due as the balance falls, so treat card figures as estimates; the <a href="/credit-card-interest-calculator">credit card interest calculator</a> shows the real cost of paying only the minimum. Before prepaying a fixed-rate loan, check your sanction letter for a prepayment charge.</p></section>
+<section><h2>Spreadsheet or app?</h2>
+<div class="tw"><table class="cmp"><thead><tr><th></th><th>Debt payoff sheet</th><th>Self Streak app</th></tr></thead><tbody>
+<tr><td>Price</td><td>Free</td><td>Free plan; Plus ₹199/month adds the AI plan, reminders and AI logging</td></tr>
+<tr><td>Snowball vs avalanche</td><td>Yes, side by side with minimums only</td><td>Yes, in the <a href="/debt-payoff-planner">debt payoff planner</a></td></tr>
+<tr><td>Where the extra money comes from</td><td>You decide the monthly amount</td><td>Suggests cuts from your own budget categories, with amounts</td></tr>
+<tr><td>Reminder before each EMI and card bill</td><td>No</td><td>Yes</td></tr>
+<tr><td>Bank login or SMS access</td><td>Not needed</td><td>Not needed either</td></tr>
+<tr><td>Your data</td><td>A file you own completely</td><td>Synced to your account; export or delete any time</td></tr></tbody></table></div>
+<p>If you update your balances once a month on a laptop, the sheet is all you need. If you’d rather the plan update itself as you log spends and pay bills, that’s what the app does. Have several cards? The <a href="/credit-card-tracker-template">credit card tracker sheet</a> shows when each bill is due.</p></section>'''
+    faq = [('Is this debt snowball spreadsheet free?', 'Yes. Download it without signing up or giving an email, and use it for up to 10 debts.'),
+           ('Does it do the debt avalanche method too?', 'Yes. The same file works out both methods and a minimums-only plan from one list of debts, and shows the debt-free month and total interest for each.'),
+           ('What if I can’t afford all my minimum payments?', 'The sheet shows a red warning and the plans still pay every minimum, so the shortfall is clear. If your EMIs and minimums are more than you can pay, talk to your lender about restructuring before you miss a payment.'),
+           ('Does it work in rupees?', 'Yes. Amounts are in rupees with Indian digit grouping (₹1,50,000), and the debt types are the ones Indian households have: cards, personal loans, EMIs, gold loans and pay-later.'),
+           ('Does it work in Google Sheets?', 'Yes. In Google Sheets choose File, Import, Upload and pick the file. The formulas and drop-downs keep working.')]
+    return page('/debt-snowball-spreadsheet', 'Free Debt Snowball Spreadsheet (Excel, ₹) | Self Streak',
+                'Free debt snowball and avalanche spreadsheet in rupees: list your cards and loans, see your debt-free month and interest under each plan. No signup.',
+                'Debt payoff spreadsheet', 'Free template', 'Free debt snowball and avalanche spreadsheet',
+                'List your credit cards and loans, type what you can pay each month, and see which order gets you debt-free sooner and for less interest.',
+                '<b>Download the free debt payoff spreadsheet</b> above: enter each debt’s balance, rate and minimum, plus what you can pay towards debts each month. It works out the snowball and avalanche plans month by month, the month each debt is cleared, your debt-free date and total interest, and how much paying extra saves over minimums only. It opens in Excel, Google Sheets and Numbers.',
+                'self-streak-debt-payoff-planner.xlsx', 'debt payoff spreadsheet for Excel', body, faq, 'debt-payoff-planner')
+
 LINKS = {'habit-tracker': ('/habit-tracker-template', 'Free habit tracker template (Excel & Google Sheets)', 'Download a 12-month habit tracking sheet with automatic streaks.'),
          'emi-calculator': ('/emi-tracker-template', 'Free EMI tracker Excel sheet for all your loans', 'Outstanding balance today, interest paid and your debt-free month.'),
          'debt-payoff-planner': ('/emi-tracker-template', 'Free EMI tracker Excel sheet', 'Every loan in one sheet, with a prepayment column to test what-ifs.'),
+         'debt-payoff-planner ': ('/debt-snowball-spreadsheet', 'Free debt snowball and avalanche spreadsheet', 'Both plans side by side: debt-free month and interest for each.'),
          'credit-card-bill-reminder': ('/credit-card-tracker-template', 'Free credit card tracker Excel sheet', 'Statement and due dates, this bill and next bill, and interest-free days for every card.'),
          'expense-tracker': ('/budget-template-india', 'Free monthly budget Excel sheet for India', 'Rupee categories, an expenses log and a 50/30/20 check.')}
 
 def link_from_tools():
     for slug, link in LINKS.items():
-        bp.GUIDES_FOR.setdefault(slug, []).insert(0, link)
+        bp.GUIDES_FOR.setdefault(slug.strip(), []).insert(0, link)
 
 def llms_lines():
     return ['', '## Free templates', f'- [Habit tracker template for Excel and Google Sheets]({B}/habit-tracker-template): 12 months, up to 12 habits, automatic streaks and completion %.',
             f'- [Monthly budget Excel sheet for India]({B}/budget-template-india): rupee categories, an expenses log and a 50/30/20 check.',
             f'- [EMI tracker Excel sheet]({B}/emi-tracker-template): every loan in one sheet, outstanding balance today, interest paid, debt-free month and a prepayment schedule.',
-            f'- [Credit card tracker Excel sheet]({B}/credit-card-tracker-template): every card in one sheet, statement and due dates, this bill and next bill, interest-free days if you buy today, and limit used.']
+            f'- [Credit card tracker Excel sheet]({B}/credit-card-tracker-template): every card in one sheet, statement and due dates, this bill and next bill, interest-free days if you buy today, and limit used.',
+            f'- [Debt snowball and avalanche spreadsheet]({B}/debt-snowball-spreadsheet): up to 10 debts in rupees, both payoff plans and minimums only side by side, debt-free month and total interest for each.']
 
 def build():
-    for fn in (habit_template, budget_template, emi_template, cc_template):
+    for fn in (habit_template, budget_template, emi_template, cc_template, debt_template):
         path, pg = fn(); bp.write(path, pg)

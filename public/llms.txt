@@ -50,6 +50,7 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [Monthly budget Excel sheet for India](https://selfstreak.com/budget-template-india): rupee categories, an expenses log and a 50/30/20 check.
 - [EMI tracker Excel sheet](https://selfstreak.com/emi-tracker-template): every loan in one sheet, outstanding balance today, interest paid, debt-free month and a prepayment schedule.
 - [Credit card tracker Excel sheet](https://selfstreak.com/credit-card-tracker-template): every card in one sheet, statement and due dates, this bill and next bill, interest-free days if you buy today, and limit used.
+- [Debt snowball and avalanche spreadsheet](https://selfstreak.com/debt-snowball-spreadsheet): up to 10 debts in rupees, both payoff plans and minimums only side by side, debt-free month and total interest for each.
 
 ## Key facts
 - Price: free plan for habits, water, expenses and streaks. Plus (₹199 a month, 7-day free trial) adds AI logging, photo scans, reminders and more. Paid on the web via Razorpay or Cashfree.
