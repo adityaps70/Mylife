@@ -44,7 +44,7 @@ Next, one per autopilot run, highest value first:
 - [ ] Printable PDF version of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf").
 - [x] ~~EMI tracker Excel template~~ Shipped 2026-11-16 as /emi-tracker-template.
 - [x] ~~Credit card tracker Excel~~ Shipped 2026-11-17 as /credit-card-tracker-template.
-- [ ] Debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
+- [x] ~~Debt snowball / avalanche spreadsheet~~ Shipped 2026-11-18 as /debt-snowball-spreadsheet.
 - [ ] "Notion habit tracker vs app" guide, honest about when Notion is enough ("notion habit tracker template").
 - [ ] 30-day challenge tracker template + guide ("30 day challenge tracker", "75 day challenge tracker").
 - [ ] Study habit tracker for students guide ("study habit tracker").
@@ -61,6 +61,13 @@ Next, one per autopilot run, highest value first:
 ## Added 2026-11-17
 - [x] ~~Request indexing for /credit-card-tracker-template and /emi-tracker-template~~ 2026-11-17: requested for /credit-card-tracker-template ("URL is unknown to Google"); /emi-tracker-template was already indexed. Search Console works on authuser=0: open https://search.google.com/search-console?resource_id=https%3A%2F%2Fselfstreak.com%2F&authuser=0 and use the top search bar (the direct /inspect?id= URL returns a Google 404).
 - [ ] Weekly run is due 2026-11-20: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md not checked yet), competitor sitemap diffs, report.
-- [ ] Next template: debt snowball / avalanche spreadsheet on /debt-payoff-planner ("debt snowball spreadsheet").
+- [x] ~~Next template: debt snowball / avalanche spreadsheet~~ Shipped 2026-11-18 as /debt-snowball-spreadsheet.
 - [ ] Link /emi-tracker-template and /credit-card-tracker-template from /blog/credit-card-statement-date-vs-due-date and the 5 /emi-calculator/* loan pages.
 - [ ] Sign-ups per 100 visitors fell to 3.7 (10–17 Nov) from 23.8 the week before, on a much bigger visitor count (82 vs 21). Most views are the homepage; check where the new visitors come from before reading anything into it.
+
+## Added 2026-11-18
+- [ ] Weekly run is due 2026-11-20 (unchanged): page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check, competitor sitemap diffs, report.
+- [ ] Sign-ups are down to 1 in 11–18 Nov (7 the week before) on similar visitors (53 vs 56); 79 of 108 views are the homepage and 101 are direct/internal. Look at the homepage → /app#signup path in the weekly report; analytics (backlog item 13) would show where it drops.
+- [ ] Link /debt-snowball-spreadsheet from /budget-template-india and /credit-card-interest-calculator (it has 4 links today).
+- [ ] Hindi version /hi/debt-snowball-spreadsheet only if /hi/emi-calculator shows Hindi impressions first.
+- [ ] Still open from 17 Nov: link /emi-tracker-template and /credit-card-tracker-template from the 5 /emi-calculator/* loan pages and /blog/credit-card-statement-date-vs-due-date.

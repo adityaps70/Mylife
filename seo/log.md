@@ -68,3 +68,12 @@
 
 ## 2026-11-17 (manual, owner request)
 - Search Console URL Inspection: requested indexing for /credit-card-tracker-template (was unknown to Google) and a recrawl of /habit-tracker-template (✓ tick redesign). Already indexed: /emi-tracker-template, /habit-and-money-tracker, /health-and-finance-tracker. Overview showed 22 indexed, 13 not indexed.
+
+## 2026-11-18 (daily autopilot, deployed)
+- Shipped and deployed: /debt-snowball-spreadsheet, a free debt snowball and avalanche spreadsheet in rupees (self-streak-debt-payoff-planner.xlsx). Up to 10 debts; avalanche, snowball and minimums-only plans side by side (debt-free month, total interest, saving vs minimums), the month each debt is cleared, and a 360-month plan tab for each. Targets "debt snowball spreadsheet", "debt avalanche spreadsheet", "debt payoff spreadsheet". The top Google results are US-dollar templates, some behind an email or a paywall; none is in rupees or shows the three plans side by side.
+- Formulas checked with the `formulas` library against a Python month-by-month simulation. The example (card ₹60,000 at 42%, personal loan ₹1,50,000 at 14%, phone EMI ₹20,000 at 16%, ₹20,000 a month) reproduces /blog/debt-avalanche-vs-snowball exactly: avalanche 13 months ₹23,584, snowball 13 months ₹25,229, minimums only 30 months ₹66,935. Edge cases checked: monthly amount below the minimums (red warning, plans pay minimums) and a 0% debt with no minimum.
+- Links to it from /debt-payoff-planner (Related guides), /blog/debt-avalanche-vs-snowball (body), /emi-tracker-template and /credit-card-tracker-template (body). Sitemap 47 URLs; IndexNow 200 for 11 URLs.
+- Health check (before deploy): all 46 live sitemap URLs returned 200 in under 0.71 s with correct canonicals and no noindex; http:// and www. still 301.
+- No product facts changed in commits since the last run (only SEO log commits).
+- Search Console (authuser=0, property https://selfstreak.com/): indexing requested for /debt-snowball-spreadsheet ("URL is unknown to Google") and a recrawl of /blog/debt-avalanche-vs-snowball (indexed). Overview: 22 indexed, 13 not indexed, 2 web search clicks.
+- `npm run report` (11–18 Nov): 108 views, 53 visitors, 1 sign-up, 0 paid; google.com sent 3 views. Saved in reports/traffic-2026-11-18.md.
