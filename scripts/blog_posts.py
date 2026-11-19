@@ -27,7 +27,7 @@ dict(slug='credit-card-statement-date-vs-due-date', nav='Statement date vs due d
 <tr><td>6 March (day after statement)</td><td>5 April statement</td><td>25 April</td><td>about 50 days</td></tr>
 <tr><td>20 March</td><td>5 April statement</td><td>25 April</td><td>about 36 days</td></tr>
 <tr><td>4 April (day before statement)</td><td>5 April statement</td><td>25 April</td><td>about 21 days</td></tr></tbody></table></div>
-<p>So a big planned purchase made just after your statement date gets the longest time to pay. The exact number of days depends on your card’s cycle.</p>
+<p>So a big planned purchase made just after your statement date gets the longest time to pay. The exact number of days depends on your card’s cycle. With more than one card, the free <a href="/credit-card-tracker-template">credit card tracker Excel sheet</a> works this out for each card: what’s on this bill, when it’s due and how many interest-free days a purchase made today gets.</p>
 <p>The interest-free period disappears if you carry a balance. RBI requires card issuers to explain in their terms that the interest-free credit period is suspended if any balance from the previous bill is still outstanding. In practice, once you pay less than the full amount, new purchases start charging interest from the day you make them.</p></section>
 <section><h2 id="minimum-due">Why paying only the minimum is so expensive</h2>
 <p>Paying the minimum due keeps your account in good standing and avoids a late fee, but interest is charged on the rest, usually 3–3.75% a month (about 36–45% a year).</p>

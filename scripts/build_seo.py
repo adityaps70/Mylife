@@ -136,7 +136,7 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${{n-m}} months sooner`:'–';oNote.
 {bp.shots_html('loan', 'Track this loan in Self Streak')}
 <section><h2>Tips before you borrow</h2><ul class="list">{"".join(f"<li>{html.escape(t)}</li>" for t in L["tips"])}</ul></section>
 <section><h2>How EMI is calculated</h2><p>EMI = P × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1), where P is the loan amount, r is the monthly rate (yearly rate ÷ 12 ÷ 100) and n is the number of months. All tables on this page use this reducing-balance formula.</p>
-<p>Once you have the loan, <a href="/emi-calculator">Self Streak tracks every EMI</a> with a reminder before each due date and shows your <a href="/debt-payoff-planner">debt-free date</a>.</p></section>
+<p>Once you have the loan, <a href="/emi-calculator">Self Streak tracks every EMI</a> with a reminder before each due date and shows your <a href="/debt-payoff-planner">debt-free date</a>. Prefer a spreadsheet? The free <a href="/emi-tracker-template">EMI tracker Excel sheet</a> puts every loan in one place, with the balance left today, interest paid so far and a prepayment column.</p></section>
 <section><h2>Questions</h2>{"".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in faq)}</section>
 <section><h2>Related guides</h2><div class="guides">{"".join(f'<a href="/blog/{q["slug"]}">{html.escape(q["h1"])}<span>{html.escape(q["desc"])}</span></a>' for q in POSTS if q["slug"] in LOAN_GUIDES)}</div></section>
 {bp.FINAL}
