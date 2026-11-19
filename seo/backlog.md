@@ -54,7 +54,7 @@ Next, one per autopilot run, highest value first:
 
 ## Added 2026-11-16
 - [ ] Weekly run (due 2026-11-20, as the last report is from 13 Nov): /streaks-app-alternative is "Crawled – currently not indexed". Check whether it's thin next to /habitify-alternative and /loop-habit-tracker-alternative, and add unique content or more internal links.
-- [ ] Link /emi-tracker-template from the 5 /emi-calculator/* loan pages (body sentence near "Once you have the loan"), so it gets more than 3 internal links.
+- [x] ~~Link /emi-tracker-template from the 5 /emi-calculator/* loan pages~~ Done 2026-11-19.
 - [ ] Hindi version /hi/emi-tracker-template ("emi tracker excel hindi"), next to /hi/emi-calculator.
 - [x] ~~Next template: credit card tracker Excel~~ Shipped 2026-11-17.
 
@@ -62,12 +62,17 @@ Next, one per autopilot run, highest value first:
 - [x] ~~Request indexing for /credit-card-tracker-template and /emi-tracker-template~~ 2026-11-17: requested for /credit-card-tracker-template ("URL is unknown to Google"); /emi-tracker-template was already indexed. Search Console works on authuser=0: open https://search.google.com/search-console?resource_id=https%3A%2F%2Fselfstreak.com%2F&authuser=0 and use the top search bar (the direct /inspect?id= URL returns a Google 404).
 - [ ] Weekly run is due 2026-11-20: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md not checked yet), competitor sitemap diffs, report.
 - [x] ~~Next template: debt snowball / avalanche spreadsheet~~ Shipped 2026-11-18 as /debt-snowball-spreadsheet.
-- [ ] Link /emi-tracker-template and /credit-card-tracker-template from /blog/credit-card-statement-date-vs-due-date and the 5 /emi-calculator/* loan pages.
+- [x] ~~Link /emi-tracker-template and /credit-card-tracker-template from the statement-date blog and the 5 loan pages~~ Done 2026-11-19.
 - [ ] Sign-ups per 100 visitors fell to 3.7 (10–17 Nov) from 23.8 the week before, on a much bigger visitor count (82 vs 21). Most views are the homepage; check where the new visitors come from before reading anything into it.
 
 ## Added 2026-11-18
 - [ ] Weekly run is due 2026-11-20 (unchanged): page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check, competitor sitemap diffs, report.
 - [ ] Sign-ups are down to 1 in 11–18 Nov (7 the week before) on similar visitors (53 vs 56); 79 of 108 views are the homepage and 101 are direct/internal. Look at the homepage → /app#signup path in the weekly report; analytics (backlog item 13) would show where it drops.
-- [ ] Link /debt-snowball-spreadsheet from /budget-template-india and /credit-card-interest-calculator (it has 4 links today).
+- [x] ~~Link /debt-snowball-spreadsheet from /budget-template-india and /credit-card-interest-calculator~~ Done 2026-11-19.
 - [ ] Hindi version /hi/debt-snowball-spreadsheet only if /hi/emi-calculator shows Hindi impressions first.
-- [ ] Still open from 17 Nov: link /emi-tracker-template and /credit-card-tracker-template from the 5 /emi-calculator/* loan pages and /blog/credit-card-statement-date-vs-due-date.
+- [x] ~~Link /emi-tracker-template and /credit-card-tracker-template from the 5 loan pages and the statement-date blog~~ Done 2026-11-19.
+
+## Added 2026-11-19
+- [ ] **Weekly run is due tomorrow (2026-11-20)**: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md never checked), competitor sitemap diffs, report.
+- [ ] **Sign-ups: 0 in 12–19 Nov** (7 the week before) on 40 visitors; 54 of 82 views are the homepage. Two weeks of decline. In the weekly report, compare the homepage → /app#signup path with the earlier week and ask the owner whether the signup flow changed (app code is off-limits for the autopilot). Analytics (item 13) is still missing.
+- [ ] Update context.md "Ship mode" line (still says "PR for review"; AUTOPILOT.md says merge and deploy since 14 Nov).

@@ -77,3 +77,11 @@
 - No product facts changed in commits since the last run (only SEO log commits).
 - Search Console (authuser=0, property https://selfstreak.com/): indexing requested for /debt-snowball-spreadsheet ("URL is unknown to Google") and a recrawl of /blog/debt-avalanche-vs-snowball (indexed). Overview: 22 indexed, 13 not indexed, 2 web search clicks.
 - `npm run report` (11–18 Nov): 108 views, 53 visitors, 1 sign-up, 0 paid; google.com sent 3 views. Saved in reports/traffic-2026-11-18.md.
+
+## 2026-11-19 (daily autopilot, deployed)
+- Shipped and deployed: internal links to the three newest templates. /emi-tracker-template is now linked from all 5 /emi-calculator/* loan pages (home, car, personal, education, two-wheeler); /credit-card-tracker-template from /blog/credit-card-statement-date-vs-due-date (interest-free period section); /debt-snowball-spreadsheet from /budget-template-india and /credit-card-interest-calculator ("Three ways out"). 8 pages changed; IndexNow 200 for 13 URLs. Closes the open link items from 17 and 18 Nov.
+- Local checks before deploy: all 8 pages 200 on wrangler dev with correct title, canonical and parseable JSON-LD; nothing under src/, schema.sql or wrangler.jsonc changed. Live after deploy: the 4 spot-checked pages return 200 with the new links.
+- Health check (before deploy): all 47 live sitemap URLs returned 200 in under 0.47 s with correct canonicals and no noindex; http:// and www. still 301.
+- No product facts changed in commits since the last run (only SEO commits).
+- Search Console (authuser=0, property https://selfstreak.com/): /debt-snowball-spreadsheet is already indexed (requested yesterday). Recrawl requested for /emi-calculator/home-loan and /blog/credit-card-statement-date-vs-due-date (both indexed). Overview: 22 indexed, 13 not indexed, 3 web search clicks (9–17 Nov). Bing Webmaster not checked today.
+- `npm run report` (12–19 Nov): 82 views, 40 visitors, **0 sign-ups**, 0 paid; google.com sent 2 views; 54 of 82 views are the homepage. Saved in reports/traffic-2026-11-19.md.
