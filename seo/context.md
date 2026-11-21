@@ -8,7 +8,7 @@ Built 2026-11-13 from the code and live site. Every fact has its source. If the 
 - Buyer: young working adults in India who juggle UPI spends, credit cards, EMIs and self-improvement habits, and want one app. Prices are in ₹ and the copy references Swiggy/Zomato, UPI and RBI rules. Source: `scripts/build-pages.py`, `scripts/blog_posts.py`.
 - Conversion: trial signup at `/app#signup` (no card needed), then a Plus subscription. Source: `public/landing.html` CTAs.
 - Competitors: found on 2026-11-13, see the Competitors section below.
-- Ship mode: PR for review. The owner deploys with `npm run deploy` (wrangler).
+- Ship mode: merge when the build passes, then deploy with `npm run deploy` (owner chose this on 14 Nov 2026; see AUTOPILOT.md).
 
 ## Plans and price
 - Free plan: the app and manual logging keep working (habits, water, expenses, streak). Source: `src/worker.js:47`, and the pricing FAQ in `public/landing.html`.

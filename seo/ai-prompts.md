@@ -1,7 +1,7 @@
 # AI answer tracking
 
 25 questions a buyer might ask an AI assistant. Weekly check: is Self Streak named, what's said, which sources are cited, and is anything wrong?
-Status: not checked yet (first weekly run).
+Status: not checked yet. 2026-11-21: skipped, as unattended runs have no ChatGPT/Perplexity access. Proxy: a Google search for Q2 ("habits and expenses together", India) did not show Self Streak; results were expense-app roundups (investing.com, equitylogy.in) and habit-app lists.
 
 1. What's the best habit tracker app in India?
 2. Is there an app that tracks habits and expenses together?

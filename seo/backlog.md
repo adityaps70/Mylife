@@ -76,3 +76,13 @@ Next, one per autopilot run, highest value first:
 - [ ] **Weekly run is due tomorrow (2026-11-20)**: page 2 → page 1, /streaks-app-alternative "Crawled – not indexed", AI answer check (ai-prompts.md never checked), competitor sitemap diffs, report.
 - [ ] **Sign-ups: 0 in 12–19 Nov** (7 the week before) on 40 visitors; 54 of 82 views are the homepage. Two weeks of decline. In the weekly report, compare the homepage → /app#signup path with the earlier week and ask the owner whether the signup flow changed (app code is off-limits for the autopilot). Analytics (item 13) is still missing.
 - [ ] Update context.md "Ship mode" line (still says "PR for review"; AUTOPILOT.md says merge and deploy since 14 Nov).
+
+## Added 2026-11-21 (weekly)
+- [x] ~~Weekly run (page 2 → page 1, /streaks-app-alternative, competitor diffs, report)~~ Done 2026-11-21. /streaks-app-alternative is no longer "not indexed".
+- [ ] Re-check the bank "billing cycle" queries around 2026-12-05 (Search Console, Performance, filter "billing cycle"). If they're still at 8–20, add a per-bank "billing cycle change" step list, sourced only from each bank's own FAQ or MITC.
+- [ ] /blog/credit-card-statement-date-vs-due-date: "what is statement date credit card" has 23 impressions at position 68. Check the top 3 results and tighten the first paragraph and H1.
+- [ ] Education loan queries ("education loan calculator", "education loan emi") get impressions at 60–80 on /emi-calculator/education-loan. Look at what the top results have (moratorium period, interest during study) and add what's missing.
+- [ ] Rupee net worth calculator (free tool, no signup). TimelyBills added /networth-calculator this week; Self Streak already tracks net worth in the app. Read the top 5 results first.
+- [ ] **Owner: sign-ups 0 for 9 days**; daily views fell from 26–60 (10–13 Nov) to 2–13 from 14 Nov. Ask whether launch-week promotion stopped and whether the signup flow changed. Analytics (item 13) still missing.
+- [ ] AI answer check still not done: needs an AI SEO Tracker account or a manual check by the owner.
+- [x] ~~Update context.md "Ship mode" line~~ Done 2026-11-21.
