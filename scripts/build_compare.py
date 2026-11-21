@@ -122,6 +122,7 @@ def compare_page(c):
     li = lambda xs: '<ul class="list">' + ''.join(f'<li>{x}</li>' for x in xs) + '</ul>'
     src = ''.join(f'<li><a href="{u}" rel="noopener" target="_blank">{html.escape(t)}</a></li>' for t, u in c['sources'])
     faq = ''.join(f'<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>' for q, a in c['faq'])
+    tmpl = {'credit-card-bill-reminder': ('/credit-card-tracker-template', 'Free credit card tracker Excel'), 'expense-tracker': ('/budget-template-india', 'Free budget template (Excel)'), 'habit-tracker': ('/habit-tracker-template', 'Free habit tracker Excel template')}[c['tool']]
     tool_name = {'credit-card-bill-reminder': 'Credit card bill reminder', 'expense-tracker': 'Expense tracker', 'habit-tracker': 'Habit tracker'}[c['tool']]
     inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">Compare</div>
 <h1>{html.escape(c["h1"])}</h1><p class="lead">{html.escape(c["lead"])}</p>
@@ -135,7 +136,7 @@ def compare_page(c):
 <section><h2>Questions</h2>{faq}</section>
 <section><h2>Sources</h2><ul class="list src">{src}</ul><p class="note">Features and prices change. If something here is out of date, <a href="/contact">tell us</a> and we’ll fix it.</p></section>
 {bp.FINAL}
-<section><h2 style="font-size:20px">More comparisons</h2><div class="more">{"".join(f'<a href="/{o["slug"]}">{html.escape(o["nav"])}</a>' for o in COMPARE if o is not c)}<a href="/{c["tool"]}">{html.escape(tool_name)}</a></div></section></main>'''
+<section><h2 style="font-size:20px">More comparisons</h2><div class="more">{"".join(f'<a href="/{o["slug"]}">{html.escape(o["nav"])}</a>' for o in COMPARE if o is not c)}<a href="/{c["tool"]}">{html.escape(tool_name)}</a><a href="{tmpl[0]}">{tmpl[1]}</a></div></section></main>'''
     graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": c['h1'], "description": c['desc'],
               "isPartOf": {"@id": B + "/#website"}, "about": {"@id": B + "/#app"}, "dateModified": bp.UPDATED, "inLanguage": "en-IN"},
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in c['faq']]}]
@@ -192,12 +193,12 @@ def link_from_tools():
     for c in COMPARE:
         bp.GUIDES_FOR.setdefault(c['tool'], []).append(('/' + c['slug'], f"Self Streak vs {c['other']}", c['desc']))
     bp.GUIDES_FOR.setdefault('credit-card-bill-reminder', []).extend(
-        (f'/credit-card-statement-date/{k["slug"]}', f'{k["name"]} credit card statement date and due date', f'Interest-free period, due date, grace days and changing the date, from {k["name"]}’s own terms.') for k in BANKS)
+        (f'/credit-card-statement-date/{k["slug"]}', f'{k["name"]} credit card billing cycle and due date', f'Interest-free period, due date, grace days and changing the date, from {k["name"]}’s own terms.') for k in BANKS)
     for slug in ('credit-card-bill-reminder', 'debt-payoff-planner'):
         bp.GUIDES_FOR.setdefault(slug, []).insert(0, CC_CALC_LINK)
 
 def llms_lines():
-    return [f'- [Credit card interest calculator]({B}/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.', '', '## Card billing cycles by bank'] + [f"- [{k['name']} credit card statement date and due date]({B}/credit-card-statement-date/{k['slug']}): billing cycle, interest-free period and grace days from {k['name']}’s own terms." for k in BANKS] + ['', '## Comparisons'] + [f"- [Self Streak vs {c['other']}]({B}/{c['slug']}): {c['desc']}" for c in COMPARE]
+    return [f'- [Credit card interest calculator]({B}/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.', '', '## Card billing cycles by bank'] + [f"- [{k['name']} credit card billing cycle and due date]({B}/credit-card-statement-date/{k['slug']}): billing cycle, interest-free period and grace days from {k['name']}’s own terms." for k in BANKS] + ['', '## Comparisons'] + [f"- [Self Streak vs {c['other']}]({B}/{c['slug']}): {c['desc']}" for c in COMPARE]
 
 def build():
     for c in COMPARE:
@@ -239,21 +240,28 @@ dict(slug='axis-bank', name='Axis Bank', free='20 to 50 days, depending on the d
 def bank_page(k):
     path = f'/credit-card-statement-date/{k["slug"]}'
     n = k['name']
-    title = f'{n} Credit Card Statement Date & Due Date | Self Streak'
-    if len(title) > 60: title = f'{n} Card Statement & Due Date | Self Streak'
+    title = f'{n} Credit Card Billing Cycle & Due Date | Self Streak'
+    if len(title) > 60: title = f'{n} Card Billing Cycle & Due Date | Self Streak'
+    h1 = f'{n} credit card billing cycle, statement date and due date'
+    change = next(f for f in k['facts'] if 'chang' in f)
+    grace = next((f for f in k['facts'] if 'grace' in f), None)
     desc = f'{n} credit card billing cycle explained from its official terms: interest-free period of {k["free"].split(",")[0]}, when the bill is due, grace days and changing the date.'
     if len(desc) > 160: desc = f'{n} credit card billing cycle from its official terms: interest-free period, when the bill is due, grace days and how to change the date.'
     faq = [(f'What is the interest-free period on a {n} credit card?', f'{k["free"][0].upper() + k["free"][1:]}, according to {n}’s own terms, as long as you pay the full previous bill and don’t withdraw cash.'),
-           (f'Can I change my {n} card statement date?', next(f for f in k['facts'] if 'chang' in f)),
+           (f'When is my {n} credit card bill generated?', f'On your statement date (also called the billing date or bill generation date), once a month. The bill covers every transaction since the previous statement date. It is printed on each {n} statement, and the payment due date comes after it.'),
+           (f'Can I change my {n} credit card billing cycle?', change),
+           *([(f'Is there a grace period after the {n} credit card due date?', grace)] if grace else []),
            ('Do I need my card number to track this in Self Streak?', 'No. Add the card’s limit, statement day and due day, and Self Streak tracks this bill and next bill and reminds you before each due date.')]
     others = ''.join(f'<a href="/credit-card-statement-date/{o["slug"]}">{html.escape(o["name"])}</a>' for o in BANKS if o is not k)
     inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">Credit cards</div>
-<h1>{html.escape(n)} credit card statement date and due date</h1>
-<p class="lead">How the billing cycle, payment due date and interest-free period work on {html.escape(n)} credit cards, taken from the bank’s own most important terms and conditions (MITC).</p>
+<h1>{html.escape(h1)}</h1>
+<p class="lead">Your {html.escape(n)} credit card billing cycle is the month between two statement dates. The bill is generated on the statement date, and you pay it by the due date printed on that statement. Below is how {html.escape(n)}’s own most important terms and conditions (MITC) set the interest-free period, grace days and the rules for changing your cycle.</p>
 <p class="short"><b>Short answer:</b> On {html.escape(n)} cards the interest-free period is {html.escape(k["free"])}. Pay the <b>total amount due</b> by the due date on your statement and you pay no interest. Your exact dates are printed on each statement.</p>
 <p class="upd">Checked against {html.escape(n)}’s published terms on {AS_OF}. Terms differ by card; your card’s MITC wins. Updated {bp.UPDATED}.</p></div></header>
 <main class="wrap">
 <section><h2>What {html.escape(n)}’s terms say</h2><ul class="list">{"".join(f"<li>{html.escape(f)}</li>" for f in k["facts"])}</ul></section>
+<section><h2>How to change your {html.escape(n)} billing cycle</h2><p>{html.escape(change)}</p>
+<p>RBI’s credit card rules require every card issuer to give cardholders at least a one-time option to change the billing cycle to suit them. Choose a statement date whose due date falls a few days after your salary arrives, so the money is in your account when the bill is due.</p></section>
 <section><h2>What this means for you</h2><ul class="list"><li>Make big planned purchases just after your statement date to get the longest time to pay.</li>
 <li>Pay a few working days before the due date, so the money reaches the card account in time.</li>
 <li>Paying only the minimum keeps the account in good standing but costs a lot of interest; see the <a href="/credit-card-interest-calculator">credit card interest calculator</a>.</li>
@@ -265,10 +273,10 @@ def bank_page(k):
 <p class="note">Self Streak is not affiliated with {html.escape(n)}. This page summarises the bank’s published terms and is not financial advice. If something is out of date, <a href="/contact">tell us</a>.</p></section>
 {bp.FINAL}
 <section><h2 style="font-size:20px">Other banks</h2><div class="more">{others}<a href="/credit-card-bill-reminder">Credit card bill reminder</a></div></section></main>'''
-    graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": f'{n} credit card statement date and due date', "description": desc,
+    graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": h1, "description": desc,
               "isPartOf": {"@id": B + "/#website"}, "dateModified": bp.UPDATED, "inLanguage": "en-IN"},
              {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}]
-    return path, bp.shell(path, title, desc, f'{n} credit card statement date and due date', graph,
+    return path, bp.shell(path, title, desc, h1, graph,
                           [('Self Streak', '/'), ('Credit card bills', '/credit-card-bill-reminder'), (n, path)], inner)
 
 def build_banks():

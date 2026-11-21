@@ -27,7 +27,6 @@ https://pocketclear.app/blog/best-copilot-money-alternative.html
 https://pocketclear.app/blog/best-everydollar-alternative.html
 https://pocketclear.app/blog/best-expense-tracker-android-2026.html
 https://pocketclear.app/blog/best-expense-tracker-app-2026.html
-https://pocketclear.app/blog/best-expense-tracker-for-couples.html
 https://pocketclear.app/blog/best-expense-tracker-for-mac.html
 https://pocketclear.app/blog/best-expense-tracker-india.html
 https://pocketclear.app/blog/best-expense-tracker-iphone-2026.html
@@ -59,6 +58,7 @@ https://pocketclear.app/blog/budget-for-tax-season.html
 https://pocketclear.app/blog/budget-irregular-income.html
 https://pocketclear.app/blog/budget-planner-app.html
 https://pocketclear.app/blog/budget-rollover.html
+https://pocketclear.app/blog/budgeting-app-for-couples-one-subscription.html
 https://pocketclear.app/blog/budgeting-app-privacy-scorecard-2026.html
 https://pocketclear.app/blog/buy-now-pay-later-hidden-cost.html
 https://pocketclear.app/blog/capture-on-device-ai-expense-logging.html
@@ -202,7 +202,6 @@ https://pocketclear.app/blog/net-worth-without-bank-linking.html
 https://pocketclear.app/blog/new-year-budget-resolution.html
 https://pocketclear.app/blog/new-year-financial-reset-2027.html
 https://pocketclear.app/blog/no-ads-budget-app.html
-https://pocketclear.app/blog/offline-expense-tracker.html
 https://pocketclear.app/blog/onam-budget.html
 https://pocketclear.app/blog/organize-receipts-tax-season.html
 https://pocketclear.app/blog/paper-ledger-vs-budget-app.html
@@ -256,21 +255,23 @@ https://pocketclear.app/blog/saving-vs-investing.html
 https://pocketclear.app/blog/savings-goals-real-money.html
 https://pocketclear.app/blog/semi-automated-expense-tracking-without-bank-linking.html
 https://pocketclear.app/blog/semi-monthly-budget-paid-twice-a-month.html
+https://pocketclear.app/blog/set-up-your-accounts-in-five-minutes.html
 https://pocketclear.app/blog/side-hustle-expense-tracking.html
 https://pocketclear.app/blog/simple-expense-tracker-beginners.html
 https://pocketclear.app/blog/simplifi-review-2026.html
 https://pocketclear.app/blog/sinking-fund-budget.html
 https://pocketclear.app/blog/smart-suggestions-recurring-transactions.html
 https://pocketclear.app/blog/spendee-problems.html
-https://pocketclear.app/blog/spending-awareness.html
 https://pocketclear.app/blog/spending-vs-wasting-money.html
 https://pocketclear.app/blog/split-expenses-and-keep-your-budget.html
+https://pocketclear.app/blog/split-rent-bills-roommates-private-budget.html
 https://pocketclear.app/blog/split-rent-different-salaries.html
 https://pocketclear.app/blog/splitwise-alternative-couples.html
 https://pocketclear.app/blog/spring-financial-reset-2026.html
 https://pocketclear.app/blog/stop-impulse-buying.html
 https://pocketclear.app/blog/summer-vacation-budget-2026.html
 https://pocketclear.app/blog/switching-from-mint-to-pocket-clear.html
+https://pocketclear.app/blog/switching-from-money-manager.html
 https://pocketclear.app/blog/switching-from-ynab-to-pocket-clear.html
 https://pocketclear.app/blog/talking-to-partner-about-money.html
 https://pocketclear.app/blog/tax-refund-smart-ways-2026.html
@@ -294,7 +295,6 @@ https://pocketclear.app/blog/what-happened-to-mint-2026.html
 https://pocketclear.app/blog/what-to-do-with-tax-refund.html
 https://pocketclear.app/blog/why-cant-i-search-my-transactions.html
 https://pocketclear.app/blog/why-i-built-pocket-clear.html
-https://pocketclear.app/blog/why-manual-expense-tracking-better.html
 https://pocketclear.app/blog/why-not-link-bank-account.html
 https://pocketclear.app/blog/why-on-device-ai.html
 https://pocketclear.app/blog/ynab-complaints-problems.html
@@ -317,6 +317,7 @@ https://pocketclear.app/fil/no-bank-linking-budget-app.html
 https://pocketclear.app/fil/offline-expense-tracker.html
 https://pocketclear.app/free-forever.html
 https://pocketclear.app/help/
+https://pocketclear.app/help/accounts.html
 https://pocketclear.app/help/ai-assistants.html
 https://pocketclear.app/help/all-transactions.html
 https://pocketclear.app/help/appearance.html
@@ -331,6 +332,7 @@ https://pocketclear.app/help/currency.html
 https://pocketclear.app/help/daily-reminder.html
 https://pocketclear.app/help/day-streak.html
 https://pocketclear.app/help/decimal-places.html
+https://pocketclear.app/help/device-backup.html
 https://pocketclear.app/help/export.html
 https://pocketclear.app/help/group-expenses.html
 https://pocketclear.app/help/hide-balance.html
@@ -341,12 +343,12 @@ https://pocketclear.app/help/invite-friends.html
 https://pocketclear.app/help/language.html
 https://pocketclear.app/help/lend-borrow.html
 https://pocketclear.app/help/manage-categories.html
-https://pocketclear.app/help/manage-payment-types.html
 https://pocketclear.app/help/month-projection.html
 https://pocketclear.app/help/partner-mode.html
 https://pocketclear.app/help/payees.html
 https://pocketclear.app/help/power-score.html
 https://pocketclear.app/help/privacy-security.html
+https://pocketclear.app/help/pro-trial.html
 https://pocketclear.app/help/push-notifications.html
 https://pocketclear.app/help/receipts.html
 https://pocketclear.app/help/recurring-transactions.html
@@ -358,6 +360,7 @@ https://pocketclear.app/help/secondary-currency.html
 https://pocketclear.app/help/setup-guide.html
 https://pocketclear.app/help/smart-suggestions.html
 https://pocketclear.app/help/split-transactions.html
+https://pocketclear.app/help/stores-subscriptions.html
 https://pocketclear.app/help/tags.html
 https://pocketclear.app/help/text-size.html
 https://pocketclear.app/help/tips.html
@@ -395,10 +398,10 @@ https://pocketclear.app/pt/index.html
 https://pocketclear.app/pt/no-bank-linking-budget-app.html
 https://pocketclear.app/pt/offline-expense-tracker.html
 https://pocketclear.app/reviews.html
-https://pocketclear.app/shared-expense-tracker.html
 https://pocketclear.app/start-here.html
 https://pocketclear.app/stats.html
 https://pocketclear.app/terms.html
+https://pocketclear.app/tools/
 https://pocketclear.app/tools/13th-month-pay-calculator.html
 https://pocketclear.app/tools/amortization-calculator.html
 https://pocketclear.app/tools/auto-loan-calculator.html
@@ -418,7 +421,6 @@ https://pocketclear.app/tools/gratuity-calculator.html
 https://pocketclear.app/tools/hourly-to-salary-calculator.html
 https://pocketclear.app/tools/hra-calculator.html
 https://pocketclear.app/tools/income-tax-calculator.html
-https://pocketclear.app/tools/index.html
 https://pocketclear.app/tools/inflation-calculator.html
 https://pocketclear.app/tools/loan-payment-calculator.html
 https://pocketclear.app/tools/minimum-payment-calculator.html

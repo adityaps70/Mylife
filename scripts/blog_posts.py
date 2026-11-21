@@ -37,7 +37,7 @@ dict(slug='credit-card-statement-date-vs-due-date', nav='Statement date vs due d
 <ul class="list">
 <li><b>3-day grace for late fees and credit reports.</b> Card issuers can levy late payment charges, or report your account as past due to credit bureaus, only when the account stays past due for more than three days after the due date.</li>
 <li><b>Late fees only on what is overdue.</b> Late payment charges are levied only on the amount outstanding after the due date, not on the total amount due.</li>
-<li><b>You can change your billing cycle.</b> Card issuers must let you modify the billing cycle at least once, choosing the date that suits you, through channels like the helpline, app or internet banking.</li>
+<li><b>You can change your billing cycle.</b> Card issuers must let you modify the billing cycle at least once, choosing the date that suits you, through channels like the helpline, app or internet banking. Each bank’s own rules: <a href="/credit-card-statement-date/hdfc-bank">HDFC Bank billing cycle</a>, <a href="/credit-card-statement-date/sbi-card">SBI Card billing cycle</a>, <a href="/credit-card-statement-date/icici-bank">ICICI Bank billing cycle</a> and <a href="/credit-card-statement-date/axis-bank">Axis Bank billing cycle</a>.</li>
 <li><b>Interest only on what you owe.</b> Interest is levied only on the outstanding amount, adjusted for payments, refunds and reversed transactions.</li></ul>
 <p>The 3-day grace is a safety net, not a plan. Interest on the unpaid balance can still apply from the due date, so pay on time.</p></section>
 <section><h2 id="choose-dates">How to choose the best statement date</h2>
@@ -216,7 +216,7 @@ dict(slug='how-long-does-it-take-to-form-a-habit', nav='How long to form a habit
   lead='You have probably heard that it takes 21 days to form a habit. The best-known study on the question found something different, and the details are more encouraging than the myth.',
   short='In a 2010 study at University College London, new daily habits took a <b>median of 66 days</b> to become automatic, ranging from <b>18 to 254 days</b> depending on the person and the habit. Missing a single day did not meaningfully set people back.',
   date='2026-11-13', hubs=['habit-tracker', 'water-reminder'],
-  related=[('Habit tracker', '/habit-tracker'), ('How much water to drink', '/blog/how-much-water-should-i-drink-a-day'), ('Protein on an Indian diet', '/blog/protein-intake-indian-diet')],
+  related=[('Habit tracker', '/habit-tracker'), ('Free habit tracker Excel template', '/habit-tracker-template'), ('Habit tracker app vs Excel', '/blog/habit-tracker-app-vs-excel')],
   sources=[('Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W. and Wardle, J. (2010), “How are habits formed: Modelling habit formation in the real world”, European Journal of Social Psychology, 40(6)', 'https://doi.org/10.1002/ejsp.674')],
   body='''
 <section><h2 id="study">What the research found</h2>

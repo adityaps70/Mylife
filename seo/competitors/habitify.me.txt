@@ -4,6 +4,8 @@ https://habitify.me/author/anh-vu
 https://habitify.me/author/jack
 https://habitify.me/author/jasmine-nguyen
 https://habitify.me/author/julie
+https://habitify.me/black-friday-2026
+https://habitify.me/black-friday-2026-mo
 https://habitify.me/blog
 https://habitify.me/blog/1-percent-better-every-day
 https://habitify.me/blog/20-20-20-morning-routine
@@ -157,6 +159,8 @@ https://habitify.me/de/author/anh-vu
 https://habitify.me/de/author/jack
 https://habitify.me/de/author/jasmine-nguyen
 https://habitify.me/de/author/julie
+https://habitify.me/de/black-friday-2026
+https://habitify.me/de/black-friday-2026-mo
 https://habitify.me/de/blog
 https://habitify.me/de/blog/1-percent-better-every-day
 https://habitify.me/de/blog/20-20-20-morning-routine
@@ -344,6 +348,8 @@ https://habitify.me/es/author/anh-vu
 https://habitify.me/es/author/jack
 https://habitify.me/es/author/jasmine-nguyen
 https://habitify.me/es/author/julie
+https://habitify.me/es/black-friday-2026
+https://habitify.me/es/black-friday-2026-mo
 https://habitify.me/es/blog
 https://habitify.me/es/blog/1-percent-better-every-day
 https://habitify.me/es/blog/20-20-20-morning-routine
@@ -531,6 +537,8 @@ https://habitify.me/ja/author/anh-vu
 https://habitify.me/ja/author/jack
 https://habitify.me/ja/author/jasmine-nguyen
 https://habitify.me/ja/author/julie
+https://habitify.me/ja/black-friday-2026
+https://habitify.me/ja/black-friday-2026-mo
 https://habitify.me/ja/blog
 https://habitify.me/ja/blog/1-percent-better-every-day
 https://habitify.me/ja/blog/20-20-20-morning-routine

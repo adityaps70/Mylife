@@ -33,10 +33,10 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [Credit card interest calculator](https://selfstreak.com/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.
 
 ## Card billing cycles by bank
-- [HDFC Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/hdfc-bank): billing cycle, interest-free period and grace days from HDFC Bank’s own terms.
-- [SBI Card credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/sbi-card): billing cycle, interest-free period and grace days from SBI Card’s own terms.
-- [ICICI Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/icici-bank): billing cycle, interest-free period and grace days from ICICI Bank’s own terms.
-- [Axis Bank credit card statement date and due date](https://selfstreak.com/credit-card-statement-date/axis-bank): billing cycle, interest-free period and grace days from Axis Bank’s own terms.
+- [HDFC Bank credit card billing cycle and due date](https://selfstreak.com/credit-card-statement-date/hdfc-bank): billing cycle, interest-free period and grace days from HDFC Bank’s own terms.
+- [SBI Card credit card billing cycle and due date](https://selfstreak.com/credit-card-statement-date/sbi-card): billing cycle, interest-free period and grace days from SBI Card’s own terms.
+- [ICICI Bank credit card billing cycle and due date](https://selfstreak.com/credit-card-statement-date/icici-bank): billing cycle, interest-free period and grace days from ICICI Bank’s own terms.
+- [Axis Bank credit card billing cycle and due date](https://selfstreak.com/credit-card-statement-date/axis-bank): billing cycle, interest-free period and grace days from Axis Bank’s own terms.
 
 ## Comparisons
 - [Self Streak vs CRED](https://selfstreak.com/cred-alternative): Self Streak vs CRED: CRED pays card bills and gives rewards; Self Streak tracks each card’s billing cycle, EMIs, budgets and habits. Which one fits you.
