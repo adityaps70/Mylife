@@ -81,8 +81,13 @@ Next, one per autopilot run, highest value first:
 - [x] ~~Weekly run (page 2 → page 1, /streaks-app-alternative, competitor diffs, report)~~ Done 2026-11-21. /streaks-app-alternative is no longer "not indexed".
 - [ ] Re-check the bank "billing cycle" queries around 2026-12-05 (Search Console, Performance, filter "billing cycle"). If they're still at 8–20, add a per-bank "billing cycle change" step list, sourced only from each bank's own FAQ or MITC.
 - [ ] /blog/credit-card-statement-date-vs-due-date: "what is statement date credit card" has 23 impressions at position 68. Check the top 3 results and tighten the first paragraph and H1.
-- [ ] Education loan queries ("education loan calculator", "education loan emi") get impressions at 60–80 on /emi-calculator/education-loan. Look at what the top results have (moratorium period, interest during study) and add what's missing.
+- [x] ~~Education loan queries at 60–80 on /emi-calculator/education-loan~~ Shipped 2026-11-22: moratorium section, table and 2 FAQs, "with Moratorium" in the title. Re-check positions around 2026-12-06.
 - [ ] Rupee net worth calculator (free tool, no signup). TimelyBills added /networth-calculator this week; Self Streak already tracks net worth in the app. Read the top 5 results first.
 - [ ] **Owner: sign-ups 0 for 9 days**; daily views fell from 26–60 (10–13 Nov) to 2–13 from 14 Nov. Ask whether launch-week promotion stopped and whether the signup flow changed. Analytics (item 13) still missing.
 - [ ] AI answer check still not done: needs an AI SEO Tracker account or a manual check by the owner.
 - [x] ~~Update context.md "Ship mode" line~~ Done 2026-11-21.
+
+## Added 2026-11-22
+- [ ] /emi-calculator/education-loan: the calculator itself has no moratorium field (Lemonn and WeMakeScholars let you enter course length and interest paid while studying). Add an optional "months before EMIs start" + "pay interest while studying?" input to the education page only, if positions improve after the 22 Nov change.
+- [ ] Owner (unchanged): sign-ups 0 for 10 days; 25 views and 21 visitors in 15–22 Nov (185 / 101 the week before). Analytics still missing.
+- [ ] Next daily item: /blog/credit-card-statement-date-vs-due-date first paragraph and H1 for "what is statement date credit card" (23 impressions at position 68).

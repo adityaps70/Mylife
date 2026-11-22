@@ -8,7 +8,7 @@ emi calculator,transactional,unknown,unknown,/emi-calculator,live,not indexed,20
 home loan emi calculator,transactional,unknown,unknown,/emi-calculator/home-loan,live,not indexed,2026-11-13
 car loan emi calculator,transactional,unknown,unknown,/emi-calculator/car-loan,live,not indexed,2026-11-13
 personal loan emi calculator,transactional,unknown,unknown,/emi-calculator/personal-loan,live,not indexed,2026-11-13
-education loan emi calculator,transactional,unknown,unknown,/emi-calculator/education-loan,live,not indexed,2026-11-13
+education loan emi calculator,transactional,unknown,unknown,/emi-calculator/education-loan,live,indexed; impressions at 60-80 (GSC 28d to 18 Nov),2026-11-22
 two wheeler loan emi calculator,transactional,unknown,unknown,/emi-calculator/two-wheeler-loan,live,not indexed,2026-11-13
 debt payoff planner,commercial,unknown,unknown,/debt-payoff-planner,live,not indexed,2026-11-13
 debt avalanche vs snowball,informational,unknown,unknown,/blog/debt-avalanche-vs-snowball,live,not indexed,2026-11-13
@@ -75,3 +75,4 @@ axis bank credit card statement date,informational,unknown,unknown,/credit-card-
 axis bank credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/axis-bank,live (retargeted 2026-11-21),12.6 (5 impr, 28d),2026-11-21
 what is statement date credit card,informational,unknown,unknown,/blog/credit-card-statement-date-vs-due-date,live,68.6 (23 impr, 28d),2026-11-21
 net worth calculator india,transactional,unknown,unknown,,gap,,2026-11-21
+education loan emi calculator with moratorium,transactional,unknown,unknown,/emi-calculator/education-loan,live,new 2026-11-22,2026-11-22
