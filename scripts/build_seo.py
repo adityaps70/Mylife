@@ -64,7 +64,9 @@ LOANS = [
                'Use a personal loan to clear credit card debt only if you stop adding to the card.',
                'Shorter tenures cost much less interest; pick the highest EMI you can comfortably pay.']),
     dict(slug='education-loan', name='Education loan', rate=10.5, P=1500000, n=120, amounts=[500000, 1000000, 1500000, 2500000, 4000000],
-         tenures=[60, 84, 120, 180], extra=3000,
+         tenures=[60, 84, 120, 180], extra=3000, mor=dict(course=24, grace=12),
+         title='Education Loan EMI Calculator with Moratorium | Self Streak',
+         desc='Education loan EMI calculator for India: EMI after the moratorium, interest that builds up while you study, tables by amount and tenure, and 80E tax.',
          intro='An education loan usually has a moratorium: you start repaying after the course ends plus a grace period (often 6 to 12 months). Interest builds up during that time, so paying even the interest while studying lowers your future EMI.',
          tax='Under Section 80E (old tax regime), the entire interest paid on an education loan for higher studies can be deducted, with no upper limit, for up to 8 years from the year you start repaying. Principal repayment is not deductible.',
          prepay='Many education loans are on a floating rate, so prepaying is usually free under RBI rules for individual borrowers. Some private lenders use fixed rates with a foreclosure fee; check the sanction letter.',
@@ -96,8 +98,8 @@ def loan_page(L):
     pick = yr if len(yr) <= 7 else [yr[i] for i in sorted(set([0, 1, 2, len(yr)//4, len(yr)//2, 3*len(yr)//4, len(yr)-1]))]
     arows = ''.join(f'<tr><td>Year {y}</td><td>{inr(pp)}</td><td>{inr(pi)}</td><td>{inr(b)}</td></tr>' for y, pp, pi, b in pick)
     first_int_share = round(100 * yr[0][2] / (yr[0][1] + yr[0][2]))
-    title = f"{name} EMI Calculator India | Self Streak"
-    desc = f"{name} EMI calculator with ready tables: EMI by amount and tenure, total interest, year-by-year split and prepayment savings. Free, no sign-up."
+    title = L.get('title') or f"{name} EMI Calculator India | Self Streak"
+    desc = L.get('desc') or f"{name} EMI calculator with ready tables: EMI by amount and tenure, total interest, year-by-year split and prepayment savings. Free, no sign-up."
     if len(desc) > 160: desc = desc[:157].rsplit(' ', 1)[0] + '…'
     short = (f"For a {lakh(P)} {name.lower()} at {rate:g}% a year for {yrs} years, the EMI is about {inr(E)} a month and the total interest is about {inr(TI)}. "
              f"Paying {inr(x)} extra every month would close it {n - m2} months early and save about {inr(TI - I2)} in interest.")
@@ -120,13 +122,36 @@ const saved=(E*n-P)-int;oS.textContent=x>0?`${{n-m}} months sooner`:'–';oNote.
     faq = [(f'What is the EMI for a {lakh(P)} {name.lower()}?', f'At {rate:g}% a year for {yrs} years, the EMI on {lakh(P)} is about {inr(E)} a month. Use the calculator above for your own rate and tenure.'),
            (f'How much interest will I pay on a {name.lower()}?', f'On {lakh(P)} at {rate:g}% for {yrs} years, total interest is about {inr(TI)}, so you repay {inr(E*n)} in all. A shorter tenure or regular prepayments cut this.'),
            (f'Can I prepay my {name.lower()}?', L['prepay'])]
+    mor_html = ''
+    if L.get('mor'):
+        mm = L['mor']['course'] + L['mor']['grace']
+        si = P * rate / 100 * mm / 12
+        Pa = P + si
+        Ea, Eb = emi(Pa, rate, n), E
+        Ec = emi(P, rate - 1, n)
+        tot_a = Ea * n
+        tot_b = si + Eb * n
+        tot_c = si + Ec * n
+        mor_html = f'''<section id="moratorium"><h2>Education loan EMI after the moratorium</h2>
+<p>Your EMI starts after the moratorium, and it is worked out on the loan amount plus any interest you did not pay while studying. Most banks charge simple interest during the moratorium and add the unpaid interest to the loan when repayment begins. SBI, for example, charges simple interest during the moratorium, adds the outstanding interest to the loan at the start of repayment, and starts EMIs 12 months after the course ends or 6 months after you get a job, whichever is earlier (<a href="https://sbi.co.in/web/personal-banking/loans/education-loans/student-loan-scheme" rel="noopener" target="_blank">SBI Student Loan Scheme</a>, as of 22 Nov 2026).</p>
+<p>Example: {lakh(P)} at {rate:g}%, a {L["mor"]["course"]//12}-year course plus a {L["mor"]["grace"]}-month grace period ({mm} months), repaid over {yrs} years. It assumes the full amount is paid out on day one; most loans are paid out in instalments, so the real interest during the course is lower.</p>
+<div class="tw"><table><thead><tr><th>During the moratorium</th><th>Interest built up</th><th>Loan when EMIs start</th><th>EMI for {yrs} years</th><th>Total you pay</th></tr></thead><tbody>
+<tr><td>Pay nothing</td><td>{inr(si)}</td><td>{inr(Pa)}</td><td>{inr(Ea)}</td><td>{inr(tot_a)}</td></tr>
+<tr><td>Pay the interest every month ({inr(si/mm)})</td><td>₹0 (paid as it comes)</td><td>{inr(P)}</td><td>{inr(Eb)}</td><td>{inr(tot_b)}</td></tr>
+<tr><td>Pay the interest, with a 1% rate concession</td><td>₹0 (paid as it comes)</td><td>{inr(P)}</td><td>{inr(Ec)} at {rate-1:g}%</td><td>{inr(tot_c)}</td></tr>
+</tbody></table></div>
+<p>Paying the interest while you study keeps the EMI at {inr(Eb)} instead of {inr(Ea)} and saves about {inr(tot_a - tot_b)} over the loan. Some banks also cut the rate if you pay the interest during the course: SBI gives a 1% concession for the whole tenure when the full interest is paid during the course and moratorium. Ask your bank whether it offers this, and enter the amount in the calculator above as the loan amount plus unpaid interest to see your own EMI.</p></section>\n'''
+        faq += [('Is the education loan EMI calculated on the loan amount or on the loan plus interest?',
+                 f'On the loan plus any interest you did not pay during the moratorium. For {lakh(P)} at {rate:g}% with a {mm}-month moratorium and nothing paid, about {inr(si)} of simple interest is added, so the {yrs}-year EMI is about {inr(Ea)} instead of {inr(Eb)}.'),
+                ('Is interest charged during the education loan moratorium?',
+                 'Yes. Interest runs from the date each instalment of the loan is paid out, even though no EMI is due. Most banks charge simple interest for this period and add it to the loan when repayment starts. Paying it as it comes keeps your EMI lower.')]
     inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">EMI calculator</div>
 <h1>{html.escape(name)} EMI calculator</h1><p class="lead">{html.escape(L["intro"])}</p>
 {calc}<p class="short">{html.escape(short)}</p><p class="upd">Example rate of {rate:g}% used for the tables below. Rates change with the RBI repo rate and your credit profile, so enter the rate your lender offers. Updated {UPDATED}.</p></div></header>
 <main class="wrap">
 <section><h2>{html.escape(name)} EMI by amount and tenure</h2><p>Monthly EMI at {rate:g}% a year for common {name.lower()} amounts.</p>
 <div class="tw"><table><thead><tr><th>Loan amount</th>{head}</tr></thead><tbody>{grid}</tbody></table></div></section>
-<section><h2>How much does a 1% rate change cost?</h2><p>For {lakh(P)} over {yrs} years, every 0.5% on the rate changes the EMI and the total interest like this:</p>
+{mor_html}<section><h2>How much does a 1% rate change cost?</h2><p>For {lakh(P)} over {yrs} years, every 0.5% on the rate changes the EMI and the total interest like this:</p>
 <div class="tw"><table><thead><tr><th>Rate</th><th>EMI</th><th>Total interest</th></tr></thead><tbody>{rrows}</tbody></table></div></section>
 <section><h2>Where your EMI goes, year by year</h2><p>In year 1, about {first_int_share}% of what you pay on {lakh(P)} at {rate:g}% goes to interest. The share falls every year as the balance shrinks.</p>
 <div class="tw"><table><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance left</th></tr></thead><tbody>{arows}</tbody></table></div></section>
