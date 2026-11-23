@@ -105,3 +105,12 @@
 - No product facts changed in commits since the last run (only SEO commits).
 - Search Console (authuser=0, property https://selfstreak.com/): /emi-calculator/education-loan is indexed; recrawl requested ("added to a priority crawl queue"). Overview: 44 indexed, 2 not indexed, 3 web search clicks. Bing not checked today.
 - `npm run report` (15–22 Nov): 25 views, 21 visitors, 0 sign-ups, 0 paid; google.com sent 4 views. Saved in reports/traffic-2026-11-22.md.
+
+## 2026-11-23 (daily autopilot, deployed)
+- Shipped and deployed: /blog/credit-card-statement-date-vs-due-date now answers "what is statement date credit card" (23 impressions at position 68). New H1 "What is a credit card statement date? Statement date vs due date"; the first paragraph defines the statement date (last day of the billing cycle, when the bill is generated) and the due date in two sentences; the statement-date section adds the synonyms (billing date, bill generation date, closing date) and "where to find it" (on the statement and in the bank app); new FAQ "What is the statement date on a credit card?". Title unchanged (it holds the "vs due date" query). Top results checked first (NerdWallet, Chase, Amex, Citi, Paytm): all are short definition pages using "closing date"; none is India-specific with RBI rules.
+- 8 other pages changed only because they link the guide with its H1 as anchor text (/blog, /about, /404, 2 blog posts, /credit-card-bill-reminder, /debt-payoff-planner, /expense-tracker), so the anchor now carries the query.
+- Local checks: all 9 pages 200 on wrangler dev, titles ≤60, canonicals correct, JSON-LD parses; nothing under src/, schema.sql or wrangler.jsonc changed. Deployed; IndexNow 200 for 9 URLs; live H1 confirmed.
+- Health check (before deploy): all 47 live sitemap URLs 200 (slowest 1.03 s), canonicals correct, no noindex; http:// and www. 301.
+- No product facts changed in commits since the last run (only SEO commits).
+- Search Console (authuser=0, property https://selfstreak.com/): the guide is indexed; recrawl requested ("added to a priority crawl queue"). Overview: 44 indexed, 2 not indexed, 3 web search clicks. Bing not checked today.
+- `npm run report` (16–23 Nov): 23 views, 19 visitors, 0 sign-ups, 0 paid; google.com sent 3 views; /credit-card-tracker-template got 4 views. Saved in reports/traffic-2026-11-23.md.
