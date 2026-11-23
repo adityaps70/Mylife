@@ -8,16 +8,17 @@ POSTS = [
 dict(slug='credit-card-statement-date-vs-due-date', nav='Statement date vs due date', kicker='Credit cards',
   title='Credit Card Statement Date vs Due Date | Self Streak',
   desc='What the statement date and due date mean, how the interest-free period works, why paying only the minimum costs so much, and RBI rules that protect you.',
-  h1='Credit card statement date vs due date: what each one means',
-  lead='Two dates decide what you pay on a credit card and when. Get them right and a card is an interest-free loan for up to about 50 days. Get them wrong and you pay 3–4% interest a month.',
+  h1='What is a credit card statement date? Statement date vs due date',
+  lead='The statement date on a credit card is the last day of its billing cycle: the day your bank adds up everything you spent since the last bill and generates this month’s statement. The due date is the last day to pay that statement, usually 15–20 days later. Get the two right and a card is an interest-free loan for up to about 50 days; get them wrong and you pay 3–4% interest a month.',
   short='The <b>statement date</b> is the day your card closes the month’s bill; everything you spent since the last statement is on it. The <b>due date</b> is the last day to pay that bill, usually 15–20 days later. Pay the full amount due by the due date and you pay no interest.',
   date='2026-11-13', hubs=['credit-card-bill-reminder', 'expense-tracker', 'debt-payoff-planner'],
   related=[('Credit card bill reminder', '/credit-card-bill-reminder'), ('Debt avalanche vs snowball', '/blog/debt-avalanche-vs-snowball'), ('50/30/20 budget in rupees', '/blog/50-30-20-budget-rule-india')],
   sources=[RBI_CC],
   body='''
 <section><h2 id="statement-date">What is the statement date?</h2>
-<p>The statement date (also called the billing date) is the day your card issuer closes a billing cycle and creates your bill. Every purchase from the day after the previous statement date up to this date appears on the new statement. Anything you spend after the statement date goes on next month’s bill.</p>
-<p>Example: your statement date is the 5th of every month. A ₹4,000 purchase on 3 March is on the 5 March statement. A ₹4,000 purchase on 6 March is on the 5 April statement.</p></section>
+<p>The statement date (also called the billing date, bill generation date or closing date) is the day your card issuer closes a billing cycle and creates your bill. It falls on the same day every month, so each billing cycle runs about 30 days. Every purchase from the day after the previous statement date up to this date appears on the new statement. Anything you spend after the statement date goes on next month’s bill.</p>
+<p>Example: your statement date is the 5th of every month. A ₹4,000 purchase on 3 March is on the 5 March statement. A ₹4,000 purchase on 6 March is on the 5 April statement.</p>
+<p><b>Where to find it:</b> the statement date is printed near the top of every credit card statement, next to the payment due date and the statement period. Your bank’s app or net banking also shows it on the card’s statement page. It stays the same each month unless you ask the bank to change it.</p></section>
 <section><h2 id="due-date">What is the payment due date?</h2>
 <p>The due date is the last day to pay the bill created on the statement date. Most Indian cards give 15 to 20 days between the two. If your statement date is the 5th, your due date might be the 23rd or 25th.</p>
 <p>The statement shows two amounts: the <b>total amount due</b> (everything on this bill) and the <b>minimum amount due</b> (usually around 5% of the total, plus any EMIs and fees). Only paying the total amount due keeps you interest-free.</p></section>
@@ -54,6 +55,7 @@ dict(slug='credit-card-statement-date-vs-due-date', nav='Statement date vs due d
 <li>Get a reminder that shows the amount, not just the date.</li></ol>
 <p><a href="/credit-card-bill-reminder">Self Streak’s credit card tracker</a> follows each card’s statement and due dates, splits spends into this bill and next bill, and reminds you two days before each due date.</p></section>
 <section><h2 id="faq">Common questions</h2>
+<h3>What is the statement date on a credit card?</h3><p>It is the last day of the card’s billing cycle, when the bank closes the cycle and generates your bill. Spends up to that day are on this bill; spends after it go on next month’s.</p>
 <h3>Is the statement date the same as the due date?</h3><p>No. The statement date closes the bill; the due date, usually 15–20 days later, is the deadline to pay it.</p>
 <h3>What happens if I pay one day late?</h3><p>Under RBI rules, late fees and credit bureau reporting apply only if the account is past due for more than three days. Interest on the unpaid balance can still be charged, and the interest-free period on new purchases is lost until you clear the balance.</p>
 <h3>Does paying the minimum due affect my credit score?</h3><p>Paying at least the minimum on time avoids a late payment mark. But a high balance relative to your limit can still lower your score, and the interest adds up quickly.</p></section>

@@ -23,7 +23,7 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [Two-wheeler loan EMI calculator](https://selfstreak.com/emi-calculator/two-wheeler-loan): EMI tables by amount and tenure, interest by year and prepayment savings at an example 12% rate.
 
 ## Guides
-- [Credit card statement date vs due date: what each one means](https://selfstreak.com/blog/credit-card-statement-date-vs-due-date): What the statement date and due date mean, how the interest-free period works, why paying only the minimum costs so much, and RBI rules that protect you.
+- [What is a credit card statement date? Statement date vs due date](https://selfstreak.com/blog/credit-card-statement-date-vs-due-date): What the statement date and due date mean, how the interest-free period works, why paying only the minimum costs so much, and RBI rules that protect you.
 - [The 50/30/20 budget rule in India, with rupee examples](https://selfstreak.com/blog/50-30-20-budget-rule-india): How the 50/30/20 budget rule works on an Indian salary, with worked examples for ₹40,000, ₹75,000 and ₹1.5 lakh a month, and how to adjust it for rent and EMIs.
 - [Debt avalanche vs snowball: which pays off debt faster?](https://selfstreak.com/blog/debt-avalanche-vs-snowball): Avalanche vs snowball debt payoff, compared on a real Indian example with a credit card, personal loan and phone EMI: months to debt-free and interest paid.
 - [How long does it take to form a habit?](https://selfstreak.com/blog/how-long-does-it-take-to-form-a-habit): Research found new habits took a median of 66 days to become automatic, with a range of 18 to 254 days. What that means, and how to make a habit stick.
