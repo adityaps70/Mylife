@@ -3,7 +3,7 @@ credit card interest calculator. Called from build-pages.py.
 
 Rules for comparison pages: every claim about another app has a source and an "as of" date, and each page
 says plainly where the other app is the better choice. Re-check the sources before changing a claim."""
-import html
+import html, json
 import build_pages as bp
 
 B = bp.B
@@ -186,6 +186,92 @@ def cc_calculator():
     return path, bp.shell(path, 'Credit Card Interest Calculator India | Self Streak', desc,
                           'Credit card interest calculator · Self Streak', graph, [('Self Streak', '/'), ('Credit card interest calculator', path)], inner)
 
+# ---------------- net worth calculator ----------------
+NW_AS_OF = '24 November 2026'
+NW_ASSETS = [('nA1', 'Savings accounts and cash', 150000, 'q'), ('nA2', 'Fixed and recurring deposits', 200000, 'q'),
+             ('nA3', 'Mutual funds and shares', 400000, 'q'), ('nA4', 'EPF, PPF and NPS', 600000, ''),
+             ('nA5', 'Gold and jewellery', 300000, ''), ('nA6', 'Home you live in (today’s value)', 6000000, 'h'),
+             ('nA7', 'Other property and land', 0, ''), ('nA8', 'Vehicles and other assets', 400000, '')]
+NW_DEBTS = [('nD1', 'Home loan outstanding', 4200000, 'h'), ('nD2', 'Car or two-wheeler loan', 250000, ''),
+            ('nD3', 'Personal and education loans', 0, ''), ('nD4', 'Credit card and pay-later dues', 40000, ''),
+            ('nD5', 'Other borrowings (gold loan, family)', 0, '')]
+def _nw_fields(rows):
+    return ''.join(f'<label>{html.escape(t)} (₹)<input id="{i}" type="number" inputmode="numeric" value="{v}" min="0"></label>' for i, t, v, _ in rows)
+NW_CALC = '''<div class="calc" id="nw"><h3 style="margin-top:0">What you own</h3><div class="fields">''' + _nw_fields(NW_ASSETS) + '''</div>
+<h3>What you owe</h3><div class="fields">''' + _nw_fields(NW_DEBTS) + '''</div>
+<h3>Optional</h3><div class="fields"><label>Monthly expenses, including EMIs (₹)<input id="nE" type="number" inputmode="numeric" value="50000" min="0"></label></div>
+<div class="out"><div><small>Net worth</small><b id="nN">–</b></div><div><small>Total assets</small><b id="nTA">–</b></div><div><small>Total debts</small><b id="nTD">–</b></div>
+<div><small>Net worth without your home</small><b id="nNH">–</b></div><div><small>Money you can reach in a few days</small><b id="nQ">–</b></div><div><small>Months of expenses it covers</small><b id="nM">–</b></div><div><small>Debts as % of assets</small><b id="nR">–</b></div></div>
+<p class="note" id="nNote"></p><p class="note">Your numbers stay in this browser. Nothing is sent to Self Streak. <a href="#" id="nClr">Clear the form</a></p></div>
+<script>
+(function(){const f=n=>(n<0?'−':'')+'₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');
+const A=''' + json.dumps([[i, k] for i, _, _, k in NW_ASSETS]) + ''',D=''' + json.dumps([[i, k] for i, _, _, k in NW_DEBTS]) + ''',ids=A.concat(D).map(x=>x[0]).concat(['nE']),$=id=>document.getElementById(id),v=id=>Math.max(0,+$(id).value||0),K='ss-networth';
+try{const s=JSON.parse(localStorage.getItem(K)||'null');if(s)ids.forEach(id=>{if(id in s)$(id).value=s[id]})}catch(e){}
+function calc(){let a=0,d=0,q=0,ha=0,hd=0;A.forEach(([id,k])=>{const x=v(id);a+=x;if(k=='q')q+=x;if(k=='h')ha+=x});D.forEach(([id,k])=>{const x=v(id);d+=x;if(k=='h')hd+=x});
+const n=a-d,nh=(a-ha)-(d-hd),e=v('nE');$('nN').textContent=f(n);$('nN').style.color=n<0?'var(--red)':'var(--lime)';$('nTA').textContent=f(a);$('nTD').textContent=f(d);$('nNH').textContent=f(nh);$('nQ').textContent=f(q);
+const mo=e?(q/e).toFixed(1).replace(/\\.0$/,''):'';$('nM').textContent=mo||'–';$('nR').textContent=a?Math.round(d/a*100)+'%':'–';
+let t=n<0?`You owe ${f(-n)} more than you own. That is common in the first years of a big loan; what matters is that the number rises each month.`:`You own ${f(n)} more than you owe.`;
+if(ha||hd)t+=` Leave out your home and its loan and it is ${f(nh)}: the part you could actually spend or invest.`;
+if(e)t+=q/e<3?` The money you can reach quickly covers ${mo} months of expenses; a common rule of thumb is to keep 3 to 6 months.`:` The money you can reach quickly covers about ${mo} months of expenses.`;
+$('nNote').textContent=t;try{const o={};ids.forEach(id=>o[id]=$(id).value);localStorage.setItem(K,JSON.stringify(o))}catch(e){}}
+ids.forEach(id=>$(id).addEventListener('input',calc));$('nClr').addEventListener('click',ev=>{ev.preventDefault();ids.forEach(id=>$(id).value='');try{localStorage.removeItem(K)}catch(e){}calc()});calc()})();
+</script>'''
+
+def net_worth_calculator():
+    path = '/net-worth-calculator'
+    h1 = 'Net worth calculator in rupees'
+    desc = 'Free net worth calculator for India: add savings, EPF, PPF, gold, property and loans in rupees. See net worth with and without your home. No sign-up.'
+    faq = [('How do I calculate my net worth?', 'Add up everything you own at today’s value (bank balances, deposits, mutual funds and shares, EPF, PPF and NPS, gold, property, vehicles) and subtract everything you owe (home, car, personal and education loans, credit card dues and other borrowings). Net worth = total assets − total liabilities.'),
+           ('Should I count the house I live in?', 'Both ways are used, which is why this calculator shows both. Your home is an asset, so the total includes it. But you can’t spend it without moving out, so the second figure leaves out the home and its loan. SEBI’s own net worth calculator lists real estate as “not the house you live in”.'),
+           ('Do EPF, PPF and NPS count towards net worth?', 'Yes. They are your money, so they are part of your net worth. They are locked in for years, though, so this calculator does not count them as money you can reach in a few days.'),
+           ('Can net worth be negative?', 'Yes. If your loans and card dues add up to more than what you own, net worth is negative. It is common just after taking an education loan or early in a home loan. The useful question is whether it rises month after month.'),
+           ('How often should I check my net worth?', 'Once a month is enough for most people, on the same day each month, so that salary and EMI dates don’t distort the comparison.'),
+           ('Is my data saved or shared?', 'The numbers are kept only in your own browser so they are still there when you come back. Nothing is sent to Self Streak and no sign-up is needed. Use “Clear the form” to remove them.')]
+    inner = f'''<header style="padding-top:20px"><div class="wrap"><div class="kick">Calculator</div>
+<h1>{h1}</h1><p class="lead">Your net worth is everything you own minus everything you owe. Enter your savings, investments, gold, property and loans below to see it in rupees, with and without the home you live in, and how many months of expenses your ready money covers.</p>
+{NW_CALC}<p class="short"><b>Net worth = total assets − total liabilities.</b> In the example filled in above, assets of ₹80,50,000 minus debts of ₹44,90,000 give a net worth of ₹35,60,000. Leave out the ₹60 lakh home and its ₹42 lakh loan and it is ₹17,60,000, of which ₹7,50,000 can be reached within a few days.</p>
+<p class="upd">Free, no sign-up. Updated {bp.UPDATED}.</p></div></header>
+<main class="wrap">
+<section><h2>What to count as an asset</h2><p>Use today’s value, not what you paid.</p><ul class="list">
+<li><b>Savings accounts and cash:</b> the balance today, plus cash at home and wallet balances.</li>
+<li><b>Fixed and recurring deposits:</b> the amount deposited so far, plus interest already credited.</li>
+<li><b>Mutual funds and shares:</b> the current value in your fund or demat statement, not the amount invested.</li>
+<li><b>EPF, PPF and NPS:</b> the latest balance in your passbook or statement. Easy to forget because you never see this money, and often the largest financial asset a salaried person has.</li>
+<li><b>Gold and jewellery:</b> the weight at today’s gold price. Leave out making charges; you don’t get them back on resale.</li>
+<li><b>Property:</b> a realistic selling price today. The home you live in has its own box, so it can be shown separately.</li>
+<li><b>Vehicles and other assets:</b> the resale value of a car or bike, and money others owe you that you really expect back.</li></ul>
+<p>Leave out things that have no resale value to speak of (furniture, phones, clothes) and term insurance, which pays nothing while you are alive.</p></section>
+<section><h2>What to count as a liability</h2><ul class="list">
+<li><b>Loans:</b> the outstanding principal today, not the original loan amount and not EMI × months left (that includes future interest). Your lender’s app or loan statement shows it; the <a href="/emi-calculator">EMI calculator</a> can estimate it.</li>
+<li><b>Credit cards and pay-later:</b> everything you owe right now, including spends that are not billed yet and any card EMIs.</li>
+<li><b>Other borrowings:</b> gold loans, loans against an FD or a policy, and money borrowed from family or friends.</li></ul></section>
+<section><h2>Three numbers, not one</h2><p>One net worth figure hides a lot when most of it is a house. This calculator shows three:</p>
+<div class="tw"><table class="cmp"><thead><tr><th></th><th>What it counts</th><th>In the example</th></tr></thead><tbody>
+<tr><td>Net worth</td><td>All assets minus all debts</td><td>₹35,60,000</td></tr>
+<tr><td>Net worth without your home</td><td>The same, leaving out the home you live in and its home loan</td><td>₹17,60,000</td></tr>
+<tr><td>Money you can reach in a few days</td><td>Savings, deposits, mutual funds and shares</td><td>₹7,50,000 (15 months of ₹50,000 expenses)</td></tr></tbody></table></div>
+<p>The first tells you where you stand overall. The second is what you could spend or invest without selling the roof over your head; SEBI’s investor net worth calculator takes the same view and lists real estate as “not the house you live in” (as of {NW_AS_OF}). The third is your cushion if your income stops: EPF, PPF and NPS are locked in, and gold and property take time to sell.</p></section>
+<section><h2>How to raise your net worth</h2><ul class="list">
+<li><b>Clear the most expensive debt first.</b> Every rupee of principal repaid raises net worth by a rupee, and on a credit card it also stops interest of around 3–3.75% a month. See the <a href="/credit-card-interest-calculator">credit card interest calculator</a> and the <a href="/debt-payoff-planner">debt payoff planner</a>.</li>
+<li><b>Save before you spend.</b> Decide the amount on payday; the <a href="/blog/50-30-20-budget-rule-india">50/30/20 budget calculator</a> gives a starting split.</li>
+<li><b>Know where the month goes.</b> Net worth only rises if you spend less than you earn, and that takes an <a href="/expense-tracker">expense tracker</a> or the free <a href="/budget-template-india">monthly budget sheet</a>.</li>
+<li><b>Check it monthly.</b> One reading means little. Twelve readings show the direction.</li></ul></section>
+<section><h2>Track it every month without retyping</h2><p>This page gives you today’s number. Self Streak keeps it up to date: add your savings and investment accounts and your loans once, and the Overview screen shows your net worth, what you set aside this month and the month you’ll be debt-free, without retyping every box each month. It never asks for a bank login, card number or SMS access.</p></section>
+{bp.shots_html('net-worth-calculator', 'Net worth in the Self Streak app')}
+<section><h2>Questions</h2>{"".join(f"<details><summary>{html.escape(q)}</summary><p>{html.escape(a)}</p></details>" for q, a in faq)}</section>
+<section><h2>Sources</h2><ul class="list src"><li><a href="https://investor.sebi.gov.in/calculators/Networth_Calculator.html" rel="noopener" target="_blank">SEBI Investor: Net Worth Calculator (asset and liability heads; real estate listed as “not the house you live in”), checked {NW_AS_OF}</a></li></ul><p class="note">General information, not financial advice. The figures are only as accurate as the values you enter.</p></section>
+{bp.FINAL}
+<section><h2 style="font-size:20px">More free tools</h2><div class="more"><a href="/emi-calculator">EMI calculator</a><a href="/credit-card-interest-calculator">Credit card interest calculator</a><a href="/debt-snowball-spreadsheet">Debt snowball spreadsheet</a><a href="/budget-template-india">Budget template (Excel)</a><a href="/emi-tracker-template">EMI tracker Excel</a><a href="/expense-tracker">Expense tracker</a></div></section></main>'''
+    graph = [{"@type": "WebPage", "@id": B + path + "#page", "url": B + path, "name": h1, "description": desc,
+              "isPartOf": {"@id": B + "/#website"}, "dateModified": bp.UPDATED, "inLanguage": "en-IN"},
+             {"@type": "WebApplication", "name": "Net worth calculator (India, ₹)", "url": B + path, "applicationCategory": "FinanceApplication", "operatingSystem": "Any",
+              "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"}, "publisher": {"@id": B + "/#org"}},
+             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}]
+    return path, bp.shell(path, 'Net Worth Calculator India (in Rupees) | Self Streak', desc,
+                          'Net worth calculator in rupees · Self Streak', graph, [('Self Streak', '/'), ('Net worth calculator', path)], inner)
+
+NW_CALC_LINK = ('/net-worth-calculator', 'Net worth calculator in rupees', 'Add what you own and what you owe: net worth with and without your home, and months of expenses covered.')
+
 CC_CALC_LINK = ('/credit-card-interest-calculator', 'Credit card interest calculator', 'What paying only the minimum due costs in interest and GST, and how long it takes to clear.')
 
 def link_from_tools():
@@ -196,14 +282,18 @@ def link_from_tools():
         (f'/credit-card-statement-date/{k["slug"]}', f'{k["name"]} credit card billing cycle and due date', f'Interest-free period, due date, grace days and changing the date, from {k["name"]}’s own terms.') for k in BANKS)
     for slug in ('credit-card-bill-reminder', 'debt-payoff-planner'):
         bp.GUIDES_FOR.setdefault(slug, []).insert(0, CC_CALC_LINK)
+    bp.SHOTS_FOR['net-worth-calculator'] = ['overview', 'debt']
+    for slug in ('expense-tracker', 'debt-payoff-planner', 'emi-calculator', 'health-and-finance-tracker', 'habit-and-money-tracker'):
+        bp.GUIDES_FOR.setdefault(slug, []).append(NW_CALC_LINK)
 
 def llms_lines():
-    return [f'- [Credit card interest calculator]({B}/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.', '', '## Card billing cycles by bank'] + [f"- [{k['name']} credit card billing cycle and due date]({B}/credit-card-statement-date/{k['slug']}): billing cycle, interest-free period and grace days from {k['name']}’s own terms." for k in BANKS] + ['', '## Comparisons'] + [f"- [Self Streak vs {c['other']}]({B}/{c['slug']}): {c['desc']}" for c in COMPARE]
+    return [f'- [Credit card interest calculator]({B}/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.', f'- [Net worth calculator in rupees]({B}/net-worth-calculator): assets minus liabilities for Indian households (EPF, PPF, NPS, gold, property, loans), shown with and without the home you live in, plus months of expenses covered. No sign-up.', '', '## Card billing cycles by bank'] + [f"- [{k['name']} credit card billing cycle and due date]({B}/credit-card-statement-date/{k['slug']}): billing cycle, interest-free period and grace days from {k['name']}’s own terms." for k in BANKS] + ['', '## Comparisons'] + [f"- [Self Streak vs {c['other']}]({B}/{c['slug']}): {c['desc']}" for c in COMPARE]
 
 def build():
     for c in COMPARE:
         path, page = compare_page(c); bp.write(path, page)
     path, page = cc_calculator(); bp.write(path, page)
+    path, page = net_worth_calculator(); bp.write(path, page)
     build_banks()
 
 # ---------------- per-bank statement date / due date pages ----------------

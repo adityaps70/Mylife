@@ -309,7 +309,7 @@ page(slug='health-and-finance-tracker', nav='Health & finance tracker',
 <div class="card"><b>Spending</b><p>Log by voice, receipt photo or bank statement, sorted into categories in rupees.</p></div>
 <div class="card"><b>Budget</b><p>A monthly budget by category, with how much you can still spend each day.</p></div>
 <div class="card"><b>Bills, EMIs and cards</b><p>Reminders before each due date, with the amount and minimum due.</p></div>
-<div class="card"><b>Net worth and debt-free date</b><p>See income, spending and what you saved this month, and the month your loans will be paid off.</p></div></div></section>
+<div class="card"><b>Net worth and debt-free date</b><p>See income, spending and what you saved this month, and the month your loans will be paid off. Try the free <a href="/net-worth-calculator">net worth calculator</a> first.</p></div></div></section>
 <section><h2>Why one app for both</h2>
 <p>Health and money goals fail the same way: you track hard for a week, then stop opening the app. Keeping both in one place means one habit to keep, opening Self Streak each day, instead of two. Each day’s quests mix them (drink water, log a meal, log an expense, tick your habits), and the evening summary looks at the whole day.</p>
 <p>They also affect each other. Cooking at home is both cheaper and usually better for your protein target, and a weekly grocery budget is easier to keep when meals are planned. Seeing food spending and what you ate on the same screen makes that link obvious.</p></section>

@@ -31,6 +31,7 @@ Self Streak runs on the web at https://selfstreak.com/app, with iPhone and Andro
 - [How much protein do you need on an Indian diet?](https://selfstreak.com/blog/protein-intake-indian-diet): How much protein Indian adults need per kg, how to hit it on a vegetarian or non-vegetarian Indian diet, with a sample day and protein in common Indian foods.
 - [Habit tracker app vs Excel sheet vs paper: which actually works?](https://selfstreak.com/blog/habit-tracker-app-vs-excel): Should you track habits in an app, an Excel or Google Sheets template, or a paper journal? What each does well, where each fails, and how to choose.
 - [Credit card interest calculator](https://selfstreak.com/credit-card-interest-calculator): cost of paying only the minimum due on an Indian credit card, with interest and 18% GST.
+- [Net worth calculator in rupees](https://selfstreak.com/net-worth-calculator): assets minus liabilities for Indian households (EPF, PPF, NPS, gold, property, loans), shown with and without the home you live in, plus months of expenses covered. No sign-up.
 
 ## Card billing cycles by bank
 - [HDFC Bank credit card billing cycle and due date](https://selfstreak.com/credit-card-statement-date/hdfc-bank): billing cycle, interest-free period and grace days from HDFC Bank’s own terms.

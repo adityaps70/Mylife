@@ -84,8 +84,8 @@
   "modified": "2026-11-18"
  },
  "/debt-payoff-planner": {
-  "hash": "be061f3084051bc9",
-  "modified": "2026-11-23"
+  "hash": "064f9b1eeb77b053",
+  "modified": "2026-11-24"
  },
  "/debt-snowball-spreadsheet": {
   "hash": "b23ce2678e3c98e0",
@@ -96,8 +96,8 @@
   "modified": "2026-11-15"
  },
  "/emi-calculator": {
-  "hash": "ad2d24c2b73d48f0",
-  "modified": "2026-11-16"
+  "hash": "777e5c7b27b296e3",
+  "modified": "2026-11-24"
  },
  "/emi-calculator/car-loan": {
   "hash": "e45cda4cbc0011ae",
@@ -124,12 +124,12 @@
   "modified": "2026-11-18"
  },
  "/expense-tracker": {
-  "hash": "aa7d9700200650bf",
-  "modified": "2026-11-23"
+  "hash": "86cca59801ffbbbc",
+  "modified": "2026-11-24"
  },
  "/habit-and-money-tracker": {
-  "hash": "b6609c234d351c4b",
-  "modified": "2026-11-14"
+  "hash": "7d33fac71ac60b64",
+  "modified": "2026-11-24"
  },
  "/habit-tracker": {
   "hash": "6e1abfa368daec71",
@@ -144,8 +144,8 @@
   "modified": "2026-11-21"
  },
  "/health-and-finance-tracker": {
-  "hash": "7fe5e028df038daa",
-  "modified": "2026-11-14"
+  "hash": "1ad37f1a382d4904",
+  "modified": "2026-11-24"
  },
  "/hi/blog/credit-card-statement-date-vs-due-date": {
   "hash": "7bf1e59dc8fbed03",
@@ -158,6 +158,10 @@
  "/loop-habit-tracker-alternative": {
   "hash": "f34f9b8d542a914e",
   "modified": "2026-11-21"
+ },
+ "/net-worth-calculator": {
+  "hash": "71810bed6d9aefb7",
+  "modified": "2026-11-24"
  },
  "/privacy": {
   "hash": "529f443d7096edef",
