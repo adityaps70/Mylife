@@ -82,7 +82,7 @@ Next, one per autopilot run, highest value first:
 - [ ] Re-check the bank "billing cycle" queries around 2026-12-05 (Search Console, Performance, filter "billing cycle"). If they're still at 8–20, add a per-bank "billing cycle change" step list, sourced only from each bank's own FAQ or MITC.
 - [x] ~~/blog/credit-card-statement-date-vs-due-date: "what is statement date credit card" H1 and first paragraph~~ Shipped 2026-11-23. Re-check position around 2026-12-07.
 - [x] ~~Education loan queries at 60–80 on /emi-calculator/education-loan~~ Shipped 2026-11-22: moratorium section, table and 2 FAQs, "with Moratorium" in the title. Re-check positions around 2026-12-06.
-- [ ] Rupee net worth calculator (free tool, no signup). TimelyBills added /networth-calculator this week; Self Streak already tracks net worth in the app. Read the top 5 results first.
+- [x] ~~Rupee net worth calculator (free tool, no signup)~~ Shipped 2026-11-24 as /net-worth-calculator.
 - [ ] **Owner: sign-ups 0 for 9 days**; daily views fell from 26–60 (10–13 Nov) to 2–13 from 14 Nov. Ask whether launch-week promotion stopped and whether the signup flow changed. Analytics (item 13) still missing.
 - [ ] AI answer check still not done: needs an AI SEO Tracker account or a manual check by the owner.
 - [x] ~~Update context.md "Ship mode" line~~ Done 2026-11-21.
@@ -94,5 +94,12 @@ Next, one per autopilot run, highest value first:
 
 ## Added 2026-11-23
 - [ ] **Weekly run due 2026-11-28** (last report 21 Nov): page 2 → page 1, indexing, competitor diffs, report.
-- [ ] Next daily item: rupee net worth calculator (free tool, no signup); read the top 5 results first. TimelyBills added /networth-calculator.
+- [x] ~~Next daily item: rupee net worth calculator~~ Shipped 2026-11-24.
 - [ ] Owner (unchanged): sign-ups 0 for 11 days; 23 views and 19 visitors in 16–23 Nov (187 / 103 the week before), 8 of the views from the US. Analytics still missing.
+
+## Added 2026-11-24
+- [ ] **Weekly run due 2026-11-28** (last report 21 Nov), unchanged.
+- [ ] Next daily item: printable PDF of the habit tracker on /habit-tracker-template ("habit tracker printable", "habit tracker pdf"); or the /habit-tracker-template and /budget-template-india Hindi versions if Hindi impressions show up first.
+- [ ] /net-worth-calculator: check it is indexed at the weekly run; check position for "net worth calculator india" around 2026-12-08. If it gets impressions, add a free net worth tracker Excel (12 monthly columns) and link the two.
+- [ ] Link /net-worth-calculator from /budget-template-india and /debt-snowball-spreadsheet (body text) on a day those templates change anyway.
+- [ ] Owner (unchanged): sign-ups 0 for 12 days; 23 views and 19 visitors in 17–24 Nov (165 / 85 the week before), 9 of the views from the US. 2 views came from Instagram this week. Analytics still missing.
