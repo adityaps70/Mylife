@@ -125,3 +125,18 @@
 - No product facts changed in commits since the last run (only SEO commits).
 - Search Console (authuser=0, property https://selfstreak.com/): /net-worth-calculator was "URL is unknown to Google"; indexing requested ("added to a priority crawl queue"). Overview: 44 indexed, 2 not indexed, 3 web search clicks. Bing not checked today.
 - `npm run report` (17–24 Nov): 23 views, 19 visitors, 0 sign-ups, 0 paid; google.com sent 4 views, l.instagram.com 2. Saved in reports/traffic-2026-11-24.md.
+
+## 2026-11-28 (daily + weekly autopilot, deployed)
+- No runs on 25–27 Nov (nothing in the log or git), so this run covers 7 days.
+- Page 2 → page 1: Search Console (28 days to 26 Nov) shows /hi/blog/credit-card-statement-date-vs-due-date at position 11.6 (51 impressions), with "credit card me due date kya hota hai" at 10.7 and "credit card kitne din me aata hai" at 27.6. Shipped: new title "क्रेडिट कार्ड में ड्यू डेट क्या होता है? | Self Streak", H1 "क्रेडिट कार्ड में ड्यू डेट क्या होता है? स्टेटमेंट डेट और ड्यू डेट का फ़र्क", a lead that answers both questions in the first two sentences (due date 15–20 days after the statement date; one bill a month, a 28–31 day cycle), a short Hinglish (Roman script) answer box, and 2 new FAQs (in FAQPage JSON-LD). Share image re-rendered. Top results were read first: all English, mostly US "closing date" pages (Citi, Chase, NerdWallet) plus HDFC/ICICI/Paytm billing-cycle pages; none answers in Hindi.
+- Backlog item: /net-worth-calculator linked from /budget-template-india and /debt-snowball-spreadsheet (body text). It now has 7 inbound links.
+- The bank "billing cycle" pages are held until the 5 Dec re-check (hdfc billing cycle: 52 impressions at 12.0, still 0 clicks).
+- Local checks: 3 changed pages 200 on wrangler dev, titles ≤60, canonicals correct, JSON-LD parses; nothing under src/, schema.sql or wrangler.jsonc changed. Deployed; IndexNow 200 for 9 URLs; live title confirmed.
+- Health check (before deploy): all 48 live sitemap URLs 200 (slowest 1.23 s), canonicals correct, no noindex, no duplicate titles, no orphans; http:// and www. 301.
+- **Broken: https://selfstreak.com/download/SelfStreak.apk returns 404** (Search Console "Not found (404)", first seen 22 Nov). /download links to it. `*.apk` is in .gitignore, so every deploy from a fresh clone (the autopilot's) uploads the site without the APK. Needs the owner; see backlog.
+- No product facts changed in commits since the last run (only SEO commits).
+- Search Console (authuser=0, property https://selfstreak.com/): 50 indexed, 4 not indexed (2 × 404: the APK and https://selfstreak.com/12; 2 × "Crawled – currently not indexed": /net-worth-calculator and /blog/habit-tracker-app-vs-excel). URL Inspection: /net-worth-calculator is now indexed (the report lags), recrawl requested; the Hindi guide is indexed, recrawl requested ("priority crawl queue"). /blog/habit-tracker-app-vs-excel is still "Crawled – currently not indexed" (last crawl 21 Nov) after the 21 Nov request; not requested again, the cause is content (backlog). 28 days: 5 clicks, 1,390 impressions, average position 36.4.
+- Bing Webmaster: not checked (signed out in Chrome; the autopilot does not sign in).
+- Competitors: no URLs added or removed since 21 Nov on habitify.me (753), pocketclear.app (444) or timelybills.app (164).
+- AI answers: not checked (no assistant access in unattended runs).
+- `npm run report` (21–28 Nov): 16 views, 13 visitors, 1 sign-up (first since 18 Nov), 0 paid; referrers: Instagram 2, Facebook 2, Google 2. Saved in reports/traffic-2026-11-28.md. Weekly report: reports/2026-11-28.md.

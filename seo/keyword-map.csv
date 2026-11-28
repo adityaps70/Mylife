@@ -67,13 +67,15 @@ loan tracker excel,transactional,unknown,unknown,/emi-tracker-template,live,not 
 multiple loan emi tracker,transactional,unknown,unknown,/emi-tracker-template,live,not indexed (new),2026-11-16
 debt avalanche spreadsheet,transactional (wants a file),unknown,unknown,/debt-snowball-spreadsheet,live,not indexed (new),2026-11-18
 debt payoff spreadsheet india,transactional (wants a file),unknown,unknown,/debt-snowball-spreadsheet,live,not indexed (new),2026-11-18
-hdfc credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/hdfc-bank,live (retargeted 2026-11-21),11.7 (15 impr, 28d),2026-11-21
+hdfc credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/hdfc-bank,live (retargeted 2026-11-21),12.0 (52 impr, 28d),2026-11-28
 hdfc credit card statement date,informational,unknown,unknown,/credit-card-statement-date/hdfc-bank,live,8.2 (9 impr, 28d),2026-11-21
 sbi credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/sbi-card,live (retargeted 2026-11-21),10.2 (8 impr, 28d),2026-11-21
 icici bank credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/icici-bank,live (retargeted 2026-11-21),8.7 (6 impr, 28d),2026-11-21
 axis bank credit card statement date,informational,unknown,unknown,/credit-card-statement-date/axis-bank,live,6.9 (7 impr, 28d),2026-11-21
-axis bank credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/axis-bank,live (retargeted 2026-11-21),12.6 (5 impr, 28d),2026-11-21
-what is statement date credit card,informational,unknown,unknown,/blog/credit-card-statement-date-vs-due-date,live (H1 retargeted 2026-11-23),68.6 (23 impr, 28d),2026-11-21
-net worth calculator india,transactional,unknown,unknown,/net-worth-calculator,live,new 2026-11-24 (indexing requested),2026-11-24
+axis bank credit card billing cycle,informational,unknown,unknown,/credit-card-statement-date/axis-bank,live (retargeted 2026-11-21),16.1 (8 impr, 28d),2026-11-28
+what is statement date credit card,informational,unknown,unknown,/blog/credit-card-statement-date-vs-due-date,live (H1 retargeted 2026-11-23),66.8 (49 impr, 28d),2026-11-28
+net worth calculator india,transactional,unknown,unknown,/net-worth-calculator,live,77.7 page-level (25 impr 28d; indexed per URL Inspection),2026-11-28
 net worth calculator in rupees,transactional,unknown,unknown,/net-worth-calculator,live (secondary),new 2026-11-24,2026-11-24
 education loan emi calculator with moratorium,transactional,unknown,unknown,/emi-calculator/education-loan,live,new 2026-11-22,2026-11-22
+credit card me due date kya hota hai,informational,unknown,unknown,/hi/blog/credit-card-statement-date-vs-due-date,live (H1 retargeted 2026-11-28),10.7 (3 impr, 28d),2026-11-28
+credit card kitne din me aata hai,informational,unknown,unknown,/hi/blog/credit-card-statement-date-vs-due-date,live (lead + FAQ added 2026-11-28),27.6 (5 impr, 28d),2026-11-28
